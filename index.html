@@ -1,0 +1,676 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+:root{
+  --tr:#C1634F;--tl:#D4876F;--tp:#F5EAE6;--td:#8B3E2D;--tvp:#FCF4F1;
+  --sg:#7A9E82;--sl:#A8C4AC;--sp:#EAF0EB;--sd:#4D7255;--svp:#F1F7F2;
+  --wh:#FFFFFF;--pl:#FAF9F7;--pl2:#F3F1EE;
+  --ch:#2C2825;--cm:#5A534C;--cl:#9A9189;
+  --sf:'Cormorant Garamond',Georgia,serif;--ss:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{font-family:var(--ss);background:var(--wh);color:var(--ch);font-size:15px;line-height:1.6;overflow-x:hidden;}
+.pg{display:none;}.pg.on{display:block;}
+
+/* ── SHARED NAV ── */
+nav{background:var(--wh);border-bottom:1px solid rgba(44,40,37,.07);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:66px;}
+.logo{display:flex;align-items:center;gap:12px;cursor:pointer;}
+.ln{font-family:var(--sf);font-size:28px;font-weight:500;letter-spacing:.02em;line-height:1;}
+.ln .ca{color:var(--tr);}.ln .co{color:var(--sg);}
+.lt{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--cl);margin-top:3px;white-space:nowrap;}
+.nl{display:flex;gap:1.3rem;align-items:center;list-style:none;}
+.nl a{text-decoration:none;font-size:13px;color:var(--cm);cursor:pointer;transition:color .15s;}
+.nl a:hover{color:var(--tr);}
+.nl .cta{background:var(--tr)!important;color:var(--wh)!important;padding:7px 15px;border-radius:20px;}
+.nl a.act{color:var(--tr);font-weight:500;}
+
+/* ── BREADCRUMB ── */
+.bc{padding:.6rem 2rem;font-size:12px;color:var(--cl);background:var(--tvp);border-bottom:1px solid rgba(193,99,79,.1);}
+.bc a{color:var(--tr);cursor:pointer;text-decoration:none;}
+.bc span{margin:0 5px;}
+
+/* ── WAVES ── */
+.wd{padding-bottom:56px;margin-bottom:-56px;}
+.wu{border-radius:50% 50% 0 0/56px 56px 0 0;}
+
+/* ── TYPOGRAPHY ── */
+.ey{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tr);margin-bottom:.35rem;}
+.eys{color:var(--sg);}
+.sh{font-family:var(--sf);font-size:30px;font-weight:300;color:var(--ch);margin-bottom:.25rem;}
+.st{font-size:13px;color:var(--cl);}
+.shd{text-align:center;margin-bottom:1.75rem;}
+.va{display:inline-block;margin-top:1.25rem;font-size:13px;color:var(--tr);border-bottom:1px dotted var(--tl);cursor:pointer;}
+.ctr{text-align:center;}
+
+/* ── SHARED CARDS ── */
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:9px;margin-left:4px;}
+.bm{background:var(--tp);color:var(--td);}
+.bl{background:var(--sp);color:var(--sd);}
+.sv-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:13px;}
+.sv-c{background:var(--wh);border:1px solid rgba(44,40,37,.09);border-radius:10px;padding:1.2rem;cursor:pointer;transition:all .18s;}
+.sv-c:hover{border-color:var(--sl);}
+.sv-av{width:38px;height:38px;border-radius:50%;background:var(--sp);border:1.5px solid var(--sl);display:flex;align-items:center;justify-content:center;font-family:var(--sf);font-size:15px;color:var(--sd);margin-bottom:.7rem;}
+.sv-nm{font-size:13px;font-weight:500;color:var(--ch);margin-bottom:2px;}
+.sv-tp{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--cl);margin-bottom:6px;}
+.sv-lc{font-size:12px;color:var(--cm);margin-bottom:5px;}
+.sv-rt{font-size:12px;color:var(--tr);}
+.pr-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;}
+.pr-c{background:var(--wh);border:1px solid rgba(44,40,37,.08);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .18s;}
+.pr-c:hover{border-color:rgba(193,99,79,.3);transform:translateY(-2px);}
+.pr-i{height:125px;display:flex;align-items:center;justify-content:center;}
+.pr-b{padding:.7rem 1rem .9rem;}
+.pr-t{font-size:13px;font-weight:500;color:var(--ch);margin-bottom:3px;line-height:1.3;}
+.pr-s{font-size:11px;color:var(--cl);margin-bottom:5px;}
+.pr-p{font-size:14px;font-weight:500;color:var(--tr);}
+.loc-bar{display:flex;align-items:center;gap:10px;background:var(--wh);border:1px solid rgba(44,40,37,.1);border-radius:8px;padding:10px 16px;margin-bottom:1.5rem;}
+.loc-bar span{font-size:13px;color:var(--cm);flex:1;}
+.loc-bar input{border:none;background:transparent;font-family:var(--ss);font-size:13px;color:var(--tr);font-weight:500;outline:none;width:180px;}
+.loc-btn{background:var(--sg);color:var(--wh);border:none;padding:6px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:var(--ss);}
+
+/* ── FOOTER ── */
+footer{background:var(--ch);padding:2.5rem 2rem 1.75rem;}
+.fti{max-width:880px;margin:0 auto;display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;gap:1.75rem;padding-bottom:2rem;border-bottom:1px solid rgba(252,244,241,.1);}
+.fb-n{font-family:var(--sf);font-size:20px;font-weight:500;margin-bottom:.5rem;}
+.fb-n .ca{color:var(--tl);}.fb-n .co{color:var(--sl);}
+.fb-p{font-size:12px;color:rgba(252,244,241,.4);line-height:1.7;max-width:200px;}
+.fc h4{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(252,244,241,.3);margin-bottom:10px;font-weight:500;}
+.fc a{display:block;font-size:13px;color:rgba(252,244,241,.55);text-decoration:none;margin-bottom:8px;cursor:pointer;}
+.fc a:hover{color:var(--tl);}
+.fm{max-width:880px;margin:1.4rem auto 0;padding-top:1.25rem;border-top:1px solid rgba(252,244,241,.07);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.fm span{font-size:12px;color:rgba(252,244,241,.28);}
+.fll{display:flex;gap:1.1rem;}
+.fll a{font-size:12px;color:rgba(252,244,241,.32);text-decoration:none;cursor:pointer;}
+
+/* ── FORMS (vendor pages) ── */
+.fi{width:100%;padding:10px 14px;border:1px solid rgba(44,40,37,.2);border-radius:8px;font-family:var(--ss);font-size:13px;color:var(--ch);background:var(--wh);outline:none;transition:border-color .15s;}
+.fi:focus{border-color:var(--tr);}
+.fi::placeholder{color:var(--cl);}
+textarea.fi{resize:vertical;min-height:90px;}
+.fl{font-size:12px;font-weight:500;color:var(--cm);margin-bottom:.4rem;display:block;}
+.fl span{font-weight:400;color:var(--cl);}
+.fg{margin-bottom:1.25rem;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fg3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;}
+.sec{margin-bottom:2rem;}
+.sh2{font-family:var(--sf);font-size:22px;font-weight:400;color:var(--ch);margin-bottom:.25rem;padding-bottom:.6rem;border-bottom:1px solid rgba(44,40,37,.08);}
+.rc{border:1px solid rgba(44,40,37,.14);border-radius:8px;padding:12px 14px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;transition:all .15s;}
+.rc:hover{border-color:var(--tl);}
+.rc.on{border-color:var(--tr);background:var(--tvp);}
+.rdot{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(44,40,37,.3);margin-top:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.rc.on .rdot{border-color:var(--tr);}
+.rin{width:8px;height:8px;border-radius:50%;background:transparent;}
+.rc.on .rin{background:var(--tr);}
+.rc-t{font-size:13px;font-weight:500;color:var(--ch);}
+.rc-d{font-size:12px;color:var(--cl);margin-top:2px;line-height:1.5;}
+.rc-p{font-size:13px;font-weight:500;color:var(--tr);margin-left:auto;padding-left:12px;flex-shrink:0;align-self:center;}
+.cp-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1.25rem;}
+.cp{background:var(--pl);border:1px solid rgba(44,40,37,.12);color:var(--cm);padding:6px 13px;border-radius:15px;font-size:12px;cursor:pointer;font-family:var(--ss);transition:all .15s;}
+.cp:hover,.cp.on{background:var(--tr);color:var(--wh);border-color:var(--tr);}
+.cp.sg:hover,.cp.sg.on{background:var(--sg);border-color:var(--sg);}
+.upload-zone{border:1.5px dashed rgba(44,40,37,.25);border-radius:10px;padding:1.75rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--pl);}
+.upload-zone:hover{border-color:var(--tr);background:var(--tvp);}
+.price-row{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:.6rem 0;border-bottom:1px solid rgba(44,40,37,.06);}
+.price-row:last-child{border-bottom:none;}
+.price-del{width:24px;height:24px;border-radius:50%;background:none;border:1px solid rgba(44,40,37,.15);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--cl);}
+.price-del:hover{border-color:var(--tr);color:var(--tr);}
+.add-row-btn{font-size:12px;color:var(--tr);background:none;border:none;font-family:var(--ss);cursor:pointer;padding:0;margin-top:.5rem;}
+.avail-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:1.25rem;}
+.avail-day{background:var(--pl);border:1px solid rgba(44,40,37,.12);border-radius:7px;padding:8px 4px;text-align:center;cursor:pointer;transition:all .15s;}
+.avail-day.on{background:var(--sg);border-color:var(--sg);}
+.avail-day span{display:block;font-size:11px;font-weight:500;color:var(--ch);}
+.avail-day.on span{color:var(--wh);}
+.plan-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:1.5rem;}
+.plan-c{background:var(--wh);border:1.5px solid rgba(44,40,37,.12);border-radius:12px;padding:1.4rem 1.2rem;cursor:pointer;transition:all .18s;text-align:center;}
+.plan-c:hover{border-color:var(--tl);}
+.plan-c.on{border:2px solid var(--tr);}
+.plan-pop{display:inline-block;font-size:10px;background:var(--sp);color:var(--sd);border:1px solid var(--sl);padding:2px 10px;border-radius:9px;margin-bottom:.6rem;}
+.plan-name{font-family:var(--sf);font-size:20px;font-weight:400;color:var(--ch);margin-bottom:.25rem;}
+.plan-price{font-size:22px;font-weight:500;color:var(--tr);margin-bottom:.6rem;}
+.plan-price span{font-size:13px;font-weight:400;color:var(--cl);}
+.plan-feat{list-style:none;text-align:left;margin-top:.75rem;}
+.plan-feat li{font-size:12px;color:var(--cm);padding:4px 0;border-bottom:1px solid rgba(44,40,37,.05);display:flex;align-items:center;gap:7px;}
+.plan-feat li:last-child{border-bottom:none;}
+.btn-p{background:var(--tr);color:var(--wh);border:none;padding:12px 28px;border-radius:24px;font-size:14px;cursor:pointer;font-family:var(--ss);}
+.btn-p:hover{background:var(--td);}
+.btn-s{background:transparent;color:var(--ch);border:1.5px solid rgba(44,40,37,.22);padding:12px 24px;border-radius:24px;font-size:13px;cursor:pointer;font-family:var(--ss);}
+.btn-s:hover{border-color:var(--tr);color:var(--tr);}
+.btn-row{display:flex;gap:12px;margin-top:1rem;align-items:center;}
+.steps-bar{display:flex;align-items:center;justify-content:center;padding:1.1rem 2rem;background:var(--wh);border-bottom:1px solid rgba(44,40,37,.07);gap:0;}
+.sdot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;font-family:var(--ss);border:1.5px solid rgba(44,40,37,.2);color:var(--cl);background:var(--wh);flex-shrink:0;transition:all .25s;}
+.sdot.dn{background:var(--sg);border-color:var(--sg);color:var(--wh);}
+.sdot.ac{background:var(--tr);border-color:var(--tr);color:var(--wh);}
+.slbl{font-size:12px;color:var(--cl);margin:0 7px;white-space:nowrap;}
+.slbl.ac{color:var(--tr);font-weight:500;}
+.slbl.dn{color:var(--ch);}
+.sln{width:32px;height:1px;background:rgba(44,40,37,.15);flex-shrink:0;}
+.sln.dn{background:var(--sg);}
+
+/* ── PDP & SERVICES ── */
+.pdp-tab{padding:10px 16px;font-size:13px;font-family:var(--ss);color:var(--cl);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .18s;}
+.pdp-tab.on{color:var(--tr);border-bottom-color:var(--tr);font-weight:500;}
+.tp{display:none;}.tp.on{display:block;}
+.fp{background:var(--pl);border:1px solid rgba(44,40,37,.12);color:var(--cm);padding:5px 10px;border-radius:13px;font-size:12px;cursor:pointer;font-family:var(--ss);transition:all .15s;}
+.fp:hover,.fp.on{background:var(--tr);color:var(--wh);border-color:var(--tr);}
+.src-c{background:var(--wh);border:1px solid rgba(44,40,37,.09);border-radius:10px;padding:1.1rem 1.2rem;margin-bottom:10px;cursor:pointer;display:grid;grid-template-columns:44px 1fr auto;gap:11px;align-items:start;transition:all .18s;}
+.src-c:hover{border-color:var(--sl);}
+.src-av{width:44px;height:44px;border-radius:50%;background:var(--sp);border:1.5px solid var(--sl);display:flex;align-items:center;justify-content:center;font-family:var(--sf);font-size:16px;color:var(--sd);flex-shrink:0;}
+.cat-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:11px;}
+.cc{background:var(--wh);border:1px solid rgba(44,40,37,.09);border-radius:11px;padding:1.1rem .9rem;text-align:center;cursor:pointer;transition:all .18s;}
+.cc:hover{border-color:var(--tl);transform:translateY(-2px);}
+.ciw{width:38px;height:38px;margin:0 auto .6rem;display:flex;align-items:center;justify-content:center;}
+.ct2{font-size:12px;font-weight:500;color:var(--ch);line-height:1.3;}
+.bk-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:15px;}
+.bk-c{background:var(--wh);border:1px solid rgba(44,40,37,.08);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .18s;}
+.bk-c:hover{transform:translateY(-2px);}
+.bk-cv{height:165px;display:flex;align-items:flex-end;padding:12px;position:relative;overflow:hidden;}
+.bkh{font-family:var(--sf);font-size:16px;font-weight:400;color:rgba(255,255,255,.95);line-height:1.2;position:relative;z-index:1;}
+.bka{font-size:11px;color:rgba(255,255,255,.7);margin-top:3px;font-style:italic;position:relative;z-index:1;}
+.bk-b{padding:.7rem 1rem;}
+.bk-d{font-size:12px;color:var(--cm);line-height:1.5;margin-bottom:7px;}
+.bk-l{font-size:12px;color:var(--tr);border-bottom:1px dotted var(--tl);cursor:pointer;}
+</style>
+
+<div class="app">
+<h2 style="position:absolute;left:-9999px">CodaCo — complete site including landing, services, product detail, shop, and list with us</h2>
+
+<!-- PAGE NAV TABS -->
+<div style="display:flex;gap:0;border-bottom:2px solid var(--pl2);background:var(--wh);padding:0 1.5rem;overflow-x:auto;flex-shrink:0;">
+  <button onclick="go(0)" id="t0" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid var(--tr);margin-bottom:-2px;color:var(--tr);font-weight:500;white-space:nowrap;">Home</button>
+  <button onclick="go(1)" id="t1" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--cl);white-space:nowrap;">Find services</button>
+  <button onclick="go(2)" id="t2" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--cl);white-space:nowrap;">Product detail</button>
+  <button onclick="go(3)" id="t3" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--cl);white-space:nowrap;">Shop goods</button>
+  <button onclick="go(4)" id="t4" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--cl);white-space:nowrap;">List with us</button>
+  <button onclick="go(5)" id="t5" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--cl);white-space:nowrap;">List goods form</button>
+  <button onclick="go(6)" id="t6" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--cl);white-space:nowrap;">List services form</button>
+  <button onclick="go(7)" id="t7" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--cl);white-space:nowrap;">Plan &amp; review</button>
+  <button onclick="go(8)" id="t8" class="ntab" style="padding:11px 14px;font-size:12px;font-family:var(--ss);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--cl);white-space:nowrap;">Submitted</button>
+</div>
+
+<!-- ═══ PAGE 0 — LANDING ═══ -->
+<div class="pg on" id="p0">
+<nav>
+  <div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div>
+  <ul class="nl"><li><a onclick="go(3)">Shop goods</a></li><li><a onclick="go(1)">Find services</a></li><li><a>Books</a></li><li><a>Light &amp; dark</a></li><li><a onclick="go(4)">List with us</a></li><li><a class="cta">Sign in</a></li></ul>
+</nav>
+<div style="background:var(--wh);padding:4rem 2rem 2.5rem;text-align:center;">
+  <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tr);margin-bottom:.5rem;">Welcome</div>
+  <h1 style="font-family:var(--sf);font-size:48px;font-weight:300;line-height:1.12;color:var(--ch);margin-bottom:1.1rem;">Everything you need to plan<br><em style="font-style:italic;color:var(--tr);">a meaningful end.</em></h1>
+  <p style="font-size:15px;color:var(--cm);max-width:555px;margin:0 auto .5rem;line-height:1.78;">CodaCo connects you with thoughtfully curated goods, local services and expert resources to help you approach death — yours or someone you love — with grace and intention.</p>
+  <p style="font-size:14px;color:var(--cl);font-style:italic;margin-bottom:1.9rem;">Death is a part of life. Support shouldn't be hard to find.</p>
+  <div style="display:flex;max-width:490px;margin:0 auto 2.5rem;">
+    <input type="text" placeholder="Search goods, services, books…" style="flex:1;padding:13px 19px;border:1.5px solid rgba(193,99,79,.25);border-right:none;border-radius:27px 0 0 27px;background:var(--wh);font-family:var(--ss);font-size:14px;color:var(--ch);outline:none;"/>
+    <button style="background:var(--tr);color:var(--wh);border:none;padding:13px 21px;border-radius:0 27px 27px 0;font-family:var(--ss);font-size:13px;cursor:pointer;">Search</button>
+  </div>
+</div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--tvp);padding:3rem 2rem 2.5rem;">
+  <div style="max-width:880px;margin:0 auto;">
+    <div class="shd"><div class="ey">Browse by category</div><h2 class="sh">What are you looking for?</h2><p class="st">Goods by mail · Services by location</p></div>
+    <div class="cat-g">
+      <div class="cc" onclick="go(3)"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M18 6 C12 6 8 11 8 18 C8 25 12 30 18 30 C24 30 28 25 28 18 C28 11 24 6 18 6Z" stroke="#C1634F" stroke-width="1.5" fill="none"/><path d="M13 18 C13 14 15 11 18 11 C21 11 23 14 23 18" stroke="#C1634F" stroke-width="1.3" fill="none"/><line x1="18" y1="6" x2="18" y2="4" stroke="#C1634F" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="ct2">Urns &amp; vessels</div></div>
+      <div class="cc" onclick="go(3)"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M18 8 L20 14 L26 14 L21 18 L23 24 L18 20 L13 24 L15 18 L10 14 L16 14 Z" stroke="#C1634F" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg></div><div class="ct2">Ash jewelry</div></div>
+      <div class="cc" onclick="go(3)"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M11 8 C11 8 13 10 18 10 C23 10 25 8 25 8 L25 24 C25 27 22 29 18 29 C14 29 11 27 11 24 Z" stroke="#7A9E82" stroke-width="1.5" fill="none"/></svg></div><div class="ct2">Burial shrouds</div></div>
+      <div class="cc" onclick="go(3)"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="8" y="6" width="20" height="24" rx="2" stroke="#C1634F" stroke-width="1.5"/><line x1="12" y1="13" x2="24" y2="13" stroke="#C1634F" stroke-width="1.2"/><line x1="12" y1="17" x2="24" y2="17" stroke="#C1634F" stroke-width="1.2"/><line x1="12" y1="21" x2="19" y2="21" stroke="#C1634F" stroke-width="1.2"/></svg></div><div class="ct2">Planning docs</div></div>
+      <div class="cc" onclick="go(1)"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="14" cy="13" r="4.5" stroke="#7A9E82" stroke-width="1.5"/><path d="M6 28 C6 23 9.5 20 14 20 C18.5 20 22 23 22 28" stroke="#7A9E82" stroke-width="1.5" stroke-linecap="round"/><path d="M24 15 C24 15 27 13 29 16" stroke="#C1634F" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="ct2">Death doulas</div></div>
+      <div class="cc" onclick="go(1)"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="10" y="10" width="16" height="16" rx="2" stroke="#7A9E82" stroke-width="1.5"/><line x1="14" y1="16" x2="22" y2="16" stroke="#7A9E82" stroke-width="1.2"/><line x1="14" y1="20" x2="20" y2="20" stroke="#7A9E82" stroke-width="1.2"/></svg></div><div class="ct2">Estate attorneys</div></div>
+      <div class="cc" onclick="go(1)"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M10 28 L10 14 L18 8 L26 14 L26 28" stroke="#C1634F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><rect x="14" y="20" width="8" height="8" stroke="#C1634F" stroke-width="1.3"/></svg></div><div class="ct2">Death cleaning</div></div>
+      <div class="cc" onclick="go(1)"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="10" stroke="#7A9E82" stroke-width="1.5" fill="none"/><path d="M14 18 C14 15 16 13 18 13 C20 13 22 15 22 18" stroke="#7A9E82" stroke-width="1.3" fill="none"/></svg></div><div class="ct2">Celebrants</div></div>
+      <div class="cc"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="9" y="6" width="12" height="22" rx="1.5" stroke="#C1634F" stroke-width="1.5"/><rect x="14" y="8" width="12" height="22" rx="1.5" stroke="#7A9E82" stroke-width="1.3"/></svg></div><div class="ct2">Books</div></div>
+      <div class="cc"><div class="ciw"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M10 22 C10 22 10 14 18 14 C26 14 26 22 26 22 L10 22Z" stroke="#C1634F" stroke-width="1.5" fill="none"/><rect x="14" y="22" width="8" height="5" rx="1" stroke="#C1634F" stroke-width="1.3"/></svg></div><div class="ct2">Gifts &amp; humor</div></div>
+    </div>
+  </div>
+</div>
+<div class="wd" style="background:var(--tvp);"></div>
+<div class="wu" style="background:var(--wh);padding:3rem 2rem 2.5rem;">
+  <div style="max-width:880px;margin:0 auto;">
+    <div class="shd"><div class="ey eys">Find local services</div><h2 class="sh">Support in your area</h2><p class="st">Vetted providers · search by zip or city</p></div>
+    <div class="loc-bar"><span>Showing results near:</span><input value="New York, NY 10001"/><button class="loc-btn">Change</button></div>
+    <div class="sv-g">
+      <div class="sv-c" onclick="go(1)"><div class="sv-av">MR</div><div class="sv-nm">Maria Rosales, CEND</div><div class="sv-tp">Death Doula</div><div class="sv-lc">Brooklyn, NY · In-home &amp; virtual</div><div class="sv-rt">★★★★★ · 34 reviews</div></div>
+      <div class="sv-c" onclick="go(1)"><div class="sv-av">JT</div><div class="sv-nm">James Thornton, Esq.</div><div class="sv-tp">Estate Attorney</div><div class="sv-lc">Manhattan, NY</div><div class="sv-rt">★★★★☆ · 18 reviews</div></div>
+      <div class="sv-c" onclick="go(1)"><div class="sv-av">SL</div><div class="sv-nm">Sunlight Leaving</div><div class="sv-tp">Death Cleaning</div><div class="sv-lc">Queens &amp; Long Island, NY</div><div class="sv-rt">★★★★★ · 11 reviews</div></div>
+      <div class="sv-c" onclick="go(1)"><div class="sv-av">AP</div><div class="sv-nm">Alma Park Celebrations</div><div class="sv-tp">Funeral Celebrant</div><div class="sv-lc">Greater NYC · Travels</div><div class="sv-rt">★★★★★ · 27 reviews</div></div>
+    </div>
+    <div class="ctr"><a class="va" onclick="go(1)">Search all service providers →</a></div>
+  </div>
+</div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--svp);padding:3rem 2rem 2.5rem;">
+  <div style="max-width:880px;margin:0 auto;">
+    <div class="shd"><div class="ey">Handpicked goods</div><h2 class="sh">Featured in the marketplace</h2><p class="st">Available locally or shipped anywhere in the US</p></div>
+    <div class="pr-g">
+      <div class="pr-c" onclick="go(2)"><div class="pr-i" style="background:var(--tp)"><svg width="50" height="60" viewBox="0 0 60 70" fill="none"><path d="M30 8 C18 8 10 20 10 38 C10 52 18 62 30 62 C42 62 50 52 50 38 C50 20 42 8 30 8Z" stroke="#C1634F" stroke-width="1.8" fill="none"/><path d="M20 38 C20 28 24 22 30 22 C36 22 40 28 40 38" stroke="#C1634F" stroke-width="1.5" fill="none"/></svg></div><div class="pr-b"><div class="pr-t">Hand-thrown ceramic urn, sage glaze</div><div class="pr-s">Earthen Studio, Portland OR</div><div class="pr-p">$145 <span class="badge bm">Ships anywhere</span></div></div></div>
+      <div class="pr-c" onclick="go(3)"><div class="pr-i" style="background:var(--pl2)"><svg width="46" height="46" viewBox="0 0 60 60" fill="none"><path d="M30 10 L33 22 L44 22 L35 28 L38 38 L30 32 L22 38 L25 28 L16 22 L27 22 Z" stroke="#5A534C" stroke-width="1.6" fill="none" stroke-linejoin="round"/></svg></div><div class="pr-b"><div class="pr-t">Memorial ash pendant, sterling silver</div><div class="pr-s">Keepsake &amp; Co., Austin TX</div><div class="pr-p">$89 <span class="badge bm">Ships anywhere</span></div></div></div>
+      <div class="pr-c" onclick="go(3)"><div class="pr-i" style="background:var(--sp)"><svg width="46" height="52" viewBox="0 0 60 62" fill="none"><path d="M18 58 L18 22 L30 14 L42 22 L42 58" stroke="#7A9E82" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="pr-b"><div class="pr-t">Organic cotton burial shroud, undyed</div><div class="pr-s">Gentle Passage, Vermont</div><div class="pr-p">$220 <span class="badge bm">Ships anywhere</span></div></div></div>
+      <div class="pr-c" onclick="go(3)"><div class="pr-i" style="background:var(--tp)"><svg width="46" height="56" viewBox="0 0 60 70" fill="none"><rect x="12" y="8" width="36" height="52" rx="3" stroke="#C1634F" stroke-width="1.8" fill="none"/><line x1="18" y1="22" x2="42" y2="22" stroke="#C1634F" stroke-width="1.4"/><line x1="18" y1="30" x2="42" y2="30" stroke="#C1634F" stroke-width="1.4"/></svg></div><div class="pr-b"><div class="pr-t">End of life planning workbook</div><div class="pr-s">Threshold Press</div><div class="pr-p">$32 <span class="badge bm">Digital + print</span></div></div></div>
+    </div>
+    <div class="ctr"><a class="va" onclick="go(3)">View all goods →</a></div>
+  </div>
+</div>
+<div class="wd" style="background:var(--svp);"></div>
+<div class="wu" style="background:var(--wh);padding:3rem 2rem 2.5rem;">
+  <div style="max-width:880px;margin:0 auto;">
+    <div class="shd"><div class="ey eys">The reading room</div><h2 class="sh">Books on death &amp; dying</h2><p class="st">Honest, beautifully written guides</p></div>
+    <div class="bk-g">
+      <div class="bk-c"><div class="bk-cv" style="background:#8B4F42"><div style="position:absolute;inset:0;opacity:.14"><svg width="100%" height="100%" viewBox="0 0 160 170"><line x1="0" y1="20" x2="160" y2="0" stroke="#fff" stroke-width=".7"/><line x1="0" y1="60" x2="160" y2="40" stroke="#fff" stroke-width=".5"/><line x1="0" y1="100" x2="160" y2="80" stroke="#fff" stroke-width=".6"/><line x1="0" y1="140" x2="160" y2="120" stroke="#fff" stroke-width=".5"/></svg></div><div style="position:relative;z-index:1"><div class="bkh">Briefly Perfectly Human</div><div class="bka">Alua Arthur</div></div></div><div class="bk-b"><div class="bk-d">Death doula Alua Arthur on what it means to be alive.</div><a class="bk-l">Find this book →</a></div></div>
+      <div class="bk-c"><div class="bk-cv" style="background:#3D5C47"><div style="position:absolute;inset:0;opacity:.13"><svg width="100%" height="100%" viewBox="0 0 160 170"><circle cx="80" cy="85" r="60" stroke="#fff" stroke-width=".7" fill="none"/><circle cx="80" cy="85" r="35" stroke="#fff" stroke-width=".5" fill="none"/></svg></div><div style="position:relative;z-index:1"><div class="bkh">Smoke Gets in Your Eyes</div><div class="bka">Caitlin Doughty</div></div></div><div class="bk-b"><div class="bk-d">A mortician's dark, funny memoir on how we hide from death.</div><a class="bk-l">Find this book →</a></div></div>
+      <div class="bk-c"><div class="bk-cv" style="background:#4A4030"><div style="position:absolute;inset:0;opacity:.12"><svg width="100%" height="100%" viewBox="0 0 160 170"><rect x="20" y="20" width="120" height="130" stroke="#fff" stroke-width=".6" fill="none"/><rect x="36" y="36" width="88" height="98" stroke="#fff" stroke-width=".4" fill="none"/></svg></div><div style="position:relative;z-index:1"><div class="bkh">Being Mortal</div><div class="bka">Atul Gawande</div></div></div><div class="bk-b"><div class="bk-d">How medicine can better serve people at the end of life.</div><a class="bk-l">Find this book →</a></div></div>
+      <div class="bk-c"><div class="bk-cv" style="background:#2C3A5A"><div style="position:absolute;inset:0;opacity:.13"><svg width="100%" height="100%" viewBox="0 0 160 170"><path d="M0 170 Q80 60 160 170" stroke="#fff" stroke-width=".7" fill="none"/><path d="M0 130 Q80 30 160 130" stroke="#fff" stroke-width=".5" fill="none"/></svg></div><div style="position:relative;z-index:1"><div class="bkh">When Breath Becomes Air</div><div class="bka">Paul Kalanithi</div></div></div><div class="bk-b"><div class="bk-d">A neurosurgeon's luminous memoir facing his own terminal diagnosis.</div><a class="bk-l">Find this book →</a></div></div>
+    </div>
+    <div class="ctr"><a class="va">Browse the full reading list →</a></div>
+  </div>
+</div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--tvp);padding:3rem 2rem 2.5rem;">
+  <div style="max-width:880px;margin:0 auto;">
+    <div style="background:var(--ch);border-radius:12px;padding:1.4rem 1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;"><div><h3 style="font-family:var(--sf);font-size:22px;font-weight:300;color:var(--tvp);margin-bottom:3px;">Light &amp; Dark — Because death is also funny.</h3><p style="font-size:13px;color:rgba(252,244,241,.6);max-width:320px;">Prints, mugs, cards and gifts that find the levity in life's only guarantee.</p></div><button style="background:var(--tr);color:var(--wh);border:none;padding:9px 18px;border-radius:18px;font-size:13px;cursor:pointer;font-family:var(--ss);">Shop all →</button></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:13px;">
+      <div style="background:var(--wh);border:1px solid rgba(44,40,37,.08);border-radius:10px;padding:.9rem;text-align:center;cursor:pointer;"><div style="height:82px;background:var(--ch);border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:.7rem;font-family:var(--sf);font-size:12px;color:rgba(252,244,241,.85);padding:.7rem;line-height:1.45;text-align:center;font-style:italic;">"Eventually, we are all just stardust with opinions."</div><div style="font-size:12px;color:var(--ch);font-weight:500;">Art print, 8×10</div><div style="font-size:12px;color:var(--tr);margin-top:2px;">$18</div></div>
+      <div style="background:var(--wh);border:1px solid rgba(44,40,37,.08);border-radius:10px;padding:.9rem;text-align:center;cursor:pointer;"><div style="height:82px;background:var(--ch);border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:.7rem;font-family:var(--sf);font-size:12px;color:rgba(252,244,241,.85);padding:.7rem;line-height:1.45;text-align:center;font-style:italic;">"I've made peace with my mortality. My accountant has not."</div><div style="font-size:12px;color:var(--ch);font-weight:500;">Ceramic mug, 12 oz</div><div style="font-size:12px;color:var(--tr);margin-top:2px;">$24</div></div>
+      <div style="background:var(--wh);border:1px solid rgba(44,40,37,.08);border-radius:10px;padding:.9rem;text-align:center;cursor:pointer;"><div style="height:82px;background:var(--ch);border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:.7rem;font-family:var(--sf);font-size:12px;color:rgba(252,244,241,.85);padding:.7rem;line-height:1.45;text-align:center;font-style:italic;">"YOLO was taken. So I planned ahead."</div><div style="font-size:12px;color:var(--ch);font-weight:500;">Tote bag</div><div style="font-size:12px;color:var(--tr);margin-top:2px;">$22</div></div>
+      <div style="background:var(--wh);border:1px solid rgba(44,40,37,.08);border-radius:10px;padding:.9rem;text-align:center;cursor:pointer;"><div style="height:82px;background:var(--ch);border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:.7rem;font-family:var(--sf);font-size:12px;color:rgba(252,244,241,.85);padding:.7rem;line-height:1.45;text-align:center;font-style:italic;">"My estate plan is the most loving thing I've ever done."</div><div style="font-size:12px;color:var(--ch);font-weight:500;">Greeting card set</div><div style="font-size:12px;color:var(--tr);margin-top:2px;">$14</div></div>
+    </div>
+  </div>
+</div>
+<div class="wd" style="background:var(--tvp);"></div>
+<div class="wu" style="background:var(--wh);padding:3rem 2rem 2.5rem;">
+  <div style="max-width:880px;margin:0 auto;text-align:center;">
+    <div class="ey" style="text-align:center">For vendors &amp; service providers</div>
+    <h2 style="font-family:var(--sf);font-size:30px;font-weight:300;color:var(--ch);margin-bottom:.65rem;">Reach people who are ready</h2>
+    <p style="font-size:14px;color:var(--cm);max-width:440px;margin:0 auto 2rem;">CodaCo connects you with clients actively seeking what you offer. List your goods or services in minutes.</p>
+    <div style="display:flex;gap:12px;justify-content:center;"><button class="btn-p" onclick="go(4)">List with us →</button></div>
+  </div>
+</div>
+<div class="wd" style="background:var(--wh);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying. Based in the US. Built with care.</p></div><div class="fc"><h4>Shop</h4><a onclick="go(3)">Urns &amp; vessels</a><a onclick="go(3)">Ash jewelry</a><a onclick="go(3)">Burial shrouds</a><a onclick="go(3)">Planning docs</a><a onclick="go(3)">Gifts &amp; humor</a></div><div class="fc"><h4>Services</h4><a onclick="go(1)">Death doulas</a><a onclick="go(1)">Estate attorneys</a><a onclick="go(1)">Death cleaning</a><a onclick="go(1)">Celebrants</a><a onclick="go(1)">EOL organizers</a></div><div class="fc"><h4>Company</h4><a>About CodaCo</a><a onclick="go(4)">List with us</a><a>Books</a><a>Help &amp; FAQ</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc. · United States</span><div class="fll"><a>Terms</a><a>Privacy</a><a>Accessibility</a><a>Cookie preferences</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+<!-- ═══ PAGE 1 — SERVICES SEARCH ═══ -->
+<div class="pg" id="p1">
+<nav><div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div><ul class="nl"><li><a onclick="go(3)">Shop goods</a></li><li><a class="act">Find services</a></li><li><a>Books</a></li><li><a onclick="go(4)">List with us</a></li><li><a class="cta">Sign in</a></li></ul></nav>
+<div class="bc"><a onclick="go(0)">Home</a><span>›</span>Find services</div>
+<div style="background:var(--wh);padding:1.4rem 2rem 1.2rem;border-bottom:1px solid rgba(44,40,37,.07);">
+  <div style="max-width:860px;margin:0 auto;"><h1 style="font-family:var(--sf);font-size:28px;font-weight:300;color:var(--ch);margin-bottom:.75rem;">Find services near you</h1>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <div style="display:flex;flex:1.2;min-width:190px;border:1.5px solid rgba(193,99,79,.22);border-radius:8px;overflow:hidden;background:var(--wh);"><div style="padding:9px 11px;border-right:1px solid rgba(44,40,37,.09);display:flex;align-items:center;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#9A9189" stroke-width="1.3"/><line x1="11" y1="11" x2="15" y2="15" stroke="#9A9189" stroke-width="1.3" stroke-linecap="round"/></svg></div><input value="Death doula" style="flex:1;border:none;padding:9px 13px;font-family:var(--ss);font-size:13px;color:var(--ch);outline:none;background:transparent;"/></div>
+    <div style="display:flex;flex:1;min-width:160px;border:1.5px solid rgba(44,40,37,.15);border-radius:8px;overflow:hidden;background:var(--wh);"><div style="padding:9px 11px;border-right:1px solid rgba(44,40,37,.09);display:flex;align-items:center;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3.5" stroke="#9A9189" stroke-width="1.3"/><path d="M8 10.5 L8 14" stroke="#9A9189" stroke-width="1.3" stroke-linecap="round"/></svg></div><input value="New York, NY 10001" style="flex:1;border:none;padding:9px 13px;font-family:var(--ss);font-size:13px;color:var(--ch);outline:none;background:transparent;"/></div>
+    <button style="background:var(--tr);color:var(--wh);border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-family:var(--ss);cursor:pointer;">Search</button>
+  </div></div>
+</div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--tvp);padding:2.5rem 2rem 3rem;">
+  <div style="max-width:880px;margin:0 auto;display:grid;grid-template-columns:195px 1fr;gap:0;">
+    <div style="padding:0 1.25rem 2rem 0;border-right:1px solid rgba(44,40,37,.08);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;"><span style="font-size:13px;font-weight:500;color:var(--ch);">Filters</span><button style="font-size:12px;color:var(--cl);background:none;border:none;font-family:var(--ss);cursor:pointer;text-decoration:underline;">Clear all</button></div>
+      <div style="margin-bottom:1.3rem;"><h4 style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cl);margin-bottom:.6rem;font-weight:500;">Service type</h4><div style="display:flex;flex-wrap:wrap;gap:5px;"><button class="fp on">Death doula</button><button class="fp">Estate attorney</button><button class="fp">Death cleaning</button><button class="fp">Celebrant</button><button class="fp">EOL organizer</button></div></div>
+      <div style="height:1px;background:rgba(44,40,37,.07);margin:1rem 0;"></div>
+      <div style="margin-bottom:1.3rem;"><h4 style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cl);margin-bottom:.6rem;font-weight:500;">Distance</h4><div style="display:flex;flex-wrap:wrap;gap:5px;"><button class="fp">5 mi</button><button class="fp on">15 mi</button><button class="fp">30 mi</button><button class="fp">50 mi</button></div></div>
+      <div style="height:1px;background:rgba(44,40,37,.07);margin:1rem 0;"></div>
+      <div style="margin-bottom:1.3rem;"><h4 style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cl);margin-bottom:.6rem;font-weight:500;">Availability</h4><label style="display:flex;align-items:center;gap:7px;margin-bottom:7px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--tr);width:13px;height:13px;"/><span style="font-size:12px;color:var(--cm);">Accepting new clients</span></label><label style="display:flex;align-items:center;gap:7px;margin-bottom:7px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--tr);width:13px;height:13px;"/><span style="font-size:12px;color:var(--cm);">Virtual sessions</span></label></div>
+      <div style="height:1px;background:rgba(44,40,37,.07);margin:1rem 0;"></div>
+      <div><h4 style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cl);margin-bottom:.6rem;font-weight:500;">Specializations</h4><label style="display:flex;align-items:center;gap:7px;margin-bottom:7px;cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--tr);width:13px;height:13px;"/><span style="font-size:12px;color:var(--cm);">EOL planning</span></label><label style="display:flex;align-items:center;gap:7px;margin-bottom:7px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--tr);width:13px;height:13px;"/><span style="font-size:12px;color:var(--cm);">LGBTQ+ affirming</span></label><label style="display:flex;align-items:center;gap:7px;cursor:pointer;"><input type="checkbox" style="accent-color:var(--tr);width:13px;height:13px;"/><span style="font-size:12px;color:var(--cm);">Bilingual (Spanish)</span></label></div>
+    </div>
+    <div style="padding:0 0 2rem 1.4rem;">
+      <div style="background:var(--pl2);border:1px solid rgba(44,40,37,.1);border-radius:10px;height:140px;display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;"><svg width="270" height="75" viewBox="0 0 280 80" fill="none"><rect x="10" y="10" width="260" height="60" rx="6" stroke="#9A9189" stroke-width="1" fill="none"/><circle cx="80" cy="40" r="7" stroke="#C1634F" stroke-width="1.5" fill="none"/><circle cx="80" cy="40" r="3" fill="#C1634F"/><circle cx="140" cy="28" r="7" stroke="#C1634F" stroke-width="1.5" fill="none"/><circle cx="140" cy="28" r="3" fill="#C1634F"/><circle cx="195" cy="45" r="7" stroke="#7A9E82" stroke-width="1.5" fill="none"/><circle cx="195" cy="45" r="3" fill="#7A9E82"/><path d="M30 55 Q70 44 100 50 Q130 56 155 40 Q180 24 210 34 Q235 42 255 38" stroke="#9A9189" stroke-width=".8" fill="none" stroke-dasharray="4 3"/><text x="140" y="72" font-size="10" fill="#9A9189" text-anchor="middle" font-family="sans-serif">14 providers near New York, NY</text></svg></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;"><span style="font-size:13px;color:var(--cm);">14 providers · <strong style="color:var(--ch)">8</strong> after filters</span><div style="display:flex;align-items:center;gap:7px;"><label style="font-size:12px;color:var(--cl);">Sort by</label><select style="font-size:12px;color:var(--cm);border:1px solid rgba(44,40,37,.15);border-radius:6px;padding:5px 10px;background:var(--wh);font-family:var(--ss);outline:none;"><option>Best match</option><option>Rating: high</option><option>Nearest first</option></select></div></div>
+      <div class="src-c"><div class="src-av">MR</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);margin-bottom:2px;">Maria Rosales, CEND</div><span style="display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--sp);color:var(--sd);border:1px solid var(--sl);padding:2px 8px;border-radius:9px;margin-bottom:5px;">Death doula</span><div style="font-size:12px;color:var(--cm);line-height:1.5;margin-bottom:5px;">Certified EOL doula · 8 years experience · LGBTQ+ affirming.</div><div style="display:flex;gap:9px;flex-wrap:wrap;"><span style="font-size:12px;color:var(--cl);">Brooklyn, NY · 3.2 mi</span><span style="font-size:12px;color:var(--cl);">In-home &amp; virtual</span></div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:13px;color:var(--tr);">★★★★★</div><div style="font-size:11px;color:var(--cl);margin-bottom:8px;">34 reviews</div><button style="background:var(--tr);color:var(--wh);border:none;padding:7px 14px;border-radius:16px;font-size:12px;cursor:pointer;font-family:var(--ss);width:100%;">Contact ↗</button><button style="background:transparent;color:var(--cl);border:1px solid rgba(44,40,37,.15);padding:6px 13px;border-radius:16px;font-size:12px;cursor:pointer;font-family:var(--ss);margin-top:5px;width:100%;">Save</button></div></div>
+      <div class="src-c"><div class="src-av">TW</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);margin-bottom:2px;">Threshold Wellness, LLC</div><span style="display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:var(--sp);color:var(--sd);border:1px solid var(--sl);padding:2px 8px;border-radius:9px;margin-bottom:5px;">Death doula</span><div style="font-size:12px;color:var(--cm);line-height:1.5;margin-bottom:5px;">Collective of three certified doulas · sliding-scale · perinatal loss, dementia, cultural customs.</div><div style="display:flex;gap:9px;"><span style="font-size:12px;color:var(--cl);">Manhattan, NY · 5.1 mi</span></div></div><div style="text-align:right;flex-shrink:0;"><div style="font-size:13px;color:var(--tr);">★★★★★</div><div style="font-size:11px;color:var(--cl);margin-bottom:8px;">21 reviews</div><button style="background:var(--tr);color:var(--wh);border:none;padding:7px 14px;border-radius:16px;font-size:12px;cursor:pointer;font-family:var(--ss);width:100%;">Contact ↗</button><button style="background:transparent;color:var(--cl);border:1px solid rgba(44,40,37,.15);padding:6px 13px;border-radius:16px;font-size:12px;cursor:pointer;font-family:var(--ss);margin-top:5px;width:100%;">Save</button></div></div>
+      <div class="ctr" style="padding-top:.5rem;"><a class="va">Show 6 more results →</a></div>
+    </div>
+  </div>
+</div>
+<div class="wd" style="background:var(--tvp);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying.</p></div><div class="fc"><h4>Shop</h4><a onclick="go(3)">Urns &amp; vessels</a><a onclick="go(3)">Planning docs</a></div><div class="fc"><h4>Services</h4><a>Death doulas</a><a>Estate attorneys</a></div><div class="fc"><h4>Company</h4><a onclick="go(0)">About CodaCo</a><a onclick="go(4)">List with us</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc.</span><div class="fll"><a>Terms</a><a>Privacy</a><a>Accessibility</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+<!-- ═══ PAGE 2 — PRODUCT DETAIL ═══ -->
+<div class="pg" id="p2">
+<nav><div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div><ul class="nl"><li><a class="act" onclick="go(3)">Shop goods</a></li><li><a onclick="go(1)">Find services</a></li><li><a onclick="go(4)">List with us</a></li><li><a class="cta">Sign in</a></li></ul></nav>
+<div class="bc"><a onclick="go(0)">Home</a><span>›</span><a onclick="go(3)">Urns &amp; vessels</a><span>›</span>Hand-thrown ceramic urn, sage glaze</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;max-width:860px;margin:0 auto;padding:2rem 2rem 0;">
+  <div style="display:flex;flex-direction:column;gap:10px;">
+    <div style="border-radius:12px;height:280px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(44,40,37,.07);background:var(--tp);">
+      <svg width="108" height="128" viewBox="0 0 120 140" fill="none"><path d="M60 18 C36 18 22 36 22 65 C22 96 36 120 60 120 C84 120 98 96 98 65 C98 36 84 18 60 18Z" stroke="#C1634F" stroke-width="2" fill="none"/><path d="M38 65 C38 50 47 40 60 40 C73 40 82 50 82 65" stroke="#C1634F" stroke-width="1.8" fill="none"/><line x1="60" y1="18" x2="60" y2="12" stroke="#C1634F" stroke-width="2" stroke-linecap="round"/><ellipse cx="60" cy="12" rx="9" ry="5" stroke="#C1634F" stroke-width="1.6" fill="none"/><path d="M38 82 C44 90 76 90 82 82" stroke="#C1634F" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <div style="width:66px;height:66px;border-radius:7px;border:2px solid var(--tr);cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--tp);"><svg width="24" height="30" viewBox="0 0 60 72" fill="none"><path d="M30 8 C18 8 10 20 10 38 C10 56 18 66 30 66 C42 66 50 56 50 38 C50 20 42 8 30 8Z" stroke="#C1634F" stroke-width="2" fill="none"/></svg></div>
+      <div style="width:66px;height:66px;border-radius:7px;border:1.5px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--pl2);"><svg width="24" height="24" viewBox="0 0 60 60" fill="none"><path d="M30 10 L33 22 L44 22 L35 28 L38 38 L30 32 L22 38 L25 28 L16 22 L27 22 Z" stroke="#5A534C" stroke-width="1.8" fill="none" stroke-linejoin="round"/></svg></div>
+      <div style="width:66px;height:66px;border-radius:7px;border:1.5px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--sp);"><svg width="24" height="24" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="17" stroke="#7A9E82" stroke-width="1.8" fill="none"/></svg></div>
+    </div>
+  </div>
+  <div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:.7rem;"><div style="width:25px;height:25px;border-radius:50%;background:var(--sp);border:1px solid var(--sl);display:flex;align-items:center;justify-content:center;font-family:var(--sf);font-size:11px;color:var(--sd);">ES</div><div><div style="font-size:12px;color:var(--tr);cursor:pointer;border-bottom:1px dotted var(--tl);">Earthen Studio</div><div style="font-size:11px;color:var(--cl);">Portland, OR · Member since 2021</div></div></div>
+    <h1 style="font-family:var(--sf);font-size:25px;font-weight:400;color:var(--ch);line-height:1.2;margin-bottom:.5rem;">Hand-thrown ceramic urn,<br>sage glaze</h1>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:.9rem;"><span style="font-size:13px;color:var(--tr);">★★★★★</span><span style="font-size:12px;color:var(--cl);">4.9 · 47 reviews</span><span style="font-size:10px;background:var(--sp);color:var(--sd);border:1px solid var(--sl);padding:2px 9px;border-radius:9px;">CodaCo verified</span></div>
+    <div style="font-family:var(--sf);font-size:30px;font-weight:300;color:var(--tr);margin-bottom:.9rem;">$145</div>
+    <div style="margin-bottom:1rem;"><div style="font-size:12px;font-weight:500;color:var(--cm);margin-bottom:.45rem;">Glaze color</div><div style="display:flex;gap:8px;align-items:flex-end;"><div><div style="width:29px;height:29px;border-radius:50%;cursor:pointer;border:2px solid var(--ch);background:#8B9E8D;"></div><div style="font-size:11px;color:var(--cl);text-align:center;margin-top:3px;">Sage</div></div><div><div style="width:29px;height:29px;border-radius:50%;cursor:pointer;border:2px solid transparent;background:#C1634F;"></div><div style="font-size:11px;color:var(--cl);text-align:center;margin-top:3px;">Terra</div></div><div><div style="width:29px;height:29px;border-radius:50%;cursor:pointer;border:2px solid transparent;background:#E8E0D5;"></div><div style="font-size:11px;color:var(--cl);text-align:center;margin-top:3px;">Cream</div></div></div></div>
+    <div style="margin-bottom:1rem;"><div style="font-size:12px;font-weight:500;color:var(--cm);margin-bottom:.45rem;">Size</div><div style="display:flex;gap:7px;flex-wrap:wrap;"><button style="padding:6px 12px;border:1.5px solid var(--tr);border-radius:6px;background:var(--tp);color:var(--td);font-size:12px;font-family:var(--ss);cursor:pointer;">Standard (200 cu in)</button><button style="padding:6px 12px;border:1px solid rgba(44,40,37,.18);border-radius:6px;background:var(--wh);color:var(--cm);font-size:12px;font-family:var(--ss);cursor:pointer;">Large (280 cu in)</button></div></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.1rem;"><div><div style="font-size:12px;font-weight:500;color:var(--cm);margin-bottom:4px;">Quantity</div><div style="display:flex;align-items:center;border:1px solid rgba(44,40,37,.2);border-radius:7px;overflow:hidden;"><button onclick="adjQ(-1)" style="width:30px;height:30px;background:var(--pl);border:none;font-size:16px;cursor:pointer;color:var(--ch);font-family:var(--ss);">−</button><span id="qv" style="width:32px;text-align:center;font-size:13px;font-weight:500;color:var(--ch);">1</span><button onclick="adjQ(1)" style="width:30px;height:30px;background:var(--pl);border:none;font-size:16px;cursor:pointer;color:var(--ch);font-family:var(--ss);">+</button></div></div><div style="padding-top:1.3rem;"><div style="font-size:12px;color:var(--cm);">Free shipping · Ships in 3–5 business days</div></div></div>
+    <button id="aBtn" style="background:var(--tr);color:var(--wh);border:none;width:100%;padding:13px;border-radius:24px;font-size:14px;font-family:var(--ss);cursor:pointer;margin-bottom:8px;">Add to cart — $145</button>
+    <button style="background:transparent;color:var(--ch);border:1.5px solid rgba(44,40,37,.2);width:100%;padding:11px;border-radius:24px;font-size:13px;font-family:var(--ss);cursor:pointer;">Save to wishlist</button>
+  </div>
+</div>
+<div class="wd" style="background:var(--wh);padding-bottom:40px;margin-bottom:-40px;"></div>
+<div class="wu" style="background:var(--tvp);padding:0;">
+  <div style="display:flex;border-bottom:1px solid rgba(44,40,37,.1);max-width:860px;margin:0 auto;padding:0 2rem;">
+    <button class="pdp-tab on" onclick="showT('desc')">Description</button>
+    <button class="pdp-tab" onclick="showT('det')">Details &amp; dimensions</button>
+    <button class="pdp-tab" onclick="showT('rev')">Reviews (47)</button>
+    <button class="pdp-tab" onclick="showT('sel')">About the seller</button>
+  </div>
+  <div style="max-width:860px;margin:0 auto;padding:1.75rem 2rem 2rem;">
+    <div class="tp on" id="td-desc"><p style="font-size:14px;color:var(--cm);line-height:1.8;max-width:580px;margin-bottom:1rem;">Each urn is hand-thrown on the wheel by ceramicist Nora Hayashi in her Portland studio. The sage glaze is fired at high temperature, producing a matte, earthy finish with subtle variation — no two are identical. Designed to hold the cremated remains of one adult, with a threaded lid for secure, dignified closure.</p><p style="font-size:14px;color:var(--cm);line-height:1.8;max-width:580px;">Earthen Studio believes the objects we use to honor our loved ones should be as beautiful and considered as the people themselves. Every piece is made with that intention.</p></div>
+    <div class="tp" id="td-det"><div style="display:flex;font-size:13px;color:var(--cm);padding:7px 0;border-bottom:1px solid rgba(44,40,37,.05);"><span style="color:var(--cl);min-width:130px;">Dimensions</span><span>9.5" H × 5.5" W (standard)</span></div><div style="display:flex;font-size:13px;color:var(--cm);padding:7px 0;border-bottom:1px solid rgba(44,40,37,.05);"><span style="color:var(--cl);min-width:130px;">Capacity</span><span>200 cubic inches (standard adult)</span></div><div style="display:flex;font-size:13px;color:var(--cm);padding:7px 0;border-bottom:1px solid rgba(44,40,37,.05);"><span style="color:var(--cl);min-width:130px;">Material</span><span>High-fire stoneware clay</span></div><div style="display:flex;font-size:13px;color:var(--cm);padding:7px 0;border-bottom:1px solid rgba(44,40,37,.05);"><span style="color:var(--cl);min-width:130px;">Finish</span><span>Matte glaze, hand-applied</span></div><div style="display:flex;font-size:13px;color:var(--cm);padding:7px 0;"><span style="color:var(--cl);min-width:130px;">Made in</span><span>Portland, Oregon, USA</span></div></div>
+    <div class="tp" id="td-rev"><div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(44,40,37,.08);"><div style="text-align:center;"><div style="font-family:var(--sf);font-size:40px;font-weight:300;color:var(--ch);line-height:1;">4.9</div><div style="font-size:13px;color:var(--tr);">★★★★★</div><div style="font-size:11px;color:var(--cl);">47 reviews</div></div><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;"><span style="font-size:12px;color:var(--cl);width:20px;">5★</span><div style="flex:1;height:5px;background:var(--pl2);border-radius:3px;"><div style="width:85%;height:100%;background:var(--tr);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--cl);width:22px;">40</span></div><div style="display:flex;align-items:center;gap:7px;"><span style="font-size:12px;color:var(--cl);width:20px;">4★</span><div style="flex:1;height:5px;background:var(--pl2);border-radius:3px;"><div style="width:13%;height:100%;background:var(--tl);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--cl);width:22px;">6</span></div></div></div><div style="border-bottom:1px solid rgba(44,40,37,.07);padding-bottom:1.1rem;margin-bottom:1.1rem;"><div style="display:flex;justify-content:space-between;margin-bottom:.35rem;"><span style="font-size:13px;font-weight:500;color:var(--ch);">Diane M., Seattle WA</span><span style="font-size:11px;color:var(--cl);">March 2025</span></div><div style="font-size:12px;color:var(--tr);margin-bottom:.3rem;">★★★★★</div><div style="font-size:13px;color:var(--cm);line-height:1.6;">The quality is extraordinary — it arrived beautifully packed. Nora sent a handwritten note. This is what end of life commerce should look like.</div></div><div style="border-bottom:1px solid rgba(44,40,37,.07);padding-bottom:1.1rem;margin-bottom:1.1rem;"><div style="display:flex;justify-content:space-between;margin-bottom:.35rem;"><span style="font-size:13px;font-weight:500;color:var(--ch);">Theo R., Austin TX</span><span style="font-size:11px;color:var(--cl);">January 2025</span></div><div style="font-size:12px;color:var(--tr);margin-bottom:.3rem;">★★★★★</div><div style="font-size:13px;color:var(--cm);line-height:1.6;">The craftsmanship feels deeply intentional. It sits on our mantle and gets more beautiful every day.</div></div></div>
+    <div class="tp" id="td-sel"><div style="background:var(--tvp);border-radius:10px;padding:1.2rem;display:flex;gap:1.1rem;align-items:flex-start;"><div style="width:50px;height:50px;border-radius:50%;background:var(--sp);border:2px solid var(--sl);display:flex;align-items:center;justify-content:center;font-family:var(--sf);font-size:19px;color:var(--sd);flex-shrink:0;">ES</div><div><div style="font-size:15px;font-weight:500;color:var(--ch);margin-bottom:2px;">Earthen Studio</div><div style="font-size:12px;color:var(--cl);margin-bottom:.5rem;">Portland, Oregon · On CodaCo since 2021</div><div style="font-size:13px;color:var(--cm);line-height:1.6;margin-bottom:.7rem;">Nora Hayashi has been throwing functional ceramics for over fifteen years. After losing her own mother, she began making urns as a way of honoring the people who shape us.</div><div style="display:flex;gap:1rem;"><div><div style="font-family:var(--sf);font-size:17px;color:var(--ch);">214</div><div style="font-size:11px;color:var(--cl);">Orders</div></div><div><div style="font-family:var(--sf);font-size:17px;color:var(--ch);">4.9</div><div style="font-size:11px;color:var(--cl);">Avg rating</div></div><div><div style="font-family:var(--sf);font-size:17px;color:var(--ch);">100%</div><div style="font-size:11px;color:var(--cl);">On-time</div></div></div></div></div></div>
+  </div>
+</div>
+<div class="wd" style="background:var(--tvp);"></div>
+<div class="wu" style="background:var(--svp);padding:2.5rem 2rem 0;"><div style="max-width:860px;margin:0 auto;"><div class="ey eys">You might also like</div><h2 class="sh" style="margin-bottom:1.2rem;">More from this seller &amp; category</h2></div></div>
+<div style="background:var(--svp);"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;max-width:860px;margin:0 auto;padding:.5rem 2rem 2.5rem;">
+  <div class="pr-c" onclick="go(2)"><div class="pr-i" style="background:var(--tp);height:105px"><svg width="38" height="46" viewBox="0 0 60 72" fill="none"><path d="M30 8 C18 8 10 20 10 38 C10 56 18 66 30 66 C42 66 50 56 50 38 C50 20 42 8 30 8Z" stroke="#C1634F" stroke-width="2" fill="none"/></svg></div><div class="pr-b"><div class="pr-t">Ceramic urn, terracotta glaze</div><div class="pr-s">Earthen Studio</div><div class="pr-p">$145</div></div></div>
+  <div class="pr-c"><div class="pr-i" style="background:var(--pl2);height:105px"><svg width="36" height="36" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="16" stroke="#5A534C" stroke-width="1.8" fill="none"/><circle cx="30" cy="30" r="8" stroke="#5A534C" stroke-width="1.2" fill="none"/></svg></div><div class="pr-b"><div class="pr-t">Keepsake urn, ceramic mini</div><div class="pr-s">Earthen Studio</div><div class="pr-p">$68</div></div></div>
+  <div class="pr-c"><div class="pr-i" style="background:var(--sp);height:105px"><svg width="36" height="40" viewBox="0 0 60 62" fill="none"><path d="M18 58 L18 22 L30 14 L42 22 L42 58" stroke="#7A9E82" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="pr-b"><div class="pr-t">Organic burial shroud, undyed</div><div class="pr-s">Gentle Passage</div><div class="pr-p">$220</div></div></div>
+  <div class="pr-c"><div class="pr-i" style="background:var(--pl2);height:105px"><svg width="36" height="36" viewBox="0 0 60 60" fill="none"><path d="M30 10 L33 22 L44 22 L35 28 L38 38 L30 32 L22 38 L25 28 L16 22 L27 22 Z" stroke="#5A534C" stroke-width="1.6" fill="none" stroke-linejoin="round"/></svg></div><div class="pr-b"><div class="pr-t">Ash pendant, sterling silver</div><div class="pr-s">Keepsake &amp; Co.</div><div class="pr-p">$89</div></div></div>
+</div></div>
+<div class="wd" style="background:var(--svp);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying.</p></div><div class="fc"><h4>Shop</h4><a onclick="go(3)">Urns &amp; vessels</a><a onclick="go(3)">Ash jewelry</a></div><div class="fc"><h4>Services</h4><a onclick="go(1)">Death doulas</a><a onclick="go(1)">Estate attorneys</a></div><div class="fc"><h4>Company</h4><a onclick="go(0)">About CodaCo</a><a onclick="go(4)">List with us</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc.</span><div class="fll"><a>Terms</a><a>Privacy</a><a>Accessibility</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+<!-- ═══ PAGE 3 — SHOP GOODS ═══ -->
+<div class="pg" id="p3">
+<nav><div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div><ul class="nl"><li><a class="act">Shop goods</a></li><li><a onclick="go(1)">Find services</a></li><li><a onclick="go(4)">List with us</a></li><li><a class="cta">Sign in</a></li></ul></nav>
+<div class="bc"><a onclick="go(0)">Home</a><span>›</span>Shop goods</div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--svp);padding:3rem 2rem 2.5rem;">
+  <div style="max-width:880px;margin:0 auto;">
+    <div class="shd"><div class="ey">All goods</div><h2 class="sh">The marketplace</h2><p class="st">Handmade, purposeful goods — available locally or shipped anywhere in the US</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;">
+      <span style="font-size:12px;color:var(--cl);">Filter:</span>
+      <button class="fp on">All</button><button class="fp">Urns &amp; vessels</button><button class="fp">Ash jewelry</button><button class="fp">Burial shrouds</button><button class="fp">Planning docs</button><button class="fp">Memorial items</button>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:7px;"><span style="font-size:12px;color:var(--cl);">Sort:</span><select style="font-size:12px;color:var(--cm);border:1px solid rgba(44,40,37,.15);border-radius:6px;padding:5px 10px;background:var(--wh);font-family:var(--ss);outline:none;"><option>Featured</option><option>Price: low to high</option><option>Price: high to low</option></select></div>
+    </div>
+    <div class="pr-g">
+      <div class="pr-c" onclick="go(2)"><div class="pr-i" style="background:var(--tp)"><svg width="48" height="58" viewBox="0 0 60 70" fill="none"><path d="M30 8 C18 8 10 20 10 38 C10 52 18 62 30 62 C42 62 50 52 50 38 C50 20 42 8 30 8Z" stroke="#C1634F" stroke-width="1.8" fill="none"/><path d="M20 38 C20 28 24 22 30 22 C36 22 40 28 40 38" stroke="#C1634F" stroke-width="1.5" fill="none"/></svg></div><div class="pr-b"><div class="pr-t">Hand-thrown ceramic urn, sage glaze</div><div class="pr-s">Earthen Studio, Portland OR</div><div class="pr-p">$145 <span class="badge bm">Ships anywhere</span></div></div></div>
+      <div class="pr-c"><div class="pr-i" style="background:var(--pl2)"><svg width="44" height="44" viewBox="0 0 60 60" fill="none"><path d="M30 10 L33 22 L44 22 L35 28 L38 38 L30 32 L22 38 L25 28 L16 22 L27 22 Z" stroke="#5A534C" stroke-width="1.6" fill="none" stroke-linejoin="round"/></svg></div><div class="pr-b"><div class="pr-t">Memorial ash pendant, sterling silver</div><div class="pr-s">Keepsake &amp; Co., Austin TX</div><div class="pr-p">$89 <span class="badge bm">Ships anywhere</span></div></div></div>
+      <div class="pr-c"><div class="pr-i" style="background:var(--sp)"><svg width="44" height="50" viewBox="0 0 60 62" fill="none"><path d="M18 58 L18 22 L30 14 L42 22 L42 58" stroke="#7A9E82" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="pr-b"><div class="pr-t">Organic cotton burial shroud, undyed</div><div class="pr-s">Gentle Passage, Vermont</div><div class="pr-p">$220 <span class="badge bm">Ships anywhere</span></div></div></div>
+      <div class="pr-c"><div class="pr-i" style="background:var(--tp)"><svg width="44" height="54" viewBox="0 0 60 70" fill="none"><rect x="12" y="8" width="36" height="52" rx="3" stroke="#C1634F" stroke-width="1.8" fill="none"/><line x1="18" y1="22" x2="42" y2="22" stroke="#C1634F" stroke-width="1.4"/><line x1="18" y1="30" x2="42" y2="30" stroke="#C1634F" stroke-width="1.4"/></svg></div><div class="pr-b"><div class="pr-t">End of life planning workbook</div><div class="pr-s">Threshold Press</div><div class="pr-p">$32 <span class="badge bm">Digital + print</span></div></div></div>
+      <div class="pr-c"><div class="pr-i" style="background:var(--pl2)"><svg width="44" height="44" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="16" stroke="#5A534C" stroke-width="1.8" fill="none"/><circle cx="30" cy="30" r="8" stroke="#5A534C" stroke-width="1.2" fill="none"/><circle cx="30" cy="30" r="3" fill="#5A534C"/></svg></div><div class="pr-b"><div class="pr-t">Keepsake urn, ceramic mini</div><div class="pr-s">Earthen Studio, Portland OR</div><div class="pr-p">$68 <span class="badge bm">Ships anywhere</span></div></div></div>
+      <div class="pr-c"><div class="pr-i" style="background:var(--tp)"><svg width="44" height="44" viewBox="0 0 60 60" fill="none"><path d="M18 50 C18 50 18 30 30 22 C42 30 42 50 42 50" stroke="#C1634F" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="pr-b"><div class="pr-t">Advance care planning template set</div><div class="pr-s">Threshold Press</div><div class="pr-p">$24 <span class="badge bm">Digital download</span></div></div></div>
+      <div class="pr-c"><div class="pr-i" style="background:var(--sp)"><svg width="44" height="44" viewBox="0 0 60 60" fill="none"><rect x="15" y="10" width="30" height="40" rx="3" stroke="#7A9E82" stroke-width="1.8" fill="none"/><line x1="22" y1="22" x2="38" y2="22" stroke="#7A9E82" stroke-width="1.3"/><line x1="22" y1="30" x2="38" y2="30" stroke="#7A9E82" stroke-width="1.3"/></svg></div><div class="pr-b"><div class="pr-t">Eco burial guide &amp; resource kit</div><div class="pr-s">Green Passage, Oregon</div><div class="pr-p">$18 <span class="badge bl">Local + ships</span></div></div></div>
+      <div class="pr-c"><div class="pr-i" style="background:var(--pl2)"><svg width="44" height="40" viewBox="0 0 60 54" fill="none"><path d="M10 44 C10 44 10 28 30 22 C50 28 50 44 50 44" stroke="#5A534C" stroke-width="1.8" fill="none" stroke-linecap="round"/><ellipse cx="30" cy="44" rx="20" ry="4" stroke="#5A534C" stroke-width="1.3" fill="none"/></svg></div><div class="pr-b"><div class="pr-t">Memorial portrait, custom illustration</div><div class="pr-s">Still Life Studio, Brooklyn</div><div class="pr-p">$120 <span class="badge bm">Ships anywhere</span></div></div></div>
+    </div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:2rem;"><button style="background:var(--wh);border:1px solid rgba(44,40,37,.2);color:var(--cl);padding:7px 15px;border-radius:7px;font-size:13px;font-family:var(--ss);cursor:pointer;">← Prev</button><span style="font-size:13px;color:var(--cm);">Page 1 of 12</span><button style="background:var(--tr);border:none;color:var(--wh);padding:7px 15px;border-radius:7px;font-size:13px;font-family:var(--ss);cursor:pointer;">Next →</button></div>
+  </div>
+</div>
+<div class="wd" style="background:var(--svp);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying.</p></div><div class="fc"><h4>Shop</h4><a>Urns &amp; vessels</a><a>Ash jewelry</a><a>Burial shrouds</a></div><div class="fc"><h4>Services</h4><a onclick="go(1)">Death doulas</a><a onclick="go(1)">Estate attorneys</a></div><div class="fc"><h4>Company</h4><a onclick="go(0)">About CodaCo</a><a onclick="go(4)">List with us</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc.</span><div class="fll"><a>Terms</a><a>Privacy</a><a>Accessibility</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+<!-- ═══ PAGE 4 — LIST WITH US LANDING ═══ -->
+<div class="pg" id="p4">
+<nav><div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div><ul class="nl"><li><a onclick="go(3)">Shop goods</a></li><li><a onclick="go(1)">Find services</a></li><li><a class="act">List with us</a></li><li><a class="cta">Sign in</a></li></ul></nav>
+<div class="bc"><a onclick="go(0)">Home</a><span>›</span>List with us</div>
+<div style="background:var(--wh);padding:4rem 2rem 3rem;text-align:center;">
+  <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tr);margin-bottom:.5rem;">For vendors &amp; service providers</div>
+  <h1 style="font-family:var(--sf);font-size:44px;font-weight:300;line-height:1.13;color:var(--ch);margin-bottom:1rem;">Reach people who are <em style="font-style:italic;color:var(--tr);">ready.</em></h1>
+  <p style="font-size:15px;color:var(--cm);max-width:520px;margin:0 auto 2.5rem;line-height:1.75;">CodaCo connects you with clients who are actively seeking support around death and dying — whether that's a handmade urn, an estate attorney, or a compassionate death doula.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:600px;margin:0 auto;">
+    <div onclick="go(5)" style="background:var(--wh);border:2px solid rgba(44,40,37,.12);border-radius:12px;padding:1.75rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--tl)';this.style.background='var(--tvp)'" onmouseout="this.style.borderColor='rgba(44,40,37,.12)';this.style.background='var(--wh)'">
+      <div style="width:52px;height:52px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;"><svg width="48" height="48" viewBox="0 0 60 60" fill="none"><path d="M30 8 C18 8 10 20 10 35 C10 48 18 56 30 56 C42 56 50 48 50 35 C50 20 42 8 30 8Z" stroke="#C1634F" stroke-width="2" fill="none"/><path d="M20 35 C20 26 24 20 30 20 C36 20 40 26 40 35" stroke="#C1634F" stroke-width="1.7" fill="none"/></svg></div>
+      <div style="font-family:var(--sf);font-size:22px;font-weight:400;color:var(--ch);margin-bottom:.4rem;">List goods</div>
+      <div style="font-size:13px;color:var(--cl);line-height:1.5;">Urns, jewelry, shrouds, planning workbooks, memorial art, humor gifts</div>
+    </div>
+    <div onclick="go(6)" style="background:var(--wh);border:2px solid rgba(44,40,37,.12);border-radius:12px;padding:1.75rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--tl)';this.style.background='var(--tvp)'" onmouseout="this.style.borderColor='rgba(44,40,37,.12)';this.style.background='var(--wh)'">
+      <div style="width:52px;height:52px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;"><svg width="48" height="48" viewBox="0 0 60 60" fill="none"><circle cx="24" cy="20" r="9" stroke="#7A9E82" stroke-width="2"/><path d="M8 52 C8 42 15 37 24 37 C33 37 40 42 40 52" stroke="#7A9E82" stroke-width="2" stroke-linecap="round"/><path d="M40 22 C40 22 44 20 48 24 C50 27 48 32 44 30" stroke="#C1634F" stroke-width="1.7" stroke-linecap="round" fill="none"/></svg></div>
+      <div style="font-family:var(--sf);font-size:22px;font-weight:400;color:var(--ch);margin-bottom:.4rem;">List services</div>
+      <div style="font-size:13px;color:var(--cl);line-height:1.5;">Death doulas, estate attorneys, death cleaning, celebrants, EOL organizers</div>
+    </div>
+  </div>
+</div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--tvp);padding:3rem 2rem 2.75rem;">
+  <div style="max-width:860px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:2rem;"><div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tr);margin-bottom:.35rem;">Why CodaCo</div><h2 class="sh">Built for this work, by people who understand it</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+      <div style="background:var(--wh);border-radius:10px;padding:1.4rem 1.25rem;border:1px solid rgba(44,40,37,.07);"><div style="width:36px;height:36px;margin-bottom:.9rem;"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="14" stroke="#C1634F" stroke-width="1.5" fill="none"/><path d="M12 18 L16 22 L24 14" stroke="#C1634F" stroke-width="1.5" stroke-linecap="round"/></svg></div><div style="font-size:14px;font-weight:500;color:var(--ch);margin-bottom:.35rem;">Curated audience</div><div style="font-size:13px;color:var(--cl);line-height:1.6;">Every visitor is here intentionally — actively seeking goods and services related to death and dying.</div></div>
+      <div style="background:var(--wh);border-radius:10px;padding:1.4rem 1.25rem;border:1px solid rgba(44,40,37,.07);"><div style="width:36px;height:36px;margin-bottom:.9rem;"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="6" y="6" width="24" height="24" rx="4" stroke="#7A9E82" stroke-width="1.5" fill="none"/><line x1="11" y1="13" x2="25" y2="13" stroke="#7A9E82" stroke-width="1.2"/><line x1="11" y1="18" x2="25" y2="18" stroke="#7A9E82" stroke-width="1.2"/><line x1="11" y1="23" x2="19" y2="23" stroke="#7A9E82" stroke-width="1.2"/></svg></div><div style="font-size:14px;font-weight:500;color:var(--ch);margin-bottom:.35rem;">Simple setup</div><div style="font-size:13px;color:var(--cl);line-height:1.6;">Create a profile, list your offerings, and start receiving inquiries — typically within 24 hours of approval.</div></div>
+      <div style="background:var(--wh);border-radius:10px;padding:1.4rem 1.25rem;border:1px solid rgba(44,40,37,.07);"><div style="width:36px;height:36px;margin-bottom:.9rem;"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M18 4 L21 12 L30 12.5 L23.5 18.5 L25.5 28 L18 23.5 L10.5 28 L12.5 18.5 L6 12.5 L15 12 Z" stroke="#C1634F" stroke-width="1.4" fill="none" stroke-linejoin="round"/></svg></div><div style="font-size:14px;font-weight:500;color:var(--ch);margin-bottom:.35rem;">Trusted reviews</div><div style="font-size:13px;color:var(--cl);line-height:1.6;">Verified reviews from real clients help you build a reputation and give buyers confidence.</div></div>
+      <div style="background:var(--wh);border-radius:10px;padding:1.4rem 1.25rem;border:1px solid rgba(44,40,37,.07);"><div style="width:36px;height:36px;margin-bottom:.9rem;"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="12" stroke="#7A9E82" stroke-width="1.5" fill="none"/><path d="M14 18 L18 12 L22 18 L18 24 Z" stroke="#7A9E82" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg></div><div style="font-size:14px;font-weight:500;color:var(--ch);margin-bottom:.35rem;">Fair, transparent fees</div><div style="font-size:13px;color:var(--cl);line-height:1.6;">Plans start free. Transaction fees only apply when you make a sale.</div></div>
+    </div>
+  </div>
+</div>
+<div class="wd" style="background:var(--tvp);"></div>
+<div class="wu" style="background:var(--wh);padding:3rem 2rem 2.75rem;">
+  <div style="max-width:860px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:2rem;"><div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--sg);margin-bottom:.35rem;">From our vendors</div><h2 class="sh">What sellers are saying</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+      <div style="background:var(--svp);border-radius:10px;padding:1.4rem 1.25rem;border:1px solid rgba(122,158,130,.15);"><p style="font-family:var(--sf);font-size:16px;font-weight:300;color:var(--ch);line-height:1.7;font-style:italic;margin-bottom:1rem;">"CodaCo brought me clients who truly understood the value of handmade work. My first week, I had three orders."</p><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:50%;background:var(--sp);border:1.5px solid var(--sl);display:flex;align-items:center;justify-content:center;font-family:var(--sf);font-size:13px;color:var(--sd);">NH</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);">Nora Hayashi</div><div style="font-size:11px;color:var(--cl);">Earthen Studio, Portland OR</div></div></div></div>
+      <div style="background:var(--svp);border-radius:10px;padding:1.4rem 1.25rem;border:1px solid rgba(122,158,130,.15);"><p style="font-family:var(--sf);font-size:16px;font-weight:300;color:var(--ch);line-height:1.7;font-style:italic;margin-bottom:1rem;">"As a death doula, finding clients used to rely entirely on word of mouth. CodaCo changed that."</p><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:50%;background:var(--sp);border:1.5px solid var(--sl);display:flex;align-items:center;justify-content:center;font-family:var(--sf);font-size:13px;color:var(--sd);">MR</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);">Maria Rosales, CEND</div><div style="font-size:11px;color:var(--cl);">Brooklyn, NY</div></div></div></div>
+      <div style="background:var(--svp);border-radius:10px;padding:1.4rem 1.25rem;border:1px solid rgba(122,158,130,.15);"><p style="font-family:var(--sf);font-size:16px;font-weight:300;color:var(--ch);line-height:1.7;font-style:italic;margin-bottom:1rem;">"The platform feels right for this kind of work. I'm proud to have my practice listed here."</p><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:50%;background:var(--sp);border:1.5px solid var(--sl);display:flex;align-items:center;justify-content:center;font-family:var(--sf);font-size:13px;color:var(--sd);">JT</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);">James Thornton, Esq.</div><div style="font-size:11px;color:var(--cl);">Estate Attorney, Manhattan NY</div></div></div></div>
+    </div>
+  </div>
+</div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--svp);padding:3rem 2rem 3rem;">
+  <div style="max-width:680px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:2rem;"><div class="ey eys">FAQ</div><h2 class="sh">Common questions</h2></div>
+    <div id="faq">
+      <div style="border-bottom:1px solid rgba(44,40,37,.1);padding:.9rem 0;cursor:pointer;" onclick="toggleFaq(0)"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;font-weight:500;color:var(--ch);">Is there a fee to list on CodaCo?</span><span id="fi0" style="font-size:18px;color:var(--tr);">+</span></div><div id="fb0" style="display:none;font-size:13px;color:var(--cm);line-height:1.7;margin-top:.6rem;padding-right:2rem;">Starter is free with up to 3 listings. Standard is $12/month with unlimited listings. Pro is $29/month with featured placement. A 5% transaction fee applies on goods sales.</div></div>
+      <div style="border-bottom:1px solid rgba(44,40,37,.1);padding:.9rem 0;cursor:pointer;" onclick="toggleFaq(1)"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;font-weight:500;color:var(--ch);">How long does approval take?</span><span id="fi1" style="font-size:18px;color:var(--tr);">+</span></div><div id="fb1" style="display:none;font-size:13px;color:var(--cm);line-height:1.7;margin-top:.6rem;padding-right:2rem;">We review all listings within 1–2 business days. Service providers may be asked to provide credentials or verification documents.</div></div>
+      <div style="border-bottom:1px solid rgba(44,40,37,.1);padding:.9rem 0;cursor:pointer;" onclick="toggleFaq(2)"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;font-weight:500;color:var(--ch);">Who can list on CodaCo?</span><span id="fi2" style="font-size:18px;color:var(--tr);">+</span></div><div id="fb2" style="display:none;font-size:13px;color:var(--cm);line-height:1.7;margin-top:.6rem;padding-right:2rem;">Any US-based individual or business offering goods or services related to death and dying — makers, artists, estate professionals, certified doulas, celebrants, organizers, attorneys, and more.</div></div>
+      <div style="padding:.9rem 0;cursor:pointer;" onclick="toggleFaq(3)"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;font-weight:500;color:var(--ch);">Can I list both goods and services?</span><span id="fi3" style="font-size:18px;color:var(--tr);">+</span></div><div id="fb3" style="display:none;font-size:13px;color:var(--cm);line-height:1.7;margin-top:.6rem;padding-right:2rem;">Yes — you can manage both from a single vendor account. Your profile will display both your goods shop and your service listing.</div></div>
+    </div>
+  </div>
+</div>
+<div class="wd" style="background:var(--svp);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying.</p></div><div class="fc"><h4>Shop</h4><a onclick="go(3)">Urns &amp; vessels</a><a onclick="go(3)">Planning docs</a></div><div class="fc"><h4>Services</h4><a onclick="go(1)">Death doulas</a><a onclick="go(1)">Estate attorneys</a></div><div class="fc"><h4>Company</h4><a onclick="go(0)">About CodaCo</a><a>Help &amp; FAQ</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc.</span><div class="fll"><a>Terms</a><a>Privacy</a><a>Accessibility</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+<!-- ═══ PAGE 5 — LIST GOODS FORM ═══ -->
+<div class="pg" id="p5">
+<nav><div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div><ul class="nl"><li><a onclick="go(3)">Shop goods</a></li><li><a onclick="go(1)">Find services</a></li><li><a class="act" onclick="go(4)">List with us</a></li><li><a class="cta">Sign in</a></li></ul></nav>
+<div class="bc"><a onclick="go(0)">Home</a><span>›</span><a onclick="go(4)">List with us</a><span>›</span>List goods</div>
+<div class="steps-bar"><div style="display:flex;align-items:center;"><div class="sdot ac">1</div><div class="slbl ac">Your profile</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">2</div><div class="slbl">Your listing</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">3</div><div class="slbl">Photos &amp; pricing</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">4</div><div class="slbl">Choose a plan</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">5</div><div class="slbl">Review &amp; submit</div></div></div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--tvp);padding:2.5rem 2rem 3rem;">
+<div style="display:grid;grid-template-columns:1fr 270px;gap:0;max-width:880px;margin:0 auto;">
+<div style="padding-right:2.5rem;">
+  <div class="sec"><div class="sh2">Step 1 — Your seller profile</div><div style="font-size:13px;color:var(--cl);margin-bottom:1.25rem;">This is how buyers will know and trust you.</div>
+    <div class="fg2"><div class="fg"><label class="fl">First name</label><input class="fi" value="Nora"/></div><div class="fg"><label class="fl">Last name</label><input class="fi" value="Hayashi"/></div></div>
+    <div class="fg"><label class="fl">Shop / business name</label><input class="fi" value="Earthen Studio"/></div>
+    <div class="fg"><label class="fl">Email address</label><input class="fi" type="email" value="nora@earthenstudio.com"/></div>
+    <div class="fg2"><div class="fg"><label class="fl">City</label><input class="fi" value="Portland"/></div><div class="fg"><label class="fl">State</label><select class="fi"><option>OR</option><option>CA</option><option>NY</option></select></div></div>
+    <div class="fg"><label class="fl">About you <span>(shown on your profile)</span></label><textarea class="fi">Nora Hayashi has been throwing functional ceramics for over fifteen years. After losing her own mother, she began making urns as a way of honoring the people who shape us. Every piece is made with intention.</textarea></div>
+  </div>
+  <div class="sec"><div class="sh2">Step 2 — Your listing</div>
+    <div class="fg"><label class="fl">Product name</label><input class="fi" value="Hand-thrown ceramic urn, sage glaze"/></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi"><option>Urns &amp; vessels</option><option>Ash jewelry</option><option>Burial shrouds</option><option>Planning documents</option><option>Memorial art &amp; prints</option><option>Gifts &amp; humor</option></select></div>
+    <div class="fg"><label class="fl">Description</label><textarea class="fi" style="min-height:100px;">Each urn is hand-thrown on the wheel in my Portland studio. The sage glaze is fired at high temperature, producing a matte, earthy finish with subtle natural variation — no two are identical.</textarea></div>
+    <div class="fg"><label class="fl">Tags</label><div class="cp-row"><span class="cp on">Handmade</span><span class="cp on">Ceramic</span><span class="cp">Eco-friendly</span><span class="cp on">Ships anywhere</span><span class="cp">Local pickup</span><span class="cp">Custom / personalized</span><span class="cp">Made to order</span></div></div>
+    <div class="fg"><label class="fl">Availability</label>
+      <div class="rc on" onclick="selRc(this,'ship')"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">Ships anywhere in the US</div></div></div>
+      <div class="rc" onclick="selRc(this,'ship')"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">Local pickup only</div></div></div>
+      <div class="rc" onclick="selRc(this,'ship')" style="margin-top:-2px;"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">Both — ships and local pickup</div></div></div>
+    </div>
+  </div>
+  <div class="sec"><div class="sh2">Step 3 — Photos &amp; pricing</div>
+    <div class="fg"><label class="fl">Product photos <span>(up to 8)</span></label>
+      <div class="upload-zone"><svg width="28" height="28" viewBox="0 0 32 32" fill="none" style="margin:0 auto;display:block;"><rect x="4" y="8" width="24" height="18" rx="3" stroke="#9A9189" stroke-width="1.5" fill="none"/><path d="M16 14 L16 22" stroke="#9A9189" stroke-width="1.5" stroke-linecap="round"/><path d="M12 18 L16 14 L20 18" stroke="#9A9189" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg><p style="font-size:13px;color:var(--cl);margin-top:.5rem;">Click to upload or drag and drop</p></div>
+      <div style="display:flex;gap:10px;margin-top:.75rem;"><div style="width:72px;height:72px;border-radius:8px;border:1.5px solid var(--tr);background:var(--tp);display:flex;align-items:center;justify-content:center;"><svg width="32" height="38" viewBox="0 0 60 70" fill="none"><path d="M30 8 C18 8 10 20 10 38 C10 52 18 62 30 62 C42 62 50 52 50 38 C50 20 42 8 30 8Z" stroke="#C1634F" stroke-width="2" fill="none"/></svg></div><div style="width:72px;height:72px;border-radius:8px;border:1px solid rgba(44,40,37,.12);background:var(--pl2);display:flex;align-items:center;justify-content:center;"><svg width="28" height="28" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="16" stroke="#5A534C" stroke-width="1.8" fill="none"/></svg></div><div style="width:72px;height:72px;border-radius:8px;border:1.5px dashed rgba(44,40,37,.2);background:var(--pl);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><line x1="10" y1="3" x2="10" y2="17" stroke="#9A9189" stroke-width="1.5" stroke-linecap="round"/><line x1="3" y1="10" x2="17" y2="10" stroke="#9A9189" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+    </div>
+    <div class="fg"><label class="fl">Pricing variants</label>
+      <div id="ptable">
+        <div class="price-row"><input class="fi" value="Standard (200 cu in)" style="font-size:13px;"/><input class="fi" value="145" style="width:80px;font-size:13px;" placeholder="$"/><input class="fi" value="12" style="width:70px;font-size:13px;" placeholder="Stock"/><button class="price-del" onclick="delRow(this)">×</button></div>
+        <div class="price-row"><input class="fi" value="Large (280 cu in)" style="font-size:13px;"/><input class="fi" value="185" style="width:80px;font-size:13px;"/><input class="fi" value="8" style="width:70px;font-size:13px;"/><button class="price-del" onclick="delRow(this)">×</button></div>
+        <div class="price-row"><input class="fi" value="Keepsake (30 cu in)" style="font-size:13px;"/><input class="fi" value="68" style="width:80px;font-size:13px;"/><input class="fi" value="20" style="width:70px;font-size:13px;"/><button class="price-del" onclick="delRow(this)">×</button></div>
+      </div>
+      <button class="add-row-btn" onclick="addRow()">+ Add another variant</button>
+    </div>
+    <div class="fg2"><div class="fg"><label class="fl">Processing time</label><select class="fi"><option>3–5 business days</option><option>7–10 business days</option><option>Made to order</option></select></div><div class="fg"><label class="fl">Returns</label><select class="fi"><option>Yes, within 14 days</option><option>No returns (personalized)</option><option>Contact me</option></select></div></div>
+  </div>
+  <div class="btn-row"><button class="btn-s" onclick="go(4)">← Back</button><button class="btn-p" onclick="go(7)">Continue to plan selection →</button></div>
+</div>
+<div style="border-left:1px solid rgba(44,40,37,.08);padding-left:2rem;">
+  <div style="font-size:12px;font-weight:500;color:var(--cm);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(44,40,37,.08);">Listing preview</div>
+  <div style="background:var(--wh);border:1px solid rgba(44,40,37,.08);border-radius:10px;overflow:hidden;">
+    <div style="height:115px;background:var(--tp);display:flex;align-items:center;justify-content:center;"><svg width="48" height="58" viewBox="0 0 60 70" fill="none"><path d="M30 8 C18 8 10 20 10 38 C10 52 18 62 30 62 C42 62 50 52 50 38 C50 20 42 8 30 8Z" stroke="#C1634F" stroke-width="1.8" fill="none"/></svg></div>
+    <div style="padding:.75rem 1rem .9rem;"><div style="font-size:13px;font-weight:500;color:var(--ch);margin-bottom:3px;">Hand-thrown ceramic urn, sage glaze</div><div style="font-size:11px;color:var(--cl);margin-bottom:6px;">Earthen Studio, Portland OR</div><div style="font-size:14px;font-weight:500;color:var(--tr);">$145 <span class="badge bm">Ships anywhere</span></div></div>
+  </div>
+  <div style="margin-top:1.1rem;font-size:12px;color:var(--cl);line-height:1.65;background:var(--sp);border:1px solid var(--sl);border-radius:8px;padding:.75rem 1rem;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="display:inline;vertical-align:middle;margin-right:4px"><circle cx="7" cy="7" r="5.5" stroke="#4D7255" stroke-width="1.1"/></svg>Listing will be reviewed within 1–2 business days before going live.</div>
+</div>
+</div></div>
+<div class="wd" style="background:var(--tvp);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying.</p></div><div class="fc"><h4>Shop</h4><a onclick="go(3)">All goods</a></div><div class="fc"><h4>Services</h4><a onclick="go(1)">Find services</a></div><div class="fc"><h4>Company</h4><a onclick="go(4)">List with us</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc.</span><div class="fll"><a>Terms</a><a>Privacy</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+<!-- ═══ PAGE 6 — LIST SERVICES FORM ═══ -->
+<div class="pg" id="p6">
+<nav><div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div><ul class="nl"><li><a onclick="go(3)">Shop goods</a></li><li><a onclick="go(1)">Find services</a></li><li><a class="act" onclick="go(4)">List with us</a></li><li><a class="cta">Sign in</a></li></ul></nav>
+<div class="bc"><a onclick="go(0)">Home</a><span>›</span><a onclick="go(4)">List with us</a><span>›</span>List services</div>
+<div class="steps-bar"><div style="display:flex;align-items:center;"><div class="sdot ac">1</div><div class="slbl ac">Your profile</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">2</div><div class="slbl">Your service</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">3</div><div class="slbl">Area &amp; availability</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">4</div><div class="slbl">Choose a plan</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">5</div><div class="slbl">Review &amp; submit</div></div></div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--svp);padding:2.5rem 2rem 3rem;">
+<div style="display:grid;grid-template-columns:1fr 250px;gap:0;max-width:880px;margin:0 auto;">
+<div style="padding-right:2.5rem;">
+  <div class="sec"><div class="sh2">Step 1 — Your provider profile</div>
+    <div class="fg2"><div class="fg"><label class="fl">First name</label><input class="fi" value="Maria"/></div><div class="fg"><label class="fl">Last name</label><input class="fi" value="Rosales"/></div></div>
+    <div class="fg"><label class="fl">Credentials / certifications</label><input class="fi" value="CEND, certified end-of-life doula"/></div>
+    <div class="fg"><label class="fl">Email address</label><input class="fi" type="email" value="maria@rosaleseoling.com"/></div>
+    <div class="fg"><label class="fl">About you</label><textarea class="fi" style="min-height:100px;">I'm a certified end-of-life doula with 8 years of experience supporting individuals and families through the dying process. I specialize in home-centered dying, advance care conversations, and vigil support.</textarea></div>
+  </div>
+  <div class="sec"><div class="sh2">Step 2 — Your service</div>
+    <div class="fg"><label class="fl">Service type</label><select class="fi"><option>Death doula</option><option>Estate attorney</option><option>Death cleaning</option><option>Funeral celebrant</option><option>EOL organizer</option><option>Home funeral guide</option><option>Grief counselor</option></select></div>
+    <div class="fg"><label class="fl">Service description</label><textarea class="fi" style="min-height:100px;">I offer one-on-one doula support across the arc of dying — from advance care planning and family conversations, through active dying and vigil. I work in-home and remotely. LGBTQ+ affirming.</textarea></div>
+    <div class="fg"><label class="fl">Specializations</label><div class="cp-row"><span class="cp sg on">EOL planning</span><span class="cp sg on">Advance care directives</span><span class="cp sg on">Vigil support</span><span class="cp sg on">LGBTQ+ affirming</span><span class="cp sg">Grief support</span><span class="cp sg">Bilingual (Spanish)</span><span class="cp sg">Perinatal loss</span><span class="cp sg">Dementia &amp; memory care</span></div></div>
+    <div class="fg"><label class="fl">Session format</label>
+      <div class="rc on" onclick="selRcSvc(this)"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">Both in-person and virtual</div></div></div>
+      <div class="rc" onclick="selRcSvc(this)"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">In-person only</div></div></div>
+      <div class="rc" onclick="selRcSvc(this)"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">Virtual only</div></div></div>
+    </div>
+    <div class="fg2"><div class="fg"><label class="fl">Starting rate</label><input class="fi" placeholder="e.g. $120/hr or $800–$1,200"/></div><div class="fg"><label class="fl">Free consultation?</label><select class="fi"><option>Yes — 30 min free</option><option>Yes — 15 min free</option><option>No</option></select></div></div>
+  </div>
+  <div class="sec"><div class="sh2">Step 3 — Service area &amp; availability</div>
+    <div class="fg"><label class="fl">Primary location</label><div class="fg3" style="margin-bottom:0;"><input class="fi" value="Brooklyn"/><select class="fi"><option>NY</option><option>CA</option><option>TX</option></select><input class="fi" value="11201" placeholder="ZIP"/></div></div>
+    <div class="fg"><label class="fl">Service radius</label><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="cp sg">5 miles</button><button class="cp sg on">15 miles</button><button class="cp sg">30 miles</button><button class="cp sg">50 miles</button><button class="cp sg">Virtual (national)</button></div></div>
+    <div class="fg"><label class="fl">Typical availability</label>
+      <div class="avail-grid"><div class="avail-day"><span>Mon</span></div><div class="avail-day on"><span>Tue</span></div><div class="avail-day on"><span>Wed</span></div><div class="avail-day on"><span>Thu</span></div><div class="avail-day on"><span>Fri</span></div><div class="avail-day"><span>Sat</span></div><div class="avail-day"><span>Sun</span></div></div>
+    </div>
+    <div class="fg"><label class="fl">Current availability</label>
+      <div class="rc on" onclick="selRcAv(this)"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">Accepting new clients</div></div></div>
+      <div class="rc" onclick="selRcAv(this)"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">Waitlist only</div></div></div>
+      <div class="rc" onclick="selRcAv(this)"><div class="rdot"><div class="rin"></div></div><div><div class="rc-t">Not currently taking new clients</div></div></div>
+    </div>
+  </div>
+  <div class="btn-row"><button class="btn-s" onclick="go(4)">← Back</button><button class="btn-p" onclick="go(7)">Continue to plan selection →</button></div>
+</div>
+<div style="border-left:1px solid rgba(44,40,37,.08);padding-left:2rem;">
+  <div style="font-size:12px;font-weight:500;color:var(--cm);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid rgba(44,40,37,.08);">Profile preview</div>
+  <div style="background:var(--wh);border:1px solid rgba(44,40,37,.09);border-radius:10px;padding:1.1rem;">
+    <div style="width:38px;height:38px;border-radius:50%;background:var(--sp);border:1.5px solid var(--sl);display:flex;align-items:center;justify-content:center;font-family:var(--sf);font-size:15px;color:var(--sd);margin-bottom:.7rem;">MR</div>
+    <div style="font-size:13px;font-weight:500;color:var(--ch);margin-bottom:2px;">Maria Rosales, CEND</div>
+    <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--cl);margin-bottom:7px;">Death doula</div>
+    <div style="font-size:12px;color:var(--cm);margin-bottom:5px;">Brooklyn, NY · 15 mi radius</div>
+    <div style="font-size:12px;color:var(--tr);">Accepting new clients</div>
+  </div>
+  <div style="margin-top:1.1rem;font-size:12px;color:var(--cl);line-height:1.65;background:var(--sp);border:1px solid var(--sl);border-radius:8px;padding:.75rem 1rem;">Service listings are free on the Starter plan.</div>
+</div>
+</div></div>
+<div class="wd" style="background:var(--svp);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying.</p></div><div class="fc"><h4>Shop</h4><a onclick="go(3)">All goods</a></div><div class="fc"><h4>Services</h4><a onclick="go(1)">Find services</a></div><div class="fc"><h4>Company</h4><a onclick="go(4)">List with us</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc.</span><div class="fll"><a>Terms</a><a>Privacy</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+<!-- ═══ PAGE 7 — PLAN SELECTION & REVIEW ═══ -->
+<div class="pg" id="p7">
+<nav><div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div><ul class="nl"><li><a onclick="go(3)">Shop goods</a></li><li><a onclick="go(1)">Find services</a></li><li><a class="act" onclick="go(4)">List with us</a></li><li><a class="cta">Sign in</a></li></ul></nav>
+<div class="bc"><a onclick="go(0)">Home</a><span>›</span><a onclick="go(4)">List with us</a><span>›</span>Choose your plan</div>
+<div class="steps-bar"><div style="display:flex;align-items:center;"><div class="sdot dn">✓</div><div class="slbl dn">Profile</div></div><div class="sln dn"></div><div style="display:flex;align-items:center;"><div class="sdot dn">✓</div><div class="slbl dn">Listing</div></div><div class="sln dn"></div><div style="display:flex;align-items:center;"><div class="sdot dn">✓</div><div class="slbl dn">Details</div></div><div class="sln dn"></div><div style="display:flex;align-items:center;"><div class="sdot ac">4</div><div class="slbl ac">Choose a plan</div></div><div class="sln"></div><div style="display:flex;align-items:center;"><div class="sdot">5</div><div class="slbl">Review &amp; submit</div></div></div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--tvp);padding:2.5rem 2rem 3rem;">
+<div style="max-width:820px;margin:0 auto;">
+  <div style="text-align:center;margin-bottom:2rem;"><h2 class="sh">Choose your plan</h2><p class="st">All plans include a review period. Upgrade or downgrade at any time.</p></div>
+  <div class="plan-cards">
+    <div class="plan-c" onclick="selPlan(this)"><div class="plan-name">Starter</div><div class="plan-price">Free <span>/ month</span></div><ul class="plan-feat"><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>Up to 3 listings</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>1 service profile</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>5% transaction fee</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#9A9189" stroke-width="1.1"/><line x1="5" y1="5" x2="9" y2="9" stroke="#9A9189" stroke-width="1.1" stroke-linecap="round"/><line x1="9" y1="5" x2="5" y2="9" stroke="#9A9189" stroke-width="1.1" stroke-linecap="round"/></svg><span style="color:var(--cl);">No featured placement</span></li></ul></div>
+    <div class="plan-c on" onclick="selPlan(this)"><div class="plan-pop">Most popular</div><div class="plan-name">Standard</div><div class="plan-price">$12 <span>/ month</span></div><ul class="plan-feat"><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>Unlimited listings</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>Unlimited service profiles</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>Reviews + messaging</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>5% transaction fee</li></ul></div>
+    <div class="plan-c" onclick="selPlan(this)"><div class="plan-name">Pro</div><div class="plan-price">$29 <span>/ month</span></div><ul class="plan-feat"><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>Everything in Standard</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>Featured placement</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>Advanced analytics</li><li><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#7A9E82" stroke-width="1.1"/><path d="M4.5 7 L6.5 9 L10 5" stroke="#7A9E82" stroke-width="1.2" stroke-linecap="round"/></svg>3% transaction fee</li></ul></div>
+  </div>
+  <div style="margin-top:2rem;"><h3 class="sh2">Review your submission</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1rem;">
+      <div style="background:var(--pl);border-radius:10px;padding:1rem 1.25rem;"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cl);margin-bottom:.4rem;">Seller name</div><div style="font-size:13px;color:var(--ch);">Nora Hayashi<br><span style="font-size:12px;color:var(--cl);">Earthen Studio · Portland, OR</span></div></div>
+      <div style="background:var(--pl);border-radius:10px;padding:1rem 1.25rem;"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cl);margin-bottom:.4rem;">Listing type</div><div style="font-size:13px;color:var(--ch);">Goods — Urns &amp; vessels<br><span style="font-size:12px;color:var(--cl);">3 variants · ships anywhere</span></div></div>
+      <div style="background:var(--pl);border-radius:10px;padding:1rem 1.25rem;"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cl);margin-bottom:.4rem;">Plan selected</div><div id="ps" style="font-size:13px;color:var(--ch);">Standard — $12/month<br><span style="font-size:12px;color:var(--cl);">5% transaction fee on sales</span></div></div>
+      <div style="background:var(--pl);border-radius:10px;padding:1rem 1.25rem;"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cl);margin-bottom:.4rem;">Photos uploaded</div><div style="font-size:13px;color:var(--ch);">2 product photos<br><span style="font-size:12px;color:var(--cl);">Add more after approval</span></div></div>
+    </div>
+    <div style="background:var(--sp);border:1px solid var(--sl);border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem;font-size:13px;color:var(--sd);line-height:1.7;">By submitting you agree to CodaCo's <a style="color:var(--sg);cursor:pointer;">Seller Terms of Service</a> and confirm your listing complies with our <a style="color:var(--sg);cursor:pointer;">Marketplace Standards</a>.</div>
+  </div>
+  <div class="btn-row" style="margin-top:1.5rem;"><button class="btn-s" onclick="go(5)">← Edit listing</button><button class="btn-p" onclick="go(8)">Submit for review →</button></div>
+</div></div>
+<div class="wd" style="background:var(--tvp);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying.</p></div><div class="fc"><h4>Shop</h4><a onclick="go(3)">All goods</a></div><div class="fc"><h4>Services</h4><a onclick="go(1)">Find services</a></div><div class="fc"><h4>Company</h4><a onclick="go(4)">List with us</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc.</span><div class="fll"><a>Terms</a><a>Privacy</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+<!-- ═══ PAGE 8 — SUBMISSION CONFIRMED ═══ -->
+<div class="pg" id="p8">
+<nav><div class="logo" onclick="go(0)"><svg width="42" height="42" viewBox="0 0 46 46" fill="none"><path d="M36,23 A16,16 0 0,1 36,22.6 A16,16 0 1,0 36,23" stroke="#C1634F" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M29,23 A10,10 0 0,1 29,22.7 A10,10 0 1,0 29,23" stroke="#7A9E82" stroke-width="3" stroke-linecap="round" fill="none"/></svg><div><div class="ln"><span class="ca">Coda</span><span class="co">Co</span></div><div class="lt">A curated marketplace for death and dying</div></div></div><ul class="nl"><li><a onclick="go(3)">Shop goods</a></li><li><a onclick="go(1)">Find services</a></li><li><a onclick="go(4)">List with us</a></li><li><a class="cta">Sign in</a></li></ul></nav>
+<div class="steps-bar"><div style="display:flex;align-items:center;"><div class="sdot dn">✓</div><div class="slbl dn">Profile</div></div><div class="sln dn"></div><div style="display:flex;align-items:center;"><div class="sdot dn">✓</div><div class="slbl dn">Listing</div></div><div class="sln dn"></div><div style="display:flex;align-items:center;"><div class="sdot dn">✓</div><div class="slbl dn">Details</div></div><div class="sln dn"></div><div style="display:flex;align-items:center;"><div class="sdot dn">✓</div><div class="slbl dn">Plan</div></div><div class="sln dn"></div><div style="display:flex;align-items:center;"><div class="sdot dn">✓</div><div class="slbl dn">Submitted</div></div></div>
+<div class="wd" style="background:var(--wh);"></div>
+<div class="wu" style="background:var(--svp);padding:3rem 2rem 4rem;">
+<div style="max-width:540px;margin:0 auto;text-align:center;">
+  <div style="width:64px;height:64px;border-radius:50%;background:var(--sp);border:2px solid var(--sl);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M6 14 L11 20 L22 9" stroke="#4D7255" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <h1 style="font-family:var(--sf);font-size:36px;font-weight:300;color:var(--ch);margin-bottom:.6rem;">You're submitted.</h1>
+  <p style="font-size:15px;color:var(--cm);line-height:1.78;margin-bottom:1rem;">Thank you, Nora. Your listing has been received and is under review. A confirmation has been sent to <strong style="color:var(--ch);">nora@earthenstudio.com</strong>.</p>
+  <div style="display:inline-block;background:var(--pl2);border:1px solid rgba(44,40,37,.12);border-radius:8px;padding:7px 18px;font-size:13px;color:var(--cm);margin-bottom:2rem;">Submission ID: <strong style="color:var(--ch);">CC-VND-84712</strong></div>
+  <h3 style="font-family:var(--sf);font-size:22px;font-weight:400;color:var(--ch);margin-bottom:1.1rem;text-align:left;">What happens next</h3>
+  <div style="background:var(--wh);border:1px solid rgba(44,40,37,.1);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:.75rem;display:flex;align-items:flex-start;gap:12px;text-align:left;"><div style="width:26px;height:26px;border-radius:50%;background:var(--tr);color:var(--wh);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">1</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);margin-bottom:2px;">Listing review</div><div style="font-size:12px;color:var(--cl);line-height:1.5;">The CodaCo team will review your profile and listing within 1–2 business days.</div></div></div>
+  <div style="background:var(--wh);border:1px solid rgba(44,40,37,.1);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:.75rem;display:flex;align-items:flex-start;gap:12px;text-align:left;"><div style="width:26px;height:26px;border-radius:50%;background:var(--tr);color:var(--wh);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">2</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);margin-bottom:2px;">Approval notification</div><div style="font-size:12px;color:var(--cl);line-height:1.5;">You'll receive an email once your listing is approved and live.</div></div></div>
+  <div style="background:var(--wh);border:1px solid rgba(44,40,37,.1);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:.75rem;display:flex;align-items:flex-start;gap:12px;text-align:left;"><div style="width:26px;height:26px;border-radius:50%;background:var(--tr);color:var(--wh);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">3</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);margin-bottom:2px;">Go live</div><div style="font-size:12px;color:var(--cl);line-height:1.5;">Your listing appears in search results. Buyers can message you through CodaCo.</div></div></div>
+  <div style="background:var(--wh);border:1px solid rgba(44,40,37,.1);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:1.75rem;display:flex;align-items:flex-start;gap:12px;text-align:left;"><div style="width:26px;height:26px;border-radius:50%;background:var(--tr);color:var(--wh);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">4</div><div><div style="font-size:13px;font-weight:500;color:var(--ch);margin-bottom:2px;">Manage your dashboard</div><div style="font-size:12px;color:var(--cl);line-height:1.5;">Update listings, view inquiries, track orders, and manage your profile at any time.</div></div></div>
+  <div style="display:flex;flex-direction:column;gap:10px;"><button class="btn-p" style="width:100%;" onclick="go(0)">Return to homepage</button><button class="btn-s" style="width:100%;" onclick="go(5)">Edit my listing</button></div>
+  <div style="margin-top:2rem;font-size:12px;color:var(--cl);text-align:center;">Questions? <a style="color:var(--tr);cursor:pointer;">Contact vendor support</a></div>
+</div>
+</div>
+<div class="wd" style="background:var(--svp);"></div>
+<footer style="border-radius:50% 50% 0 0/56px 56px 0 0;"><div class="fti"><div><div class="fb-n"><span class="ca">Coda</span><span class="co">Co</span></div><p class="fb-p">A curated marketplace for death and dying. Built with care.</p></div><div class="fc"><h4>Shop</h4><a onclick="go(3)">Urns &amp; vessels</a><a onclick="go(3)">Ash jewelry</a><a onclick="go(3)">Burial shrouds</a><a onclick="go(3)">Planning docs</a></div><div class="fc"><h4>Services</h4><a onclick="go(1)">Death doulas</a><a onclick="go(1)">Estate attorneys</a><a onclick="go(1)">Death cleaning</a><a onclick="go(1)">Celebrants</a></div><div class="fc"><h4>Company</h4><a onclick="go(0)">About CodaCo</a><a onclick="go(4)">List with us</a><a>Help &amp; FAQ</a><a>Privacy policy</a></div></div><div class="fm"><span>© 2025 CodaCo, Inc. · United States</span><div class="fll"><a>Terms</a><a>Privacy</a><a>Accessibility</a><a>Cookie preferences</a></div><span>Made with intention.</span></div></footer>
+</div>
+
+</div>
+<script>
+var tabs=document.querySelectorAll('.ntab');
+function go(n){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.getElementById('p'+n).classList.add('on');
+  tabs.forEach(function(t,i){
+    t.style.color=i===n?'var(--tr)':'var(--cl)';
+    t.style.borderBottomColor=i===n?'var(--tr)':'transparent';
+    t.style.fontWeight=i===n?'500':'400';
+  });
+}
+function showT(id){
+  document.querySelectorAll('.tp').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.pdp-tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('td-'+id).classList.add('on');
+  var idx={desc:0,det:1,rev:2,sel:3};
+  document.querySelectorAll('.pdp-tab')[idx[id]].classList.add('on');
+}
+function adjQ(d){var el=document.getElementById('qv');var v=Math.max(1,parseInt(el.textContent)+d);el.textContent=v;document.getElementById('aBtn').textContent='Add to cart — $'+(145*v);}
+function selPlan(el){
+  document.querySelectorAll('.plan-c').forEach(function(c){c.classList.remove('on');});el.classList.add('on');
+  var nm=el.querySelector('.plan-name').textContent;
+  var pr=el.querySelector('.plan-price').childNodes[0].textContent.trim();
+  var fee=nm==='Pro'?'3%':'5%';
+  var ps=document.getElementById('ps');
+  if(ps)ps.innerHTML=nm+' — '+pr+'/month<br><span style="font-size:12px;color:var(--cl);">'+fee+' transaction fee on sales</span>';
+}
+function toggleFaq(n){
+  var b=document.getElementById('fb'+n);var i=document.getElementById('fi'+n);
+  var open=b.style.display==='block';b.style.display=open?'none':'block';i.textContent=open?'+':'−';
+}
+function selRc(el,grp){el.closest('.fg').querySelectorAll('.rc').forEach(function(r){r.classList.remove('on');});el.classList.add('on');}
+function selRcSvc(el){el.closest('.fg').querySelectorAll('.rc').forEach(function(r){r.classList.remove('on');});el.classList.add('on');}
+function selRcAv(el){el.closest('.fg').querySelectorAll('.rc').forEach(function(r){r.classList.remove('on');});el.classList.add('on');}
+function addRow(){var t=document.getElementById('ptable');var r=document.createElement('div');r.className='price-row';r.innerHTML='<input class="fi" placeholder="Variant name" style="font-size:13px;"/><input class="fi" placeholder="$" style="width:80px;font-size:13px;"/><input class="fi" placeholder="Stock" style="width:70px;font-size:13px;"/><button class="price-del" onclick="delRow(this)">×</button>';t.appendChild(r);}
+function delRow(btn){var row=btn.closest('.price-row');if(document.querySelectorAll('.price-row').length>1)row.remove();}
+document.querySelectorAll('.avail-day').forEach(function(d){d.addEventListener('click',function(){this.classList.toggle('on');});});
+document.querySelectorAll('.cp').forEach(function(c){c.addEventListener('click',function(){this.classList.toggle('on');});});
+document.querySelectorAll('.fp').forEach(function(b){b.addEventListener('click',function(){var p=this.parentNode;p.querySelectorAll('.fp').forEach(function(s){s.classList.remove('on');});this.classList.add('on');});});
+</script>
