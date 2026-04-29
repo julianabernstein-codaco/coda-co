@@ -1,0 +1,103 @@
+import type { Plan } from "@/lib/types";
+
+export const goodsPlans: Plan[] = [
+  {
+    id: "starter",
+    name: "Starter",
+    price: null,
+    period: null,
+    features: [
+      "Up to 3 product listings",
+      "CodaCo marketplace visibility",
+      "Buyer messaging",
+      "Basic analytics",
+    ],
+    popular: false,
+    transactionFee: "5% per sale",
+    targetType: "goods",
+  },
+  {
+    id: "standard",
+    name: "Standard",
+    price: 12,
+    period: "month",
+    features: [
+      "Unlimited listings",
+      "Verified seller badge",
+      "Customer reviews",
+      "Priority in search results",
+      "Sales analytics dashboard",
+    ],
+    popular: true,
+    transactionFee: "5% per sale",
+    targetType: "goods",
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: 29,
+    period: "month",
+    features: [
+      "Everything in Standard",
+      "Featured placement in categories",
+      "Reduced 3% transaction fee",
+      "Advanced analytics",
+      "Priority seller support",
+      "Early access to new features",
+    ],
+    popular: false,
+    transactionFee: "3% per sale",
+    targetType: "goods",
+  },
+];
+
+export const servicePlans: Plan[] = [
+  {
+    id: "starter",
+    name: "Starter",
+    price: null,
+    period: null,
+    features: [
+      "1 service listing",
+      "CodaCo marketplace visibility",
+      "Client messaging via CodaCo",
+      "Basic profile page",
+    ],
+    popular: false,
+    transactionFee: "No transaction fee",
+    targetType: "services",
+  },
+  {
+    id: "standard",
+    name: "Standard",
+    price: 12,
+    period: "month",
+    features: [
+      "Unlimited service profiles",
+      "Verified provider badge",
+      "Client reviews",
+      "Priority in search results",
+      "Inquiry analytics",
+    ],
+    popular: true,
+    transactionFee: "No transaction fee",
+    targetType: "services",
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: 29,
+    period: "month",
+    features: [
+      "Everything in Standard",
+      "Featured placement in search",
+      "Advanced analytics",
+      "Priority support",
+      "Early access to new features",
+      "Multi-provider team accounts",
+    ],
+    popular: false,
+    transactionFee: "No transaction fee",
+    targetType: "services",
+  },
+];

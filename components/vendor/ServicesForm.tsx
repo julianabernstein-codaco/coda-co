@@ -1,0 +1,366 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { StepsBar } from "@/components/ui/StepsBar";
+
+const STEPS = [
+  { label: "Your profile" },
+  { label: "Your service" },
+  { label: "Area & availability" },
+  { label: "Choose a plan" },
+];
+
+const SERVICE_TYPES = [
+  "Death doula",
+  "Estate attorney",
+  "Death cleaning (döstädning)",
+  "Funeral celebrant",
+  "EOL organizer",
+  "Home funeral guide",
+  "Grief counselor",
+  "Other",
+];
+
+const SPECIALIZATIONS = [
+  "EOL planning",
+  "Grief support",
+  "LGBTQ+ affirming",
+  "Bilingual (Spanish)",
+  "Perinatal loss",
+  "Dementia",
+  "Home-centered dying",
+  "Legacy work",
+  "Advance directives",
+  "Vigil support",
+];
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  credentials: string;
+  email: string;
+  city: string;
+  state: string;
+  bio: string;
+  serviceType: string;
+  serviceDescription: string;
+  specializations: string[];
+  radius: string;
+  virtual: boolean;
+  inHome: boolean;
+  availableDays: string[];
+}
+
+export function ServicesForm() {
+  const router = useRouter();
+  const [step, setStep] = useState(0);
+  const [data, setData] = useState<FormData>({
+    firstName: "",
+    lastName: "",
+    credentials: "",
+    email: "",
+    city: "",
+    state: "",
+    bio: "",
+    serviceType: SERVICE_TYPES[0],
+    serviceDescription: "",
+    specializations: [],
+    radius: "15 mi",
+    virtual: false,
+    inHome: true,
+    availableDays: [],
+  });
+
+  function field(key: keyof FormData) {
+    return {
+      value: data[key] as string,
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+        setData((d) => ({ ...d, [key]: e.target.value })),
+    };
+  }
+
+  function toggleSpec(s: string) {
+    setData((d) => ({
+      ...d,
+      specializations: d.specializations.includes(s)
+        ? d.specializations.filter((x) => x !== s)
+        : [...d.specializations, s],
+    }));
+  }
+
+  function toggleDay(day: string) {
+    setData((d) => ({
+      ...d,
+      availableDays: d.availableDays.includes(day)
+        ? d.availableDays.filter((x) => x !== day)
+        : [...d.availableDays, day],
+    }));
+  }
+
+  return (
+    <div>
+      <StepsBar steps={STEPS} current={step} />
+
+      <section className="bg-sg-vp px-10 py-10">
+        <div className="max-w-[780px] mx-auto">
+          <div className="bg-white rounded-[14px] border border-[rgba(44,40,37,.08)] p-8">
+            {step === 0 && (
+              <>
+                <h2 className="font-serif text-[24px] font-light text-ch mb-1">
+                  Step 1 — Your profile
+                </h2>
+                <p className="text-[13px] text-cl mb-6">
+                  This is how clients will find and trust you.
+                </p>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <FormField label="First name">
+                    <input className={inputCls} placeholder="Maria" {...field("firstName")} />
+                  </FormField>
+                  <FormField label="Last name">
+                    <input className={inputCls} placeholder="Rosales" {...field("lastName")} />
+                  </FormField>
+                </div>
+                <FormField label="Credentials or certification (optional)">
+                  <input className={inputCls} placeholder="CEND, INELDA, J.D., etc." {...field("credentials")} />
+                </FormField>
+                <FormField label="Email address">
+                  <input className={inputCls} type="email" placeholder="you@example.com" {...field("email")} />
+                </FormField>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField label="City">
+                    <input className={inputCls} placeholder="Brooklyn" {...field("city")} />
+                  </FormField>
+                  <FormField label="State">
+                    <select className={inputCls} {...field("state")}>
+                      {["NY", "CA", "OR", "TX", "WA", "FL", "CO", "MA"].map((s) => (
+                        <option key={s}>{s}</option>
+                      ))}
+                    </select>
+                  </FormField>
+                </div>
+                <FormField label="About you (shown on your profile)">
+                  <textarea
+                    className={`${inputCls} min-h-[100px] resize-y`}
+                    placeholder="Your background, approach, and what clients can expect…"
+                    {...field("bio")}
+                  />
+                </FormField>
+              </>
+            )}
+
+            {step === 1 && (
+              <>
+                <h2 className="font-serif text-[24px] font-light text-ch mb-1">
+                  Step 2 — Your service
+                </h2>
+                <p className="text-[13px] text-cl mb-6">Tell clients what you offer.</p>
+                <FormField label="Service type">
+                  <select className={inputCls} {...field("serviceType")}>
+                    {SERVICE_TYPES.map((t) => (
+                      <option key={t}>{t}</option>
+                    ))}
+                  </select>
+                </FormField>
+                <FormField label="Service description">
+                  <textarea
+                    className={`${inputCls} min-h-[120px] resize-y`}
+                    placeholder="Describe what you offer, your approach, typical session structure, pricing, etc."
+                    {...field("serviceDescription")}
+                  />
+                </FormField>
+                <FormField label="Specializations (select all that apply)">
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {SPECIALIZATIONS.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => toggleSpec(s)}
+                        className={[
+                          "px-3 py-1.5 rounded-full text-[12px] border transition-all cursor-pointer",
+                          data.specializations.includes(s)
+                            ? "bg-sg text-white border-sg"
+                            : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-sg",
+                        ].join(" ")}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </FormField>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <h2 className="font-serif text-[24px] font-light text-ch mb-1">
+                  Step 3 — Area &amp; availability
+                </h2>
+                <p className="text-[13px] text-cl mb-6">Help clients know if you can reach them.</p>
+
+                <FormField label="Service radius">
+                  <div className="flex flex-wrap gap-2">
+                    {["5 mi", "15 mi", "30 mi", "50 mi", "Virtual only"].map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setData((d) => ({ ...d, radius: r }))}
+                        className={[
+                          "px-4 py-2 rounded-full text-[13px] border cursor-pointer transition-all",
+                          data.radius === r
+                            ? "bg-tr text-white border-tr"
+                            : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-tr",
+                        ].join(" ")}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </FormField>
+
+                <FormField label="Session types">
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer text-[13px] text-cm">
+                      <input
+                        type="checkbox"
+                        checked={data.inHome}
+                        onChange={() => setData((d) => ({ ...d, inHome: !d.inHome }))}
+                        className="accent-tr"
+                      />
+                      In-home / in-person
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer text-[13px] text-cm">
+                      <input
+                        type="checkbox"
+                        checked={data.virtual}
+                        onChange={() => setData((d) => ({ ...d, virtual: !d.virtual }))}
+                        className="accent-tr"
+                      />
+                      Virtual
+                    </label>
+                  </div>
+                </FormField>
+
+                <FormField label="Typical availability (select days)">
+                  <div className="flex gap-2 flex-wrap mt-1">
+                    {DAYS.map((day) => (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => toggleDay(day)}
+                        className={[
+                          "w-12 h-10 rounded-[8px] text-[13px] border cursor-pointer transition-all",
+                          data.availableDays.includes(day)
+                            ? "bg-tr text-white border-tr"
+                            : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-tr",
+                        ].join(" ")}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                </FormField>
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <h2 className="font-serif text-[24px] font-light text-ch mb-1">
+                  Step 4 — Choose a plan
+                </h2>
+                <p className="text-[13px] text-cl mb-6">Start free. Upgrade anytime.</p>
+                <div className="space-y-3">
+                  {[
+                    {
+                      name: "Starter",
+                      price: "Free",
+                      features: ["1 service profile", "CodaCo messaging", "Basic visibility"],
+                      popular: false,
+                    },
+                    {
+                      name: "Standard",
+                      price: "$12/mo",
+                      features: ["Unlimited profiles", "Verified badge", "Client reviews", "Priority search"],
+                      popular: true,
+                    },
+                    {
+                      name: "Pro",
+                      price: "$29/mo",
+                      features: ["Featured placement", "Advanced analytics", "Priority support", "Team accounts"],
+                      popular: false,
+                    },
+                  ].map((plan) => (
+                    <div
+                      key={plan.name}
+                      className={[
+                        "border rounded-[10px] p-4 cursor-pointer transition-all",
+                        plan.popular ? "border-sg bg-sg-vp" : "border-[rgba(44,40,37,.12)] hover:border-sg",
+                      ].join(" ")}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[15px] font-medium text-ch">{plan.name}</span>
+                        <span className="text-[15px] font-medium text-sg-d">{plan.price}</span>
+                        {plan.popular && (
+                          <span className="text-[10px] bg-sg text-white px-2 py-0.5 rounded-full">
+                            Most popular
+                          </span>
+                        )}
+                      </div>
+                      <ul className="space-y-1">
+                        {plan.features.map((f) => (
+                          <li key={f} className="text-[12px] text-cm flex items-center gap-1.5">
+                            <span className="text-sg">✓</span> {f}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={() => setStep((s) => s - 1)}
+              disabled={step === 0}
+              className="px-6 py-2.5 rounded-full border border-[rgba(44,40,37,.2)] text-[13px] text-cm cursor-pointer hover:border-ch transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ← Back
+            </button>
+            {step < STEPS.length - 1 ? (
+              <button
+                onClick={() => setStep((s) => s + 1)}
+                className="px-8 py-2.5 rounded-full bg-sg text-white text-[13px] cursor-pointer hover:bg-sg-d transition-colors"
+              >
+                Continue →
+              </button>
+            ) : (
+              <button
+                onClick={() => router.push("/list-with-us/confirm")}
+                className="px-8 py-2.5 rounded-full bg-sg text-white text-[13px] cursor-pointer hover:bg-sg-d transition-colors"
+              >
+                Submit listing →
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function FormField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-4">
+      <label className="block text-[12px] font-medium text-ch mb-1.5">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+const inputCls =
+  "w-full border border-[rgba(44,40,37,.18)] rounded-[8px] px-3 py-2.5 text-[14px] text-ch bg-white outline-none focus:border-sg transition-colors";
