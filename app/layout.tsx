@@ -1,0 +1,43 @@
+import type { Metadata } from "next";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import "./globals.css";
+import { Nav } from "@/components/layout/Nav";
+import { Footer } from "@/components/layout/Footer";
+import { CartProvider } from "@/components/providers/CartProvider";
+
+const serif = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+});
+
+const sans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  variable: "--font-sans",
+});
+
+export const metadata: Metadata = {
+  title: "CodaCo — A curated marketplace for death and dying",
+  description:
+    "CodaCo connects people with trusted goods and services for end-of-life planning, grief support, and meaningful farewells.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={`${serif.variable} ${sans.variable}`}>
+      <body className="flex flex-col min-h-screen">
+        <CartProvider>
+          <Nav />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </CartProvider>
+      </body>
+    </html>
+  );
+}
