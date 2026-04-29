@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { GuidedSearch } from "@/components/landing/GuidedSearch";
+import { HeroSearch } from "@/components/landing/HeroSearch";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { WaveDivider } from "@/components/ui/WaveDivider";
@@ -10,7 +10,7 @@ import { getFeaturedVendors } from "@/lib/api/vendors";
 export const metadata: Metadata = {
   title: "CodaCo — A curated marketplace for death and dying",
   description:
-    "CodaCo connects people with trusted goods and services for end-of-life planning, grief support, and meaningful farewells.",
+    "CodaCo connects you with thoughtfully curated goods, local services and expert resources to help you approach death — yours or someone you love — with grace and intention.",
 };
 
 const categories = [
@@ -99,11 +99,12 @@ const categories = [
     ),
   },
   {
-    label: "Memorial items",
-    href: "/shop?category=memorial",
+    label: "Books",
+    href: "/books",
     icon: (
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <path d="M18 27 C18 27 8 20 8 13.5 C8 10 10.5 8 13.5 8 C15.5 8 17 9.5 18 11 C19 9.5 20.5 8 22.5 8 C25.5 8 28 10 28 13.5 C28 20 18 27 18 27Z" stroke="#7A9E82" strokeWidth="1.5" fill="none"/>
+        <rect x="9" y="6" width="12" height="22" rx="1.5" stroke="#C1634F" strokeWidth="1.5"/>
+        <rect x="14" y="8" width="12" height="22" rx="1.5" stroke="#7A9E82" strokeWidth="1.3"/>
       </svg>
     ),
   },
@@ -119,80 +120,131 @@ const categories = [
   },
 ];
 
-const serviceTypes = [
-  { label: "Death doulas", type: "doula" },
-  { label: "Estate attorneys", type: "attorney" },
-  { label: "Death cleaning", type: "cleaner" },
-  { label: "Celebrants", type: "celebrant" },
-  { label: "EOL organizers", type: "organizer" },
-  { label: "Grief counselors", type: "grief" },
+const books = [
+  {
+    title: "Briefly Perfectly Human",
+    author: "Alua Arthur",
+    bg: "#8B4F42",
+    desc: "Death doula Alua Arthur explores what it means to be alive through honest, moving encounters with the dying.",
+    overlay: (
+      <svg width="100%" height="100%" viewBox="0 0 160 170">
+        <line x1="0" y1="20" x2="160" y2="0" stroke="#fff" strokeWidth=".7"/>
+        <line x1="0" y1="60" x2="160" y2="40" stroke="#fff" strokeWidth=".5"/>
+        <line x1="0" y1="100" x2="160" y2="80" stroke="#fff" strokeWidth=".6"/>
+        <line x1="0" y1="140" x2="160" y2="120" stroke="#fff" strokeWidth=".5"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Smoke Gets in Your Eyes",
+    author: "Caitlin Doughty",
+    bg: "#3D5C47",
+    desc: "A mortician's dark, funny memoir challenging how Americans hide from death — and why we shouldn't.",
+    overlay: (
+      <svg width="100%" height="100%" viewBox="0 0 160 170">
+        <circle cx="80" cy="85" r="60" stroke="#fff" strokeWidth=".7" fill="none"/>
+        <circle cx="80" cy="85" r="35" stroke="#fff" strokeWidth=".5" fill="none"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Being Mortal",
+    author: "Atul Gawande",
+    bg: "#4A4030",
+    desc: "A physician's exploration of how medicine can better serve people at the end of life on their own terms.",
+    overlay: (
+      <svg width="100%" height="100%" viewBox="0 0 160 170">
+        <rect x="20" y="20" width="120" height="130" stroke="#fff" strokeWidth=".6" fill="none"/>
+        <rect x="36" y="36" width="88" height="98" stroke="#fff" strokeWidth=".4" fill="none"/>
+      </svg>
+    ),
+  },
+  {
+    title: "When Breath Becomes Air",
+    author: "Paul Kalanithi",
+    bg: "#2C3A5A",
+    desc: "A young neurosurgeon's luminous memoir, written as he faced his own terminal diagnosis.",
+    overlay: (
+      <svg width="100%" height="100%" viewBox="0 0 160 170">
+        <path d="M0 170 Q80 60 160 170" stroke="#fff" strokeWidth=".7" fill="none"/>
+        <path d="M0 130 Q80 30 160 130" stroke="#fff" strokeWidth=".5" fill="none"/>
+      </svg>
+    ),
+  },
+];
+
+const humor = [
+  { quote: "Eventually, we are all just stardust with opinions.", item: "Art print, 8×10", price: "$18" },
+  { quote: "I've made peace with my mortality. My accountant has not.", item: "Ceramic mug, 12 oz", price: "$24" },
+  { quote: "YOLO was taken. So I planned ahead.", item: "Tote bag", price: "$22" },
+  { quote: "My estate plan is the most loving thing I've ever done.", item: "Greeting card set", price: "$14" },
+];
+
+const vendorSteps = [
+  { n: 1, title: "Create your profile", desc: "Set up a shop or service profile with photos and pricing" },
+  { n: 2, title: "List goods or services", desc: "Add products with shipping options or services with area" },
+  { n: 3, title: "Connect with clients", desc: "Receive inquiries, manage orders, build reviews" },
 ];
 
 export default async function LandingPage() {
   const [featuredProducts, featuredVendors] = await Promise.all([
-    getFeaturedProducts(6),
+    getFeaturedProducts(4),
     getFeaturedVendors(4),
   ]);
 
   return (
     <>
       {/* Hero */}
-      <section className="bg-white px-10 py-16">
-        <div className="max-w-[780px] mx-auto">
-          <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-3">
-            A curated marketplace
-          </p>
-          <h1 className="font-serif text-[52px] font-light leading-[1.1] text-ch mb-5">
-            Death care,{" "}
-            <em className="not-italic text-tr">done with intention.</em>
-          </h1>
-          <p className="text-[16px] text-cm max-w-[540px] leading-[1.8] mb-6">
-            CodaCo connects you with trusted makers and service providers — handmade goods, death
-            doulas, estate attorneys, and more — all vetted for care and quality.
-          </p>
+      <section className="bg-white px-10 pt-[4.5rem] pb-12 text-center">
+        <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
+          Welcome
+        </p>
+        <h1 className="font-serif text-[52px] font-light leading-[1.12] text-ch mb-5">
+          Everything you need to plan
+          <br />
+          <em className="italic text-tr">a meaningful end.</em>
+        </h1>
+        <p className="text-[15px] text-cm max-w-[560px] mx-auto leading-[1.78] mb-2">
+          CodaCo connects you with thoughtfully curated goods, local services
+          and expert resources to help you approach death — yours or someone
+          you love — with grace and intention.
+        </p>
+        <p className="text-[14px] text-cl italic mb-8">
+          Death is a part of life. Support shouldn&apos;t be hard to find.
+        </p>
 
-          {/* Search bar */}
-          <div className="flex gap-3 max-w-[560px]">
-            <div className="flex-1 flex items-center gap-2 border border-[rgba(44,40,37,.15)] rounded-[10px] px-4 py-3 bg-white">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="7" cy="7" r="5" stroke="#9A9189" strokeWidth="1.3" />
-                <line x1="11" y1="11" x2="15" y2="15" stroke="#9A9189" strokeWidth="1.3" strokeLinecap="round" />
-              </svg>
-              <input
-                className="flex-1 bg-transparent text-[14px] text-cm outline-none"
-                placeholder="What are you looking for?"
-              />
-            </div>
-            <button className="bg-tr text-white px-6 py-3 rounded-[10px] text-[14px] hover:bg-tr-d transition-colors cursor-pointer">
-              Search
-            </button>
-          </div>
-
-          <GuidedSearch />
-        </div>
+        <HeroSearch />
       </section>
 
       <WaveDivider topColor="#ffffff" bottomColor="#FCF4F1" />
 
-      {/* Category grid */}
-      <section className="bg-tr-vp px-10 pt-0 pb-12">
+      {/* Browse by category */}
+      <section className="bg-tr-vp px-10 pt-12 pb-10">
         <div className="max-w-[900px] mx-auto">
           <div className="text-center mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-2">Browse by category</p>
-            <h2 className="font-serif text-[32px] font-light text-ch mb-1">What are you looking for?</h2>
-            <p className="text-[13px] text-cl">Goods by mail · Services by location</p>
+            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
+              Browse by category
+            </p>
+            <h2 className="font-serif text-[32px] font-light text-ch mb-1">
+              What are you looking for?
+            </h2>
+            <p className="text-[13px] text-cl">
+              Goods by mail · Services by location
+            </p>
           </div>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-3">
             {categories.map((cat) => (
               <Link
-                key={cat.href}
+                key={cat.label}
                 href={cat.href}
-                className="bg-white border border-[rgba(44,40,37,.09)] rounded-[12px] p-5 text-center cursor-pointer transition-all duration-200 hover:border-tr-l hover:-translate-y-0.5 no-underline block"
+                className="bg-white border border-[rgba(44,40,37,.09)] rounded-[12px] py-[1.2rem] px-4 text-center cursor-pointer transition-all duration-200 hover:border-tr-l hover:-translate-y-0.5 no-underline block"
               >
                 <div className="w-10 h-10 mx-auto mb-2.5 flex items-center justify-center">
                   {cat.icon}
                 </div>
-                <div className="text-[12px] font-medium text-ch leading-tight">{cat.label}</div>
+                <div className="text-[12px] font-medium text-ch leading-tight">
+                  {cat.label}
+                </div>
               </Link>
             ))}
           </div>
@@ -201,105 +253,239 @@ export default async function LandingPage() {
 
       <WaveDivider topColor="#FCF4F1" bottomColor="#ffffff" />
 
-      {/* Featured products */}
-      <section className="bg-white px-10 pt-0 pb-12">
-        <div className="max-w-[880px] mx-auto">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1">Handpicked goods</p>
-              <h2 className="font-serif text-[32px] font-light text-ch">Featured in the marketplace</h2>
-            </div>
-            <Link href="/shop" className="text-[13px] text-tr border-b border-dotted border-tr-l pb-px no-underline hover:text-tr-d transition-colors">
-              View all
+      {/* Support in your area */}
+      <section className="bg-white px-10 pt-12 pb-10">
+        <div className="max-w-[900px] mx-auto">
+          <div className="text-center mb-7">
+            <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-1.5">
+              Find local services
+            </p>
+            <h2 className="font-serif text-[32px] font-light text-ch mb-1">
+              Support in your area
+            </h2>
+            <p className="text-[13px] text-cl">
+              Vetted providers · search by zip or city
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 bg-white border border-[rgba(44,40,37,.1)] rounded-[8px] px-4 py-2.5 mb-6">
+            <span className="text-[13px] text-cm flex-1">
+              Showing results near:
+            </span>
+            <input
+              defaultValue="New York, NY 10001"
+              className="border-0 bg-transparent font-sans text-[13px] text-tr font-medium outline-none w-[200px]"
+            />
+            <button className="bg-sg text-white border-0 px-4 py-1.5 rounded-[18px] text-[12px] cursor-pointer hover:bg-sg-d transition-colors">
+              Change
+            </button>
+          </div>
+
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3.5">
+            {featuredVendors.map((v) => (
+              <ServiceCard key={v.id} vendor={v} />
+            ))}
+          </div>
+
+          <div className="text-center mt-5">
+            <Link
+              href="/services"
+              className="inline-block text-[13px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d"
+            >
+              Search all service providers →
             </Link>
           </div>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(178px,1fr))] gap-4">
-            {featuredProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+          <div className="text-center mt-2">
+            <Link
+              href="/where-to-start"
+              className="inline-block text-[13px] text-sg border-b border-dotted border-sg-l no-underline hover:text-sg-d"
+            >
+              Not sure what you need? See our guide for recently bereaved →
+            </Link>
           </div>
         </div>
       </section>
 
       <WaveDivider topColor="#ffffff" bottomColor="#F1F7F2" />
 
-      {/* Services */}
-      <section className="bg-sg-vp px-10 pt-0 pb-12">
-        <div className="max-w-[880px] mx-auto">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-1">Find local services</p>
-              <h2 className="font-serif text-[32px] font-light text-ch">Support in your area</h2>
-            </div>
-            <Link href="/services" className="text-[13px] text-sg-d border-b border-dotted border-sg-l pb-px no-underline hover:opacity-80 transition-opacity">
-              Find services
+      {/* Featured in the marketplace */}
+      <section className="bg-sg-vp px-10 pt-12 pb-10">
+        <div className="max-w-[900px] mx-auto">
+          <div className="text-center mb-7">
+            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
+              Handpicked goods
+            </p>
+            <h2 className="font-serif text-[32px] font-light text-ch mb-1">
+              Featured in the marketplace
+            </h2>
+            <p className="text-[13px] text-cl">
+              Available locally or shipped anywhere in the US
+            </p>
+          </div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(178px,1fr))] gap-4">
+            {featuredProducts.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+          <div className="text-center mt-5">
+            <Link
+              href="/shop"
+              className="inline-block text-[13px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d"
+            >
+              View all goods →
             </Link>
           </div>
+        </div>
+      </section>
 
-          <div className="flex flex-wrap gap-2 mb-6">
-            {serviceTypes.map((st) => (
-              <Link
-                key={st.type}
-                href={`/services?type=${st.type}`}
-                className="bg-white border border-[rgba(44,40,37,.09)] rounded-full px-4 py-2 text-[13px] text-cm no-underline hover:border-sg transition-colors"
+      <WaveDivider topColor="#F1F7F2" bottomColor="#ffffff" />
+
+      {/* Books on death & dying */}
+      <section className="bg-white px-10 pt-12 pb-10">
+        <div className="max-w-[900px] mx-auto">
+          <div className="text-center mb-7">
+            <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-1.5">
+              The reading room
+            </p>
+            <h2 className="font-serif text-[32px] font-light text-ch mb-1">
+              Books on death &amp; dying
+            </h2>
+            <p className="text-[13px] text-cl">
+              Honest, beautifully written guides for the journey
+            </p>
+          </div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4">
+            {books.map((b) => (
+              <div
+                key={b.title}
+                className="bg-white border border-[rgba(44,40,37,.08)] rounded-[10px] overflow-hidden cursor-pointer transition-transform duration-200 hover:-translate-y-0.5"
               >
-                {st.label}
-              </Link>
+                <div
+                  className="h-[168px] flex items-end p-3.5 relative overflow-hidden"
+                  style={{ background: b.bg }}
+                >
+                  <div className="absolute inset-0 opacity-[.13]">{b.overlay}</div>
+                  <div className="relative z-10">
+                    <div className="font-serif text-[17px] font-normal text-white/95 leading-[1.2]">
+                      {b.title}
+                    </div>
+                    <div className="text-[11px] text-white/70 mt-1 italic">
+                      {b.author}
+                    </div>
+                  </div>
+                </div>
+                <div className="px-4 py-3">
+                  <div className="text-[12px] text-cm leading-[1.5] mb-1.5">
+                    {b.desc}
+                  </div>
+                  <span className="text-[12px] text-tr border-b border-dotted border-tr-l cursor-pointer">
+                    Find this book →
+                  </span>
+                </div>
+              </div>
             ))}
           </div>
-
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-4">
-            {featuredVendors.map((v) => (
-              <ServiceCard key={v.id} vendor={v} />
-            ))}
+          <div className="text-center mt-5">
+            <Link
+              href="/books"
+              className="inline-block text-[13px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d"
+            >
+              Browse the full reading list →
+            </Link>
           </div>
         </div>
       </section>
 
-      <WaveDivider topColor="#F1F7F2" bottomColor="#2C2825" />
+      <WaveDivider topColor="#ffffff" bottomColor="#FCF4F1" />
 
-      {/* Where to start CTA */}
-      <section className="bg-ch px-10 pt-0 pb-14 text-center">
-        <div className="max-w-[560px] mx-auto">
-          <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-3">Not sure where to begin?</p>
-          <h2 className="font-serif text-[36px] font-light text-tr-vp mb-4 leading-tight">
-            We will help you find your footing.
-          </h2>
-          <p className="text-[14px] text-[rgba(252,244,241,.7)] mb-8 leading-relaxed">
-            Whether someone just died, you are planning ahead, or you are supporting a loved one,
-            our guide helps you figure out what you need and who can help.
+      {/* Light & Dark */}
+      <section className="bg-tr-vp px-10 pt-12 pb-10">
+        <div className="max-w-[900px] mx-auto">
+          <div className="bg-ch rounded-[12px] px-8 py-6 flex items-center justify-between gap-4 mb-6 flex-wrap">
+            <div>
+              <h3 className="font-serif text-[24px] font-light text-tr-vp mb-0.5">
+                Light &amp; Dark — Because death is also funny.
+              </h3>
+              <p className="text-[13px] text-tr-vp/60 max-w-[340px]">
+                Prints, mugs, cards and gifts that find the levity in life&apos;s
+                only guarantee.
+              </p>
+            </div>
+            <Link
+              href="/light-and-dark"
+              className="bg-tr text-white border-0 px-5 py-2.5 rounded-[18px] text-[13px] no-underline hover:bg-tr-d transition-colors"
+            >
+              Shop all →
+            </Link>
+          </div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3.5">
+            {humor.map((h) => (
+              <div
+                key={h.quote}
+                className="bg-white border border-[rgba(44,40,37,.08)] rounded-[10px] p-3.5 text-center cursor-pointer transition-colors hover:border-cl"
+              >
+                <div className="h-[86px] bg-ch rounded-[7px] flex items-center justify-center mb-2.5 font-serif text-[12px] text-tr-vp/85 px-3 leading-[1.45] italic">
+                  {h.quote}
+                </div>
+                <div className="text-[12px] text-ch font-medium">{h.item}</div>
+                <div className="text-[12px] text-tr mt-0.5">{h.price}</div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-5">
+            <Link
+              href="/light-and-dark"
+              className="inline-block text-[13px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d"
+            >
+              Browse Light &amp; Dark →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <WaveDivider topColor="#FCF4F1" bottomColor="#ffffff" />
+
+      {/* Reach people who are ready (vendor CTA) */}
+      <section className="bg-white px-10 pt-12 pb-12 text-center">
+        <div className="max-w-[900px] mx-auto">
+          <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
+            For vendors &amp; service providers
           </p>
-          <Link
-            href="/where-to-start"
-            className="inline-block bg-tr text-white px-8 py-3.5 rounded-full text-[14px] no-underline hover:bg-tr-d transition-colors"
-          >
-            Read the guide
-          </Link>
-        </div>
-      </section>
-
-      <WaveDivider topColor="#2C2825" bottomColor="#ffffff" />
-
-      {/* List with us CTA */}
-      <section className="bg-white px-10 pt-0 pb-12 text-center">
-        <div className="max-w-[560px] mx-auto">
-          <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-2">For vendors</p>
           <h2 className="font-serif text-[32px] font-light text-ch mb-3">
-            Reach people who are ready.
+            Reach people who are ready
           </h2>
-          <p className="text-[14px] text-cm mb-6 leading-relaxed">
-            Join CodaCo curated marketplace. Free to start, approval typically within 24 hours.
+          <p className="text-[15px] text-cm max-w-[460px] mx-auto mb-8">
+            CodaCo connects you with clients actively seeking what you offer.
+            List your goods or services in three easy steps.
           </p>
-          <div className="flex gap-3 justify-center flex-wrap">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 max-w-[680px] mx-auto mb-8">
+            {vendorSteps.map((s) => (
+              <div
+                key={s.n}
+                className="bg-white rounded-[10px] py-5 px-4 text-center border border-[rgba(44,40,37,.07)]"
+              >
+                <div className="w-[30px] h-[30px] rounded-full bg-tr text-white text-[13px] font-medium flex items-center justify-center mx-auto mb-2.5">
+                  {s.n}
+                </div>
+                <div className="text-[13px] font-medium text-ch mb-0.5">
+                  {s.title}
+                </div>
+                <div className="text-[12px] text-cl leading-[1.45]">
+                  {s.desc}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-3.5 justify-center flex-wrap">
             <Link
               href="/list-with-us/goods"
-              className="inline-block bg-tr text-white px-7 py-3 rounded-full text-[14px] no-underline hover:bg-tr-d transition-colors"
+              className="inline-block bg-tr text-white px-[30px] py-3.5 rounded-[26px] text-[14px] no-underline hover:bg-tr-d transition-colors"
             >
               List goods →
             </Link>
             <Link
               href="/list-with-us/services"
-              className="inline-block border border-[rgba(44,40,37,.2)] text-ch px-7 py-3 rounded-full text-[14px] no-underline hover:border-tr hover:text-tr transition-colors"
+              className="inline-block bg-transparent text-ch border-[1.5px] border-[rgba(44,40,37,.25)] px-[26px] py-3 rounded-[26px] text-[13px] no-underline hover:border-tr hover:text-tr transition-colors"
             >
               List services
             </Link>

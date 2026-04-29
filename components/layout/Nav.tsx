@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 
 interface NavProps {
-  active?: "shop" | "services" | "guide" | "list";
+  active?: "shop" | "services" | "books" | "light" | "list";
 }
 
 export function Nav({ active }: NavProps) {
@@ -40,7 +40,8 @@ export function Nav({ active }: NavProps) {
       <ul className="flex gap-6 items-center list-none">
         {link("Shop goods", "/shop", "shop")}
         {link("Find services", "/services", "services")}
-        {link("Where to start", "/where-to-start", "guide")}
+        {link("Books", "/books", "books")}
+        {link("Light & dark", "/light-and-dark", "light")}
         {link("List with us", "/list-with-us", "list")}
         <li>
           <a className="bg-tr text-white px-[17px] py-[7px] rounded-full text-[13px] cursor-pointer hover:bg-tr-d transition-colors duration-150 no-underline">
