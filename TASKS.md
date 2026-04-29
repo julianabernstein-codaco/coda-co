@@ -8,7 +8,7 @@ This file tracks implementation progress for the Next.js rebuild. See `PLAN.md` 
 
 ### Phase 1 — Project Setup ✅
 - [x] Bootstrap Next.js 15 with TypeScript, Tailwind v4, App Router, Turbopack
-- [x] Enable React Compiler (`experimental.reactCompiler`)
+- [x] Enable React Compiler (`reactCompiler: true` in next.config.ts)
 - [x] Configure Tailwind `@theme` tokens in `app/globals.css`
 - [x] Set up `next/font` with Cormorant Garamond + DM Sans
 - [x] Create full directory structure (`lib/`, `components/`, all `app/` routes)
@@ -16,84 +16,84 @@ This file tracks implementation progress for the Next.js rebuild. See `PLAN.md` 
 
 ---
 
-### Phase 2 — Types + Data Layer
+### Phase 2 — Types + Data Layer ✅
 - [x] Write all TypeScript interfaces in `lib/types.ts`
-- [ ] Extract mock products into `lib/data/products.ts`
-- [ ] Extract mock vendors into `lib/data/vendors.ts`
-- [ ] Extract mock reviews into `lib/data/reviews.ts`
-- [ ] Extract mock plans into `lib/data/plans.ts`
-- [ ] Write `lib/api/products.ts` — `getProducts()`, `getProduct()`
-- [ ] Write `lib/api/vendors.ts` — `getVendors()`, `getVendor()`
-- [ ] Write `lib/api/reviews.ts` — `getReviews()`, `getReviewSummary()`
-- [ ] Write `lib/api/plans.ts` — `getPlans()`
+- [x] Extract mock products into `lib/data/products.ts`
+- [x] Extract mock vendors into `lib/data/vendors.ts`
+- [x] Extract mock reviews into `lib/data/reviews.ts`
+- [x] Extract mock plans into `lib/data/plans.ts`
+- [x] Write `lib/api/products.ts` — `getProducts()`, `getProduct()`, `getRelatedProducts()`
+- [x] Write `lib/api/vendors.ts` — `getVendors()`, `getVendor()`, `getFeaturedVendors()`
+- [x] Write `lib/api/reviews.ts` — `getReviews()`, `getReviewSummary()`
+- [x] Write `lib/api/plans.ts` — `getPlans(type)`
 
 ---
 
-### Phase 3 — Shared Components
-- [ ] `components/layout/Nav.tsx` (RSC)
-- [ ] `components/layout/Footer.tsx` (RSC)
-- [ ] `components/layout/Breadcrumb.tsx` (RSC)
-- [ ] `components/ui/ProductCard.tsx` (RSC)
-- [ ] `components/ui/ServiceCard.tsx` (RSC)
-- [ ] `components/ui/PlanCard.tsx` (client — interactive selection)
-- [ ] `components/ui/ReviewCard.tsx` (RSC)
-- [ ] `components/ui/StarRating.tsx` (RSC)
-- [ ] `components/ui/Badge.tsx` (RSC)
-- [ ] `components/ui/Button.tsx`
-- [ ] `components/ui/WaveDivider.tsx` (RSC)
-- [ ] `components/ui/StepsBar.tsx` (RSC)
-- [ ] `components/providers/CartProvider.tsx` (client — Context + localStorage)
+### Phase 3 — Shared Components ✅
+- [x] `components/ui/Logo.tsx` (RSC — extracted SVG)
+- [x] `components/layout/Nav.tsx` (RSC — sticky nav, active link state)
+- [x] `components/layout/Footer.tsx` (RSC — multi-column footer)
+- [x] `components/layout/Breadcrumb.tsx` (RSC)
+- [x] `components/ui/ProductCard.tsx` (RSC)
+- [x] `components/ui/ServiceCard.tsx` + `ServiceSearchCard` (RSC)
+- [x] `components/ui/ReviewCard.tsx` (RSC)
+- [x] `components/ui/StarRating.tsx` (RSC)
+- [x] `components/ui/Badge.tsx` (RSC)
+- [x] `components/ui/WaveDivider.tsx` (RSC)
+- [x] `components/ui/StepsBar.tsx` (RSC)
+- [x] `components/providers/CartProvider.tsx` (client — Context + localStorage)
 
 ---
 
-### Phase 4 — Pages
+### Phase 4 — Pages ✅
 
 #### 4a — Static / simple pages
-- [ ] `app/where-to-start/page.tsx`
-- [ ] `app/list-with-us/page.tsx`
-- [ ] `app/list-with-us/confirm/page.tsx`
+- [x] `app/where-to-start/page.tsx` — guide for recently bereaved
+- [x] `app/list-with-us/page.tsx` — vendor landing with why/testimonials/FAQ
+- [x] `app/list-with-us/confirm/page.tsx` — post-submission confirmation
 
 #### 4b — Shop + Services
-- [ ] `app/shop/page.tsx` + `components/shop/ProductGrid.tsx`
-- [ ] `components/shop/FilterSidebar.tsx` (client)
-- [ ] `components/shop/FilterStrip.tsx` (client)
-- [ ] `app/services/page.tsx` + `components/services/ServiceGrid.tsx`
-- [ ] `components/services/ServiceSearch.tsx` (client)
-- [ ] `components/services/ServiceFilters.tsx` (client)
+- [x] `app/shop/page.tsx` — RSC with server-side sort
+- [x] `components/shop/ProductGrid.tsx` (RSC)
+- [x] `components/shop/FilterStrip.tsx` (client — reads/writes URL searchParams)
+- [x] `app/services/page.tsx` — RSC with server-side filter
+- [x] `components/services/ServiceGrid.tsx` (RSC)
+- [x] `components/services/ServiceFilters.tsx` (client — sidebar with URL searchParams)
 
 #### 4c — Product Detail Page (PDP)
-- [ ] `app/shop/[productId]/page.tsx`
-- [ ] `components/pdp/ImageGallery.tsx` (client)
-- [ ] `components/pdp/VariantSelector.tsx` (client)
-- [ ] `components/pdp/QuantityAdjuster.tsx` (client)
-- [ ] `components/pdp/AddToCart.tsx` (client)
-- [ ] `components/pdp/ProductTabs.tsx` (client)
-- [ ] `components/pdp/ReviewHistogram.tsx` (RSC)
+- [x] `app/shop/[productId]/page.tsx` — RSC with parallel data fetching
+- [x] `components/pdp/AddToCart.tsx` (client — variant/qty selection + cart)
+- [x] `components/pdp/ProductTabs.tsx` (client — tabs: description/details/reviews/seller)
 
 #### 4d — Landing Page
-- [ ] `app/page.tsx`
-- [ ] `components/landing/Hero.tsx` (RSC)
-- [ ] `components/landing/GuidedSearch.tsx` (client)
+- [x] `app/page.tsx` — RSC with parallel featured product/vendor fetch
+- [x] `components/landing/GuidedSearch.tsx` (client — collapsible panel + sub-panels)
 
 #### 4e — Vendor Onboarding Forms
-- [ ] `app/list-with-us/goods/page.tsx` + `components/vendor/GoodsForm.tsx` (client)
-- [ ] `app/list-with-us/services/page.tsx` + `components/vendor/ServicesForm.tsx` (client)
-- [ ] `app/list-with-us/plan/page.tsx` + `components/vendor/PlanSelector.tsx` (client)
+- [x] `app/list-with-us/goods/page.tsx` + `components/vendor/GoodsForm.tsx` (4-step client form)
+- [x] `app/list-with-us/services/page.tsx` + `components/vendor/ServicesForm.tsx` (4-step client form)
+- [x] `app/list-with-us/plan/page.tsx` — RSC plan selection by type (goods/services)
 
 ---
 
-### Phase 5 — State Wiring
-- [ ] Wire cart state: `CartProvider` → `AddToCart`, Nav cart count
-- [ ] Wire filter state: searchParams → `FilterSidebar` / `FilterStrip` → page RSC
-- [ ] Wire multi-step form state + URL step param
-- [ ] Add Server Actions for form submission stubs
+### Phase 5 — State Wiring (Remaining Work)
+- [x] Cart state: `CartProvider` wired to `AddToCart` in PDP — works end-to-end
+- [x] Filter state: URL searchParams flow from `FilterStrip`/`ServiceFilters` → page RSC
+- [x] Multi-step form state: component state in `GoodsForm`/`ServicesForm`
+- [ ] Add cart count display to Nav (requires Nav to become client or use server-side cookie)
+- [ ] Server Actions for `GoodsForm`/`ServicesForm` submission (currently router.push stub)
+- [ ] `generateStaticParams` for `/shop/[productId]` to enable full static generation
+- [ ] Suspense boundaries for filter components to enable streaming
 
 ---
 
 ## Notes for Future Agents
 
-- **Design reference**: `index.html.reference` contains the full original prototype. Use it for visual parity, copy, and layout reference.
+- **Design reference**: `index.html.reference` is the full original prototype. Use it for visual parity and content reference.
 - **Tailwind tokens**: All brand colors are in `app/globals.css` under `@theme`. Use `bg-tr`, `text-sg-d`, `border-tr-l`, `font-serif`, etc.
 - **RSC first**: Components are RSC by default. Only add `'use client'` if the component needs `useState`, `useEffect`, browser APIs, or event handlers.
-- **Data API**: All data is fetched via `lib/api/*.ts`. These functions are async — call them with `await` in Server Components. Do not import from `lib/data/*.ts` directly in components.
-- **Fonts**: Loaded via `next/font` in `app/layout.tsx`, exposed as CSS variables `--font-serif` and `--font-sans`, referenced in Tailwind `@theme`.
+- **Data API**: All data fetched via `lib/api/*.ts`. These are async — call with `await` in Server Components. Don't import from `lib/data/*.ts` directly in components.
+- **Cart**: `useCart()` from `components/providers/CartProvider.tsx`. Works client-side only.
+- **Filters**: URL searchParams are the source of truth for shop/service filters. `FilterStrip` and `ServiceFilters` update URL; the page RSC re-renders with new data.
+- **Forms**: `GoodsForm` and `ServicesForm` manage their own step state. On final submit, they call `router.push('/list-with-us/confirm')`. Replace with a Server Action for real persistence.
+- **Next.js version**: 16.2.4 — `reactCompiler` is a top-level config key, not under `experimental`.
