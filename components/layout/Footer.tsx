@@ -6,7 +6,7 @@ export function Footer() {
       {/* Wave top */}
       <div
         className="h-[60px] -mb-[1px]"
-        style={{ background: "var(--color-tr-vp)" }}
+        style={{ background: "#ffffff" }}
       />
       <footer
         className="bg-ch font-sans"

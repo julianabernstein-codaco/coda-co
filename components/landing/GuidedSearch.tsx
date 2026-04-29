@@ -3,128 +3,158 @@
 import { useState } from "react";
 import Link from "next/link";
 
-interface SubPanel {
-  id: string;
-  label: string;
-  content: {
-    heading: string;
-    body: string;
-    links: { label: string; href: string }[];
-  };
+interface GuidedSearchProps {
+  open: boolean;
 }
 
-const subPanels: SubPanel[] = [
+interface SubPanel {
+  id: "recently" | "planning" | "memorial" | "learn";
+  title: string;
+  desc: string;
+  featured?: boolean;
+}
+
+const tiles: SubPanel[] = [
   {
     id: "recently",
-    label: "Someone just died",
-    content: {
-      heading: "If someone just died",
-      body: "You don't have to do anything immediately except be present. If the death was expected and at home, you have time. A death doula can help you navigate the next steps.",
-      links: [
-        { label: "Find a death doula near me →", href: "/services?type=doula" },
-        { label: "Find a home funeral guide →", href: "/services?type=home-funeral" },
-      ],
-    },
+    title: "Someone I love just died",
+    desc: "I don't know where to start",
+    featured: true,
   },
   {
     id: "planning",
-    label: "I'm planning ahead",
-    content: {
-      heading: "Planning ahead",
-      body: "The greatest gift you can give your family is clear documentation of your wishes — an advance directive, a will, and a list of your accounts.",
-      links: [
-        { label: "Browse planning workbooks →", href: "/shop?category=planning" },
-        { label: "Find an estate attorney →", href: "/services?type=attorney" },
-      ],
-    },
+    title: "Planning ahead",
+    desc: "Documents, workbooks, directives",
   },
   {
     id: "memorial",
-    label: "I want to create a memorial",
-    content: {
-      heading: "Honoring someone",
-      body: "Meaningful objects and rituals help. A handmade urn, an ash pendant, a memorial portrait — these are ways of keeping someone present.",
-      links: [
-        { label: "Shop urns & vessels →", href: "/shop?category=urns" },
-        { label: "Shop memorial goods →", href: "/shop?category=memorial" },
-      ],
-    },
+    title: "Memorial & burial",
+    desc: "Urns, shrouds, ash jewelry",
   },
   {
     id: "learn",
-    label: "I want to learn more",
-    content: {
-      heading: "Learning about death",
-      body: "Understanding death — the process, the options, the rights you have — makes it less frightening and helps you support others better.",
-      links: [
-        { label: "Read our guide →", href: "/where-to-start" },
-        { label: "Browse all services →", href: "/services" },
-      ],
-    },
+    title: "Learning & exploring",
+    desc: "Books, humor, community",
   },
 ];
 
-export function GuidedSearch() {
-  const [open, setOpen] = useState(false);
-  const [activeSub, setActiveSub] = useState<string | null>(null);
+interface TagLink {
+  label: string;
+  href?: string;
+}
 
-  const activePanel = subPanels.find((p) => p.id === activeSub);
+const subTags: Record<SubPanel["id"], TagLink[]> = {
+  recently: [],
+  planning: [
+    { label: "Advance care templates", href: "/shop?category=planning" },
+    { label: "EOL workbooks", href: "/shop?category=planning" },
+    { label: "Estate attorneys", href: "/services?type=attorney" },
+    { label: "Death doulas", href: "/services?type=doula" },
+  ],
+  memorial: [
+    { label: "Urns & vessels", href: "/shop?category=urns" },
+    { label: "Ash jewelry", href: "/shop?category=jewelry" },
+    { label: "Burial shrouds", href: "/shop?category=shrouds" },
+    { label: "Custom keepsakes", href: "/shop?category=memorial" },
+  ],
+  learn: [
+    { label: "Books on death" },
+    { label: "Dark humor gifts" },
+    { label: "Briefly Perfectly Human" },
+    { label: "Smoke Gets in Your Eyes" },
+  ],
+};
+
+export function GuidedSearch({ open }: GuidedSearchProps) {
+  const [activeSub, setActiveSub] = useState<SubPanel["id"] | null>(null);
+
+  if (!open) return null;
 
   return (
-    <div className="mt-4">
-      <button
-        onClick={() => {
-          setOpen((o) => !o);
-          setActiveSub(null);
-        }}
-        className="text-[13px] text-tr border-b border-dotted border-tr-l pb-px cursor-pointer hover:text-tr-d transition-colors bg-transparent border-0"
-      >
-        {open ? "Hide guided search ↑" : "Not sure where to start? Get guided →"}
-      </button>
+    <div className="bg-white border border-tr-p rounded-[12px] p-6 max-w-[620px] mx-auto mt-5 text-left">
+      <h3 className="font-serif text-[21px] font-normal text-ch mb-4">
+        What brings you to CodaCo today?
+      </h3>
 
-      {open && (
-        <div className="mt-4 bg-white rounded-[14px] border border-[rgba(44,40,37,.1)] p-6 shadow-sm">
-          <p className="text-[14px] font-medium text-ch mb-4">What brings you here today?</p>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {subPanels.map((panel) => (
-              <button
-                key={panel.id}
-                onClick={() => setActiveSub(activeSub === panel.id ? null : panel.id)}
-                className={[
-                  "px-4 py-2 rounded-full text-[13px] border transition-all cursor-pointer",
-                  activeSub === panel.id
-                    ? "bg-tr text-white border-tr"
-                    : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-tr hover:text-tr",
-                ].join(" ")}
-              >
-                {panel.label}
-              </button>
-            ))}
+      <div className="grid grid-cols-2 gap-2.5">
+        {tiles.map((tile) => (
+          <button
+            key={tile.id}
+            onClick={() => setActiveSub(tile.id)}
+            className={[
+              "rounded-[8px] p-3.5 text-left cursor-pointer transition-all duration-200",
+              tile.featured
+                ? "bg-tr-vp border-[1.5px] border-tr-p hover:border-tr"
+                : "bg-pl border border-[rgba(44,40,37,.09)] hover:border-tr-l hover:bg-tr-vp",
+            ].join(" ")}
+          >
+            <span className="block text-[13px] font-medium text-ch">
+              {tile.title}
+            </span>
+            <span className="block text-[12px] text-cl mt-0.5">{tile.desc}</span>
+          </button>
+        ))}
+      </div>
+
+      {activeSub === "recently" && (
+        <div className="mt-3">
+          <p className="text-[13px] text-cm mb-3">
+            We're so sorry for your loss. Here is a gentle guide to what might
+            help right now.
+          </p>
+          <Link
+            href="/where-to-start"
+            className="block bg-tr text-white text-center py-2.5 px-5 rounded-[20px] text-[13px] no-underline hover:bg-tr-d transition-colors"
+          >
+            See the full guide: where to start →
+          </Link>
+          <BackButton onClick={() => setActiveSub(null)} />
+        </div>
+      )}
+
+      {activeSub && activeSub !== "recently" && (
+        <div className="mt-3">
+          <p className="text-[13px] text-cm mb-2">
+            {activeSub === "planning"
+              ? "Planning ahead:"
+              : activeSub === "memorial"
+              ? "Memorial items:"
+              : "Explore & learn:"}
+          </p>
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {subTags[activeSub].map((tag) =>
+              tag.href ? (
+                <Link
+                  key={tag.label}
+                  href={tag.href}
+                  className="bg-sg-p text-sg-d border border-sg-l px-3 py-[5px] rounded-[18px] text-[12px] no-underline hover:bg-sg-l hover:text-white transition-colors"
+                >
+                  {tag.label}
+                </Link>
+              ) : (
+                <span
+                  key={tag.label}
+                  className="bg-sg-p text-sg-d border border-sg-l px-3 py-[5px] rounded-[18px] text-[12px] cursor-pointer hover:bg-sg-l hover:text-white transition-colors"
+                >
+                  {tag.label}
+                </span>
+              )
+            )}
           </div>
-
-          {activePanel && (
-            <div className="bg-tr-vp rounded-[10px] px-5 py-4 border border-tr-p">
-              <h3 className="font-serif text-[20px] font-light text-ch mb-2">
-                {activePanel.content.heading}
-              </h3>
-              <p className="text-[13px] text-cm leading-relaxed mb-4">
-                {activePanel.content.body}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {activePanel.content.links.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className="text-[13px] text-tr border-b border-dotted border-tr-l pb-px hover:text-tr-d transition-colors no-underline"
-                  >
-                    {l.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
+          <BackButton onClick={() => setActiveSub(null)} />
         </div>
       )}
     </div>
+  );
+}
+
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="block mt-3 text-[12px] text-cl bg-transparent border-0 p-0 cursor-pointer hover:text-tr"
+    >
+      ← Back
+    </button>
   );
 }
