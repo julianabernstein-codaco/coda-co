@@ -13,7 +13,7 @@
 | 2     | Extract shared primitives in `components/ui/`                | ✅ Done        |
 | 3     | Generalize the filter system (primitives + hook)             | ✅ Done        |
 | 4     | Consolidate card logic (vendor format helpers, `VendorCard`) | ✅ Done        |
-| 5     | Document reuse conventions in `AGENTS.md`                    | ⬜ Not started |
+| 5     | Document reuse conventions in `AGENTS.md`                    | ✅ Done        |
 | 6     | Page-level mechanical sweep across `app/**/page.tsx`         | ⬜ Not started |
 | ✓     | Verify (build, visual diff, drift greps)                     | ⬜ Not started |
 
