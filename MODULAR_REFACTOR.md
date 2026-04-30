@@ -10,7 +10,7 @@
 | Stage | Description                                                  | Status        |
 |-------|--------------------------------------------------------------|---------------|
 | 1     | Expand tokens + `@layer components` in `app/globals.css`     | ✅ Done        |
-| 2     | Extract shared primitives in `components/ui/`                | 🟡 In progress |
+| 2     | Extract shared primitives in `components/ui/`                | ✅ Done        |
 | 3     | Generalize the filter system (primitives + hook)             | ⬜ Not started |
 | 4     | Consolidate card logic (vendor format helpers, `VendorCard`) | ⬜ Not started |
 | 5     | Document reuse conventions in `AGENTS.md`                    | ⬜ Not started |
@@ -21,13 +21,20 @@ When you complete a stage, flip its status to ✅ in your commit. If you can
 only finish part of a stage, set it to 🟡 and add a sub-progress list under
 the table noting which sub-items are done so the next agent can continue.
 
-### Stage 2 sub-progress
+### Stage 2 — done
 
 - ✅ `components/ui/Container.tsx`
-- ⬜ `components/ui/SectionHeader.tsx` — **next**
-- ⬜ `components/ui/Avatar.tsx`
-- ⬜ `components/ui/Card.tsx`
-- ⬜ `components/ui/Stars.tsx` (consolidates today's `StarRating` + the inline `★/☆` strings in `ServiceCard.tsx`)
+- ✅ `components/ui/SectionHeader.tsx`
+- ✅ `components/ui/Avatar.tsx`
+- ✅ `components/ui/Card.tsx` (renders as `<Link>` when `href` prop is set, else `<div>`)
+- ✅ `components/ui/Stars.tsx` (parallel to existing `StarRating`; `StarRating` will be migrated and removed in Stage 4)
+
+**Up next: Stage 3** — generalize the filter system. Lift the local
+`Pills` / `FilterPill` / `FilterCheck` / `FilterSection` / `Divider`
+sub-components out of `components/services/ServiceFilters.tsx:159-223`
+into `components/ui/filters/`, and create
+`lib/hooks/useFilterParams.ts` to consolidate the duplicated `setParam` /
+`toggleBool` logic in `FilterStrip.tsx` and `ServiceFilters.tsx`.
 
 ---
 
