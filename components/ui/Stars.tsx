@@ -16,9 +16,7 @@ export function Stars({ rating, reviewCount, className = "" }: StarsProps) {
   return (
     <span className={`text-tr ${className}`.trim()} aria-label={label}>
       {stars}
-      {reviewCount != null && (
-        <span className="text-cl"> · {reviewCount} reviews</span>
-      )}
+      {reviewCount != null && ` · ${reviewCount} reviews`}
     </span>
   );
 }

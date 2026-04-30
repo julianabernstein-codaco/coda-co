@@ -4,7 +4,7 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { AddToCart } from "@/components/pdp/AddToCart";
 import { ProductTabs } from "@/components/pdp/ProductTabs";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { StarRating } from "@/components/ui/StarRating";
+import { Stars } from "@/components/ui/Stars";
 import { getProduct, getRelatedProducts } from "@/lib/api/products";
 import { getReviews, getReviewSummary } from "@/lib/api/reviews";
 import { getVendor } from "@/lib/api/vendors";
@@ -116,7 +116,7 @@ export default async function ProductDetailPage({ params }: PDPProps) {
             </h1>
 
             <div className="flex items-center gap-2 mb-3">
-              <StarRating rating={product.rating} />
+              <Stars rating={product.rating} />
               <span className="text-[13px] text-cl">
                 {product.rating} · {product.reviewCount} reviews
               </span>

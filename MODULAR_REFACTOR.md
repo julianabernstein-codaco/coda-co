@@ -12,7 +12,7 @@
 | 1     | Expand tokens + `@layer components` in `app/globals.css`     | ✅ Done        |
 | 2     | Extract shared primitives in `components/ui/`                | ✅ Done        |
 | 3     | Generalize the filter system (primitives + hook)             | ✅ Done        |
-| 4     | Consolidate card logic (vendor format helpers, `VendorCard`) | ⬜ Not started |
+| 4     | Consolidate card logic (vendor format helpers, `VendorCard`) | ✅ Done        |
 | 5     | Document reuse conventions in `AGENTS.md`                    | ⬜ Not started |
 | 6     | Page-level mechanical sweep across `app/**/page.tsx`         | ⬜ Not started |
 | ✓     | Verify (build, visual diff, drift greps)                     | ⬜ Not started |
@@ -29,13 +29,12 @@ the table noting which sub-items are done so the next agent can continue.
 - ✅ `components/ui/Card.tsx` (renders as `<Link>` when `href` prop is set, else `<div>`)
 - ✅ `components/ui/Stars.tsx` (parallel to existing `StarRating`; `StarRating` will be migrated and removed in Stage 4)
 
-**Up next: Stage 4** — consolidate card logic. Move `typeLabels`,
-`locationSuffix`, `ratingLine` from `components/ui/ServiceCard.tsx:3-26`
-into `lib/format/vendor.ts`. Unify `ServiceCard` and `ServiceSearchCard`
-behind a single `<VendorCard>` with `layout: 'compact' | 'search'`.
-Refactor `ProductCard` and `ReviewCard` to use the new `<Card>` /
-`<Stars>` primitives. Migrate remaining `<StarRating>` usages to
-`<Stars>` and delete `components/ui/StarRating.tsx`.
+**Up next: Stage 5** — document the conventions in `AGENTS.md` so future
+agents (and humans) reuse the primitives instead of writing inline
+markup. Then Stage 6: mechanical page sweep replacing the eyebrow/h2
+blocks with `<SectionHeader>`, `max-w-[…] mx-auto` with `<Container>`,
+inline avatar circles with `<Avatar>`, and `grid-cols-[repeat(auto-…)]`
+literals with the `.grid-auto-*` classes.
 
 ---
 

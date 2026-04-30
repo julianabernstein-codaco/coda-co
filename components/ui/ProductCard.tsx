@@ -1,14 +1,10 @@
-import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
-    <Link
-      href={`/shop/${product.id}`}
-      className="block bg-white border border-[rgba(44,40,37,.08)] rounded-[10px] overflow-hidden cursor-pointer transition-all duration-200 hover:border-[rgba(193,99,79,.3)] hover:-translate-y-0.5 no-underline"
-    >
-      {/* Thumbnail */}
+    <Card href={`/shop/${product.id}`} hoverTone="terracotta" padding="none" className="overflow-hidden">
       <div
         className="h-[130px] flex items-center justify-center"
         style={{ background: product.thumbBg }}
@@ -16,7 +12,6 @@ export function ProductCard({ product }: { product: Product }) {
         <ProductThumbnail id={product.id} category={product.category} />
       </div>
 
-      {/* Info */}
       <div className="px-4 pt-3 pb-[.95rem]">
         <div className="text-[13px] font-medium text-ch mb-[3px] leading-[1.35]">
           {product.title}
@@ -29,7 +24,7 @@ export function ProductCard({ product }: { product: Product }) {
           {product.badge && <Badge badge={product.badge} />}
         </div>
       </div>
-    </Link>
+    </Card>
   );
 }
 

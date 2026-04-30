@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroSearch } from "@/components/landing/HeroSearch";
-import { ServiceCard } from "@/components/ui/ServiceCard";
+import { VendorCard } from "@/components/ui/VendorCard";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getHomeFeaturedVendors } from "@/lib/api/vendors";
 
@@ -212,7 +212,7 @@ export default async function LandingPage() {
 
           <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3.5">
             {featuredVendors.map((v) => (
-              <ServiceCard key={v.id} vendor={v} />
+              <VendorCard key={v.id} vendor={v} />
             ))}
           </div>
 
