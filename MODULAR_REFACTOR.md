@@ -29,12 +29,41 @@ the table noting which sub-items are done so the next agent can continue.
 - ✅ `components/ui/Card.tsx` (renders as `<Link>` when `href` prop is set, else `<div>`)
 - ✅ `components/ui/Stars.tsx` (parallel to existing `StarRating`; `StarRating` will be migrated and removed in Stage 4)
 
-**Up next: Stage 5** — document the conventions in `AGENTS.md` so future
-agents (and humans) reuse the primitives instead of writing inline
-markup. Then Stage 6: mechanical page sweep replacing the eyebrow/h2
-blocks with `<SectionHeader>`, `max-w-[…] mx-auto` with `<Container>`,
-inline avatar circles with `<Avatar>`, and `grid-cols-[repeat(auto-…)]`
-literals with the `.grid-auto-*` classes.
+**Up next: Stage 6** — mechanical page sweep. Drift survey from Stages 1–5:
+
+- `max-w-[680|880|900px]` literals (~22 occurrences in `app/**/page.tsx`,
+  plus 2 in `components/layout/Footer.tsx`, 1 in
+  `components/pdp/ProductTabs.tsx`). Replace with `<Container width="…">`
+  where used as a page wrapper; leave `Footer` / `ProductTabs` ones
+  alone since they bundle additional padding/layout in the same div.
+- `border-[rgba(44,40,37,.X)]` / `bg-[rgba(44,40,37,.X)]` (~30
+  occurrences across pages and components). Map by alpha:
+  `.08` → `border-line`, `.12` → `border-line-strong`, `.20` →
+  `border-line-bold`. Leave non-matching alphas (.07, .09, .10, .15,
+  .25) alone unless tightening fidelity is desired (consider whether to
+  add `--color-line-XX` tokens or accept the existing inconsistency).
+- `grid-cols-[repeat(auto-fit/fill,minmax(N,1fr))]` (~12 occurrences).
+  Swap to `.grid-auto-130` / `.grid-auto-178` / `.grid-auto-200` only
+  where the minmax is exactly 130/178/200; leave 158/160/190/240 alone
+  unless adding tokens for those.
+- Section-header markup (centered eyebrow + serif h2 + subtitle). Cases
+  in `app/page.tsx`, `app/shop/page.tsx`, `app/services/page.tsx`,
+  `app/where-to-start/page.tsx`, `app/list-with-us/page.tsx`. Replace
+  with `<SectionHeader eyebrow=… title=… subtitle=… eyebrowTone="tr|sg"
+  subtitleTone="cl|ink" />`. Note: today `<SectionHeader>` does not
+  expose `subtitleTone` — extend it (and `app/globals.css`) before the
+  sweep, since the prototype uses `text-cl` on white bgs and `text-ink`
+  on tinted bgs.
+- Inline avatar circles. Two notable ones: PDP seller in
+  `app/shop/[productId]/page.tsx:99-112` (size ~9, sage tone), and the
+  testimonials in `app/list-with-us/page.tsx:210-224` (size 12, sage
+  tone). Replace with `<Avatar size=… tone=…>`.
+
+After the sweep, run the drift greps in the Verification section. Some
+hits will remain (the alphas / minmax sizes not in the token set, plus
+`Footer`/`ProductTabs`/`StepsBar` per the notes above) — that's
+expected. Document remaining drift in this file rather than leaving it
+silent.
 
 ---
 
