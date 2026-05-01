@@ -1,5 +1,5 @@
 import type { Vendor } from "@/lib/types";
-import { ServiceSearchCard } from "@/components/ui/ServiceCard";
+import { VendorCard } from "@/components/ui/VendorCard";
 
 export function ServiceGrid({ vendors }: { vendors: Vendor[] }) {
   if (vendors.length === 0) {
@@ -14,7 +14,7 @@ export function ServiceGrid({ vendors }: { vendors: Vendor[] }) {
   return (
     <div>
       {vendors.map((vendor) => (
-        <ServiceSearchCard key={vendor.id} vendor={vendor} />
+        <VendorCard key={vendor.id} vendor={vendor} layout="search" />
       ))}
     </div>
   );

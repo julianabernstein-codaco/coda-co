@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ServiceFilters } from "@/components/services/ServiceFilters";
 import { ServiceGrid } from "@/components/services/ServiceGrid";
+import { Container } from "@/components/ui/Container";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getVendors } from "@/lib/api/vendors";
 import type { VendorType } from "@/lib/types";
@@ -63,15 +64,15 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
       <Breadcrumb crumbs={[{ label: "Home", href: "/" }, { label: "Find services" }]} />
 
       {/* Search header */}
-      <section className="bg-white px-10 pt-6 pb-5 border-b border-[rgba(44,40,37,.07)]">
-        <div className="max-w-[880px] mx-auto mb-4">
+      <section className="bg-white px-10 pt-6 pb-5 border-b border-line">
+        <Container width="mid" className="mb-4">
           <h1 className="font-serif text-[30px] font-light text-ch">
             Find services near you
           </h1>
-        </div>
-        <div className="max-w-[880px] mx-auto flex gap-2.5 items-center flex-wrap">
+        </Container>
+        <Container width="mid" className="flex gap-2.5 items-center flex-wrap">
           <div className="flex flex-1 min-w-[200px] border-[1.5px] border-[rgba(193,99,79,.22)] rounded-[8px] overflow-hidden bg-white">
-            <div className="px-3 py-2.5 border-r border-[rgba(44,40,37,.09)] flex items-center">
+            <div className="px-3 py-2.5 border-r border-line flex items-center">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <circle cx="7" cy="7" r="5" stroke="#9A9189" strokeWidth="1.3" />
                 <line x1="11" y1="11" x2="15" y2="15" stroke="#9A9189" strokeWidth="1.3" strokeLinecap="round" />
@@ -84,7 +85,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             />
           </div>
           <div className="flex flex-1 min-w-[180px] border-[1.5px] border-[rgba(44,40,37,.15)] rounded-[8px] overflow-hidden bg-white">
-            <div className="px-3 py-2.5 border-r border-[rgba(44,40,37,.09)] flex items-center">
+            <div className="px-3 py-2.5 border-r border-line flex items-center">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="7" r="3.5" stroke="#9A9189" strokeWidth="1.3" />
                 <path d="M8 10.5 L8 14" stroke="#9A9189" strokeWidth="1.3" strokeLinecap="round" />
@@ -99,14 +100,14 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <button className="bg-tr text-white border-0 px-[22px] py-[11px] rounded-[8px] text-[13px] font-sans cursor-pointer hover:bg-tr-d transition-colors whitespace-nowrap">
             Search
           </button>
-        </div>
+        </Container>
       </section>
 
       <WaveDivider topColor="#ffffff" bottomColor="#F0AE90" />
 
       {/* Results section */}
       <section className="bg-tr-vp px-10 pb-12 pt-10">
-        <div className="max-w-[880px] mx-auto grid grid-cols-[210px_1fr] gap-0">
+        <Container width="mid" className="grid grid-cols-[210px_1fr] gap-0">
           {/* Filter column */}
           <Suspense>
             <ServiceFilters />
@@ -115,7 +116,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           {/* Results column */}
           <div className="pt-6 pb-8 pl-6">
             {/* Map */}
-            <div className="bg-pl2 border border-[rgba(44,40,37,.1)] rounded-[10px] h-[155px] flex items-center justify-center mb-5">
+            <div className="bg-pl2 border border-line rounded-[10px] h-[155px] flex items-center justify-center mb-5">
               <svg width="280" height="80" viewBox="0 0 280 80" fill="none">
                 <rect x="10" y="10" width="260" height="60" rx="6" stroke="#9A9189" strokeWidth="1" fill="none" />
                 <circle cx="80" cy="40" r="7" stroke="#C1634F" strokeWidth="1.5" fill="none" />
@@ -177,7 +178,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               </Link>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { FilterPill } from "@/components/ui/filters/FilterPill";
 
 const CATEGORIES = [
   { value: "", label: "All" },
@@ -20,33 +21,20 @@ const SORT_OPTIONS = [
 ];
 
 export function FilterStrip() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const activeCategory = searchParams.get("category") ?? "";
-  const activeSort = searchParams.get("sort") ?? "featured";
-
-  function setParam(key: string, value: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-    router.push(`${pathname}?${params.toString()}`);
-  }
+  const { get, setParam } = useFilterParams();
+  const activeCategory = get("category");
+  const activeSort = get("sort") || "featured";
 
   return (
     <div className="flex items-center gap-2 flex-wrap mb-6">
       <span className="text-[13px] text-cl mr-1">Filter:</span>
       {CATEGORIES.map((cat) => (
-        <button
+        <FilterPill
           key={cat.value}
+          label={cat.label}
+          active={activeCategory === cat.value}
           onClick={() => setParam("category", cat.value)}
-          className={`filter-pill ${activeCategory === cat.value ? "filter-pill-on" : "filter-pill-off"}`}
-        >
-          {cat.label}
-        </button>
+        />
       ))}
 
       <div className="ml-auto flex items-center gap-2 text-[13px] text-cm">
@@ -54,7 +42,7 @@ export function FilterStrip() {
         <select
           value={activeSort}
           onChange={(e) => setParam("sort", e.target.value)}
-          className="border border-[rgba(44,40,37,.2)] rounded-[6px] px-2 py-1 text-[13px] text-cm bg-white cursor-pointer"
+          className="border border-line-bold rounded-[6px] px-2 py-1 text-[13px] text-cm bg-white cursor-pointer"
         >
           {SORT_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>

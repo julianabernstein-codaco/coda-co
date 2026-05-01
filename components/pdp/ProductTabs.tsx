@@ -75,7 +75,7 @@ export function ProductTabs({ product, reviews, summary, sellerBio }: ProductTab
         {active === "reviews" && (
           <div>
             {summary && (
-              <div className="flex items-center gap-6 mb-6 pb-5 border-b border-[rgba(44,40,37,.08)]">
+              <div className="flex items-center gap-6 mb-6 pb-5 border-b border-line">
                 <div className="text-center">
                   <div className="font-serif text-[40px] font-light text-ch leading-none">
                     {summary.average.toFixed(1)}
@@ -87,7 +87,7 @@ export function ProductTabs({ product, reviews, summary, sellerBio }: ProductTab
                   {summary.distribution.map((row) => (
                     <div key={row.stars} className="flex items-center gap-2 mb-1">
                       <span className="text-[12px] text-ink w-5">{row.stars}★</span>
-                      <div className="flex-1 bg-[rgba(44,40,37,.08)] h-1.5 rounded-full">
+                      <div className="flex-1 bg-line h-1.5 rounded-full">
                         <div
                           className="bg-tr h-full rounded-full"
                           style={{

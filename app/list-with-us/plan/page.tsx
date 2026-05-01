@@ -33,7 +33,7 @@ export default async function PlanPage({ searchParams }: PlanPageProps) {
             <p className="text-[14px] text-ink mt-2">Start free. Upgrade when you are ready.</p>
           </div>
 
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-8">
+          <div className="grid-auto-200 mb-8">
             {plans.map((plan) => (
               <div
                 key={plan.id}
@@ -64,7 +64,7 @@ export default async function PlanPage({ searchParams }: PlanPageProps) {
                     </li>
                   ))}
                 </ul>
-                <div className="text-[11px] text-cl border-t border-[rgba(44,40,37,.08)] pt-3">
+                <div className="text-[11px] text-cl border-t border-line pt-3">
                   {plan.transactionFee}
                 </div>
                 <Link

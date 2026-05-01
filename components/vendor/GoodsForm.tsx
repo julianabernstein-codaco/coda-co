@@ -96,7 +96,7 @@ export function GoodsForm() {
           {/* Main form */}
           <div className="flex-1 min-w-0">
             {step === 0 && (
-              <div className="bg-white rounded-[14px] border border-[rgba(44,40,37,.08)] p-8">
+              <div className="bg-white rounded-[14px] border border-line p-8">
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 1 — Your seller profile
                 </h2>
@@ -144,7 +144,7 @@ export function GoodsForm() {
             )}
 
             {step === 1 && (
-              <div className="bg-white rounded-[14px] border border-[rgba(44,40,37,.08)] p-8">
+              <div className="bg-white rounded-[14px] border border-line p-8">
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 2 — Your listing
                 </h2>
@@ -192,7 +192,7 @@ export function GoodsForm() {
             )}
 
             {step === 2 && (
-              <div className="bg-white rounded-[14px] border border-[rgba(44,40,37,.08)] p-8">
+              <div className="bg-white rounded-[14px] border border-line p-8">
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 3 — Photos &amp; pricing
                 </h2>
@@ -227,7 +227,7 @@ export function GoodsForm() {
             )}
 
             {step === 3 && (
-              <div className="bg-white rounded-[14px] border border-[rgba(44,40,37,.08)] p-8">
+              <div className="bg-white rounded-[14px] border border-line p-8">
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 4 — Choose a plan
                 </h2>
@@ -262,7 +262,7 @@ export function GoodsForm() {
                         "border rounded-[10px] p-4 cursor-pointer transition-all",
                         plan.popular
                           ? "border-tr bg-tr-vp"
-                          : "border-[rgba(44,40,37,.12)] hover:border-tr",
+                          : "border-line-strong hover:border-tr",
                       ].join(" ")}
                     >
                       <div className="flex items-center justify-between mb-2">
@@ -316,7 +316,7 @@ export function GoodsForm() {
 
           {/* Sidebar preview */}
           <div className="w-[220px] flex-shrink-0 hidden lg:block">
-            <div className="bg-white rounded-[12px] border border-[rgba(44,40,37,.08)] p-4 sticky top-[88px]">
+            <div className="bg-white rounded-[12px] border border-line p-4 sticky top-[88px]">
               <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-3">
                 Listing preview
               </div>

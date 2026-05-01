@@ -197,7 +197,7 @@
     color: var(--color-tr);
     margin-bottom: 0.375rem;
   }
-  .section-eyebrow-sg { color: var(--color-sg-d); }
+  .section-eyebrow-sg { color: var(--color-sg); }
   .section-title      {
     font-family: var(--font-serif);
     font-size: 32px;
@@ -207,6 +207,7 @@
     line-height: 1.2;
   }
   .section-subtitle   { font-size: 13px; color: var(--color-cl); }
+  .section-subtitle-ink { color: var(--color-ink); }
 
   /*
    * Card surface — extends .card with default padding and hover affordance.

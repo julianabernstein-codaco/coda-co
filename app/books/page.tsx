@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
   title: "Books — CodaCo",
@@ -65,7 +66,7 @@ export default function BooksPage() {
       <Breadcrumb crumbs={[{ label: "Home", href: "/" }, { label: "Books" }]} />
 
       <section className="bg-white px-10 pt-12 pb-12">
-        <div className="max-w-[900px] mx-auto">
+        <Container width="wide">
           <div className="text-center mb-7">
             <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-1.5">
               The reading room
@@ -81,7 +82,7 @@ export default function BooksPage() {
             {books.map((b) => (
               <div
                 key={b.title}
-                className="bg-white border border-[rgba(44,40,37,.08)] rounded-[10px] overflow-hidden cursor-pointer transition-transform duration-200 hover:-translate-y-0.5"
+                className="bg-white border border-line rounded-[10px] overflow-hidden cursor-pointer transition-transform duration-200 hover:-translate-y-0.5"
               >
                 <div
                   className="h-[168px] flex items-end p-3.5 relative overflow-hidden"
@@ -108,7 +109,7 @@ export default function BooksPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
     </>
   );

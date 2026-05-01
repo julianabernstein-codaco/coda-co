@@ -10,24 +10,55 @@
 | Stage | Description                                                  | Status        |
 |-------|--------------------------------------------------------------|---------------|
 | 1     | Expand tokens + `@layer components` in `app/globals.css`     | ✅ Done        |
-| 2     | Extract shared primitives in `components/ui/`                | 🟡 In progress |
-| 3     | Generalize the filter system (primitives + hook)             | ⬜ Not started |
-| 4     | Consolidate card logic (vendor format helpers, `VendorCard`) | ⬜ Not started |
-| 5     | Document reuse conventions in `AGENTS.md`                    | ⬜ Not started |
-| 6     | Page-level mechanical sweep across `app/**/page.tsx`         | ⬜ Not started |
-| ✓     | Verify (build, visual diff, drift greps)                     | ⬜ Not started |
+| 2     | Extract shared primitives in `components/ui/`                | ✅ Done        |
+| 3     | Generalize the filter system (primitives + hook)             | ✅ Done        |
+| 4     | Consolidate card logic (vendor format helpers, `VendorCard`) | ✅ Done        |
+| 5     | Document reuse conventions in `AGENTS.md`                    | ✅ Done        |
+| 6     | Page-level mechanical sweep across `app/**/page.tsx`         | ✅ Done        |
+| ✓     | Verify (build, drift greps)                                  | ✅ Done (visual diff still pending Vercel preview) |
 
 When you complete a stage, flip its status to ✅ in your commit. If you can
 only finish part of a stage, set it to 🟡 and add a sub-progress list under
 the table noting which sub-items are done so the next agent can continue.
 
-### Stage 2 sub-progress
+### Stage 2 — done
 
 - ✅ `components/ui/Container.tsx`
-- ⬜ `components/ui/SectionHeader.tsx` — **next**
-- ⬜ `components/ui/Avatar.tsx`
-- ⬜ `components/ui/Card.tsx`
-- ⬜ `components/ui/Stars.tsx` (consolidates today's `StarRating` + the inline `★/☆` strings in `ServiceCard.tsx`)
+- ✅ `components/ui/SectionHeader.tsx`
+- ✅ `components/ui/Avatar.tsx`
+- ✅ `components/ui/Card.tsx` (renders as `<Link>` when `href` prop is set, else `<div>`)
+- ✅ `components/ui/Stars.tsx` (parallel to existing `StarRating`; `StarRating` will be migrated and removed in Stage 4)
+
+### Stage 6 — done
+
+Swept `app/**/page.tsx` (and `ProductGrid.tsx`):
+- All `max-w-[680|880|900px] mx-auto` page wrappers replaced with `<Container width="narrow|mid|wide">`.
+- All `.08`/`.12`/`.20` rgba borders replaced with `border-line` / `border-line-strong` / `border-line-bold` tokens.
+- `grid-cols-[repeat(auto-fit/fill,minmax(130|178|200,1fr))]` replaced with `.grid-auto-130/-178/-200`.
+- Centered eyebrow/h2/subtitle blocks replaced with `<SectionHeader>` (extended with `subtitleTone="cl|ink"` for the prototype's tinted-bg variant). Page-H1 headers (e.g. `/shop` "The marketplace", `/books`, `/where-to-start` hero, `/list-with-us` hero) are left inline since they have semantic and spacing differences from the canonical pattern.
+- Inline avatar circles in `/shop/[productId]` (seller) and `/list-with-us` (testimonials) replaced with `<Avatar>`.
+- `<StarRating>` migrated to `<Stars>` everywhere; `StarRating.tsx` deleted.
+
+### Remaining intentional drift
+
+These were left as-is — extending the system to cover them would create
+single-use abstractions:
+
+- `components/layout/Footer.tsx` (2× `max-w-[880px]`) — bundles additional
+  padding/layout in the same div, not a clean Container swap.
+- `components/pdp/ProductTabs.tsx:52` (`max-w-[680px]` without `mx-auto`)
+  — used inside a tab body, not a page wrapper.
+- `grid-cols-[repeat(auto-fit,minmax(158|160|190|240px,…))]` in
+  `/`, `/light-and-dark`, `/where-to-start`, `/list-with-us`, `/books` —
+  one-off minmax sizes; haven't crossed the 3+ usage threshold to
+  warrant their own tokens.
+- `border-[rgba(44,40,37,.07|.09|.10|.15|.25)]` and
+  `border-[rgba(193,99,79,…)]` / `border-[rgba(122,158,130,…)]` — alphas
+  not in the token set. Adding more tokens would dilute the system; if
+  desired, replace these with the closest existing token in a
+  follow-up.
+- `text-tr-vp/60` / `text-tr-vp/85` / `text-white/95` — Tailwind opacity
+  utilities, not tokens; left alone.
 
 ---
 

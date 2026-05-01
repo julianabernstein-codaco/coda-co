@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
   title: "Where to Start — CodaCo",
@@ -99,7 +100,7 @@ export default function WhereToStartPage() {
       {/* Sections */}
       {sections.map((section) => (
         <section key={section.heading} className={`${section.bg} px-10 py-12`}>
-          <div className="max-w-[680px] mx-auto">
+          <Container width="narrow">
             <p className={`text-[11px] tracking-[.14em] uppercase ${section.accent} mb-2`}>
               {section.eyebrow}
             </p>
@@ -122,13 +123,13 @@ export default function WhereToStartPage() {
                 </Link>
               ))}
             </div>
-          </div>
+          </Container>
         </section>
       ))}
 
       {/* Reading room */}
       <section className="bg-white px-10 py-14">
-        <div className="max-w-[880px] mx-auto">
+        <Container width="mid">
           <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-2 text-center">
             Reading room
           </p>
@@ -139,7 +140,7 @@ export default function WhereToStartPage() {
             {books.map((book) => (
               <div
                 key={book.title}
-                className="bg-white border border-[rgba(44,40,37,.08)] rounded-[10px] p-5 flex gap-3"
+                className="bg-white border border-line rounded-[10px] p-5 flex gap-3"
               >
                 <div
                   className="w-10 h-10 rounded-[6px] flex-shrink-0"
@@ -153,7 +154,7 @@ export default function WhereToStartPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* CTA */}

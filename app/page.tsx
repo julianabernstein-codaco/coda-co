@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroSearch } from "@/components/landing/HeroSearch";
-import { ServiceCard } from "@/components/ui/ServiceCard";
+import { Container } from "@/components/ui/Container";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { VendorCard } from "@/components/ui/VendorCard";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getHomeFeaturedVendors } from "@/lib/api/vendors";
 
@@ -149,24 +151,19 @@ export default async function LandingPage() {
 
       {/* Browse by category */}
       <section className="bg-tr-vp px-10 pt-12 pb-10">
-        <div className="max-w-[900px] mx-auto">
-          <div className="text-center mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
-              Browse by category
-            </p>
-            <h2 className="font-serif text-[32px] font-light text-ch mb-1">
-              What are you looking for?
-            </h2>
-            <p className="text-[13px] text-ink">
-              Goods by mail · Services by location
-            </p>
-          </div>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-3">
+        <Container width="wide">
+          <SectionHeader
+            eyebrow="Browse by category"
+            title="What are you looking for?"
+            subtitle="Goods by mail · Services by location"
+            subtitleTone="ink"
+          />
+          <div className="grid-auto-130">
             {categories.map((cat) => (
               <Link
                 key={cat.label}
                 href={cat.href}
-                className="bg-white border border-[rgba(44,40,37,.09)] rounded-[12px] py-[1.2rem] px-4 text-center cursor-pointer transition-all duration-200 hover:border-tr-l hover:-translate-y-0.5 no-underline block"
+                className="bg-white border border-line rounded-[12px] py-[1.2rem] px-4 text-center cursor-pointer transition-all duration-200 hover:border-tr-l hover:-translate-y-0.5 no-underline block"
               >
                 <div className="w-10 h-10 mx-auto mb-2.5 flex items-center justify-center">
                   {cat.icon}
@@ -177,27 +174,22 @@ export default async function LandingPage() {
               </Link>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       <WaveDivider topColor="var(--color-tr-vp)" bottomColor="var(--color-white)" />
 
       {/* Support in your area */}
       <section className="bg-white px-10 pt-12 pb-12">
-        <div className="max-w-[900px] mx-auto">
-          <div className="text-center mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-1.5">
-              Find local services
-            </p>
-            <h2 className="font-serif text-[32px] font-light text-ch mb-1">
-              Support in your area
-            </h2>
-            <p className="text-[13px] text-cl">
-              Vetted providers · search by zip or city
-            </p>
-          </div>
+        <Container width="wide">
+          <SectionHeader
+            eyebrow="Find local services"
+            eyebrowTone="sg"
+            title="Support in your area"
+            subtitle="Vetted providers · search by zip or city"
+          />
 
-          <div className="flex items-center gap-2.5 bg-white border border-[rgba(44,40,37,.1)] rounded-[8px] px-4 py-2.5 mb-6">
+          <div className="flex items-center gap-2.5 bg-white border border-line rounded-[8px] px-4 py-2.5 mb-6">
             <span className="text-[13px] text-cm flex-1">
               Showing results near:
             </span>
@@ -212,7 +204,7 @@ export default async function LandingPage() {
 
           <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3.5">
             {featuredVendors.map((v) => (
-              <ServiceCard key={v.id} vendor={v} />
+              <VendorCard key={v.id} vendor={v} />
             ))}
           </div>
 
@@ -232,7 +224,7 @@ export default async function LandingPage() {
               Not sure what you need? See our guide for recently bereaved →
             </Link>
           </div>
-        </div>
+        </Container>
       </section>
     </>
   );

@@ -3,7 +3,9 @@ import { Suspense } from "react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FilterStrip } from "@/components/shop/FilterStrip";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getFeaturedProducts, getProducts } from "@/lib/api/products";
 import type { ProductCategory } from "@/lib/types";
@@ -41,30 +43,24 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
       {/* Featured in the marketplace */}
       <section className="bg-white px-10 pt-12 pb-10">
-        <div className="max-w-[900px] mx-auto">
-          <div className="text-center mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
-              Handpicked goods
-            </p>
-            <h2 className="font-serif text-[32px] font-light text-ch mb-1">
-              Featured in the marketplace
-            </h2>
-            <p className="text-[13px] text-cl">
-              Available locally or shipped anywhere in the US
-            </p>
-          </div>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(178px,1fr))] gap-4">
+        <Container width="wide">
+          <SectionHeader
+            eyebrow="Handpicked goods"
+            title="Featured in the marketplace"
+            subtitle="Available locally or shipped anywhere in the US"
+          />
+          <div className="grid-auto-178">
             {featuredProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       <WaveDivider topColor="#ffffff" bottomColor="#B5C9AB" />
 
       <section className="bg-sg-vp px-10 py-10">
-        <div className="max-w-[900px] mx-auto">
+        <Container width="wide">
           <div className="text-center mb-8">
             <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-2">All goods</p>
             <h1 className="font-serif text-[32px] font-light text-ch mb-1">The marketplace</h1>
@@ -80,7 +76,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <ProductGrid products={sorted} />
 
           <div className="flex justify-center items-center gap-2 mt-8">
-            <button className="bg-white border border-[rgba(44,40,37,.2)] text-cl px-4 py-1.5 rounded-[7px] text-[13px] cursor-pointer">
+            <button className="bg-white border border-line-bold text-cl px-4 py-1.5 rounded-[7px] text-[13px] cursor-pointer">
               ← Prev
             </button>
             <span className="text-[13px] text-cm">Page 1 of 3</span>
@@ -88,7 +84,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               Next →
             </button>
           </div>
-        </div>
+        </Container>
       </section>
     </>
   );
