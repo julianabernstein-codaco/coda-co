@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
   title: "Grief Meets Humor — CodaCo",
@@ -21,7 +22,7 @@ export default function GriefMeetsHumorPage() {
       <Breadcrumb crumbs={[{ label: "Home", href: "/" }, { label: "Grief Meets Humor" }]} />
 
       <section className="bg-tr-vp px-10 pt-12 pb-12">
-        <div className="max-w-[900px] mx-auto">
+        <Container width="wide">
           <div className="bg-ch rounded-[12px] px-8 py-6 flex items-center justify-between gap-4 mb-6 flex-wrap">
             <div>
               <h1 className="font-serif text-[28px] font-light text-tr-vp mb-0.5">
@@ -43,7 +44,7 @@ export default function GriefMeetsHumorPage() {
             {humor.map((h) => (
               <div
                 key={h.quote}
-                className="bg-white border border-[rgba(44,40,37,.08)] rounded-[10px] p-3.5 text-center cursor-pointer transition-colors hover:border-cl"
+                className="bg-white border border-line rounded-[10px] p-3.5 text-center cursor-pointer transition-colors hover:border-cl"
               >
                 <div className="h-[86px] bg-ch rounded-[7px] flex items-center justify-center mb-2.5 font-serif text-[12px] text-tr-vp/85 px-3 leading-[1.45] italic">
                   {h.quote}
@@ -53,7 +54,7 @@ export default function GriefMeetsHumorPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
     </>
   );

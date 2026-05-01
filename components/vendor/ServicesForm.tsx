@@ -106,7 +106,7 @@ export function ServicesForm() {
 
       <section className="bg-sg-vp px-10 py-10">
         <div className="max-w-[780px] mx-auto">
-          <div className="bg-white rounded-[14px] border border-[rgba(44,40,37,.08)] p-8">
+          <div className="bg-white rounded-[14px] border border-line p-8">
             {step === 0 && (
               <>
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
@@ -296,7 +296,7 @@ export function ServicesForm() {
                       key={plan.name}
                       className={[
                         "border rounded-[10px] p-4 cursor-pointer transition-all",
-                        plan.popular ? "border-sg bg-sg-vp" : "border-[rgba(44,40,37,.12)] hover:border-sg",
+                        plan.popular ? "border-sg bg-sg-vp" : "border-line-strong hover:border-sg",
                       ].join(" ")}
                     >
                       <div className="flex items-center gap-2 mb-2">

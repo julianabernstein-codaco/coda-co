@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { AddToCart } from "@/components/pdp/AddToCart";
 import { ProductTabs } from "@/components/pdp/ProductTabs";
+import { Avatar } from "@/components/ui/Avatar";
+import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { Stars } from "@/components/ui/Stars";
 import { getProduct, getRelatedProducts } from "@/lib/api/products";
@@ -51,7 +53,7 @@ export default async function ProductDetailPage({ params }: PDPProps) {
 
       {/* Main product grid */}
       <section className="bg-white px-10 py-8">
-        <div className="max-w-[880px] mx-auto grid grid-cols-[1fr_1fr] gap-10">
+        <Container width="mid" className="grid grid-cols-[1fr_1fr] gap-10">
           {/* Gallery */}
           <div>
             {/* Main image */}
@@ -83,7 +85,7 @@ export default async function ProductDetailPage({ params }: PDPProps) {
                   key={i}
                   className={[
                     "w-16 h-16 rounded-[8px] border-2 flex items-center justify-center cursor-pointer",
-                    i === 0 ? "border-ch" : "border-[rgba(44,40,37,.1)] hover:border-ch",
+                    i === 0 ? "border-ch" : "border-line hover:border-ch",
                   ].join(" ")}
                   style={{ background: product.thumbBg }}
                 >
@@ -97,9 +99,7 @@ export default async function ProductDetailPage({ params }: PDPProps) {
           <div>
             {/* Seller */}
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-full bg-sg-p border border-sg-l flex items-center justify-center font-serif text-[14px] text-sg-d">
-                {product.seller.slice(0, 2).toUpperCase()}
-              </div>
+              <Avatar initials={product.seller.slice(0, 2).toUpperCase()} size="sm" />
               <div>
                 <div className="text-[14px] font-medium text-ch">{product.seller}</div>
                 <div className="text-[12px] text-cl">{product.location}</div>
@@ -128,35 +128,35 @@ export default async function ProductDetailPage({ params }: PDPProps) {
 
             <AddToCart product={product} />
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Tabs section */}
       <section className="bg-tr-vp py-0">
-        <div className="max-w-[880px] mx-auto">
+        <Container width="mid">
           <ProductTabs
             product={product}
             reviews={reviews}
             summary={summary}
             sellerBio={vendor?.bio}
           />
-        </div>
+        </Container>
       </section>
 
       {/* Related products */}
       {related.length > 0 && (
         <section className="bg-sg-vp px-10 py-10">
-          <div className="max-w-[880px] mx-auto">
+          <Container width="mid">
             <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-1">You might also like</p>
             <h2 className="font-serif text-[28px] font-light text-ch mb-6">
               More from this seller &amp; category
             </h2>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(178px,1fr))] gap-4">
+            <div className="grid-auto-178">
               {related.slice(0, 4).map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
-          </div>
+          </Container>
         </section>
       )}
     </>

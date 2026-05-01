@@ -5,6 +5,7 @@ interface SectionHeaderProps {
   title: ReactNode;
   subtitle?: ReactNode;
   eyebrowTone?: "tr" | "sg";
+  subtitleTone?: "cl" | "ink";
   className?: string;
 }
 
@@ -13,6 +14,7 @@ export function SectionHeader({
   title,
   subtitle,
   eyebrowTone = "tr",
+  subtitleTone = "cl",
   className = "",
 }: SectionHeaderProps) {
   return (
@@ -23,7 +25,11 @@ export function SectionHeader({
         </p>
       )}
       <h2 className="section-title">{title}</h2>
-      {subtitle && <p className="section-subtitle">{subtitle}</p>}
+      {subtitle && (
+        <p className={`section-subtitle ${subtitleTone === "ink" ? "section-subtitle-ink" : ""}`.trim()}>
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 }

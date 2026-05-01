@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
   title: "Submission received — CodaCo",
@@ -58,7 +59,7 @@ export default function ConfirmPage() {
       </section>
 
       <section className="bg-white px-10 py-14">
-        <div className="max-w-[680px] mx-auto">
+        <Container width="narrow">
           <h2 className="font-serif text-[28px] font-light text-ch mb-8 text-center">
             What happens next
           </h2>
@@ -75,7 +76,7 @@ export default function ConfirmPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       <section className="bg-sg-vp px-10 py-12 text-center">

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FaqList } from "@/components/list-with-us/FaqList";
+import { Avatar } from "@/components/ui/Avatar";
+import { Container } from "@/components/ui/Container";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 export const metadata: Metadata = {
   title: "List with us — CodaCo",
@@ -138,7 +141,7 @@ export default function ListWithUsPage() {
         <div className="grid grid-cols-2 gap-4 max-w-[620px] mx-auto">
           <Link
             href="/list-with-us/goods"
-            className="bg-white border-2 border-[rgba(44,40,37,.12)] rounded-[12px] py-7 px-6 text-center no-underline cursor-pointer transition-colors hover:border-tr-l hover:bg-tr-vp"
+            className="bg-white border-2 border-line-strong rounded-[12px] py-7 px-6 text-center no-underline cursor-pointer transition-colors hover:border-tr-l hover:bg-tr-vp"
           >
             <div className="w-[54px] h-[54px] mx-auto mb-4 flex items-center justify-center">
               <svg width="50" height="50" viewBox="0 0 60 60" fill="none">
@@ -167,7 +170,7 @@ export default function ListWithUsPage() {
 
           <Link
             href="/list-with-us/services"
-            className="bg-white border-2 border-[rgba(44,40,37,.12)] rounded-[12px] py-7 px-6 text-center no-underline cursor-pointer transition-colors hover:border-tr-l hover:bg-tr-vp"
+            className="bg-white border-2 border-line-strong rounded-[12px] py-7 px-6 text-center no-underline cursor-pointer transition-colors hover:border-tr-l hover:bg-tr-vp"
           >
             <div className="w-[54px] h-[54px] mx-auto mb-4 flex items-center justify-center">
               <svg width="50" height="50" viewBox="0 0 60 60" fill="none">
@@ -200,18 +203,13 @@ export default function ListWithUsPage() {
 
       {/* How it works */}
       <section className="bg-white px-10 pt-2 pb-12">
-        <div className="max-w-[680px] mx-auto">
-          <div className="text-center mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-2">How it works</p>
-            <h2 className="font-serif text-[32px] font-light text-ch">
-              Three steps to get started
-            </h2>
-          </div>
+        <Container width="narrow">
+          <SectionHeader eyebrow="How it works" title="Three steps to get started" />
           <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 mb-8">
             {howItWorks.map((s) => (
               <div
                 key={s.n}
-                className="bg-white rounded-[10px] py-5 px-4 text-center border border-[rgba(44,40,37,.07)]"
+                className="bg-white rounded-[10px] py-5 px-4 text-center border border-line"
               >
                 <div className="w-[30px] h-[30px] rounded-full bg-tr text-white text-[13px] font-medium flex items-center justify-center mx-auto mb-2.5">
                   {s.n}
@@ -239,23 +237,22 @@ export default function ListWithUsPage() {
               List services
             </Link>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Why CodaCo */}
       <section className="bg-tr-vp px-10 py-14">
-        <div className="max-w-[880px] mx-auto">
-          <div className="text-center mb-8">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-2">Why CodaCo</p>
-            <h2 className="font-serif text-[32px] font-light text-ch">
-              Built for this work, by people who understand it
-            </h2>
-          </div>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+        <Container width="mid">
+          <SectionHeader
+            eyebrow="Why CodaCo"
+            title="Built for this work, by people who understand it"
+            className="mb-8"
+          />
+          <div className="grid-auto-200">
             {whyItems.map((item) => (
               <div
                 key={item.title}
-                className="bg-white rounded-[10px] p-5 border border-[rgba(44,40,37,.07)]"
+                className="bg-white rounded-[10px] p-5 border border-line"
               >
                 <div className="mb-3">{item.icon}</div>
                 <div className="text-[14px] font-medium text-ch mb-1">{item.title}</div>
@@ -263,16 +260,18 @@ export default function ListWithUsPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Testimonials */}
       <section className="bg-white px-10 py-14">
-        <div className="max-w-[880px] mx-auto">
-          <div className="text-center mb-8">
-            <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-2">From our vendors</p>
-            <h2 className="font-serif text-[32px] font-light text-ch">What sellers are saying</h2>
-          </div>
+        <Container width="mid">
+          <SectionHeader
+            eyebrow="From our vendors"
+            eyebrowTone="sg"
+            title="What sellers are saying"
+            className="mb-8"
+          />
           <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
             {testimonials.map((t) => (
               <div
@@ -283,9 +282,7 @@ export default function ListWithUsPage() {
                   {t.quote}
                 </p>
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-sg-p border border-[1.5px] border-sg-l flex items-center justify-center font-serif text-[13px] text-sg-d">
-                    {t.initials}
-                  </div>
+                  <Avatar initials={t.initials} size="sm" />
                   <div>
                     <div className="text-[13px] font-medium text-ch">{t.name}</div>
                     <div className="text-[11px] text-cl">{t.role}</div>
@@ -294,18 +291,20 @@ export default function ListWithUsPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* FAQ */}
       <section className="bg-sg-vp px-10 py-12">
-        <div className="max-w-[680px] mx-auto">
-          <div className="text-center mb-8">
-            <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-2">FAQ</p>
-            <h2 className="font-serif text-[32px] font-light text-ch">Common questions</h2>
-          </div>
+        <Container width="narrow">
+          <SectionHeader
+            eyebrow="FAQ"
+            eyebrowTone="sg"
+            title="Common questions"
+            className="mb-8"
+          />
           <FaqList faqs={faqs} />
-        </div>
+        </Container>
       </section>
     </>
   );
