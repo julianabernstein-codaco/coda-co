@@ -117,26 +117,75 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           {/* Results column */}
           <div className="pt-6 pb-8 pl-6">
             {/* Map */}
-            <div className="bg-pl2 border border-line rounded-[10px] h-[155px] flex items-center justify-center mb-5">
-              <svg width="280" height="80" viewBox="0 0 280 80" fill="none">
-                <rect x="10" y="10" width="260" height="60" rx="6" stroke="#9A9189" strokeWidth="1" fill="none" />
-                <circle cx="80" cy="40" r="7" stroke="#C1634F" strokeWidth="1.5" fill="none" />
-                <circle cx="80" cy="40" r="3" fill="#C1634F" />
-                <circle cx="140" cy="28" r="7" stroke="#C1634F" strokeWidth="1.5" fill="none" />
-                <circle cx="140" cy="28" r="3" fill="#C1634F" />
-                <circle cx="195" cy="45" r="7" stroke="#7A9E82" strokeWidth="1.5" fill="none" />
-                <circle cx="195" cy="45" r="3" fill="#7A9E82" />
+            <div className="relative bg-sg-p border border-line rounded-[10px] h-[155px] mb-5 overflow-hidden">
+              <svg
+                className="w-full h-full"
+                viewBox="0 0 600 155"
+                preserveAspectRatio="xMidYMid slice"
+                fill="none"
+                aria-hidden="true"
+              >
+                {/* Street grid */}
+                <g stroke="#ffffff" strokeWidth="6" opacity="0.85">
+                  <line x1="0" y1="40" x2="600" y2="40" />
+                  <line x1="0" y1="110" x2="600" y2="110" />
+                  <line x1="120" y1="0" x2="120" y2="155" />
+                  <line x1="290" y1="0" x2="290" y2="155" />
+                  <line x1="465" y1="0" x2="465" y2="155" />
+                </g>
+                {/* Diagonal arterial */}
                 <path
-                  d="M30 55 Q70 44 100 50 Q130 56 155 40 Q180 24 210 34 Q235 42 255 38"
-                  stroke="#9A9189"
-                  strokeWidth=".8"
-                  fill="none"
-                  strokeDasharray="4 3"
+                  d="M-20 130 Q150 95 320 105 T620 70"
+                  stroke="#ffffff"
+                  strokeWidth="5"
+                  opacity="0.85"
+                  strokeLinecap="round"
                 />
-                <text x="140" y="72" fontSize="10" fill="#9A9189" textAnchor="middle" fontFamily="sans-serif">
-                  {total} providers near Boulder, CO
-                </text>
+                {/* Park / greenspace */}
+                <rect
+                  x="345"
+                  y="48"
+                  width="95"
+                  height="55"
+                  rx="6"
+                  fill="#B5C9AB"
+                  opacity="0.55"
+                />
+                {/* Drop pins — terracotta (providers) */}
+                {[
+                  { x: 175, y: 72 },
+                  { x: 240, y: 30 },
+                  { x: 395, y: 88 },
+                  { x: 510, y: 55 },
+                ].map((p, i) => (
+                  <g key={i} transform={`translate(${p.x} ${p.y})`}>
+                    <ellipse cx="0" cy="6" rx="6" ry="2" fill="#2C2825" opacity="0.18" />
+                    <path
+                      d="M0 -18 C-8 -18 -13 -12 -13 -5 C-13 4 0 14 0 14 C0 14 13 4 13 -5 C13 -12 8 -18 0 -18 Z"
+                      fill="#C1634F"
+                      stroke="#8B3E2D"
+                      strokeWidth="1"
+                    />
+                    <circle cx="0" cy="-6" r="3.2" fill="#ffffff" />
+                  </g>
+                ))}
+                {/* Drop pin — sage (your location) */}
+                <g transform="translate(290 95)">
+                  <circle cx="0" cy="0" r="22" fill="#7A9E82" opacity="0.18" />
+                  <ellipse cx="0" cy="6" rx="6" ry="2" fill="#2C2825" opacity="0.18" />
+                  <path
+                    d="M0 -18 C-8 -18 -13 -12 -13 -5 C-13 4 0 14 0 14 C0 14 13 4 13 -5 C13 -12 8 -18 0 -18 Z"
+                    fill="#7A9E82"
+                    stroke="#4D7255"
+                    strokeWidth="1"
+                  />
+                  <circle cx="0" cy="-6" r="3.2" fill="#ffffff" />
+                </g>
               </svg>
+              {/* Location label */}
+              <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 bg-white/95 border border-line rounded-full px-3 py-1 text-[11px] text-cm font-sans whitespace-nowrap shadow-sm">
+                <span className="text-ch font-medium">{total}</span> providers near Boulder, CO
+              </div>
             </div>
 
             {/* Count + sort */}
