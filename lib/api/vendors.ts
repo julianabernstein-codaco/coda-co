@@ -1,5 +1,6 @@
 import { vendors } from "@/lib/data/vendors";
-import type { Vendor, VendorType } from "@/lib/types";
+import { matchesLifeStage } from "@/lib/format/lifeStage";
+import type { LifeStage, Vendor, VendorType } from "@/lib/types";
 
 export interface VendorFilters {
   type?: VendorType;
@@ -8,6 +9,7 @@ export interface VendorFilters {
   virtual?: boolean;
   verified?: boolean;
   specialization?: string;
+  lifeStage?: LifeStage | LifeStage[];
 }
 
 export async function getVendors(filters: VendorFilters = {}): Promise<Vendor[]> {
@@ -24,6 +26,9 @@ export async function getVendors(filters: VendorFilters = {}): Promise<Vendor[]>
         s.toLowerCase().includes(filters.specialization!.toLowerCase())
       )
     );
+  }
+  if (filters.lifeStage) {
+    results = results.filter((v) => matchesLifeStage(v.lifeStages, filters.lifeStage));
   }
   return results;
 }

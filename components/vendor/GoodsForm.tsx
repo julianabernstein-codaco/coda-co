@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { StepsBar } from "@/components/ui/StepsBar";
+import { LIFE_STAGES } from "@/lib/format/lifeStage";
+import type { LifeStage } from "@/lib/types";
 
 const STEPS = [
   { label: "Your profile" },
@@ -46,6 +48,7 @@ interface FormData {
   category: string;
   description: string;
   tags: string[];
+  lifeStages: LifeStage[];
   basePrice: string;
 }
 
@@ -65,6 +68,7 @@ export function GoodsForm() {
     category: CATEGORIES[0],
     description: "",
     tags: [],
+    lifeStages: [],
     basePrice: "",
   });
 
@@ -80,6 +84,15 @@ export function GoodsForm() {
     setData((d) => ({
       ...d,
       tags: d.tags.includes(tag) ? d.tags.filter((t) => t !== tag) : [...d.tags, tag],
+    }));
+  }
+
+  function toggleLifeStage(stage: LifeStage) {
+    setData((d) => ({
+      ...d,
+      lifeStages: d.lifeStages.includes(stage)
+        ? d.lifeStages.filter((x) => x !== stage)
+        : [...d.lifeStages, stage],
     }));
   }
 
@@ -184,6 +197,28 @@ export function GoodsForm() {
                         ].join(" ")}
                       >
                         {tag}
+                      </button>
+                    ))}
+                  </div>
+                </FormField>
+                <FormField label="Who is this for? (select all that apply)">
+                  <p className="text-[12px] text-cl mb-2 -mt-1">
+                    Helps buyers filter goods by where they are in the journey.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {LIFE_STAGES.map((s) => (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => toggleLifeStage(s.value)}
+                        className={[
+                          "px-3 py-1.5 rounded-full text-[12px] border transition-all cursor-pointer",
+                          data.lifeStages.includes(s.value)
+                            ? "bg-tr text-white border-tr"
+                            : "bg-white text-cm border-line-bold hover:border-tr",
+                        ].join(" ")}
+                      >
+                        {s.label}
                       </button>
                     ))}
                   </div>

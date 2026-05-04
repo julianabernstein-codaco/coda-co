@@ -1,5 +1,6 @@
 import { products } from "@/lib/data/products";
-import type { Product, ProductCategory } from "@/lib/types";
+import { matchesLifeStage } from "@/lib/format/lifeStage";
+import type { LifeStage, Product, ProductCategory } from "@/lib/types";
 
 export interface ProductFilters {
   category?: ProductCategory;
@@ -8,6 +9,7 @@ export interface ProductFilters {
   maxPrice?: number;
   verified?: boolean;
   ids?: string[];
+  lifeStage?: LifeStage | LifeStage[];
 }
 
 export async function getProducts(filters: ProductFilters = {}): Promise<Product[]> {
@@ -18,6 +20,9 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   if (filters.maxPrice != null) results = results.filter((p) => p.price <= filters.maxPrice!);
   if (filters.verified != null) results = results.filter((p) => p.verified === filters.verified);
   if (filters.ids) results = results.filter((p) => filters.ids!.includes(p.id));
+  if (filters.lifeStage) {
+    results = results.filter((p) => matchesLifeStage(p.lifeStages, filters.lifeStage));
+  }
   return results;
 }
 

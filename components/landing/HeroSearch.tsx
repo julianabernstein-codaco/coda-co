@@ -1,12 +1,19 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { GuidedSearch } from "./GuidedSearch";
+
+const entries = [
+  {
+    label: "I'm planning ahead",
+    href: "/services?lifeStage=planning-ahead,throughout",
+  },
+  { label: "Someone has died", href: "/where-to-start" },
+  {
+    label: "Someone is dying",
+    href: "/services?lifeStage=throughout,active-dying,planning-ahead",
+  },
+  { label: "I'm just exploring", href: "/shop" },
+];
 
 export function HeroSearch() {
-  const [guideOpen, setGuideOpen] = useState(false);
-
   return (
     <>
       <div className="flex max-w-[500px] mx-auto mb-4">
@@ -21,26 +28,21 @@ export function HeroSearch() {
       </div>
 
       <div className="bg-sg-p border border-sg-l rounded-[12px] px-6 py-5 max-w-[500px] mx-auto">
-        <p className="text-[16px] text-cm mb-2">
-          Someone I love just died —{" "}
-          <Link
-            href="/where-to-start"
-            className="text-tr cursor-pointer border-b border-dotted border-tr-l no-underline hover:text-tr-d"
-          >
-            I don&apos;t know where to start →
-          </Link>
+        <p className="text-[14px] text-cm mb-3 text-center">
+          How can we help you today?
         </p>
-        <p className="text-[16px] text-cm">
-          <button
-            onClick={() => setGuideOpen((v) => !v)}
-            className="text-tr cursor-pointer border-b border-dotted border-tr-l bg-transparent border-x-0 border-t-0 p-0 font-sans text-[16px] hover:text-tr-d"
-          >
-            Or answer a few questions to find what you need {guideOpen ? "↑" : "↓"}
-          </button>
-        </p>
+        <div className="grid grid-cols-2 gap-2.5">
+          {entries.map((entry) => (
+            <Link
+              key={entry.label}
+              href={entry.href}
+              className="bg-white border border-line-strong rounded-[8px] px-4 py-3 text-[13px] text-ch text-center no-underline hover:border-tr hover:text-tr transition-colors"
+            >
+              {entry.label}
+            </Link>
+          ))}
+        </div>
       </div>
-
-      <GuidedSearch open={guideOpen} />
     </>
   );
 }

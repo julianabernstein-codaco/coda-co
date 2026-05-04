@@ -32,6 +32,7 @@ export const products: Product[] = [
       shipsIn: "Padded, biodegradable box",
       madeIn: "Portland, Oregon, USA",
     },
+    lifeStages: ["active-dying", "planning-ahead"],
     relatedIds: ["urn-terra-002", "urn-keepsake-003", "shroud-cotton-001", "pendant-silver-001"],
   },
   {
@@ -57,6 +58,7 @@ export const products: Product[] = [
       includes: "18\" sterling chain, velvet pouch",
       madeIn: "Austin, Texas, USA",
     },
+    lifeStages: ["post-death"],
     relatedIds: ["urn-sage-001", "urn-keepsake-003"],
   },
   {
@@ -86,6 +88,7 @@ export const products: Product[] = [
       certification: "GOTS organic",
       madeIn: "Vermont, USA",
     },
+    lifeStages: ["active-dying", "planning-ahead"],
     relatedIds: ["urn-sage-001", "planning-workbook-001"],
   },
   {
@@ -113,6 +116,7 @@ export const products: Product[] = [
       dimensions: '8.5" × 11"',
       madeIn: "United States",
     },
+    lifeStages: ["planning-ahead"],
     relatedIds: ["planning-template-001", "shroud-cotton-001"],
   },
   {
@@ -137,6 +141,7 @@ export const products: Product[] = [
       material: "High-fire stoneware clay",
       madeIn: "Portland, Oregon, USA",
     },
+    lifeStages: ["active-dying", "planning-ahead"],
     relatedIds: ["urn-sage-001", "pendant-silver-001"],
   },
   {
@@ -160,6 +165,7 @@ export const products: Product[] = [
       delivery: "Instant download",
       madeIn: "United States",
     },
+    lifeStages: ["planning-ahead"],
     relatedIds: ["planning-workbook-001"],
   },
   {
@@ -185,6 +191,7 @@ export const products: Product[] = [
       delivery: "Instant download",
       madeIn: "Oregon, USA",
     },
+    lifeStages: ["active-dying", "planning-ahead"],
     relatedIds: ["shroud-cotton-001", "planning-workbook-001"],
   },
   {
@@ -212,6 +219,7 @@ export const products: Product[] = [
       format: "Digital file or archival print",
       madeIn: "Brooklyn, New York, USA",
     },
+    lifeStages: ["post-death"],
     relatedIds: ["planning-workbook-001"],
   },
   {
@@ -240,6 +248,62 @@ export const products: Product[] = [
       material: "High-fire stoneware clay",
       madeIn: "Portland, Oregon, USA",
     },
+    lifeStages: ["active-dying", "planning-ahead"],
     relatedIds: ["urn-sage-001", "urn-keepsake-003"],
+  },
+  {
+    id: "funeral-planning-workbook-001",
+    title: "Funeral planning workbook",
+    seller: "Threshold Press",
+    sellerId: "threshold-press",
+    location: "United States",
+    price: 28,
+    category: "planning",
+    badge: { label: "Digital + print", variant: "terracotta" },
+    thumbBg: "#F5EAE6",
+    variants: [
+      { label: "Digital PDF", price: 14, stock: 999 },
+      { label: "Printed & bound", price: 28, stock: 50 },
+    ],
+    rating: 4.8,
+    reviewCount: 52,
+    verified: true,
+    description:
+      "A practical workbook for documenting your wishes around your funeral or memorial — service style, music, readings, who to invite, what to wear, where ashes or remains go. Designed to spare your family from guessing at a difficult time.",
+    details: {
+      format: "48 pages, perfect bound",
+      delivery: "Ships in 3–5 business days / PDF instant",
+      dimensions: '8.5" × 11"',
+      madeIn: "United States",
+    },
+    lifeStages: ["planning-ahead"],
+    relatedIds: ["planning-workbook-001", "planning-template-001"],
+  },
+  {
+    id: "will-kit-001",
+    title: "Simple will & estate creation kit",
+    seller: "Threshold Press",
+    sellerId: "threshold-press",
+    location: "United States",
+    price: 45,
+    category: "planning",
+    badge: { label: "Digital + print", variant: "terracotta" },
+    thumbBg: "#F3F1EE",
+    variants: [
+      { label: "Digital PDF", price: 25, stock: 999 },
+      { label: "Printed & bound", price: 45, stock: 40 },
+    ],
+    rating: 4.7,
+    reviewCount: 67,
+    verified: true,
+    description:
+      "Step-by-step templates and guidance for creating a simple will, naming an executor, and recording basic estate wishes. State-specific guidance included. Reviewed by estate attorneys. Not a substitute for legal counsel for complex estates — pair with an attorney consultation if your situation is involved.",
+    details: {
+      format: "Will template + 32-page guide",
+      delivery: "Instant download / Ships in 3–5 days",
+      madeIn: "United States",
+    },
+    lifeStages: ["planning-ahead"],
+    relatedIds: ["planning-template-001", "planning-workbook-001"],
   },
 ];

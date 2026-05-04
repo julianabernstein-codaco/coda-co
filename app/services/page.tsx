@@ -5,8 +5,10 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ServiceFilters } from "@/components/services/ServiceFilters";
 import { ServiceGrid } from "@/components/services/ServiceGrid";
 import { Container } from "@/components/ui/Container";
+import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getVendors } from "@/lib/api/vendors";
+import { parseLifeStageParam } from "@/lib/format/lifeStage";
 import type { VendorType } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -22,6 +24,7 @@ interface ServicesPageProps {
     accepting?: string;
     virtual?: string;
     verified?: string;
+    lifeStage?: string;
   }>;
 }
 
@@ -33,10 +36,12 @@ const TYPE_LABELS: Record<string, string> = {
   organizer: "EOL organizer",
   "home-funeral": "Home funeral",
   "green-burial": "Green burial",
+  cafe: "Death cafe",
+  "life-celebration": "Celebration of life planner",
 };
 
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
-  const { type, minRating, accepting, virtual: virt, verified } = await searchParams;
+  const { type, minRating, accepting, virtual: virt, verified, lifeStage } = await searchParams;
 
   const filters = {
     type: type as VendorType | undefined,
@@ -44,6 +49,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     accepting: accepting === "1" ? true : undefined,
     virtual: virt === "1" ? true : undefined,
     verified: verified === "1" ? true : undefined,
+    lifeStage: parseLifeStageParam(lifeStage),
   };
 
   const [vendors, totalVendors] = await Promise.all([
@@ -58,7 +64,8 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     filters.minRating != null ||
     filters.accepting === true ||
     filters.virtual === true ||
-    filters.verified === true;
+    filters.verified === true ||
+    filters.lifeStage != null;
 
   return (
     <>
@@ -101,6 +108,11 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <button className="bg-tr text-white border-0 px-[22px] py-[11px] rounded-[8px] text-[13px] font-sans cursor-pointer hover:bg-tr-d transition-colors whitespace-nowrap">
             Search
           </button>
+        </Container>
+        <Container width="mid" className="mt-4">
+          <Suspense>
+            <LifeStageChips />
+          </Suspense>
         </Container>
       </section>
 

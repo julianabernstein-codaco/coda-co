@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getFeaturedProducts, getProducts } from "@/lib/api/products";
+import { parseLifeStageParam } from "@/lib/format/lifeStage";
 import type { ProductCategory } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -17,14 +18,17 @@ export const metadata: Metadata = {
 };
 
 interface ShopPageProps {
-  searchParams: Promise<{ category?: string; sort?: string }>;
+  searchParams: Promise<{ category?: string; sort?: string; lifeStage?: string }>;
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
-  const { category, sort } = await searchParams;
+  const { category, sort, lifeStage } = await searchParams;
 
   const [products, featuredProducts] = await Promise.all([
-    getProducts({ category: category as ProductCategory | undefined }),
+    getProducts({
+      category: category as ProductCategory | undefined,
+      lifeStage: parseLifeStageParam(lifeStage),
+    }),
     getFeaturedProducts(4),
   ]);
 
