@@ -16,6 +16,7 @@ const SERVICE_TYPES = [
   { value: "home-funeral", label: "Home funeral" },
   { value: "green-burial", label: "Green burial" },
   { value: "cafe", label: "Death cafe" },
+  { value: "life-celebration", label: "Celebration of life planner" },
 ];
 
 const DISTANCES = ["5 mi", "15 mi", "30 mi", "50 mi", "Virtual only"];

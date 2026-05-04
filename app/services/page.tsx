@@ -36,6 +36,7 @@ const TYPE_LABELS: Record<string, string> = {
   "home-funeral": "Home funeral",
   "green-burial": "Green burial",
   cafe: "Death cafe",
+  "life-celebration": "Celebration of life planner",
 };
 
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
