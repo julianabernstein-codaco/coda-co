@@ -191,7 +191,7 @@ export const products: Product[] = [
       delivery: "Instant download",
       madeIn: "Oregon, USA",
     },
-    lifeStages: ["post-death"],
+    lifeStages: ["active-dying", "planning-ahead"],
     relatedIds: ["shroud-cotton-001", "planning-workbook-001"],
   },
   {
