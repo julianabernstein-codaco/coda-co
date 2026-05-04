@@ -9,7 +9,7 @@ export interface ProductFilters {
   maxPrice?: number;
   verified?: boolean;
   ids?: string[];
-  lifeStage?: LifeStage;
+  lifeStage?: LifeStage | LifeStage[];
 }
 
 export async function getProducts(filters: ProductFilters = {}): Promise<Product[]> {

@@ -8,7 +8,8 @@ import { Container } from "@/components/ui/Container";
 import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getVendors } from "@/lib/api/vendors";
-import type { LifeStage, VendorType } from "@/lib/types";
+import { parseLifeStageParam } from "@/lib/format/lifeStage";
+import type { VendorType } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Find services — CodaCo",
@@ -48,7 +49,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     accepting: accepting === "1" ? true : undefined,
     virtual: virt === "1" ? true : undefined,
     verified: verified === "1" ? true : undefined,
-    lifeStage: lifeStage as LifeStage | undefined,
+    lifeStage: parseLifeStageParam(lifeStage),
   };
 
   const [vendors, totalVendors] = await Promise.all([

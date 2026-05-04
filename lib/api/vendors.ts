@@ -9,7 +9,7 @@ export interface VendorFilters {
   virtual?: boolean;
   verified?: boolean;
   specialization?: string;
-  lifeStage?: LifeStage;
+  lifeStage?: LifeStage | LifeStage[];
 }
 
 export async function getVendors(filters: VendorFilters = {}): Promise<Vendor[]> {
