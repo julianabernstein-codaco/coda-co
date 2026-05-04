@@ -1,7 +1,10 @@
 import Link from "next/link";
 
 const entries = [
-  { label: "I'm planning ahead", href: "/services" },
+  {
+    label: "I'm planning ahead",
+    href: "/services?lifeStage=planning-ahead,throughout",
+  },
   { label: "Someone has died", href: "/where-to-start" },
   {
     label: "Someone is dying",
