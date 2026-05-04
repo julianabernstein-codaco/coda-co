@@ -33,6 +33,8 @@ const sections = [
     links: [
       { label: "Browse planning workbooks →", href: "/shop?category=planning" },
       { label: "Find an estate attorney →", href: "/services?type=attorney" },
+      { label: "Find a Swedish death cleaner →", href: "/services?type=cleaner" },
+      { label: "Find a death cafe near me →", href: "/services?type=cafe" },
     ],
     bg: "bg-sg-vp",
     accent: "text-sg-d",
