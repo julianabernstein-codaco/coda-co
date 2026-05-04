@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { StepsBar } from "@/components/ui/StepsBar";
+import { LIFE_STAGES } from "@/lib/format/lifeStage";
+import type { LifeStage } from "@/lib/types";
 
 const STEPS = [
   { label: "Your profile" },
@@ -48,6 +50,7 @@ interface FormData {
   serviceType: string;
   serviceDescription: string;
   specializations: string[];
+  lifeStages: LifeStage[];
   radius: string;
   virtual: boolean;
   inHome: boolean;
@@ -68,6 +71,7 @@ export function ServicesForm() {
     serviceType: SERVICE_TYPES[0],
     serviceDescription: "",
     specializations: [],
+    lifeStages: [],
     radius: "15 mi",
     virtual: false,
     inHome: true,
@@ -88,6 +92,15 @@ export function ServicesForm() {
       specializations: d.specializations.includes(s)
         ? d.specializations.filter((x) => x !== s)
         : [...d.specializations, s],
+    }));
+  }
+
+  function toggleLifeStage(stage: LifeStage) {
+    setData((d) => ({
+      ...d,
+      lifeStages: d.lifeStages.includes(stage)
+        ? d.lifeStages.filter((x) => x !== stage)
+        : [...d.lifeStages, stage],
     }));
   }
 
@@ -186,6 +199,28 @@ export function ServicesForm() {
                         ].join(" ")}
                       >
                         {s}
+                      </button>
+                    ))}
+                  </div>
+                </FormField>
+                <FormField label="Who is this for? (select all that apply)">
+                  <p className="text-[12px] text-cl mb-2 -mt-1">
+                    Helps clients filter providers by where they are in the journey.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {LIFE_STAGES.map((s) => (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => toggleLifeStage(s.value)}
+                        className={[
+                          "px-3 py-1.5 rounded-full text-[12px] border transition-all cursor-pointer",
+                          data.lifeStages.includes(s.value)
+                            ? "bg-sg text-white border-sg"
+                            : "bg-white text-cm border-line-bold hover:border-sg",
+                        ].join(" ")}
+                      >
+                        {s.label}
                       </button>
                     ))}
                   </div>

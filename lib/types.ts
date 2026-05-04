@@ -12,6 +12,12 @@ export type ProductCategory =
   | "memorial"
   | "humor";
 
+export type LifeStage =
+  | "planning-ahead"
+  | "active-dying"
+  | "post-death"
+  | "throughout";
+
 export interface Badge {
   label: string;
   variant: "terracotta" | "sage";
@@ -48,6 +54,7 @@ export interface Product {
   verified: boolean;
   description: string;
   details: ProductDetail;
+  lifeStages: LifeStage[];
   relatedIds?: string[];
 }
 
@@ -77,6 +84,7 @@ export interface Vendor {
   virtual: boolean;
   inHome: boolean;
   specializations: string[];
+  lifeStages: LifeStage[];
   verified: boolean;
   memberSince?: string;
   // Excludes product-only sellers (ceramics studios, jewelers, etc.) from

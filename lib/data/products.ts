@@ -32,6 +32,7 @@ export const products: Product[] = [
       shipsIn: "Padded, biodegradable box",
       madeIn: "Portland, Oregon, USA",
     },
+    lifeStages: ["post-death"],
     relatedIds: ["urn-terra-002", "urn-keepsake-003", "shroud-cotton-001", "pendant-silver-001"],
   },
   {
@@ -57,6 +58,7 @@ export const products: Product[] = [
       includes: "18\" sterling chain, velvet pouch",
       madeIn: "Austin, Texas, USA",
     },
+    lifeStages: ["post-death"],
     relatedIds: ["urn-sage-001", "urn-keepsake-003"],
   },
   {
@@ -86,6 +88,7 @@ export const products: Product[] = [
       certification: "GOTS organic",
       madeIn: "Vermont, USA",
     },
+    lifeStages: ["planning-ahead", "post-death"],
     relatedIds: ["urn-sage-001", "planning-workbook-001"],
   },
   {
@@ -113,6 +116,7 @@ export const products: Product[] = [
       dimensions: '8.5" × 11"',
       madeIn: "United States",
     },
+    lifeStages: ["planning-ahead"],
     relatedIds: ["planning-template-001", "shroud-cotton-001"],
   },
   {
@@ -137,6 +141,7 @@ export const products: Product[] = [
       material: "High-fire stoneware clay",
       madeIn: "Portland, Oregon, USA",
     },
+    lifeStages: ["post-death"],
     relatedIds: ["urn-sage-001", "pendant-silver-001"],
   },
   {
@@ -160,6 +165,7 @@ export const products: Product[] = [
       delivery: "Instant download",
       madeIn: "United States",
     },
+    lifeStages: ["planning-ahead"],
     relatedIds: ["planning-workbook-001"],
   },
   {
@@ -185,6 +191,7 @@ export const products: Product[] = [
       delivery: "Instant download",
       madeIn: "Oregon, USA",
     },
+    lifeStages: ["planning-ahead"],
     relatedIds: ["shroud-cotton-001", "planning-workbook-001"],
   },
   {
@@ -212,6 +219,7 @@ export const products: Product[] = [
       format: "Digital file or archival print",
       madeIn: "Brooklyn, New York, USA",
     },
+    lifeStages: ["post-death"],
     relatedIds: ["planning-workbook-001"],
   },
   {
@@ -240,6 +248,7 @@ export const products: Product[] = [
       material: "High-fire stoneware clay",
       madeIn: "Portland, Oregon, USA",
     },
+    lifeStages: ["post-death"],
     relatedIds: ["urn-sage-001", "urn-keepsake-003"],
   },
 ];

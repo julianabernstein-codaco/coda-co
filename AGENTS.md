@@ -79,6 +79,7 @@ inline (see Decision rules below).
 | `<FilterCheck>`    | Checkbox with label.                             |
 | `<FilterSection>`  | Section heading + body wrapper.                  |
 | `<FilterDivider>`  | Hairline divider between sections.               |
+| `<LifeStageChips>` | Pre-wired chip strip filtering by `lifeStage` URL param. Use at the top of any list page so users can narrow by `planning-ahead` / `active-dying` / `post-death` / `throughout`. Wrap in `<Suspense>` since it reads `searchParams`. |
 
 URL-param state for filters goes through **`useFilterParams()`** in
 `lib/hooks/useFilterParams.ts` — `get`, `setParam`, `toggleBool`,
@@ -88,6 +89,7 @@ filter component.
 ### Format helpers
 
 - `lib/format/vendor.ts` — `vendorTypeLabel(type)`, `vendorLocationSuffix(vendor)`.
+- `lib/format/lifeStage.ts` — `LIFE_STAGES` (label/value pairs), `lifeStageLabel(stage)`, `matchesLifeStage(entryStages, filter)` (used by `getVendors` / `getProducts` so `throughout`-tagged entries match any specific-stage filter).
 
 ### `@layer components` classes (`app/globals.css`)
 
