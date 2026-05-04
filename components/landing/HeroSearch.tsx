@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const entries = [
   { label: "I'm planning ahead", href: "/services" },
-  { label: "Someone has died", href: "/shop?lifeStage=post-death" },
+  { label: "Someone has died", href: "/where-to-start" },
   { label: "Someone is dying", href: "/where-to-start" },
   { label: "I'm just exploring", href: "/shop" },
 ];
