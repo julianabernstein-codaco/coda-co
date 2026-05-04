@@ -33,6 +33,7 @@ const TYPE_LABELS: Record<string, string> = {
   organizer: "EOL organizer",
   "home-funeral": "Home funeral",
   "green-burial": "Green burial",
+  cafe: "Death cafe",
 };
 
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
