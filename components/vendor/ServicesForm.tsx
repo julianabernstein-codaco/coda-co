@@ -42,8 +42,12 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 interface FormData {
   firstName: string;
   lastName: string;
+  companyName: string;
   credentials: string;
   email: string;
+  instagram: string;
+  facebook: string;
+  website: string;
   city: string;
   state: string;
   bio: string;
@@ -63,8 +67,12 @@ export function ServicesForm() {
   const [data, setData] = useState<FormData>({
     firstName: "",
     lastName: "",
+    companyName: "",
     credentials: "",
     email: "",
+    instagram: "",
+    facebook: "",
+    website: "",
     city: "",
     state: "",
     bio: "",
@@ -136,11 +144,23 @@ export function ServicesForm() {
                     <input className={inputCls} placeholder="Rosales" {...field("lastName")} />
                   </FormField>
                 </div>
+                <FormField label="Company name (optional)">
+                  <input className={inputCls} placeholder="Rosales Doula Care" {...field("companyName")} />
+                </FormField>
                 <FormField label="Credentials or certification (optional)">
                   <input className={inputCls} placeholder="CEND, INELDA, J.D., etc." {...field("credentials")} />
                 </FormField>
                 <FormField label="Email address">
                   <input className={inputCls} type="email" placeholder="you@example.com" {...field("email")} />
+                </FormField>
+                <FormField label="Website (optional)">
+                  <input className={inputCls} placeholder="https://" {...field("website")} />
+                </FormField>
+                <FormField label="Instagram (optional)">
+                  <input className={inputCls} placeholder="@yourhandle" {...field("instagram")} />
+                </FormField>
+                <FormField label="Facebook page (optional)">
+                  <input className={inputCls} placeholder="facebook.com/yourpage" {...field("facebook")} />
                 </FormField>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField label="City">

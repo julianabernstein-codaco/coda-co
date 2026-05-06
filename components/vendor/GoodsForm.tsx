@@ -38,12 +38,14 @@ const TAGS = [
 interface FormData {
   firstName: string;
   lastName: string;
-  shopName: string;
+  companyName: string;
   email: string;
+  instagram: string;
+  facebook: string;
+  website: string;
   city: string;
   state: string;
   bio: string;
-  website: string;
   productName: string;
   category: string;
   description: string;
@@ -58,12 +60,14 @@ export function GoodsForm() {
   const [data, setData] = useState<FormData>({
     firstName: "",
     lastName: "",
-    shopName: "",
+    companyName: "",
     email: "",
+    instagram: "",
+    facebook: "",
+    website: "",
     city: "",
     state: "",
     bio: "",
-    website: "",
     productName: "",
     category: CATEGORIES[0],
     description: "",
@@ -125,11 +129,20 @@ export function GoodsForm() {
                     <input className={inputCls} placeholder="Last name" {...field("lastName")} />
                   </FormField>
                 </div>
-                <FormField label="Shop / business name">
-                  <input className={inputCls} placeholder="Earthen Studio" {...field("shopName")} />
+                <FormField label="Company name (optional)">
+                  <input className={inputCls} placeholder="Earthen Studio" {...field("companyName")} />
                 </FormField>
                 <FormField label="Email address">
                   <input className={inputCls} type="email" placeholder="you@example.com" {...field("email")} />
+                </FormField>
+                <FormField label="Website (optional)">
+                  <input className={inputCls} placeholder="https://" {...field("website")} />
+                </FormField>
+                <FormField label="Instagram (optional)">
+                  <input className={inputCls} placeholder="@yourhandle" {...field("instagram")} />
+                </FormField>
+                <FormField label="Facebook page (optional)">
+                  <input className={inputCls} placeholder="facebook.com/yourpage" {...field("facebook")} />
                 </FormField>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField label="City">
@@ -149,9 +162,6 @@ export function GoodsForm() {
                     placeholder="Tell buyers about yourself and your work…"
                     {...field("bio")}
                   />
-                </FormField>
-                <FormField label="Website or social link (optional)">
-                  <input className={inputCls} placeholder="https://" {...field("website")} />
                 </FormField>
               </div>
             )}
@@ -366,7 +376,7 @@ export function GoodsForm() {
                 {data.productName || "Your product name"}
               </div>
               <div className="text-[11px] text-cl mb-1 truncate">
-                {data.shopName || "Your shop name"}
+                {data.companyName || `${data.firstName} ${data.lastName}`.trim() || "Your shop name"}
               </div>
               {data.basePrice && (
                 <div className="text-[14px] font-medium text-tr">${data.basePrice}</div>
