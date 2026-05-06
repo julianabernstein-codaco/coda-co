@@ -91,6 +91,8 @@ export interface Vendor {
   // Excludes product-only sellers (ceramics studios, jewelers, etc.) from
   // service-provider listings. Defaults to true; set false on shop sellers.
   isServiceProvider?: boolean;
+  photoSrc?: string;
+  photoTone?: "sage" | "terracotta";
 }
 
 export interface Review {
