@@ -286,6 +286,8 @@
   .vendor-photo-md .vendor-photo-disc { font-size: 14px; }
   .vendor-photo-lg { width: 64px; height: 64px; }
   .vendor-photo-lg .vendor-photo-disc { font-size: 18px; }
+  .vendor-photo-xl { width: 128px; height: 128px; border-radius: var(--radius-md); }
+  .vendor-photo-xl .vendor-photo-disc { font-size: 32px; }
 
   /*
    * Soft horizontal divider used between filter sections etc.

@@ -1,10 +1,11 @@
-type VendorPhotoSize = "sm" | "md" | "lg";
+type VendorPhotoSize = "sm" | "md" | "lg" | "xl";
 type VendorPhotoTone = "sage" | "terracotta";
 
 const sizeClass: Record<VendorPhotoSize, string> = {
   sm: "vendor-photo-sm",
   md: "vendor-photo-md",
   lg: "vendor-photo-lg",
+  xl: "vendor-photo-xl",
 };
 
 interface VendorPhotoProps {
