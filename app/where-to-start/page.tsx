@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { WaveDivider } from "@/components/ui/WaveDivider";
 
 export const metadata: Metadata = {
   title: "Where to Start — CodaCo",
@@ -36,7 +37,7 @@ const sections = [
       { label: "Find a Swedish death cleaner →", href: "/services?type=cleaner" },
       { label: "Find a death cafe near me →", href: "/services?type=cafe" },
     ],
-    bg: "bg-sg-vp",
+    bg: "bg-pl",
     accent: "text-sg-d",
   },
   {
@@ -47,8 +48,8 @@ const sections = [
       { label: "Find a grief counselor →", href: "/services?type=grief" },
       { label: "Find a death doula →", href: "/services?type=doula" },
     ],
-    bg: "bg-tr-vp",
-    accent: "text-tr",
+    bg: "bg-sg-vp",
+    accent: "text-sg-d",
   },
   {
     eyebrow: "Honoring someone",
@@ -58,10 +59,16 @@ const sections = [
       { label: "Shop memorial goods →", href: "/shop?category=memorial" },
       { label: "Shop urns & vessels →", href: "/shop?category=urns" },
     ],
-    bg: "bg-sg-vp",
-    accent: "text-sg-d",
+    bg: "bg-pl",
+    accent: "text-tr",
   },
 ];
+
+const sectionBgVar: Record<string, string> = {
+  "bg-tr-vp": "var(--color-tr-vp)",
+  "bg-sg-vp": "var(--color-sg-vp)",
+  "bg-pl": "var(--color-pl)",
+};
 
 const books = [
   {
@@ -93,7 +100,7 @@ export default function WhereToStartPage() {
       <Breadcrumb crumbs={[{ label: "Home", href: "/" }, { label: "Where to start" }]} />
 
       {/* Intro */}
-      <section className="bg-tr-vp px-10 py-14 text-center">
+      <section className="bg-white px-10 py-14 text-center">
         <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-2">A gentle guide</p>
         <h1 className="font-serif text-[42px] font-light text-ch mb-4 leading-tight">
           Where to start
@@ -104,43 +111,55 @@ export default function WhereToStartPage() {
         </p>
       </section>
 
-      {/* Sections */}
-      {sections.map((section) => (
-        <section key={section.heading} className={`${section.bg} px-10 py-12`}>
-          <Container width="narrow">
-            <p className={`text-[11px] tracking-[.14em] uppercase ${section.accent} mb-2`}>
-              {section.eyebrow}
-            </p>
-            <h2 className="font-serif text-[28px] font-light text-ch mb-4">{section.heading}</h2>
-            <p
-              className={`text-[14px] leading-[1.8] mb-5 whitespace-pre-line ${
-                section.bg === "bg-tr-vp" ? "text-ink" : "text-cm"
-              }`}
-            >
-              {section.body}
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {section.links.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className={`text-[13px] ${section.accent} border-b border-dotted border-current pb-px hover:opacity-80 transition-opacity no-underline`}
+      {/* Sections — alternating tinted/cream banners with arc-top transitions */}
+      {sections.map((section, i) => {
+        const prevBg = i === 0 ? "var(--color-white)" : sectionBgVar[sections[i - 1].bg];
+        return (
+          <div key={section.heading}>
+            <WaveDivider topColor={prevBg} bottomColor={sectionBgVar[section.bg]} />
+            <section className={`${section.bg} px-10 pt-2 pb-16`}>
+              <Container width="narrow">
+                <p className={`text-[11px] tracking-[.14em] uppercase ${section.accent} mb-2`}>
+                  {section.eyebrow}
+                </p>
+                <h2 className="font-serif text-[28px] font-light text-ch mb-4">
+                  {section.heading}
+                </h2>
+                <p
+                  className={`text-[14px] leading-[1.8] mb-5 whitespace-pre-line ${
+                    section.bg === "bg-tr-vp" ? "text-ink" : "text-cm"
+                  }`}
                 >
-                  {l.label}
-                </Link>
-              ))}
-            </div>
-          </Container>
-        </section>
-      ))}
+                  {section.body}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {section.links.map((l) => (
+                    <Link
+                      key={l.href}
+                      href={l.href}
+                      className={`text-[13px] ${section.accent} border-b border-dotted border-current pb-px hover:opacity-80 transition-opacity no-underline`}
+                    >
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
+              </Container>
+            </section>
+          </div>
+        );
+      })}
 
-      {/* Reading room */}
-      <section className="bg-white px-10 py-14">
+      {/* Reading room — pale terracotta */}
+      <WaveDivider
+        topColor={sectionBgVar[sections[sections.length - 1].bg]}
+        bottomColor="var(--color-tr-vp)"
+      />
+      <section className="bg-tr-vp px-10 pt-4 pb-20">
         <Container width="mid">
           <SectionHeader
             eyebrow="Reading room"
-            eyebrowTone="sg"
             title="Books worth reading"
+            subtitleTone="ink"
             className="mb-8"
           />
           <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
@@ -163,6 +182,8 @@ export default function WhereToStartPage() {
           </div>
         </Container>
       </section>
+
+      <WaveDivider topColor="var(--color-tr-vp)" bottomColor="var(--color-white)" />
 
       {/* CTA */}
       <section className="bg-tr-vp border border-tr-p rounded-[12px] mx-10 my-10 px-8 py-8 text-center">

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Vendor } from "@/lib/types";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
@@ -18,7 +19,7 @@ export function VendorCard({ vendor, layout = "compact" }: VendorCardProps) {
 
 function VendorCompactCard({ vendor }: { vendor: Vendor }) {
   return (
-    <Card hoverTone="sage" className="cursor-pointer">
+    <Card hoverTone="sage" href={`/services/${vendor.id}`}>
       <Avatar initials={vendor.initials} className="mb-3" />
       <div className="text-[14px] font-medium text-ch mb-[2px]">{vendor.name}</div>
       <div className="text-[10px] tracking-[.08em] uppercase text-cl mb-[7px]">
@@ -38,12 +39,17 @@ function VendorSearchCard({ vendor }: { vendor: Vendor }) {
   return (
     <Card
       hoverTone="sage"
-      className="cursor-pointer mb-3 grid grid-cols-[48px_1fr_120px] gap-3 items-start"
+      className="mb-3 grid grid-cols-[48px_1fr_120px] gap-3 items-start"
     >
       <Avatar initials={vendor.initials} size="lg" />
 
       <div className="min-w-0">
-        <div className="text-[14px] font-medium text-ch mb-[2px]">{vendor.name}</div>
+        <Link
+          href={`/services/${vendor.id}`}
+          className="text-[14px] font-medium text-ch mb-[2px] no-underline hover:text-tr block"
+        >
+          {vendor.name}
+        </Link>
         <span className="inline-block text-[10px] tracking-[.07em] uppercase bg-sg-p text-sg-d border border-sg-l px-[9px] py-[2px] rounded-[10px] mb-[6px]">
           {vendorTypeLabel(vendor.type)}
         </span>
@@ -71,7 +77,12 @@ function VendorSearchCard({ vendor }: { vendor: Vendor }) {
       <div className="text-right">
         <Stars rating={vendor.rating} className="text-[13px] whitespace-nowrap block" />
         <div className="text-[11px] text-cl mb-[10px]">{vendor.reviewCount} reviews</div>
-        <button className="btn-primary btn-sm w-full">Contact ↗</button>
+        <Link
+          href={`/services/${vendor.id}`}
+          className="btn-primary btn-sm w-full no-underline"
+        >
+          View profile →
+        </Link>
         <button className="btn-ghost btn-sm w-full mt-1.5">Save</button>
       </div>
     </Card>

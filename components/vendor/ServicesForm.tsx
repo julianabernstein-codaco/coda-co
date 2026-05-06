@@ -27,23 +27,37 @@ const SERVICE_TYPES = [
 const SPECIALIZATIONS = [
   "EOL planning",
   "Grief support",
-  "LGBTQ+ affirming",
-  "Bilingual (Spanish)",
-  "Perinatal loss",
   "Dementia",
   "Home-centered dying",
   "Legacy work",
   "Advance directives",
-  "Vigil support",
+  "Events",
+  "Memorial goods",
+  "Wills + estates",
+  "Mediation",
+  "Green burial",
+  "Funerals",
+  "Cleaning + organization",
 ];
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+const HOURS = [
+  "Early morning (6–9a)",
+  "Morning (9a–12p)",
+  "Afternoon (12–5p)",
+  "Evening (5–9p)",
+];
+
 interface FormData {
   firstName: string;
   lastName: string;
+  companyName: string;
   credentials: string;
   email: string;
+  instagram: string;
+  facebook: string;
+  website: string;
   city: string;
   state: string;
   bio: string;
@@ -55,6 +69,7 @@ interface FormData {
   virtual: boolean;
   inHome: boolean;
   availableDays: string[];
+  availableHours: string[];
 }
 
 export function ServicesForm() {
@@ -63,8 +78,12 @@ export function ServicesForm() {
   const [data, setData] = useState<FormData>({
     firstName: "",
     lastName: "",
+    companyName: "",
     credentials: "",
     email: "",
+    instagram: "",
+    facebook: "",
+    website: "",
     city: "",
     state: "",
     bio: "",
@@ -76,6 +95,7 @@ export function ServicesForm() {
     virtual: false,
     inHome: true,
     availableDays: [],
+    availableHours: [],
   });
 
   function field(key: keyof FormData) {
@@ -113,6 +133,15 @@ export function ServicesForm() {
     }));
   }
 
+  function toggleHour(hour: string) {
+    setData((d) => ({
+      ...d,
+      availableHours: d.availableHours.includes(hour)
+        ? d.availableHours.filter((x) => x !== hour)
+        : [...d.availableHours, hour],
+    }));
+  }
+
   return (
     <div>
       <StepsBar steps={STEPS} current={step} />
@@ -136,11 +165,23 @@ export function ServicesForm() {
                     <input className={inputCls} placeholder="Rosales" {...field("lastName")} />
                   </FormField>
                 </div>
+                <FormField label="Company name (optional)">
+                  <input className={inputCls} placeholder="Rosales Doula Care" {...field("companyName")} />
+                </FormField>
                 <FormField label="Credentials or certification (optional)">
                   <input className={inputCls} placeholder="CEND, INELDA, J.D., etc." {...field("credentials")} />
                 </FormField>
                 <FormField label="Email address">
                   <input className={inputCls} type="email" placeholder="you@example.com" {...field("email")} />
+                </FormField>
+                <FormField label="Website (optional)">
+                  <input className={inputCls} placeholder="https://" {...field("website")} />
+                </FormField>
+                <FormField label="Instagram (optional)">
+                  <input className={inputCls} placeholder="@yourhandle" {...field("instagram")} />
+                </FormField>
+                <FormField label="Facebook page (optional)">
+                  <input className={inputCls} placeholder="facebook.com/yourpage" {...field("facebook")} />
                 </FormField>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField label="City">
@@ -255,6 +296,18 @@ export function ServicesForm() {
                   </div>
                 </FormField>
 
+                <FormField label="Centered on">
+                  <div className="text-[14px] text-ch">
+                    {data.city && data.state ? (
+                      `${data.city}, ${data.state}`
+                    ) : (
+                      <span className="text-cl italic">
+                        Set your city and state in Step 1.
+                      </span>
+                    )}
+                  </div>
+                </FormField>
+
                 <FormField label="Session types">
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 cursor-pointer text-[13px] text-cm">
@@ -278,7 +331,10 @@ export function ServicesForm() {
                   </div>
                 </FormField>
 
-                <FormField label="Typical availability (select days)">
+                <FormField label="Typical availability">
+                  <p className="text-[12px] text-cl mb-2 -mt-1">
+                    Pick the days and times you typically offer sessions.
+                  </p>
                   <div className="flex gap-2 flex-wrap mt-1">
                     {DAYS.map((day) => (
                       <button
@@ -293,6 +349,23 @@ export function ServicesForm() {
                         ].join(" ")}
                       >
                         {day}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 flex-wrap mt-3">
+                    {HOURS.map((hour) => (
+                      <button
+                        key={hour}
+                        type="button"
+                        onClick={() => toggleHour(hour)}
+                        className={[
+                          "px-4 py-2 rounded-full text-[13px] border cursor-pointer transition-all",
+                          data.availableHours.includes(hour)
+                            ? "bg-tr text-white border-tr"
+                            : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-tr",
+                        ].join(" ")}
+                      >
+                        {hour}
                       </button>
                     ))}
                   </div>
