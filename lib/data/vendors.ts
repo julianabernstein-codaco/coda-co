@@ -96,7 +96,7 @@ export const vendors: Vendor[] = [
     lifeStages: ["throughout"],
     verified: false,
     memberSince: "2023",
-    photoSrc: "/vendors/mui-3.jpg",
+    photoSrc: "/vendors/JMB%20headshot.JPG",
     photoTone: "terracotta",
   },
   {
