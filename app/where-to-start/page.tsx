@@ -117,7 +117,7 @@ export default function WhereToStartPage() {
         return (
           <div key={section.heading}>
             <WaveDivider topColor={prevBg} bottomColor={sectionBgVar[section.bg]} />
-            <section className={`${section.bg} px-10 py-12`}>
+            <section className={`${section.bg} px-10 pt-2 pb-16`}>
               <Container width="narrow">
                 <p className={`text-[11px] tracking-[.14em] uppercase ${section.accent} mb-2`}>
                   {section.eyebrow}
@@ -154,7 +154,7 @@ export default function WhereToStartPage() {
         topColor={sectionBgVar[sections[sections.length - 1].bg]}
         bottomColor="var(--color-tr-vp)"
       />
-      <section className="bg-tr-vp px-10 py-14">
+      <section className="bg-tr-vp px-10 pt-4 pb-20">
         <Container width="mid">
           <SectionHeader
             eyebrow="Reading room"
