@@ -42,6 +42,13 @@ const SPECIALIZATIONS = [
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+const HOURS = [
+  "Early morning (6–9a)",
+  "Morning (9a–12p)",
+  "Afternoon (12–5p)",
+  "Evening (5–9p)",
+];
+
 interface FormData {
   firstName: string;
   lastName: string;
@@ -62,6 +69,7 @@ interface FormData {
   virtual: boolean;
   inHome: boolean;
   availableDays: string[];
+  availableHours: string[];
 }
 
 export function ServicesForm() {
@@ -87,6 +95,7 @@ export function ServicesForm() {
     virtual: false,
     inHome: true,
     availableDays: [],
+    availableHours: [],
   });
 
   function field(key: keyof FormData) {
@@ -121,6 +130,15 @@ export function ServicesForm() {
       availableDays: d.availableDays.includes(day)
         ? d.availableDays.filter((x) => x !== day)
         : [...d.availableDays, day],
+    }));
+  }
+
+  function toggleHour(hour: string) {
+    setData((d) => ({
+      ...d,
+      availableHours: d.availableHours.includes(hour)
+        ? d.availableHours.filter((x) => x !== hour)
+        : [...d.availableHours, hour],
     }));
   }
 
@@ -278,6 +296,18 @@ export function ServicesForm() {
                   </div>
                 </FormField>
 
+                <FormField label="Centered on">
+                  <div className="text-[14px] text-ch">
+                    {data.city && data.state ? (
+                      `${data.city}, ${data.state}`
+                    ) : (
+                      <span className="text-cl italic">
+                        Set your city and state in Step 1.
+                      </span>
+                    )}
+                  </div>
+                </FormField>
+
                 <FormField label="Session types">
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 cursor-pointer text-[13px] text-cm">
@@ -301,7 +331,10 @@ export function ServicesForm() {
                   </div>
                 </FormField>
 
-                <FormField label="Typical availability (select days)">
+                <FormField label="Typical availability">
+                  <p className="text-[12px] text-cl mb-2 -mt-1">
+                    Pick the days and times you typically offer sessions.
+                  </p>
                   <div className="flex gap-2 flex-wrap mt-1">
                     {DAYS.map((day) => (
                       <button
@@ -316,6 +349,23 @@ export function ServicesForm() {
                         ].join(" ")}
                       >
                         {day}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 flex-wrap mt-3">
+                    {HOURS.map((hour) => (
+                      <button
+                        key={hour}
+                        type="button"
+                        onClick={() => toggleHour(hour)}
+                        className={[
+                          "px-4 py-2 rounded-full text-[13px] border cursor-pointer transition-all",
+                          data.availableHours.includes(hour)
+                            ? "bg-tr text-white border-tr"
+                            : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-tr",
+                        ].join(" ")}
+                      >
+                        {hour}
                       </button>
                     ))}
                   </div>
