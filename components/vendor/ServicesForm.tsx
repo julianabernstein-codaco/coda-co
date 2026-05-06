@@ -27,14 +27,17 @@ const SERVICE_TYPES = [
 const SPECIALIZATIONS = [
   "EOL planning",
   "Grief support",
-  "LGBTQ+ affirming",
-  "Bilingual (Spanish)",
-  "Perinatal loss",
   "Dementia",
   "Home-centered dying",
   "Legacy work",
   "Advance directives",
-  "Vigil support",
+  "Events",
+  "Memorial goods",
+  "Wills + estates",
+  "Mediation",
+  "Green burial",
+  "Funerals",
+  "Cleaning + organization",
 ];
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
