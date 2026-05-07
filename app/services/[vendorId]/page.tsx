@@ -6,6 +6,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Stars } from "@/components/ui/Stars";
+import { VendorPhoto } from "@/components/ui/VendorPhoto";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getVendor } from "@/lib/api/vendors";
 import { vendorTypeLabel } from "@/lib/format/vendor";
@@ -174,7 +175,13 @@ export default async function VendorProfilePage({ params }: PageProps) {
       <section className="bg-white px-10 pt-10 pb-12">
         <Container width="mid">
           <div className="flex gap-6 items-start mb-6">
-            <Avatar initials={vendor.initials} size="lg" />
+            <VendorPhoto
+              src={vendor.photoSrc}
+              alt={vendor.name}
+              initials={vendor.initials}
+              size="xl"
+              tone={vendor.photoTone}
+            />
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-3 mb-1">
                 <h1 className="font-serif text-[34px] font-light text-ch leading-tight">

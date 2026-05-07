@@ -18,6 +18,8 @@ export const vendors: Vendor[] = [
     verified: true,
     memberSince: "2021",
     isServiceProvider: false,
+    photoSrc: "/vendors/mui-7.jpg",
+    photoTone: "sage",
   },
   {
     id: "maria-rosales",
@@ -42,6 +44,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["throughout"],
     verified: true,
     memberSince: "2022",
+    photoSrc: "/vendors/mui-4.jpg",
+    photoTone: "terracotta",
   },
   {
     id: "threshold-wellness",
@@ -66,6 +70,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["throughout"],
     verified: true,
     memberSince: "2023",
+    photoSrc: "/vendors/mui-2.jpg",
+    photoTone: "sage",
   },
   {
     id: "jade-castillo",
@@ -90,6 +96,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["throughout"],
     verified: false,
     memberSince: "2023",
+    photoSrc: "/vendors/JMB%20headshot.JPG",
+    photoTone: "terracotta",
   },
   {
     id: "james-thornton",
@@ -114,6 +122,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["throughout"],
     verified: true,
     memberSince: "2022",
+    photoSrc: "/vendors/mui-1.jpg",
+    photoTone: "sage",
   },
   {
     id: "keepsake-co",
@@ -132,6 +142,8 @@ export const vendors: Vendor[] = [
     verified: true,
     memberSince: "2022",
     isServiceProvider: false,
+    photoSrc: "/vendors/mui-5.jpg",
+    photoTone: "terracotta",
   },
   {
     id: "gentle-passage",
@@ -149,6 +161,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["active-dying", "post-death"],
     verified: true,
     memberSince: "2023",
+    photoSrc: "/vendors/mui-3.jpg",
+    photoTone: "sage",
   },
   {
     id: "threshold-press",
@@ -166,6 +180,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["planning-ahead"],
     verified: true,
     memberSince: "2021",
+    photoSrc: "/vendors/mui-7.jpg",
+    photoTone: "terracotta",
   },
   {
     id: "green-passage",
@@ -184,6 +200,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["active-dying", "post-death"],
     verified: false,
     memberSince: "2023",
+    photoSrc: "/vendors/mui-4.jpg",
+    photoTone: "sage",
   },
   {
     id: "still-life-studio",
@@ -202,6 +220,8 @@ export const vendors: Vendor[] = [
     verified: true,
     memberSince: "2024",
     isServiceProvider: false,
+    photoSrc: "/vendors/mui-2.jpg",
+    photoTone: "terracotta",
   },
   {
     id: "sunlight-leaving",
@@ -219,6 +239,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["throughout"],
     verified: true,
     memberSince: "2023",
+    photoSrc: "/vendors/mui-5.jpg",
+    photoTone: "sage",
   },
   {
     id: "alma-park-celebrations",
@@ -236,6 +258,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["active-dying", "post-death"],
     verified: true,
     memberSince: "2022",
+    photoSrc: "/vendors/mui-1.jpg",
+    photoTone: "terracotta",
   },
   {
     id: "front-range-death-cafe",
@@ -254,6 +278,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["throughout"],
     verified: true,
     memberSince: "2021",
+    photoSrc: "/vendors/mui-3.jpg",
+    photoTone: "sage",
   },
   {
     id: "denver-death-cafe-collective",
@@ -272,6 +298,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["throughout"],
     verified: true,
     memberSince: "2022",
+    photoSrc: "/vendors/mui-4.jpg",
+    photoTone: "terracotta",
   },
   {
     id: "willow-grief-therapy",
@@ -296,6 +324,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["active-dying", "post-death"],
     verified: true,
     memberSince: "2021",
+    photoSrc: "/vendors/mui-7.jpg",
+    photoTone: "sage",
   },
   {
     id: "marcus-okafor-grief",
@@ -320,6 +350,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["active-dying", "post-death"],
     verified: true,
     memberSince: "2020",
+    photoSrc: "/vendors/mui-5.jpg",
+    photoTone: "terracotta",
   },
   {
     id: "prairie-rest-conservation",
@@ -344,6 +376,8 @@ export const vendors: Vendor[] = [
     lifeStages: ["active-dying", "post-death"],
     verified: true,
     memberSince: "2022",
+    photoSrc: "/vendors/mui-2.jpg",
+    photoTone: "sage",
   },
   {
     id: "aspen-meadow-natural-burial",
@@ -362,5 +396,7 @@ export const vendors: Vendor[] = [
     lifeStages: ["active-dying", "post-death"],
     verified: true,
     memberSince: "2023",
+    photoSrc: "/vendors/mui-1.jpg",
+    photoTone: "terracotta",
   },
 ];

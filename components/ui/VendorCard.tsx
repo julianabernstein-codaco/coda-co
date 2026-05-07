@@ -1,8 +1,8 @@
 import Link from "next/link";
 import type { Vendor } from "@/lib/types";
-import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { Stars } from "@/components/ui/Stars";
+import { VendorPhoto } from "@/components/ui/VendorPhoto";
 import { vendorTypeLabel, vendorLocationSuffix } from "@/lib/format/vendor";
 
 type Layout = "compact" | "search";
@@ -20,7 +20,13 @@ export function VendorCard({ vendor, layout = "compact" }: VendorCardProps) {
 function VendorCompactCard({ vendor }: { vendor: Vendor }) {
   return (
     <Card hoverTone="sage" href={`/services/${vendor.id}`}>
-      <Avatar initials={vendor.initials} className="mb-3" />
+      <VendorPhoto
+        src={vendor.photoSrc}
+        alt={vendor.name}
+        initials={vendor.initials}
+        tone={vendor.photoTone}
+        className="mb-3"
+      />
       <div className="text-[14px] font-medium text-ch mb-[2px]">{vendor.name}</div>
       <div className="text-[10px] tracking-[.08em] uppercase text-cl mb-[7px]">
         {vendorTypeLabel(vendor.type)}
@@ -39,9 +45,15 @@ function VendorSearchCard({ vendor }: { vendor: Vendor }) {
   return (
     <Card
       hoverTone="sage"
-      className="mb-3 grid grid-cols-[48px_1fr_120px] gap-3 items-start"
+      className="mb-3 grid grid-cols-[64px_1fr_120px] gap-3 items-start"
     >
-      <Avatar initials={vendor.initials} size="lg" />
+      <VendorPhoto
+        src={vendor.photoSrc}
+        alt={vendor.name}
+        initials={vendor.initials}
+        size="lg"
+        tone={vendor.photoTone}
+      />
 
       <div className="min-w-0">
         <Link
