@@ -41,12 +41,6 @@ shipped in `node_modules/next/dist/docs/` rather than relying on memory.
   patterns banned below and explains what to use instead. Treat it as
   required: a clean run is part of "done".
 
-## Prototype fidelity
-
-`index.html.reference` is the visual + copy source of truth. When a page
-drifts from the prototype, port the prototype's structure/classes/copy
-faithfully — don't rewrite freehand.
-
 ## Reuse conventions — read before adding markup
 
 The project has a curated set of UI primitives and design tokens. Use
