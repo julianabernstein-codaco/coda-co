@@ -31,4 +31,4 @@ The original design lives in `index.html.reference` — a single self-contained
 HTML file with all routes rendered as `.pg` panes (`#p0` homepage, `#p1`
 services, `#p2` product detail, etc.). It's the source of truth for layout,
 copy, colors, and spacing. When porting a page, treat the prototype as
-canonical and keep the Next.js version faithful to it 
+canonical and keep the Next.js version faithful to it. 
