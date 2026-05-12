@@ -268,5 +268,5 @@ non-component markup). Don't reinvent them.
 
 // GOOD
 const { toggleBool } = useFilterParams();
-<button onClick={() => toggleBool("verified")}>…</button>
+<button onClick={() => toggleBool("verified")}>…</button> 
 ```
