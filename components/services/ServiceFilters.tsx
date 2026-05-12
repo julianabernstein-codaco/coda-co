@@ -7,6 +7,7 @@ import { FilterCheck } from "@/components/ui/filters/FilterCheck";
 import { FilterSection } from "@/components/ui/filters/FilterSection";
 import { FilterDivider } from "@/components/ui/filters/FilterDivider";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
+import { SPECIALIZATIONS } from "@/lib/data/specializations";
 
 const DISTANCES = ["5 mi", "15 mi", "30 mi", "50 mi", "Virtual only"];
 const RATINGS = [
@@ -14,14 +15,6 @@ const RATINGS = [
   { value: "3", label: "3+" },
   { value: "4", label: "4+" },
   { value: "5", label: "5 only" },
-];
-
-const SPECIALIZATIONS = [
-  "EOL planning",
-  "Grief support",
-  "LGBTQ+ affirming",
-  "Bilingual (Spanish)",
-  "Perinatal loss",
 ];
 
 const VERIFIED_OPTIONS = [
