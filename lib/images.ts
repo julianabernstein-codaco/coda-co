@@ -1,6 +1,10 @@
 // Shared validation for vendor-uploaded images. Used by both the client
 // uploader (for immediate user feedback) and the server action (the real
 // gate). Keep the rules in one place so they don't drift.
+//
+// Browser-safe — no Node-only dependencies. The sharp-based re-encode
+// pipeline lives in lib/images.server.ts so it doesn't get pulled into
+// client bundles.
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
@@ -63,3 +67,4 @@ export function validateImageFile(file: File): ImageValidationError | null {
   }
   return null;
 }
+

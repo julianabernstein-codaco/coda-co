@@ -4,12 +4,10 @@ import { revalidatePath } from "next/cache";
 import { del, put } from "@vercel/blob";
 import { requireVendor } from "@/app/dashboard/lib";
 import { prisma } from "@/lib/db";
-import {
-  extensionForMime,
-  isOwnedBlobUrl,
-  validateImageFile,
-} from "@/lib/images";
+import { isOwnedBlobUrl } from "@/lib/images";
+import { processUploadedImage } from "@/lib/images.server";
 import { log } from "@/lib/log";
+import { rateLimit } from "@/lib/rate-limit";
 
 const TONES = ["sage", "terracotta"] as const;
 type Tone = (typeof TONES)[number];
@@ -39,16 +37,19 @@ export async function updateVendorProfile(
 
   let nextPhotoUrl: string | null | undefined; // undefined = leave column alone
   if (hasNewPhoto) {
-    const problem = validateImageFile(photo);
-    if (problem) {
-      return { status: "error", error: problem.message };
-    }
-    const ext = extensionForMime(photo.type);
-    const key = `vendors/${vendor.slug}/photo-${Date.now()}.${ext}`;
-    const blob = await put(key, photo, {
-      access: "public",
-      contentType: photo.type,
+    const limited = rateLimit(`upload:${vendor.userId}`, {
+      limit: 100,
+      windowMs: 60 * 60 * 1000,
     });
+    if (!limited.ok) {
+      log.warn("upload.rate_limited", { kind: "vendor_photo", vendorId: vendor.id });
+      return { status: "error", error: "Too many uploads. Try again later." };
+    }
+    const processed = await processUploadedImage(photo);
+    if (!processed.ok) return { status: "error", error: processed.error };
+    const { buffer, contentType, ext } = processed.image;
+    const key = `vendors/${vendor.slug}/photo-${Date.now()}.${ext}`;
+    const blob = await put(key, buffer, { access: "public", contentType });
     nextPhotoUrl = blob.url;
   }
 
