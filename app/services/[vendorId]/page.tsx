@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { Avatar } from "@/components/ui/Avatar";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Stars } from "@/components/ui/Stars";
@@ -33,6 +32,8 @@ interface TeamMember {
   name: string;
   role: string;
   bio: string;
+  photoSrc?: string;
+  photoTone?: "sage" | "terracotta";
 }
 
 interface Offering {
@@ -68,18 +69,21 @@ const VENDOR_EXTRAS: Record<string, VendorExtras> = {
         name: "Helen Park, RN, INELDA",
         role: "Hospital & home transitions",
         bio: "Twenty years as an oncology nurse before training as a death doula. Helen leads our medical-facility work and supports families navigating ICU and hospice handoffs.",
+        photoTone: "sage",
       },
       {
         initials: "MO",
         name: "Marisol Ortega, CEND",
         role: "Cultural & ceremonial customs",
         bio: "Bilingual Spanish/English. Marisol brings ten years of bereavement and ceremony work, with a focus on multi-generational and multi-faith families.",
+        photoTone: "terracotta",
       },
       {
         initials: "RL",
         name: "Rae Linville, INELDA",
         role: "Dementia & family communication",
         bio: "Specializes in supporting families when a loved one has dementia or is no longer able to participate in their own end-of-life decisions.",
+        photoTone: "sage",
       },
     ],
     offerings: [
@@ -230,7 +234,13 @@ export default async function VendorProfilePage({ params }: PageProps) {
                       className="bg-white rounded-[10px] p-5 border border-line"
                     >
                       <div className="flex items-center gap-3 mb-3">
-                        <Avatar initials={member.initials} size="md" />
+                        <VendorPhoto
+                          src={member.photoSrc}
+                          alt={member.name}
+                          initials={member.initials}
+                          size="md"
+                          tone={member.photoTone}
+                        />
                         <div className="min-w-0">
                           <div className="text-[14px] font-medium text-ch truncate">
                             {member.name}
