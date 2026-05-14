@@ -53,11 +53,15 @@ const sections = [
   },
   {
     eyebrow: "Honoring someone",
-    heading: "If you want to create a memorial",
-    body: "Meaningful objects and rituals help. A handmade urn, a memorial portrait, an ash pendant — these are ways of keeping someone present. There is no right or wrong way to honor a life.",
+    heading: "Celebrations of life, memorial services, and items to honor loved ones",
+    body: "Rituals and meaningful objects can help. Whether you are looking to plan a personalized memorial or curious what goods are available to remember your loved one, we can help find ways to keep someone present. There is no right or wrong way to honor a life.",
     links: [
       { label: "Shop memorial goods →", href: "/shop?category=memorial" },
       { label: "Shop urns & vessels →", href: "/shop?category=urns" },
+      {
+        label: "Find help planning a memorial or celebration of life →",
+        href: "/services?type=celebrant",
+      },
     ],
     bg: "bg-pl",
     accent: "text-tr",
