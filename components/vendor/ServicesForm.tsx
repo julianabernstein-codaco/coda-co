@@ -26,6 +26,12 @@ const HOURS = [
   "Evening (5–9p)",
 ];
 
+// Server-side limits live on the application action — keep these in
+// sync if either side changes.
+const BIO_MAX = 500;
+const DESC_MAX = 500;
+const NOTES_MAX = 500;
+
 interface FormData {
   firstName: string;
   lastName: string;
@@ -37,9 +43,11 @@ interface FormData {
   website: string;
   city: string;
   state: string;
+  zip: string;
   bio: string;
   serviceType: string;
   serviceDescription: string;
+  pricingNotes: string;
   specializations: string[];
   lifeStages: LifeStage[];
   radius: string;
@@ -65,9 +73,11 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
     website: "",
     city: "",
     state: "",
+    zip: "",
     bio: "",
     serviceType: serviceTypes[0]?.slug ?? "",
     serviceDescription: "",
+    pricingNotes: "",
     specializations: [],
     lifeStages: [],
     radius: "15 mi",
@@ -162,7 +172,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 <FormField label="Facebook page (optional)">
                   <input className={inputCls} placeholder="facebook.com/yourpage" {...field("facebook")} />
                 </FormField>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-[2fr_1fr_1fr] gap-4">
                   <FormField label="City">
                     <input className={inputCls} placeholder="Brooklyn" {...field("city")} />
                   </FormField>
@@ -173,14 +183,17 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                       ))}
                     </select>
                   </FormField>
+                  <FormField label="Zip">
+                    <input
+                      className={inputCls}
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      maxLength={10}
+                      placeholder="11201"
+                      {...field("zip")}
+                    />
+                  </FormField>
                 </div>
-                <FormField label="About you (shown on your profile)">
-                  <textarea
-                    className={`${inputCls} min-h-[100px] resize-y`}
-                    placeholder="Your background, approach, and what clients can expect…"
-                    {...field("bio")}
-                  />
-                </FormField>
               </>
             )}
 
@@ -197,14 +210,42 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                     ))}
                   </select>
                 </FormField>
-                <FormField label="Service description">
+                <FormField label="About you" required>
+                  <textarea
+                    className={`${inputCls} min-h-[100px] resize-y`}
+                    placeholder="A short bio to tell clients and other vendors who you are. Feel free to include quirks or specifics about you that are truly unique."
+                    maxLength={BIO_MAX}
+                    required
+                    {...field("bio")}
+                  />
+                  <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+                    {data.bio.length} / {BIO_MAX}
+                  </div>
+                </FormField>
+                <FormField label="Service description" required>
                   <textarea
                     className={`${inputCls} min-h-[120px] resize-y`}
-                    placeholder="Describe what you offer, your approach, typical session structure, pricing, etc."
+                    placeholder="Describe your usual services, including any packages that you offer."
+                    maxLength={DESC_MAX}
+                    required
                     {...field("serviceDescription")}
                   />
+                  <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+                    {data.serviceDescription.length} / {DESC_MAX}
+                  </div>
                 </FormField>
-                <FormField label="Specializations (select all that apply)">
+                <FormField label="Pricing notes">
+                  <textarea
+                    className={`${inputCls} min-h-[120px] resize-y`}
+                    placeholder={`Please list detailed information about your pricing. Examples: "Hourly rates range from $55–125/hour. Sliding scale available." Also please list prices or price ranges for packages that you offer.`}
+                    maxLength={NOTES_MAX}
+                    {...field("pricingNotes")}
+                  />
+                  <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+                    {data.pricingNotes.length} / {NOTES_MAX}
+                  </div>
+                </FormField>
+                <FormField label="Additional specializations (select all that apply)">
                   <div className="flex flex-wrap gap-2 mt-1">
                     {SPECIALIZATIONS.map((s) => (
                       <button
@@ -277,11 +318,13 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
 
                 <FormField label="Centered on">
                   <div className="text-[14px] text-ch">
-                    {data.city && data.state ? (
-                      `${data.city}, ${data.state}`
+                    {data.zip ? (
+                      data.city && data.state
+                        ? `${data.city}, ${data.state} ${data.zip}`
+                        : data.zip
                     ) : (
                       <span className="text-cl italic">
-                        Set your city and state in Step 1.
+                        Set your zip code in Step 1.
                       </span>
                     )}
                   </div>
@@ -363,22 +406,35 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                     {
                       id: "starter" as const,
                       name: "Starter",
-                      price: "Free",
-                      features: ["1 service profile", "CodaCo messaging", "Basic visibility"],
+                      price: "Free for 3 mo",
+                      features: [
+                        "Service profile",
+                        "CodaCo messaging",
+                        "Direct client payments through CodaCo",
+                      ],
                       popular: false,
                     },
                     {
                       id: "standard" as const,
                       name: "Standard",
-                      price: "$12/mo",
-                      features: ["Unlimited profiles", "Verified badge", "Client reviews", "Priority search"],
+                      price: "$14/mo or $150/yr",
+                      features: [
+                        "Everything in Starter",
+                        "Verified badge (pending CodaCo verification)",
+                        "Client reviews",
+                      ],
                       popular: true,
                     },
                     {
                       id: "pro" as const,
                       name: "Pro",
-                      price: "$29/mo",
-                      features: ["Featured placement", "Advanced analytics", "Priority support", "Team accounts"],
+                      price: "$29/mo or $320/yr",
+                      features: [
+                        "Everything in Standard",
+                        "Unlimited service profiles",
+                        "Priority support",
+                        "Direct scheduling through CodaCo",
+                      ],
                       popular: false,
                     },
                   ].map((p) => {
@@ -447,6 +503,11 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                       city: data.city,
                       state: data.state,
                       planId: plan,
+                      specializations: data.specializations,
+                      zip: data.zip,
+                      serviceDescription: data.serviceDescription,
+                      pricingNotes: data.pricingNotes,
+                      lifeStages: data.lifeStages,
                     });
                     if (result?.error) setSubmitError(result.error);
                   });
@@ -470,10 +531,21 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
   );
 }
 
-function FormField({ label, children }: { label: string; children: React.ReactNode }) {
+function FormField({
+  label,
+  required,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div className="mb-4">
-      <label className="block text-[12px] font-medium text-ch mb-1.5">{label}</label>
+      <label className="block text-[12px] font-medium text-ch mb-1.5">
+        {label}
+        {required && <span className="text-tr ml-0.5">*</span>}
+      </label>
       {children}
     </div>
   );

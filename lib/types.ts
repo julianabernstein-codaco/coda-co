@@ -95,6 +95,18 @@ export interface Vendor {
   memberSince?: string;
   photoSrc?: string;
   photoTone?: "sage" | "terracotta";
+  // Public profile extras — all optional. Vendors fill them in from
+  // the dashboard; the public profile renders only what's set.
+  websiteUrl?: string;
+  instagramHandle?: string;
+  serviceRadius?: string;
+  serviceFormats?: string;
+  serviceDays?: string;
+  serviceHours?: string;
+  zip?: string;
+  serviceDescription?: string;
+  pricingNotes?: string;
+  specializations: string[];
 }
 
 export interface VendorWithRating extends Vendor {
@@ -189,8 +201,13 @@ export interface Plan {
   name: string;
   price: number | null;
   period: "month" | null;
+  // Discounted annual price, when offered alongside the monthly tier.
+  priceYearly?: number | null;
+  // Free-trial label shown in place of the price (e.g. "Free for 3 months").
+  trial?: string;
   features: string[];
   popular: boolean;
+  // Empty string hides the line on the plan card.
   transactionFee: string;
   targetType: "goods" | "services" | "both";
 }

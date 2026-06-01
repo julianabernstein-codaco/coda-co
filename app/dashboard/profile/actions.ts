@@ -3,11 +3,26 @@
 import { revalidatePath } from "next/cache";
 import { del, put } from "@vercel/blob";
 import { requireVendor } from "@/app/dashboard/lib";
+import { isValidSpecialization } from "@/lib/data/specializations";
 import { prisma } from "@/lib/db";
 import { isOwnedBlobUrl } from "@/lib/images";
 import { processUploadedImage } from "@/lib/images.server";
 import { log } from "@/lib/log";
 import { rateLimit } from "@/lib/rate-limit";
+
+const VALID_LIFE_STAGES = new Set<string>([
+  "planning-ahead",
+  "active-dying",
+  "post-death",
+  "throughout",
+]);
+
+// Server-side caps on the three textarea fields. Mirrors the
+// maxLength + counter values on ProfileForm and the equivalents on
+// the application form / submit action — keep all in sync.
+const BIO_MAX = 500;
+const DESC_MAX = 500;
+const NOTES_MAX = 500;
 
 const TONES = ["sage", "terracotta"] as const;
 type Tone = (typeof TONES)[number];
@@ -21,6 +36,32 @@ export type ProfileFormState =
   | { status: "ok" }
   | { status: "error"; error: string };
 
+// Trims; empty/whitespace -> null so we don't persist "" or pad rows.
+function emptyToNull(raw: FormDataEntryValue | null): string | null {
+  const s = String(raw ?? "").trim();
+  return s === "" ? null : s;
+}
+
+// Instagram handle: strip any leading @ so display is consistent.
+function normalizeInstagram(raw: FormDataEntryValue | null): string | null {
+  const s = emptyToNull(raw);
+  return s ? s.replace(/^@+/, "") : null;
+}
+
+// Light website URL sanity check. Accepts http(s) URLs only; rejects
+// scheme-less inputs ("example.com") so we never produce a broken link.
+function normalizeWebsite(raw: FormDataEntryValue | null): string | null | "invalid" {
+  const s = emptyToNull(raw);
+  if (!s) return null;
+  try {
+    const u = new URL(s);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return "invalid";
+    return u.toString();
+  } catch {
+    return "invalid";
+  }
+}
+
 export async function updateVendorProfile(
   _prev: ProfileFormState,
   formData: FormData,
@@ -31,6 +72,73 @@ export async function updateVendorProfile(
   if (!isTone(toneRaw)) {
     return { status: "error", error: "Pick a frame color." };
   }
+
+  const websiteUrl = normalizeWebsite(formData.get("websiteUrl"));
+  if (websiteUrl === "invalid") {
+    return { status: "error", error: "Website URL must start with http:// or https://." };
+  }
+
+  const bioRaw = String(formData.get("bio") ?? "");
+  if (!bioRaw.trim()) {
+    return { status: "error", error: "Add a short bio." };
+  }
+  if (bioRaw.length > BIO_MAX) {
+    return {
+      status: "error",
+      error: `Bio is too long — keep it under ${BIO_MAX} characters.`,
+    };
+  }
+  const bio = bioRaw.trim();
+
+  const descRaw = String(formData.get("serviceDescription") ?? "");
+  if (!descRaw.trim()) {
+    return { status: "error", error: "Add a service description." };
+  }
+  if (descRaw.length > DESC_MAX) {
+    return {
+      status: "error",
+      error: `Service description is too long — keep it under ${DESC_MAX} characters.`,
+    };
+  }
+  const serviceDescription = descRaw.trim();
+
+  const notesRaw = String(formData.get("pricingNotes") ?? "");
+  if (notesRaw.length > NOTES_MAX) {
+    return {
+      status: "error",
+      error: `Pricing notes are too long — keep them under ${NOTES_MAX} characters.`,
+    };
+  }
+  const pricingNotes = notesRaw.trim() || null;
+
+  const instagramHandle = normalizeInstagram(formData.get("instagramHandle"));
+  const serviceRadius = emptyToNull(formData.get("serviceRadius"));
+  const serviceFormats = emptyToNull(formData.get("serviceFormats"));
+  const serviceDays = emptyToNull(formData.get("serviceDays"));
+  const serviceHours = emptyToNull(formData.get("serviceHours"));
+
+  // Hidden inputs in the form each carry one selected spec; getAll
+  // collects them. Drop anything not in the canonical list (the client
+  // can only have made it onto an unknown value through tampering) and
+  // de-dupe.
+  const specializations = Array.from(
+    new Set(
+      formData
+        .getAll("specializations")
+        .map((v) => String(v))
+        .filter(isValidSpecialization),
+    ),
+  );
+  const lifeStages = Array.from(
+    new Set(
+      formData
+        .getAll("lifeStages")
+        .map((v) => String(v))
+        .filter((s) => VALID_LIFE_STAGES.has(s)),
+    ),
+  );
+
+  const zip = emptyToNull(formData.get("zip"));
 
   const photo = formData.get("photo");
   const hasNewPhoto = photo instanceof File && photo.size > 0;
@@ -57,6 +165,18 @@ export async function updateVendorProfile(
     where: { id: vendor.id },
     data: {
       photoTone: toneRaw,
+      bio,
+      websiteUrl,
+      instagramHandle,
+      serviceRadius,
+      serviceFormats,
+      serviceDays,
+      serviceHours,
+      specializations,
+      zip,
+      serviceDescription,
+      pricingNotes,
+      lifeStages,
       ...(nextPhotoUrl !== undefined ? { photoSrc: nextPhotoUrl } : {}),
     },
   });

@@ -1,6 +1,10 @@
 import type { ApplicationKind, ApplicationStatus, SubscriptionPlanId } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
+import {
+  sendApplicationApprovedEmail,
+  sendApplicationRejectedEmail,
+} from "@/lib/email/templates";
 import { log } from "@/lib/log";
 
 export interface ApplicationDraft {
@@ -11,6 +15,11 @@ export interface ApplicationDraft {
   proposedBio: string;
   location: string;
   planId: SubscriptionPlanId;
+  specializations: string[];
+  zip: string | null;
+  serviceDescription: string | null;
+  pricingNotes: string | null;
+  lifeStages: string[];
 }
 
 // Slug must be URL-safe and unique. We strip everything but lowercase
@@ -34,6 +43,11 @@ export async function createApplication(draft: ApplicationDraft) {
       proposedBio: draft.proposedBio,
       location: draft.location,
       planId: draft.planId,
+      specializations: draft.specializations,
+      zip: draft.zip,
+      serviceDescription: draft.serviceDescription,
+      pricingNotes: draft.pricingNotes,
+      lifeStages: draft.lifeStages,
       status: "submitted",
     },
   });
@@ -67,8 +81,11 @@ export async function getApplication(id: string) {
 // approved application can't leave a vendor without a subscription.
 export async function approveApplication(applicationId: string, reviewerId: string) {
   try {
-    const vendor = await prisma.$transaction(async (tx) => {
-      const app = await tx.vendorApplication.findUnique({ where: { id: applicationId } });
+    const { vendor, applicant } = await prisma.$transaction(async (tx) => {
+      const app = await tx.vendorApplication.findUnique({
+        where: { id: applicationId },
+        include: { applicant: { select: { email: true, name: true } } },
+      });
       if (!app) throw new Error("Application not found");
       if (app.status !== "submitted") throw new Error("Application is not pending review");
 
@@ -83,6 +100,11 @@ export async function approveApplication(applicationId: string, reviewerId: stri
           location: app.location,
           kind: app.kind,
           verified: false,
+          specializations: app.specializations,
+          zip: app.zip,
+          serviceDescription: app.serviceDescription,
+          pricingNotes: app.pricingNotes,
+          lifeStages: app.lifeStages,
         },
       });
 
@@ -104,7 +126,7 @@ export async function approveApplication(applicationId: string, reviewerId: stri
         },
       });
 
-      return vendor;
+      return { vendor, applicant: app.applicant };
     });
     log.info("application.approved", {
       applicationId,
@@ -112,6 +134,23 @@ export async function approveApplication(applicationId: string, reviewerId: stri
       vendorId: vendor.id,
       vendorSlug: vendor.slug,
     });
+
+    // Best-effort approval email — never roll the transaction back over
+    // a transport failure. The vendor row is the source of truth; a
+    // missed email is a logged warning, not a broken approval.
+    const emailResult = await sendApplicationApprovedEmail({
+      toEmail: applicant.email,
+      toName: applicant.name ?? null,
+      displayName: vendor.displayName,
+      vendorSlug: vendor.slug,
+    });
+    if (!emailResult.ok) {
+      log.warn("application.approval_email_failed", {
+        applicationId,
+        vendorId: vendor.id,
+        err: emailResult.error,
+      });
+    }
     return vendor;
   } catch (err) {
     log.error("application.approve_failed", { applicationId, reviewerId, err });
@@ -128,12 +167,26 @@ export async function rejectApplication(applicationId: string, reviewerId: strin
       reviewedAt: new Date(),
       reviewNotes: notes,
     },
+    include: { applicant: { select: { email: true, name: true } } },
   });
   log.info("application.rejected", {
     applicationId,
     reviewerId,
     hasNotes: Boolean(notes),
   });
+
+  const emailResult = await sendApplicationRejectedEmail({
+    toEmail: updated.applicant.email,
+    toName: updated.applicant.name ?? null,
+    displayName: updated.proposedDisplayName,
+    notes,
+  });
+  if (!emailResult.ok) {
+    log.warn("application.rejection_email_failed", {
+      applicationId,
+      err: emailResult.error,
+    });
+  }
   return updated;
 }
 

@@ -48,7 +48,22 @@ export default async function VendorProfilePage() {
             </p>
           </div>
 
-          <ProfileForm currentPhotoSrc={vendor.photoSrc} currentTone={tone} />
+          <ProfileForm
+            currentPhotoSrc={vendor.photoSrc}
+            currentTone={tone}
+            currentBio={vendor.bio}
+            currentWebsiteUrl={vendor.websiteUrl}
+            currentInstagramHandle={vendor.instagramHandle}
+            currentServiceRadius={vendor.serviceRadius}
+            currentServiceFormats={vendor.serviceFormats}
+            currentServiceDays={vendor.serviceDays}
+            currentServiceHours={vendor.serviceHours}
+            currentSpecializations={vendor.specializations}
+            currentZip={vendor.zip}
+            currentServiceDescription={vendor.serviceDescription}
+            currentPricingNotes={vendor.pricingNotes}
+            currentLifeStages={vendor.lifeStages}
+          />
         </Container>
       </section>
     </>
