@@ -186,13 +186,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
             <ServiceGrid vendors={vendors} servicesByVendor={servicesByVendor} />
 
-            {totalProviders > filtered && (
-              <div className="text-center pt-2">
-                <a className="inline-block text-[13px] text-tr border-b border-dotted border-tr-l cursor-pointer hover:text-tr-d">
-                  Show {totalProviders - filtered} more results →
-                </a>
-              </div>
-            )}
             <div className="text-center mt-3">
               <Link
                 href="/where-to-start"
