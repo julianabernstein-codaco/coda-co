@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { BookshopWidget } from "@/components/BookshopWidget";
 import { Container } from "@/components/ui/Container";
+import { BOOKSHOP_AFFILIATE_ID, bookshopAffiliateUrl } from "@/lib/bookshop";
 
 export const metadata: Metadata = {
   title: "Books — CodaCo",
@@ -12,6 +13,7 @@ const books = [
   {
     title: "Briefly Perfectly Human",
     author: "Alua Arthur",
+    isbn: "9780063240063",
     bg: "#8B4F42",
     desc: "Death doula Alua Arthur explores what it means to be alive through honest, moving encounters with the dying.",
     overlay: (
@@ -26,6 +28,7 @@ const books = [
   {
     title: "Smoke Gets in Your Eyes",
     author: "Caitlin Doughty",
+    isbn: "9780393351903",
     bg: "#3D5C47",
     desc: "A mortician's dark, funny memoir challenging how Americans hide from death — and why we shouldn't.",
     overlay: (
@@ -38,6 +41,7 @@ const books = [
   {
     title: "Being Mortal",
     author: "Atul Gawande",
+    isbn: "9781250076229",
     bg: "#4A4030",
     desc: "A physician's exploration of how medicine can better serve people at the end of life on their own terms.",
     overlay: (
@@ -50,6 +54,7 @@ const books = [
   {
     title: "When Breath Becomes Air",
     author: "Paul Kalanithi",
+    isbn: "9780812988406",
     bg: "#2C3A5A",
     desc: "A young neurosurgeon's luminous memoir, written as he faced his own terminal diagnosis.",
     overlay: (
@@ -62,6 +67,7 @@ const books = [
   {
     title: "The Party of Your Life",
     author: "Erika Dillman",
+    isbn: "9781595800626",
     bg: "#6B4561",
     desc: "A practical, surprisingly buoyant workbook for designing the funeral you actually want — and sparing the people you love a guessing game.",
     overlay: (
@@ -76,6 +82,7 @@ const books = [
   {
     title: "A Beginner's Guide to the End",
     author: "BJ Miller & Shoshana Berger",
+    isbn: "9781501157219",
     bg: "#4A5A5C",
     desc: "A palliative-care physician and a writer team up on a thorough, compassionate field manual for everything dying asks of us.",
     overlay: (
@@ -95,6 +102,7 @@ const books = [
   {
     title: "Never Can Say Goodbye",
     author: "Darnell Lamont Walker",
+    isbn: "9780063421837",
     bg: "#5C3A38",
     desc: "A working death doula's memoir of holding space at the bedside, and what the dying have to teach the rest of us about a peaceful end.",
     overlay: (
@@ -108,6 +116,7 @@ const books = [
   {
     title: "With the End in Mind",
     author: "Kathryn Mannix",
+    isbn: "9780316504478",
     bg: "#3F4D4A",
     desc: "A palliative-care doctor's gentle, story-rich case that a good death is still possible — and often nearer than we fear.",
     overlay: (
@@ -143,14 +152,27 @@ export default function BooksPage() {
               sku="9780063240063"
               type="featured"
               fullInfo
-              affiliateId="124868"
+              affiliateId={BOOKSHOP_AFFILIATE_ID}
+              fallback={
+                <a
+                  href={bookshopAffiliateUrl("9780063240063")}
+                  target="_blank"
+                  rel="sponsored noopener noreferrer"
+                  className="btn-secondary btn-md w-full justify-center"
+                >
+                  View &ldquo;Briefly Perfectly Human&rdquo; on Bookshop.org →
+                </a>
+              }
             />
           </Container>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {books.map((b) => (
-              <div
+              <a
                 key={b.title}
-                className="bg-white border border-line rounded-[10px] overflow-hidden cursor-pointer transition-transform duration-200 hover:-translate-y-0.5"
+                href={bookshopAffiliateUrl(b.isbn)}
+                target="_blank"
+                rel="sponsored noopener noreferrer"
+                className="block bg-white border border-line rounded-[10px] overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
               >
                 <div
                   className="h-[168px] flex items-end p-3.5 relative overflow-hidden"
@@ -170,11 +192,11 @@ export default function BooksPage() {
                   <div className="text-[12px] text-cm leading-[1.5] mb-1.5">
                     {b.desc}
                   </div>
-                  <span className="text-[12px] text-tr border-b border-dotted border-tr-l cursor-pointer">
+                  <span className="text-[12px] text-tr border-b border-dotted border-tr-l">
                     Find this book →
                   </span>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </Container>
