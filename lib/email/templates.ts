@@ -208,6 +208,69 @@ export async function sendApplicationRejectedEmail(
   return sendEmail({ to: args.toEmail, ...buildApplicationRejectedEmail(args) });
 }
 
+export interface VendorInquiryArgs {
+  // Vendor's private account email — the message's `to`, never shown to
+  // the client.
+  toEmail: string;
+  vendorName: string;
+  clientName: string;
+  // Client's email — rendered in the body and set as the message's
+  // reply-to so the vendor can respond with a single tap.
+  clientEmail: string;
+  message: string;
+}
+
+export function buildVendorInquiryEmail(args: VendorInquiryArgs): EmailPayload {
+  const subject = `New inquiry from ${args.clientName} via CodaCo`;
+
+  const text = [
+    `Hi ${args.vendorName},`,
+    "",
+    `You've received a new inquiry through your CodaCo profile.`,
+    "",
+    `From:    ${args.clientName}`,
+    `Email:   ${args.clientEmail}`,
+    "",
+    "Message:",
+    args.message,
+    "",
+    `Just reply to this email and your response goes straight to ${args.clientName}.`,
+    "",
+    "— CodaCo",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">Hi ${escapeHtml(args.vendorName)},</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      You've received a new inquiry through your CodaCo profile.
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px;font-size:14px;line-height:1.6;">
+      <tr><td style="color:#7a7570;padding-right:12px;">From</td><td style="color:#2c2825;">${escapeHtml(args.clientName)}</td></tr>
+      <tr><td style="color:#7a7570;padding-right:12px;">Email</td><td><a href="mailto:${escapeHtml(args.clientEmail)}" style="color:#c1634f;">${escapeHtml(args.clientEmail)}</a></td></tr>
+    </table>
+    <div style="margin:0 0 16px;padding:12px 14px;background:#f5f1ec;border-radius:8px;font-size:14px;line-height:1.6;color:#2c2825;">
+      ${escapeHtml(args.message).replace(/\n/g, "<br>")}
+    </div>
+    <p style="margin:0;font-size:14px;color:#7a7570;line-height:1.55;">
+      Just reply to this email and your response goes straight to ${escapeHtml(args.clientName)}.
+    </p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendVendorInquiryEmail(
+  args: VendorInquiryArgs,
+): Promise<SendResult> {
+  // replyTo = the client so the vendor can reply directly; `to` stays
+  // the vendor's private address, never surfaced to the client.
+  return sendEmail({
+    to: args.toEmail,
+    replyTo: args.clientEmail,
+    ...buildVendorInquiryEmail(args),
+  });
+}
+
 // Basic HTML-escape — applicant-supplied strings render unescaped
 // inside templates otherwise, and could break the layout (or worse).
 function escapeHtml(s: string): string {

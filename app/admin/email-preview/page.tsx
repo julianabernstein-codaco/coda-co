@@ -46,6 +46,14 @@ const SECTIONS: PreviewSection[] = [
     editFn: "buildApplicationRejectedEmail",
     payload: buildSample("rejected"),
   },
+  {
+    key: "inquiry",
+    title: "Vendor inquiry",
+    sentWhen:
+      "When a client submits the contact form on a vendor's public profile. Sent to the vendor's private email with reply-to set to the client, so the vendor replies directly. The inquiry is also saved to the vendor's dashboard.",
+    editFn: "buildVendorInquiryEmail",
+    payload: buildSample("inquiry"),
+  },
 ];
 
 export default async function AdminEmailPreviewPage() {
