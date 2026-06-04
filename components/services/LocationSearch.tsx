@@ -16,8 +16,12 @@ export function LocationSearch() {
   const { get, setParam } = useFilterParams();
   const [value, setValue] = useState(get("near"));
 
-  function submit() {
-    setParam("near", normalizeZip(value) ?? "");
+  // Apply whatever's in the box as the `near` filter. Empties / inputs
+  // with no resolvable zip clear the filter. Guarded so blurring without
+  // an actual change doesn't fire a redundant navigation.
+  function apply() {
+    const next = normalizeZip(value) ?? "";
+    if (next !== get("near")) setParam("near", next);
   }
 
   return (
@@ -33,8 +37,9 @@ export function LocationSearch() {
           className="flex-1 border-0 px-3.5 py-2.5 font-sans text-[13px] text-ch outline-none bg-transparent"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onBlur={apply}
           onKeyDown={(e) => {
-            if (e.key === "Enter") submit();
+            if (e.key === "Enter") apply();
           }}
           inputMode="numeric"
           autoComplete="postal-code"
@@ -43,7 +48,7 @@ export function LocationSearch() {
         />
       </div>
       <button
-        onClick={submit}
+        onClick={apply}
         className="bg-tr text-white border-0 px-[22px] py-[11px] rounded-[8px] text-[13px] font-sans cursor-pointer hover:bg-tr-d transition-colors whitespace-nowrap"
       >
         Search
