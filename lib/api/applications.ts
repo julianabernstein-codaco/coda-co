@@ -17,6 +17,10 @@ export interface ApplicationDraft {
   planId: SubscriptionPlanId;
   specializations: string[];
   zip: string | null;
+  // Numeric service radius in miles (parsed from the signup pill).
+  // Null = no geographic service area. Copied to vendor_profile on
+  // approval to drive the geographic search filter.
+  serviceRadiusMi: number | null;
   serviceDescription: string | null;
   pricingNotes: string | null;
   lifeStages: string[];
@@ -49,6 +53,7 @@ export async function createApplication(draft: ApplicationDraft) {
       planId: draft.planId,
       specializations: draft.specializations,
       zip: draft.zip,
+      serviceRadiusMi: draft.serviceRadiusMi,
       serviceDescription: draft.serviceDescription,
       pricingNotes: draft.pricingNotes,
       lifeStages: draft.lifeStages,
@@ -108,6 +113,7 @@ export async function approveApplication(applicationId: string, reviewerId: stri
           verified: false,
           specializations: app.specializations,
           zip: app.zip,
+          serviceRadiusMi: app.serviceRadiusMi,
           serviceDescription: app.serviceDescription,
           pricingNotes: app.pricingNotes,
           lifeStages: app.lifeStages,

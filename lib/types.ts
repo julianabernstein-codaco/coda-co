@@ -100,6 +100,11 @@ export interface Vendor {
   websiteUrl?: string;
   instagramHandle?: string;
   serviceRadius?: string;
+  // Numeric service radius in miles, driving the geographic search
+  // filter (paired with `zip`). Undefined for vendors with no
+  // geographic service area. `distanceMi` is the *derived* distance
+  // from a given searcher — computed per-query, never persisted.
+  serviceRadiusMi?: number;
   serviceFormats?: string;
   serviceDays?: string;
   serviceHours?: string;
