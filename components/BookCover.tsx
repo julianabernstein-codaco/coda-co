@@ -11,6 +11,8 @@ type BookCoverProps = {
   bg: string;
   /** Fallback geometric overlay, used when no cover image is available. */
   overlay: ReactNode;
+  /** Called once when no cover is available and the spine fallback is shown. */
+  onMissing?: () => void;
 };
 
 /**
@@ -20,7 +22,14 @@ type BookCoverProps = {
  * the original colored spine + geometric overlay, so the tile is never a
  * broken image.
  */
-export function BookCover({ isbn, title, author, bg, overlay }: BookCoverProps) {
+export function BookCover({
+  isbn,
+  title,
+  author,
+  bg,
+  overlay,
+  onMissing,
+}: BookCoverProps) {
   const [failed, setFailed] = useState(false);
 
   if (failed) {
@@ -48,7 +57,10 @@ export function BookCover({ isbn, title, author, bg, overlay }: BookCoverProps) 
         fill
         sizes="(max-width: 768px) 50vw, 220px"
         className="object-contain p-2"
-        onError={() => setFailed(true)}
+        onError={() => {
+          setFailed(true);
+          onMissing?.();
+        }}
         unoptimized
       />
     </div>

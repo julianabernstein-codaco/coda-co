@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { BookCover } from "@/components/BookCover";
+import { BooksGrid } from "@/components/BooksGrid";
 import { BookshopWidget } from "@/components/BookshopWidget";
 import { Container } from "@/components/ui/Container";
 import { BOOKSHOP_AFFILIATE_ID, bookshopAffiliateUrl } from "@/lib/bookshop";
@@ -166,33 +166,7 @@ export default function BooksPage() {
               }
             />
           </Container>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {books.map((b) => (
-              <a
-                key={b.title}
-                href={bookshopAffiliateUrl(b.isbn)}
-                target="_blank"
-                rel="sponsored noopener noreferrer"
-                className="block bg-white border border-line rounded-[10px] overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
-              >
-                <BookCover
-                  isbn={b.isbn}
-                  title={b.title}
-                  author={b.author}
-                  bg={b.bg}
-                  overlay={b.overlay}
-                />
-                <div className="px-4 py-3">
-                  <div className="text-[12px] text-cm leading-[1.5] mb-1.5">
-                    {b.desc}
-                  </div>
-                  <span className="text-[12px] text-tr border-b border-dotted border-tr-l">
-                    Find this book →
-                  </span>
-                </div>
-              </a>
-            ))}
-          </div>
+          <BooksGrid books={books} />
         </Container>
       </section>
     </>
