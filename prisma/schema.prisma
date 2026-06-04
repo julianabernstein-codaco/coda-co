@@ -161,11 +161,17 @@ model VendorProfile {
   serviceHours   String? @map("service_hours")
 
   // Captured from the application form, editable later from the
-  // dashboard. zip is used by the future radius-sort feature;
+  // dashboard. zip + serviceRadiusMi drive the geographic search
+  // filter: a vendor surfaces for a searcher whose zip is within
+  // serviceRadiusMi miles of the vendor's zip. serviceRadiusMi is
+  // null for vendors with no geographic service area (virtual-only,
+  // goods that ship nationwide). serviceRadius stays as the free-form
+  // display string shown on the profile card.
   // serviceDescription is a vendor-level "what I do" overview shown
   // above the per-service list; pricingNotes is free-form pricing
   // context that supplements each service's structured priceCents.
   zip                String? @map("zip")
+  serviceRadiusMi    Int?    @map("service_radius_mi")
   serviceDescription String? @map("service_description")
   pricingNotes       String? @map("pricing_notes")
 
@@ -249,6 +255,7 @@ model VendorApplication {
   // above the per-service list; pricingNotes is free-form pricing
   // context that supplements each service's structured priceCents.
   zip                String?              @map("zip")
+  serviceRadiusMi    Int?                 @map("service_radius_mi")
   serviceDescription String?              @map("service_description")
   pricingNotes       String?              @map("pricing_notes")
   lifeStages         String[]             @default([]) @map("life_stages")

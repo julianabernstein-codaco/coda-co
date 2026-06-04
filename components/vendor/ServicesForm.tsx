@@ -505,6 +505,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                       planId: plan,
                       specializations: data.specializations,
                       zip: data.zip,
+                      radius: data.radius,
                       serviceDescription: data.serviceDescription,
                       pricingNotes: data.pricingNotes,
                       lifeStages: data.lifeStages,
