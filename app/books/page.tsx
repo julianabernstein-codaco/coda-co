@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { BooksGrid } from "@/components/BooksGrid";
-import { BookshopWidget } from "@/components/BookshopWidget";
 import { Container } from "@/components/ui/Container";
-import { BOOKSHOP_AFFILIATE_ID, bookshopAffiliateUrl } from "@/lib/bookshop";
 
 export const metadata: Metadata = {
   title: "Books — CodaCo",
@@ -148,24 +146,6 @@ export default function BooksPage() {
               Honest, beautifully written guides for the journey
             </p>
           </div>
-          <Container width="narrow" className="mb-9">
-            <BookshopWidget
-              sku="9780063240063"
-              type="featured"
-              fullInfo
-              affiliateId={BOOKSHOP_AFFILIATE_ID}
-              fallback={
-                <a
-                  href={bookshopAffiliateUrl("9780063240063")}
-                  target="_blank"
-                  rel="sponsored noopener noreferrer"
-                  className="btn-secondary btn-md w-full justify-center"
-                >
-                  View &ldquo;Briefly Perfectly Human&rdquo; on Bookshop.org →
-                </a>
-              }
-            />
-          </Container>
           <BooksGrid books={books} />
         </Container>
       </section>
