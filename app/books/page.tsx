@@ -25,19 +25,6 @@ const books = [
     ),
   },
   {
-    title: "Smoke Gets in Your Eyes",
-    author: "Caitlin Doughty",
-    isbn: "9780393351903",
-    bg: "#3D5C47",
-    desc: "A mortician's dark, funny memoir challenging how Americans hide from death — and why we shouldn't.",
-    overlay: (
-      <svg width="100%" height="100%" viewBox="0 0 160 170">
-        <circle cx="80" cy="85" r="60" stroke="#fff" strokeWidth=".7" fill="none"/>
-        <circle cx="80" cy="85" r="35" stroke="#fff" strokeWidth=".5" fill="none"/>
-      </svg>
-    ),
-  },
-  {
     title: "Being Mortal",
     author: "Atul Gawande",
     isbn: "9781250076229",
@@ -61,6 +48,19 @@ const books = [
       <svg width="100%" height="100%" viewBox="0 0 160 170">
         <path d="M0 170 Q80 60 160 170" stroke="#fff" strokeWidth=".7" fill="none"/>
         <path d="M0 130 Q80 30 160 130" stroke="#fff" strokeWidth=".5" fill="none"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Smoke Gets in Your Eyes",
+    author: "Caitlin Doughty",
+    isbn: "9780393351903",
+    bg: "#3D5C47",
+    desc: "A mortician's dark, funny memoir challenging how Americans hide from death — and why we shouldn't.",
+    overlay: (
+      <svg width="100%" height="100%" viewBox="0 0 160 170">
+        <circle cx="80" cy="85" r="60" stroke="#fff" strokeWidth=".7" fill="none"/>
+        <circle cx="80" cy="85" r="35" stroke="#fff" strokeWidth=".5" fill="none"/>
       </svg>
     ),
   },
