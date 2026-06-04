@@ -187,6 +187,7 @@ model VendorProfile {
   products      Product[]
   services      Service[]
   vendorReviews VendorReview[]
+  inquiries     VendorInquiry[]
   subscriptions Subscription[]
 
   @@map("vendor_profile")
@@ -456,4 +457,25 @@ model VendorReview {
 
   @@index([vendorId])
   @@map("vendor_reviews")
+}
+
+// Client-to-vendor inquiries from the public profile contact form.
+// Saved before the notification email is sent so a lead is never lost
+// on a delivery failure. readAt is null until the vendor opens their
+// messages — that drives the dashboard's unread badge. The client's
+// email lives here (and is the email's reply-to) but the vendor's email
+// is never exposed to the client.
+model VendorInquiry {
+  id          String    @id @default(cuid())
+  vendorId    String    @map("vendor_id")
+  clientName  String    @map("client_name")
+  clientEmail String    @map("client_email")
+  message     String
+  readAt      DateTime? @map("read_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  vendor VendorProfile @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@map("vendor_inquiries")
 }
