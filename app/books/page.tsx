@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { BookCover } from "@/components/BookCover";
 import { BookshopWidget } from "@/components/BookshopWidget";
 import { Container } from "@/components/ui/Container";
 import { BOOKSHOP_AFFILIATE_ID, bookshopAffiliateUrl } from "@/lib/bookshop";
@@ -174,20 +175,13 @@ export default function BooksPage() {
                 rel="sponsored noopener noreferrer"
                 className="block bg-white border border-line rounded-[10px] overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
               >
-                <div
-                  className="h-[168px] flex items-end p-3.5 relative overflow-hidden"
-                  style={{ background: b.bg }}
-                >
-                  <div className="absolute inset-0 opacity-[.13]">{b.overlay}</div>
-                  <div className="relative z-10">
-                    <div className="font-serif text-[17px] font-normal text-white/95 leading-[1.2]">
-                      {b.title}
-                    </div>
-                    <div className="text-[11px] text-white/70 mt-1 italic">
-                      {b.author}
-                    </div>
-                  </div>
-                </div>
+                <BookCover
+                  isbn={b.isbn}
+                  title={b.title}
+                  author={b.author}
+                  bg={b.bg}
+                  overlay={b.overlay}
+                />
                 <div className="px-4 py-3">
                   <div className="text-[12px] text-cm leading-[1.5] mb-1.5">
                     {b.desc}
