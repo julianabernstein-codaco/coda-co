@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { BookshopWidget } from "@/components/BookshopWidget";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
@@ -137,6 +138,14 @@ export default function BooksPage() {
               Honest, beautifully written guides for the journey
             </p>
           </div>
+          <Container width="narrow" className="mb-9">
+            <BookshopWidget
+              sku="9780063240063"
+              type="featured"
+              fullInfo
+              affiliateId="124868"
+            />
+          </Container>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {books.map((b) => (
               <div
