@@ -5,6 +5,9 @@ import { useState, type ReactNode } from "react";
 
 type BookCoverProps = {
   isbn: string;
+  /** ISBN to source the cover image from, when it differs from the buy-link
+   * ISBN (e.g. a cleaner cover lives on another edition). Defaults to `isbn`. */
+  coverIsbn?: string;
   title: string;
   author: string;
   /** Fallback spine color, used when no cover image is available. */
@@ -24,6 +27,7 @@ type BookCoverProps = {
  */
 export function BookCover({
   isbn,
+  coverIsbn,
   title,
   author,
   bg,
@@ -52,7 +56,7 @@ export function BookCover({
   return (
     <div className="h-[168px] relative overflow-hidden bg-white">
       <Image
-        src={`https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`}
+        src={`https://covers.openlibrary.org/b/isbn/${coverIsbn ?? isbn}-L.jpg?default=false`}
         alt={`${title} by ${author}`}
         fill
         sizes="(max-width: 768px) 50vw, 220px"

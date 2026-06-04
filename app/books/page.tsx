@@ -41,6 +41,7 @@ const books = [
     title: "Being Mortal",
     author: "Atul Gawande",
     isbn: "9781250076229",
+    coverIsbn: "9781250081247",
     bg: "#4A4030",
     desc: "A physician's exploration of how medicine can better serve people at the end of life on their own terms.",
     overlay: (

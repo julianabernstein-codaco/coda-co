@@ -8,6 +8,9 @@ export type Book = {
   title: string;
   author: string;
   isbn: string;
+  /** Override the cover-image ISBN when a cleaner cover lives on another
+   * edition; the buy link still uses `isbn`. */
+  coverIsbn?: string;
   bg: string;
   desc: string;
   overlay: ReactNode;
@@ -45,6 +48,7 @@ export function BooksGrid({ books }: { books: Book[] }) {
         >
           <BookCover
             isbn={b.isbn}
+            coverIsbn={b.coverIsbn}
             title={b.title}
             author={b.author}
             bg={b.bg}
