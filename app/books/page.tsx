@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { BooksGrid } from "@/components/BooksGrid";
-import { BookshopWidget } from "@/components/BookshopWidget";
 import { Container } from "@/components/ui/Container";
-import { BOOKSHOP_AFFILIATE_ID, bookshopAffiliateUrl } from "@/lib/bookshop";
 
 export const metadata: Metadata = {
   title: "Books — CodaCo",
@@ -27,22 +25,10 @@ const books = [
     ),
   },
   {
-    title: "Smoke Gets in Your Eyes",
-    author: "Caitlin Doughty",
-    isbn: "9780393351903",
-    bg: "#3D5C47",
-    desc: "A mortician's dark, funny memoir challenging how Americans hide from death — and why we shouldn't.",
-    overlay: (
-      <svg width="100%" height="100%" viewBox="0 0 160 170">
-        <circle cx="80" cy="85" r="60" stroke="#fff" strokeWidth=".7" fill="none"/>
-        <circle cx="80" cy="85" r="35" stroke="#fff" strokeWidth=".5" fill="none"/>
-      </svg>
-    ),
-  },
-  {
     title: "Being Mortal",
     author: "Atul Gawande",
     isbn: "9781250076229",
+    coverIsbn: "9781250081247",
     bg: "#4A4030",
     desc: "A physician's exploration of how medicine can better serve people at the end of life on their own terms.",
     overlay: (
@@ -62,6 +48,19 @@ const books = [
       <svg width="100%" height="100%" viewBox="0 0 160 170">
         <path d="M0 170 Q80 60 160 170" stroke="#fff" strokeWidth=".7" fill="none"/>
         <path d="M0 130 Q80 30 160 130" stroke="#fff" strokeWidth=".5" fill="none"/>
+      </svg>
+    ),
+  },
+  {
+    title: "Smoke Gets in Your Eyes",
+    author: "Caitlin Doughty",
+    isbn: "9780393351903",
+    bg: "#3D5C47",
+    desc: "A mortician's dark, funny memoir challenging how Americans hide from death — and why we shouldn't.",
+    overlay: (
+      <svg width="100%" height="100%" viewBox="0 0 160 170">
+        <circle cx="80" cy="85" r="60" stroke="#fff" strokeWidth=".7" fill="none"/>
+        <circle cx="80" cy="85" r="35" stroke="#fff" strokeWidth=".5" fill="none"/>
       </svg>
     ),
   },
@@ -148,24 +147,6 @@ export default function BooksPage() {
               Honest, beautifully written guides for the journey
             </p>
           </div>
-          <Container width="narrow" className="mb-9">
-            <BookshopWidget
-              sku="9780063240063"
-              type="featured"
-              fullInfo
-              affiliateId={BOOKSHOP_AFFILIATE_ID}
-              fallback={
-                <a
-                  href={bookshopAffiliateUrl("9780063240063")}
-                  target="_blank"
-                  rel="sponsored noopener noreferrer"
-                  className="btn-secondary btn-md w-full justify-center"
-                >
-                  View &ldquo;Briefly Perfectly Human&rdquo; on Bookshop.org →
-                </a>
-              }
-            />
-          </Container>
           <BooksGrid books={books} />
         </Container>
       </section>
