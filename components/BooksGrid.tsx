@@ -36,35 +36,41 @@ export function BooksGrid({ books }: { books: Book[] }) {
     (a, b) => Number(missing.has(a.isbn)) - Number(missing.has(b.isbn)),
   );
 
+  const renderTile = (b: Book) => (
+    <a
+      key={b.title}
+      href={bookshopAffiliateUrl(b.isbn)}
+      target="_blank"
+      rel="sponsored noopener noreferrer"
+      className="block bg-white border border-line rounded-[10px] overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
+    >
+      <BookCover
+        isbn={b.isbn}
+        coverIsbn={b.coverIsbn}
+        title={b.title}
+        author={b.author}
+        bg={b.bg}
+        overlay={b.overlay}
+        onMissing={() => markMissing(b.isbn)}
+      />
+      <div className="px-4 py-3">
+        <div className="text-[12px] text-cm leading-[1.5] mb-1.5">{b.desc}</div>
+        <span className="text-[12px] text-tr border-b border-dotted border-tr-l">
+          Find this book →
+        </span>
+      </div>
+    </a>
+  );
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {ordered.map((b) => (
-        <a
-          key={b.title}
-          href={bookshopAffiliateUrl(b.isbn)}
-          target="_blank"
-          rel="sponsored noopener noreferrer"
-          className="block bg-white border border-line rounded-[10px] overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
-        >
-          <BookCover
-            isbn={b.isbn}
-            coverIsbn={b.coverIsbn}
-            title={b.title}
-            author={b.author}
-            bg={b.bg}
-            overlay={b.overlay}
-            onMissing={() => markMissing(b.isbn)}
-          />
-          <div className="px-4 py-3">
-            <div className="text-[12px] text-cm leading-[1.5] mb-1.5">
-              {b.desc}
-            </div>
-            <span className="text-[12px] text-tr border-b border-dotted border-tr-l">
-              Find this book →
-            </span>
-          </div>
-        </a>
-      ))}
+      {ordered.slice(0, 4).map(renderTile)}
+      <p className="col-span-2 md:col-span-4 text-center text-[11px] text-cl leading-[1.5] py-1">
+        This page contains affiliate links. If you make a purchase through these
+        links at Bookshop.org, CodaCo may earn a commission at no extra cost to
+        you.
+      </p>
+      {ordered.slice(4).map(renderTile)}
     </div>
   );
 }
