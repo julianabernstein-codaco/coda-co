@@ -316,16 +316,25 @@ const categories: FaqCategory[] = [
               <li>Assist with care and cleaning of a body following death</li>
               <li>Guide people through the early stages of grieving</li>
             </ul>
-            <p>Here are some real-life examples of death doula work:</p>
+          </div>
+        ),
+        searchText:
+          "What is a death doula, also called an end of life doula? A death doula is a professional companion who offers holistic, non-medical support to a dying person and their loved ones, providing emotional, spiritual and practical support to empower dignity and self-determination throughout the end of life and dying process. Death doulas can begin working with someone when death is very near or earlier. End of life doulas can: speak openly about dying and planning for death; discuss and record end-of-life care planning including advance directives; develop a plan for death including location, sounds, aromas; assist with physical and practical care; show how to care for, touch and speak to a dying person; provide respite for caregivers; explain the signs and symptoms of the dying process; assist with legacy projects and pre-death organization; provide spiritual support; assist with care and cleaning of a body following death; and guide people through the early stages of grieving.",
+      },
+      {
+        q: "What are some real life examples of death doula work?",
+        a: (
+          <div className="space-y-3">
             <ul className="list-disc pl-5 space-y-3">
               <li>
-                Sitting at the kitchen table with a woman just after her husband
-                has died at home. The hospice team visited yesterday but he died
-                today with just his wife and the death doula at home. Now the
-                doula is holding her hand, helping her take the small steps
-                around what has to happen next; phone calls and such. The doula
-                is also holding space for the woman to feel overwhelmed and in
-                complete disbelief that her husband of 41 years has just died.
+                A death doula is sitting at the kitchen table with a woman just
+                after her husband has died at home. The hospice team visited
+                yesterday but he died today with just his wife and the death
+                doula at home. Now the doula is holding her hand, helping her
+                take the small steps around what has to happen next; phone calls
+                and such. The doula is also holding space for the woman to feel
+                overwhelmed and in complete disbelief that her husband of 41
+                years has just died.
               </li>
               <li>
                 A brother and sister are planning a home funeral for their
@@ -357,7 +366,7 @@ const categories: FaqCategory[] = [
           </div>
         ),
         searchText:
-          "What is a death doula, also called an end of life doula? A death doula is a professional companion who offers holistic, non-medical support to a dying person and their loved ones, providing emotional, spiritual and practical support to empower dignity and self-determination throughout the end of life and dying process. Death doulas can begin working with someone when death is very near or earlier. End of life doulas can: speak openly about dying and planning for death; discuss and record end-of-life care planning including advance directives; develop a plan for death including location, sounds, aromas; assist with physical and practical care; show how to care for, touch and speak to a dying person; provide respite for caregivers; explain the signs and symptoms of the dying process; assist with legacy projects and pre-death organization; provide spiritual support; assist with care and cleaning of a body following death; and guide people through the early stages of grieving. Real-life examples include sitting with a newly widowed woman, planning a home funeral with a pine casket and vigil space, and helping a gentleman in his 90s give away belongings and record stories for his family.",
+          "What are some real life examples of death doula work? A death doula sitting at the kitchen table with a woman just after her husband died at home, holding her hand and helping with the next steps and phone calls. A brother and sister planning a home funeral for their mother, transforming the living room into a vigil space with dried and fresh flowers, handmade quilts and photographs and a pine casket their uncle made, and learning how to keep her body cooled. A death doula helping a gentleman in his 90s give away belongings, wrap and label gifts for his children and grandchildren, and transcribe and bind his life stories.",
       },
       {
         q: "How much do death doulas cost?",
