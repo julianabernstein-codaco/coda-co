@@ -40,7 +40,7 @@ export function Footer() {
             <FooterLink href="/about">About CodaCo</FooterLink>
             <FooterLink href="/list-with-us">List with us</FooterLink>
             <FooterLink href="/where-to-start">Where to start</FooterLink>
-            <FooterLink href="#">Help &amp; FAQ</FooterLink>
+            <FooterLink href="/faq">Help &amp; FAQ</FooterLink>
           </FooterColumn>
         </div>
 
