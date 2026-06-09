@@ -42,40 +42,6 @@ const categories: FaqCategory[] = [
     ],
   },
   {
-    heading: "Buying goods",
-    faqs: [
-      {
-        q: "How do I buy something?",
-        a: "Add items to your cart from any product page, then check out when you're ready. Each listing shows available options — size, material, engraving — and shipping or local-pickup details before you commit.",
-      },
-      {
-        q: "Are the makers and products vetted?",
-        a: "Yes. Every vendor on CodaCo is reviewed before they can list, and we curate for quality, care, and relevance to death and dying. Verified reviews from real buyers help you judge each maker for yourself.",
-      },
-      {
-        q: "What are your shipping and return policies?",
-        a: "Shipping options and timelines are set by each maker and shown on the product page. Because many items are handmade or personalized, return policies vary by vendor — check the listing, and reach out to the maker directly with any questions before ordering.",
-      },
-    ],
-  },
-  {
-    heading: "Booking services",
-    faqs: [
-      {
-        q: "How do I find a service provider near me?",
-        a: "On the services pages you can search by your zip code and filter by the type of help you need — death doula, estate attorney, celebrant, end-of-life organizer, and more. Providers who serve your area (or work virtually) will appear with their location and distance.",
-      },
-      {
-        q: "What's a death doula, and is that where I should start?",
-        a: "A death doula offers non-medical emotional, practical, and spiritual support to a dying person and their loved ones. They're often a good first call because they can help you understand what else you might need and who to contact next.",
-      },
-      {
-        q: "How do I contact a provider?",
-        a: "Each provider has a public profile with a contact option. Sign in, send a message describing your situation, and the provider will follow up directly to discuss availability, approach, and fees.",
-      },
-    ],
-  },
-  {
     heading: "Funerals & body disposition",
     faqs: [
       {
@@ -306,6 +272,40 @@ const categories: FaqCategory[] = [
         ),
         searchText:
           "What are the rules around funerals where I live? Laws around transport and disposition of human bodies vary by state, but there is a federal Funeral Rule enforced by the Federal Trade Commission to protect consumers from unfair upselling and unclear pricing at a funeral home. You do not have to buy a package or use a funeral home if you prefer a home funeral. The US Funeral Rule gives you the right to: buy only the funeral arrangements you want; hear price information over the telephone; receive a written itemized General Price List when you visit a funeral home; see a written casket price list before you see the actual caskets; get a price list for outer burial containers and concrete vaults; receive a written statement before you pay; choose cremation without buying a casket and use an alternative container of unfinished wood, fiberboard or cardboard; provide the funeral home with a casket or urn you buy elsewhere without a fee. Embalming is never required; refrigeration is often an acceptable alternative; direct cremation and immediate burial require no preservation. Source: Federal Trade Commission Advice The Funeral Rule.",
+      },
+    ],
+  },
+  {
+    heading: "Buying goods",
+    faqs: [
+      {
+        q: "How do I buy something?",
+        a: "Add items to your cart from any product page, then check out when you're ready. Each listing shows available options — size, material, engraving — and shipping or local-pickup details before you commit.",
+      },
+      {
+        q: "Are the makers and products vetted?",
+        a: "Yes. Every vendor on CodaCo is reviewed before they can list, and we curate for quality, care, and relevance to death and dying. Verified reviews from real buyers help you judge each maker for yourself.",
+      },
+      {
+        q: "What are your shipping and return policies?",
+        a: "Shipping options and timelines are set by each maker and shown on the product page. Because many items are handmade or personalized, return policies vary by vendor — check the listing, and reach out to the maker directly with any questions before ordering.",
+      },
+    ],
+  },
+  {
+    heading: "Booking services",
+    faqs: [
+      {
+        q: "How do I find a service provider near me?",
+        a: "On the services pages you can search by your zip code and filter by the type of help you need — death doula, estate attorney, celebrant, end-of-life organizer, and more. Providers who serve your area (or work virtually) will appear with their location and distance.",
+      },
+      {
+        q: "What's a death doula, and is that where I should start?",
+        a: "A death doula offers non-medical emotional, practical, and spiritual support to a dying person and their loved ones. They're often a good first call because they can help you understand what else you might need and who to contact next.",
+      },
+      {
+        q: "How do I contact a provider?",
+        a: "Each provider has a public profile with a contact option. Sign in, send a message describing your situation, and the provider will follow up directly to discuss availability, approach, and fees.",
       },
     ],
   },
