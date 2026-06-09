@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 interface Faq {
   q: string;
-  a: string;
+  a: ReactNode;
 }
 
 export function FaqList({ faqs }: { faqs: Faq[] }) {

@@ -20,7 +20,20 @@ const categories: FaqCategory[] = [
       },
       {
         q: "I'm feeling overwhelmed. Where should I begin?",
-        a: "Start wherever feels manageable. If someone has recently died, our Where to Start guide walks you gently through what each kind of support does and the order things tend to happen. If you're planning ahead or just exploring, browsing the shop or services pages is a low-pressure way to get oriented.",
+        a: (
+          <>
+            Start wherever feels manageable. If someone has recently died, our{" "}
+            <Link href="/where-to-start" className="text-tr hover:underline">
+              Where to Start guide
+            </Link>{" "}
+            walks you gently through what kind of support may be available near
+            you and the order things tend to happen. If you&apos;re planning
+            ahead or just exploring, browsing the shop or services pages is a
+            low-pressure way to get oriented.
+          </>
+        ),
+        searchText:
+          "Start wherever feels manageable. If someone has recently died, our Where to Start guide walks you gently through what kind of support may be available near you and the order things tend to happen. If you're planning ahead or just exploring, browsing the shop or services pages is a low-pressure way to get oriented.",
       },
       {
         q: "Do I need an account to browse?",

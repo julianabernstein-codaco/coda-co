@@ -1,12 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { FaqList } from "@/components/list-with-us/FaqList";
 
+interface FaqItem {
+  q: string;
+  a: ReactNode;
+  // Plain-text fallback for search when the answer is rendered as JSX.
+  searchText?: string;
+}
+
 export interface FaqCategory {
   heading: string;
-  faqs: { q: string; a: string }[];
+  faqs: FaqItem[];
+}
+
+function answerText(faq: FaqItem): string {
+  return faq.searchText ?? (typeof faq.a === "string" ? faq.a : "");
 }
 
 export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
@@ -20,7 +31,7 @@ export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
           faqs: cat.faqs.filter(
             (faq) =>
               faq.q.toLowerCase().includes(q) ||
-              faq.a.toLowerCase().includes(q),
+              answerText(faq).toLowerCase().includes(q),
           ),
         }))
         .filter((cat) => cat.faqs.length > 0)
