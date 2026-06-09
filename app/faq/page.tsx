@@ -15,7 +15,7 @@ export default function FaqPage() {
   return (
     <>
       <Breadcrumb
-        crumbs={[{ label: "Home", href: "/" }, { label: "Help & FAQ" }]}
+        crumbs={[{ label: "Home", href: "/" }, { label: "Help Center" }]}
       />
 
       {/* Hero — functional framing */}

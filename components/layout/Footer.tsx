@@ -41,7 +41,7 @@ export function Footer() {
             <FooterLink href="/list-with-us">List with us</FooterLink>
             <FooterLink href="/where-to-start">Where to start</FooterLink>
             <FooterLink href="/guidance">Guidance</FooterLink>
-            <FooterLink href="/faq">Help &amp; FAQ</FooterLink>
+            <FooterLink href="/faq">Help Center</FooterLink>
           </FooterColumn>
         </div>
 
