@@ -29,7 +29,7 @@ const sections: StartSection[] = [
     body: "You don't have to do anything immediately except be present. If the death was expected and at home, you have time. If it was sudden or unattended, contact emergency services. There is no rush to call a funeral home in the first hour.",
     bodyLink: {
       label: "What to do when someone has died →",
-      href: "/faq#first-things-when-someone-dies",
+      href: "/guidance#first-things-when-someone-dies",
     },
     bodyAfter: "When you are ready, here are some services that may be helpful:",
     links: [
