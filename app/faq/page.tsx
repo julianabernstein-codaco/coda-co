@@ -276,6 +276,124 @@ const categories: FaqCategory[] = [
     ],
   },
   {
+    heading: "Death doulas (end-of-life doulas)",
+    faqs: [
+      {
+        q: "What is a death doula (also called an end of life doula)?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              A death doula, also known as an end-of-life doula, is a
+              professional companion who offers holistic, non-medical support to
+              a dying person and their loved ones. Doulas provide emotional,
+              spiritual and practical support to empower dignity and
+              self-determination throughout the end of life and dying process.
+              Death doulas can begin working with someone when death is very
+              near, or earlier, when death is simply somewhere on the horizon.
+            </p>
+            <p>End of life doulas can provide a range of services including:</p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Speak openly about dying and planning for death</li>
+              <li>
+                Discuss and record end-of-life care planning, including advance
+                directives
+              </li>
+              <li>
+                Develop a plan for death, including wishes for location, sounds,
+                aromas
+              </li>
+              <li>Assist with physical and practical care</li>
+              <li>
+                Show examples of how to care for, touch and speak to a dying
+                person
+              </li>
+              <li>Provide respite for caregivers</li>
+              <li>Explain the signs and symptoms of the dying process</li>
+              <li>Assist with legacy projects and pre-death organization</li>
+              <li>
+                Provide spiritual support to dying individuals and loved ones
+              </li>
+              <li>Assist with care and cleaning of a body following death</li>
+              <li>Guide people through the early stages of grieving</li>
+            </ul>
+            <p>Here are some real-life examples of death doula work:</p>
+            <ul className="list-disc pl-5 space-y-3">
+              <li>
+                Sitting at the kitchen table with a woman just after her husband
+                has died at home. The hospice team visited yesterday but he died
+                today with just his wife and the death doula at home. Now the
+                doula is holding her hand, helping her take the small steps
+                around what has to happen next; phone calls and such. The doula
+                is also holding space for the woman to feel overwhelmed and in
+                complete disbelief that her husband of 41 years has just died.
+              </li>
+              <li>
+                A brother and sister are planning a home funeral for their
+                mother, who died at the hospital yesterday. Their death doula is
+                helping to transform their living room into a space for vigil and
+                memories, with dried flowers, fresh flowers, their mother&apos;s
+                favorite handmade quilts and photographs. The doula is helping
+                them prepare a space at one end of the living room for the pine
+                casket that their uncle made for her, and will help them
+                understand how to keep her body cooled once she is home in
+                preparation for her funeral the following day.
+              </li>
+              <li>
+                A death doula is working with a gentleman in his 90s. He hopes to
+                leave certain items to his children and also write down a series
+                of stories from his youth to be passed on to his children and
+                grandchildren when he dies. His doula visits twice a week, each
+                for three hours at a time. Together they gently go through his
+                belongings, wrapping items he hopes to gift, and writing out
+                cards for each. Items with no intended receiver are placed into a
+                pile for donation, which the doula transports every month or so
+                to the gentleman&apos;s favorite second hand shop. His doula also
+                transcribes stories for him into a single file, and will have the
+                file printed and bound for him when he decides it is ready. They
+                enjoy reading over his stories after he has told them and editing
+                together.
+              </li>
+            </ul>
+          </div>
+        ),
+        searchText:
+          "What is a death doula, also called an end of life doula? A death doula is a professional companion who offers holistic, non-medical support to a dying person and their loved ones, providing emotional, spiritual and practical support to empower dignity and self-determination throughout the end of life and dying process. Death doulas can begin working with someone when death is very near or earlier. End of life doulas can: speak openly about dying and planning for death; discuss and record end-of-life care planning including advance directives; develop a plan for death including location, sounds, aromas; assist with physical and practical care; show how to care for, touch and speak to a dying person; provide respite for caregivers; explain the signs and symptoms of the dying process; assist with legacy projects and pre-death organization; provide spiritual support; assist with care and cleaning of a body following death; and guide people through the early stages of grieving. Real-life examples include sitting with a newly widowed woman, planning a home funeral with a pine casket and vigil space, and helping a gentleman in his 90s give away belongings and record stories for his family.",
+      },
+      {
+        q: "How much do death doulas cost?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Costs for a death doula will vary significantly based on location
+              and services provided. An hourly rate might range from $50 to $180
+              per hour. Some doulas may offer packaged services, such as full
+              support through and until a client&apos;s death. Others may charge
+              a flat fee for 24-hour bedside vigils or for multiple days at the
+              bedside when the end of life is near. Some doulas offer a sliding
+              scale or pro bono (no cost) services to individuals in financial
+              hardship.
+            </p>
+            <p>
+              Doula services are not currently covered by Medicare, Medicaid or
+              private insurance in the US since they do not provide medical care.
+              As such, doula services typically are paid directly by the client
+              or their loved ones.
+            </p>
+            <p>
+              Some hospice programs integrate death doula services into their
+              selection of offerings, at no extra cost. Additionally, some long
+              term care insurance policies may reimburse part of the cost of a
+              death doula&apos;s services, so it is worth inquiring if an
+              individual holds one of these policies.
+            </p>
+          </div>
+        ),
+        searchText:
+          "How much do death doulas cost? Costs vary significantly based on location and services provided. An hourly rate might range from $50 to $180 per hour. Some doulas offer packaged services such as full support through a client's death, flat fees for 24-hour bedside vigils or multiple days at the bedside, and some offer a sliding scale or pro bono services for financial hardship. Doula services are not currently covered by Medicare, Medicaid or private insurance since they do not provide medical care, so they are typically paid directly by the client or their loved ones. Some hospice programs integrate death doula services at no extra cost, and some long term care insurance policies may reimburse part of the cost.",
+      },
+    ],
+  },
+  {
     heading: "Buying goods",
     faqs: [
       {
