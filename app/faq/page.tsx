@@ -407,6 +407,47 @@ const categories: FaqCategory[] = [
     ],
   },
   {
+    heading: "When someone dies",
+    faqs: [
+      {
+        q: "What are the first things I need to do when someone dies?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              The very first thing to do when someone dies is to take time to
+              breathe. You have time to sit. You have time to call another loved
+              one. There is no emergency now.
+            </p>
+            <p>
+              There is a lot to take care of when someone dies, but you are
+              allowed to grieve. You are allowed to be confused, and
+              overwhelmed, and a mess.
+            </p>
+            <p>
+              Grief has no timeline and affects each of us differently. There is
+              no one way to grieve, just as there is no one way to love someone.
+            </p>
+            <p>
+              After someone dies, their life must be legally and
+              administratively closed out. The many, many tasks that need to be
+              done when someone dies are together stressful, bureaucratic work.
+              These tasks can take months to years to complete, often while
+              complicated by grief. The most important thing to remember is that
+              when someone has died, it is not an immediate emergency.
+            </p>
+            <p>
+              Some things need to take place in the first 24 hours after death,
+              but nothing needs to happen in the first few minutes. When
+              you&apos;re ready, read on for more details.
+            </p>
+          </div>
+        ),
+        searchText:
+          "What are the first things I need to do when someone dies? The very first thing to do when someone dies is to take time to breathe. You have time to sit and to call another loved one. There is no emergency now. There is a lot to take care of, but you are allowed to grieve, to be confused, overwhelmed, and a mess. Grief has no timeline and affects each of us differently. After someone dies, their life must be legally and administratively closed out, and these stressful, bureaucratic tasks can take months to years to complete, often complicated by grief. When someone has died it is not an immediate emergency. Some things need to take place in the first 24 hours after death, but nothing needs to happen in the first few minutes.",
+      },
+    ],
+  },
+  {
     heading: "Buying goods",
     faqs: [
       {
