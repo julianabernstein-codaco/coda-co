@@ -116,7 +116,16 @@ const categories: FaqCategory[] = [
               miles from shore. There are several rules around body and casket
               preparation for burial at sea, and the EPA must be notified of a
               burial within 30 days following the event. More information about
-              burial at sea is available at the EPA website.
+              burial at sea is available at the{" "}
+              <a
+                href="https://www.epa.gov/ocean-dumping/burial-sea"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-tr hover:underline"
+              >
+                EPA website
+              </a>
+              .
             </p>
             <p>
               <span className="font-medium text-ch">Traditional Cremation:</span>{" "}
@@ -158,6 +167,145 @@ const categories: FaqCategory[] = [
         ),
         searchText:
           "There are many ways to lay a body to rest. Green Burial Natural Burial is a popular alternative to traditional burial. In a green burial, a body is placed in its natural state (no embalming) into a biodegradable casket or natural fiber shroud. The body is then placed directly into the earth, allowing it to decompose naturally. Green burials are legal in all 50 US states. Many states have green burial cemeteries or hybrid cemeteries. Traditional Burial may include embalming, a casket, and a concrete-lined grave forming the burial vault. Burial at Sea: a body or cremated remains can be buried at sea, regulated by the Environmental Protection Agency at least three nautical miles from shore, EPA notified within 30 days. Traditional Cremation: a body is incinerated and bone fragments crushed into ashes, buried, kept in an urn, or scattered. Natural Organic Reduction Terramation allows natural decomposition in urban areas, bodies laid in a closed vessel with straw alfalfa wood chips to transform into nutrient-rich soil. Aquamation Water Cremation uses water and an alkaline solution to break down a body, leaving bone fragments crushed into ashes. Anatomical donation: donate your body to science, universities, medical schools, or research organizations.",
+      },
+      {
+        q: "What are the rules around funerals where I live?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              While laws around the transport and disposition of human bodies
+              varies by state, there is a federal Funeral Rule in place to
+              protect the consumer who is planning and paying for a funeral.
+              These rules exist to protect people from unfair upselling and
+              unclear pricing structures at a funeral home and are enforced by
+              the Federal Trade Commission. The Funeral Rule makes it possible
+              for you to choose only the goods and services from a funeral home
+              that you want or need. The rule allows you to compare prices
+              between funeral homes and makes it possible to select arrangements
+              you want to use for a home funeral. In short, you do not have to
+              buy a package, and you do not have to use a funeral home if you
+              prefer a home funeral.
+            </p>
+            <p>The US Funeral Rule gives you the right to:</p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <span className="font-medium text-ch">
+                  Buy only the funeral arrangements you want.
+                </span>{" "}
+                You have a protected right to buy separate goods (such as
+                caskets) and services (such as embalming or a memorial service).
+                You do not have to accept a package that includes any items you
+                do not want.
+              </li>
+              <li>
+                <span className="font-medium text-ch">
+                  Hear price information over the telephone.
+                </span>{" "}
+                Funeral directors are required to give you pricing information
+                over the telephone if you ask for it, and you do not need to
+                give them your name, telephone number or address first. Some
+                funeral homes will mail their price lists, and some post them
+                online.
+              </li>
+              <li>
+                <span className="font-medium text-ch">
+                  Receive a written, itemized price list when you visit a
+                  funeral home.
+                </span>{" "}
+                The funeral home must give you a General Price List that is yours
+                to keep. It lists all the items and services the home offers, and
+                the cost of each one.
+              </li>
+              <li>
+                <span className="font-medium text-ch">
+                  See a written casket price list before you see the actual
+                  caskets.
+                </span>{" "}
+                It can be overwhelming to shop for a casket. Funerals must
+                provide you a written casket price list if you ask, and this is a
+                great place to start &ndash; you can see this list before you see
+                the caskets. You can also ask about lower-priced caskets that are
+                listed but may not be on display.
+              </li>
+              <li>
+                <span className="font-medium text-ch">
+                  Get a price list for outer burial containers.
+                </span>{" "}
+                Outer burial containers, such as concrete vaults lining a grave,
+                are not required by state law anywhere in the U.S., but many
+                cemeteries require them to prevent the grave from caving in
+                during a funeral or after the ground settles. If the funeral home
+                sells containers, but doesn&apos;t list their prices on the
+                general price list, you have the right to look at a separate
+                container price list before you see the containers. If you
+                don&apos;t see the lower-priced containers listed, ask about
+                them.
+              </li>
+              <li>
+                <span className="font-medium text-ch">
+                  Receive a written statement after you decide what you want, and
+                  before you pay.
+                </span>{" "}
+                This statement should show exactly what you are buying and the
+                cost of each individual item. The funeral home is required to
+                give you this once you have made your selection and before paying
+                for items.
+              </li>
+              <li>
+                <span className="font-medium text-ch">
+                  If you choose cremation for your loved one, you do not need to
+                  buy a casket.
+                </span>{" "}
+                You may use an alternative container. No state or local law
+                requires the use of a casket for cremation. If a funeral home
+                offers cremation, it must also tell you that alternative
+                containers are available. They may be out of unfinished wood,
+                fiberboard or cardboard.
+              </li>
+              <li>
+                <span className="font-medium text-ch">
+                  You may provide the funeral home with a casket or urn you buy
+                  elsewhere.
+                </span>{" "}
+                The funeral provider cannot refuse to handle a casket or urn you
+                bought somewhere else, or charge you a fee to use it. You may
+                order a casket or urn to be delivered to the funeral home and the
+                home cannot require you to be there when the casket or urn is
+                delivered to them.
+              </li>
+              <li>
+                <span className="font-medium text-ch">
+                  Embalming is never required.
+                </span>{" "}
+                No state law requires embalming for every death. Some states
+                require embalming or refrigeration if the body is not buried or
+                cremated within a certain time; some states don&apos;t require it
+                at all. In most cases, refrigeration or other cooling is an
+                acceptable alternative. In addition, you may choose services like
+                direct cremation and immediate burial, which don&apos;t require
+                any form of preservation. Many funeral homes have a policy
+                requiring embalming if the body is to be publicly viewed, but
+                this is not required by law in most states. Ask if the funeral
+                home offers private family viewing without embalming. If some
+                form of preservation is a practical necessity, ask the funeral
+                home if refrigeration is available.
+              </li>
+            </ul>
+            <p className="text-cl">
+              Source:{" "}
+              <a
+                href="https://consumer.ftc.gov/articles/ftc-funeral-rule"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-tr hover:underline"
+              >
+                Federal Trade Commission Advice: The Funeral Rule
+              </a>
+            </p>
+          </div>
+        ),
+        searchText:
+          "What are the rules around funerals where I live? Laws around transport and disposition of human bodies vary by state, but there is a federal Funeral Rule enforced by the Federal Trade Commission to protect consumers from unfair upselling and unclear pricing at a funeral home. You do not have to buy a package or use a funeral home if you prefer a home funeral. The US Funeral Rule gives you the right to: buy only the funeral arrangements you want; hear price information over the telephone; receive a written itemized General Price List when you visit a funeral home; see a written casket price list before you see the actual caskets; get a price list for outer burial containers and concrete vaults; receive a written statement before you pay; choose cremation without buying a casket and use an alternative container of unfinished wood, fiberboard or cardboard; provide the funeral home with a casket or urn you buy elsewhere without a fee. Embalming is never required; refrigeration is often an acceptable alternative; direct cremation and immediate burial require no preservation. Source: Federal Trade Commission Advice The Funeral Rule.",
       },
     ],
   },
