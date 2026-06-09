@@ -9,6 +9,8 @@ interface FaqItem {
   a: ReactNode;
   // Plain-text fallback for search when the answer is rendered as JSX.
   searchText?: string;
+  // Optional anchor id for deep-linking to this question (e.g. /faq#some-id).
+  id?: string;
 }
 
 export interface FaqCategory {

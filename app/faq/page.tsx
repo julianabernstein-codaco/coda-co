@@ -45,6 +45,7 @@ const categories: FaqCategory[] = [
     heading: "When someone dies",
     faqs: [
       {
+        id: "first-things-when-someone-dies",
         q: "What are the first things I need to do when someone dies?",
         a: (
           <div className="space-y-3">
