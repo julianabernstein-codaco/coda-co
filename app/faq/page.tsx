@@ -76,6 +76,92 @@ const categories: FaqCategory[] = [
     ],
   },
   {
+    heading: "Funerals & body disposition",
+    faqs: [
+      {
+        q: "What choices do I have for body disposition (e.g. burial, cremation, natural burial)?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              There are many ways to lay a body to rest. Here is a brief
+              explanation about the most common types of body disposition:
+            </p>
+            <p>
+              <span className="font-medium text-ch">
+                Green Burial (also called Natural Burial):
+              </span>{" "}
+              This is a popular alternative to &lsquo;traditional burial.&rsquo;
+              In a green burial, a body is placed in its natural state (no
+              embalming) into a biodegradable casket or natural fiber shroud.
+              The body is then placed directly into the earth, allowing it to
+              decompose naturally. Green burials are legal in all 50 US states,
+              though there are some regulations around where they can take
+              place. Many states have green burial cemeteries or &lsquo;hybrid&rsquo;
+              cemeteries which offer both traditional and green burials.
+            </p>
+            <p>
+              <span className="font-medium text-ch">Traditional Burial:</span>{" "}
+              A traditional burial may include embalming (where blood is drained
+              from a body and replaced with formaldehyde or other chemicals for
+              preservation), a casket (wooden, metal, other) and a grave is
+              generally lined with concrete (forming the burial vault) before
+              the body is laid to rest. Temporarily delays decomposition,
+              keeping the body intact for several days or up to a week.
+            </p>
+            <p>
+              <span className="font-medium text-ch">Burial at Sea:</span> A
+              loved one&apos;s body or their cremated remains can be buried at
+              sea. This form of burial is regulated by the Environmental
+              Protection Agency and must take place at least three nautical
+              miles from shore. There are several rules around body and casket
+              preparation for burial at sea, and the EPA must be notified of a
+              burial within 30 days following the event. More information about
+              burial at sea is available at the EPA website.
+            </p>
+            <p>
+              <span className="font-medium text-ch">Traditional Cremation:</span>{" "}
+              In traditional cremation, a body is incinerated (burned) and the
+              remaining bone fragments are crushed into ashes. Ashes can then be
+              returned to loved ones to be buried, kept in an urn, and/or
+              scattered in a beloved location.
+            </p>
+            <p>
+              <span className="font-medium text-ch">
+                Natural Organic Reduction (also called Terramation):
+              </span>{" "}
+              Terramation is a process that allows for natural decomposition in
+              urban areas, where green cemeteries and natural burial may not be
+              readily available. In this process, bodies are laid to rest within
+              a closed vessel along with organic material (such as straw,
+              alfalfa and wood chips) to transform into nutrient-rich soil over
+              several weeks. The soil can then be returned to loved ones to be
+              used in plantings or to regenerate conservation areas.
+            </p>
+            <p>
+              <span className="font-medium text-ch">
+                Aquamation (also called Water Cremation):
+              </span>{" "}
+              Aquamation is a process that uses water and an alkaline solution
+              to break down a body. This process leaves only bone fragments. As
+              in fire cremation, these fragments can then be crushed into ashes
+              and returned to a loved one.
+            </p>
+            <p>
+              <span className="font-medium text-ch">Anatomical donation:</span>{" "}
+              Some people choose (before death) to donate their body to science.
+              Bodies may go to universities, medical schools, or research
+              organizations for scientific study and medical training. Most
+              programs will cover the costs of transportation, cremation after
+              study, and the return of ashes to the family.
+            </p>
+          </div>
+        ),
+        searchText:
+          "There are many ways to lay a body to rest. Green Burial Natural Burial is a popular alternative to traditional burial. In a green burial, a body is placed in its natural state (no embalming) into a biodegradable casket or natural fiber shroud. The body is then placed directly into the earth, allowing it to decompose naturally. Green burials are legal in all 50 US states. Many states have green burial cemeteries or hybrid cemeteries. Traditional Burial may include embalming, a casket, and a concrete-lined grave forming the burial vault. Burial at Sea: a body or cremated remains can be buried at sea, regulated by the Environmental Protection Agency at least three nautical miles from shore, EPA notified within 30 days. Traditional Cremation: a body is incinerated and bone fragments crushed into ashes, buried, kept in an urn, or scattered. Natural Organic Reduction Terramation allows natural decomposition in urban areas, bodies laid in a closed vessel with straw alfalfa wood chips to transform into nutrient-rich soil. Aquamation Water Cremation uses water and an alkaline solution to break down a body, leaving bone fragments crushed into ashes. Anatomical donation: donate your body to science, universities, medical schools, or research organizations.",
+      },
+    ],
+  },
+  {
     heading: "Trust & safety",
     faqs: [
       {
