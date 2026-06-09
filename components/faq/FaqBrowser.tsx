@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { FaqList } from "@/components/list-with-us/FaqList";
 
@@ -25,6 +25,16 @@ function answerText(faq: FaqItem): string {
 export function FaqBrowser({ categories }: { categories: FaqCategory[] }) {
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
+
+  // Land at the top on load. Next's scroll-to-top on navigation is otherwise
+  // disrupted by the global `scroll-behavior: smooth`, leaving this long page
+  // mid-scroll. Skip when a hash is present so deep-linked questions still
+  // scroll to their own anchor (handled in FaqList).
+  useEffect(() => {
+    if (!window.location.hash) {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    }
+  }, []);
 
   const filtered = q
     ? categories
