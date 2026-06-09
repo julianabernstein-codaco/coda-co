@@ -391,6 +391,10 @@ const categories: FaqCategory[] = [
         searchText:
           "How much do death doulas cost? Costs vary significantly based on location and services provided. An hourly rate might range from $50 to $180 per hour. Some doulas offer packaged services such as full support through a client's death, flat fees for 24-hour bedside vigils or multiple days at the bedside, and some offer a sliding scale or pro bono services for financial hardship. Doula services are not currently covered by Medicare, Medicaid or private insurance since they do not provide medical care, so they are typically paid directly by the client or their loved ones. Some hospice programs integrate death doula services at no extra cost, and some long term care insurance policies may reimburse part of the cost.",
       },
+      {
+        q: "Is hiring a death doula worth it?",
+        a: "While the US medical system tends to focus on treating disease, death doula practice focuses on tending to the whole human being in their final months and moments. Doula work is rooted in ancient community care traditions. Doulas can offer a listening ear, continuity of presence, gentle guidance, physical and spiritual comfort, and a sense of dignity to a dying person. Many families find working with a doula deeply healing when a loved one passes, and find that a death doula has helped them approach death with grace rather than fear.",
+      },
     ],
   },
   {
