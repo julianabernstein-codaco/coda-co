@@ -44,12 +44,7 @@ export default function GuidancePage() {
           />
 
           <p className="text-center text-[13px] text-cl leading-[1.7] mt-12">
-            Just getting your bearings? Our{" "}
-            <Link href="/where-to-start" className="text-sg-d hover:underline">
-              gentle guide to where to start
-            </Link>{" "}
-            points you toward the right first steps. For help with an order or
-            your account, visit the{" "}
+            For help with an order or your account, visit the{" "}
             <Link href="/faq" className="text-sg-d hover:underline">
               Help Center
             </Link>
