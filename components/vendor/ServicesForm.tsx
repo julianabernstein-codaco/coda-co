@@ -18,6 +18,16 @@ const STEPS = [
   { label: "Choose a plan" },
 ];
 
+// Shared across every service plan — shown once in a header above the
+// plan cards so each card only lists what makes it different.
+const PLAN_INCLUDES = [
+  "Service profile",
+  "Verified badge (pending CodaCo approval)",
+  "CodaCo messaging",
+  "Direct client payments through CodaCo",
+  "Client reviews",
+];
+
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const HOURS = [
@@ -402,29 +412,30 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                   Step 4 — Choose a plan
                 </h2>
                 <p className="text-[13px] text-cl mb-6">Start free. Upgrade anytime.</p>
+                <div className="border border-line-strong rounded-[10px] bg-pl2 p-4 mb-4">
+                  <div className="text-[12px] font-medium text-ch mb-2">All plans include</div>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+                    {PLAN_INCLUDES.map((f) => (
+                      <li key={f} className="text-[12px] text-cm flex items-center gap-1.5">
+                        <span className="text-sg">✓</span> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
                 <div className="space-y-3">
                   {[
                     {
                       id: "starter" as const,
                       name: "Starter",
                       price: "Free for 3 months",
-                      features: [
-                        "Service profile",
-                        "CodaCo messaging",
-                        "Direct client payments through CodaCo",
-                      ],
+                      features: [],
                       popular: false,
                     },
                     {
                       id: "standard" as const,
                       name: "Monthly",
                       price: "$15/mo",
-                      features: [
-                        "Everything in Starter",
-                        "Verified badge (pending CodaCo verification)",
-                        "Client reviews",
-                        "Cancel any time",
-                      ],
+                      features: ["Cancel any time"],
                       popular: true,
                     },
                     {
@@ -432,7 +443,6 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                       name: "Annual",
                       price: "$160/yr",
                       features: [
-                        "Everything in Monthly",
                         "Save $20 vs. paying monthly",
                         "Priority support",
                       ],
