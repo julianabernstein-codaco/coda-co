@@ -407,7 +407,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                     {
                       id: "starter" as const,
                       name: "Starter",
-                      price: "Free for 3 mo",
+                      price: "Free for 3 months",
                       features: [
                         "Service profile",
                         "CodaCo messaging",
@@ -417,24 +417,24 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                     },
                     {
                       id: "standard" as const,
-                      name: "Standard",
-                      price: "$14/mo or $150/yr",
+                      name: "Monthly",
+                      price: "$15/mo",
                       features: [
                         "Everything in Starter",
                         "Verified badge (pending CodaCo verification)",
                         "Client reviews",
+                        "Cancel any time",
                       ],
                       popular: true,
                     },
                     {
                       id: "pro" as const,
-                      name: "Pro",
-                      price: "$29/mo or $320/yr",
+                      name: "Annual",
+                      price: "$160/yr",
                       features: [
-                        "Everything in Standard",
-                        "Unlimited service profiles",
+                        "Everything in Monthly",
+                        "Save $20 vs. paying monthly",
                         "Priority support",
-                        "Direct scheduling through CodaCo",
                       ],
                       popular: false,
                     },
