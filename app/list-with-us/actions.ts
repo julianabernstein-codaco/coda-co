@@ -9,7 +9,7 @@ import {
   normalizeSlug,
 } from "@/lib/api/applications";
 import { isValidSpecialization } from "@/lib/data/specializations";
-import { parseRadiusLabel } from "@/lib/geo/zip";
+import { normalizeZip, parseRadiusLabel } from "@/lib/geo/zip";
 import { prisma } from "@/lib/db";
 import { sendApplicationSubmittedEmail } from "@/lib/email/templates";
 import { log } from "@/lib/log";
@@ -96,6 +96,13 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
   if (!input.city.trim() || !input.state.trim()) {
     return { error: "Add a city and state." };
   }
+  // Zip is required for service providers — it drives the geographic
+  // search filter (zip + radius). Goods-only sellers ship nationwide and
+  // don't need one.
+  const normalizedZip = normalizeZip(input.zip);
+  if ((input.kind === "services" || input.kind === "both") && !normalizedZip) {
+    return { error: "Add a valid 5-digit zip code so clients can find you." };
+  }
   if (!input.bio.trim()) {
     return { error: "Tell clients a bit about you (the 'About you' field)." };
   }
@@ -137,7 +144,7 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     new Set((input.lifeStages ?? []).filter((s) => VALID_LIFE_STAGES.has(s))),
   );
 
-  const zip = input.zip?.trim() || null;
+  const zip = normalizedZip ?? (input.zip?.trim() || null);
   const serviceRadiusMi = parseRadiusLabel(input.radius);
   const serviceDescription = input.serviceDescription?.trim() || null;
   const pricingNotes = input.pricingNotes?.trim() || null;
