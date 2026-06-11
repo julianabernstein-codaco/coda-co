@@ -5,6 +5,7 @@ import { submitServicesApplication } from "@/app/list-with-us/actions";
 import { StepsBar } from "@/components/ui/StepsBar";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
 import { SPECIALIZATIONS } from "@/lib/data/specializations";
+import { normalizeZip } from "@/lib/geo/zip";
 import { LIFE_STAGES } from "@/lib/format/lifeStage";
 import type { LifeStage } from "@/lib/types";
 
@@ -183,7 +184,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                       ))}
                     </select>
                   </FormField>
-                  <FormField label="Zip">
+                  <FormField label="Zip" required>
                     <input
                       className={inputCls}
                       inputMode="numeric"
@@ -476,7 +477,10 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
           {/* Navigation */}
           <div className="flex justify-between mt-6">
             <button
-              onClick={() => setStep((s) => s - 1)}
+              onClick={() => {
+                setSubmitError(null);
+                setStep((s) => s - 1);
+              }}
               disabled={step === 0}
               className="px-6 py-2.5 rounded-full border border-[rgba(44,40,37,.2)] text-[13px] text-cm cursor-pointer hover:border-ch transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
@@ -484,7 +488,17 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
             </button>
             {step < STEPS.length - 1 ? (
               <button
-                onClick={() => setStep((s) => s + 1)}
+                onClick={() => {
+                  // Zip is required and powers geo search — gate Step 1 so
+                  // the applicant fixes it here rather than bouncing back
+                  // from the final submit.
+                  if (step === 0 && !normalizeZip(data.zip)) {
+                    setSubmitError("Enter a valid 5-digit zip code so clients can find you.");
+                    return;
+                  }
+                  setSubmitError(null);
+                  setStep((s) => s + 1);
+                }}
                 className="px-8 py-2.5 rounded-full bg-sg text-white text-[13px] cursor-pointer hover:bg-sg-d transition-colors"
               >
                 Continue →
