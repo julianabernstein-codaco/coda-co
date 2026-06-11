@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { submitServicesApplication } from "@/app/list-with-us/actions";
 import { StepsBar } from "@/components/ui/StepsBar";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
+import { planPriceLabel, servicePlanIncludes, servicePlans } from "@/lib/data/plans";
 import { SPECIALIZATIONS } from "@/lib/data/specializations";
 import { normalizeZip } from "@/lib/geo/zip";
 import { LIFE_STAGES } from "@/lib/format/lifeStage";
@@ -16,16 +17,6 @@ const STEPS = [
   { label: "Your service" },
   { label: "Area & availability" },
   { label: "Choose a plan" },
-];
-
-// Shared across every service plan — shown once in a header above the
-// plan cards so each card only lists what makes it different.
-const PLAN_INCLUDES = [
-  "Service profile",
-  "Verified badge (pending CodaCo approval)",
-  "CodaCo messaging",
-  "Direct client payments through CodaCo",
-  "Client reviews",
 ];
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -415,7 +406,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 <div className="border border-line-strong rounded-[10px] bg-pl2 p-4 mb-4">
                   <div className="text-[12px] font-medium text-ch mb-2">All plans include</div>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
-                    {PLAN_INCLUDES.map((f) => (
+                    {servicePlanIncludes.map((f) => (
                       <li key={f} className="text-[12px] text-cm flex items-center gap-1.5">
                         <span className="text-sg">✓</span> {f}
                       </li>
@@ -423,32 +414,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                   </ul>
                 </div>
                 <div className="space-y-3">
-                  {[
-                    {
-                      id: "starter" as const,
-                      name: "Starter",
-                      price: "Free for 3 months",
-                      features: [],
-                      popular: false,
-                    },
-                    {
-                      id: "standard" as const,
-                      name: "Monthly",
-                      price: "$15/mo",
-                      features: ["Cancel any time"],
-                      popular: true,
-                    },
-                    {
-                      id: "pro" as const,
-                      name: "Annual",
-                      price: "$160/yr",
-                      features: [
-                        "Save $20 vs. paying monthly",
-                        "Priority support",
-                      ],
-                      popular: false,
-                    },
-                  ].map((p) => {
+                  {servicePlans.map((p) => {
                     const selected = plan === p.id;
                     return (
                       <button
@@ -462,7 +428,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-[15px] font-medium text-ch">{p.name}</span>
-                          <span className="text-[15px] font-medium text-sg-d">{p.price}</span>
+                          <span className="text-[15px] font-medium text-sg-d">{planPriceLabel(p)}</span>
                           {p.popular && (
                             <span className="text-[10px] bg-sg text-white px-2 py-0.5 rounded-full">
                               Most popular

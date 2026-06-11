@@ -51,6 +51,14 @@ export const goodsPlans: Plan[] = [
   },
 ];
 
+export const servicePlanIncludes = [
+  "Service profile",
+  "Verified badge (pending CodaCo approval)",
+  "CodaCo messaging",
+  "Direct client payments through CodaCo",
+  "Client reviews",
+];
+
 export const servicePlans: Plan[] = [
   {
     id: "starter",
@@ -58,44 +66,38 @@ export const servicePlans: Plan[] = [
     price: null,
     period: null,
     trial: "Free for 3 months",
-    features: [
-      "Service profile",
-      "CodaCo messaging",
-      "Direct client payments through CodaCo",
-    ],
+    features: [],
     popular: false,
     transactionFee: "",
     targetType: "services",
   },
   {
     id: "standard",
-    name: "Standard",
-    price: 14,
+    name: "Monthly",
+    price: 15,
     period: "month",
-    priceYearly: 150,
-    features: [
-      "Everything in Starter",
-      "Verified badge (pending CodaCo verification)",
-      "Client reviews",
-    ],
+    features: ["Cancel any time"],
     popular: true,
     transactionFee: "",
     targetType: "services",
   },
   {
     id: "pro",
-    name: "Pro",
-    price: 29,
-    period: "month",
-    priceYearly: 320,
-    features: [
-      "Everything in Standard",
-      "Unlimited service profiles",
-      "Priority support",
-      "Direct scheduling through CodaCo",
-    ],
+    name: "Annual",
+    price: 160,
+    period: "year",
+    features: ["Save $20 vs. paying monthly", "Priority support"],
     popular: false,
     transactionFee: "",
     targetType: "services",
   },
 ];
+
+// Compact price label for a plan card ("Free for 3 months", "$15/mo",
+// "$160/yr"). Keeps the signup form and the standalone /plan page in sync.
+export function planPriceLabel(plan: Plan): string {
+  if (plan.trial) return plan.trial;
+  if (plan.price == null) return "Free";
+  const suffix = plan.period === "month" ? "/mo" : plan.period === "year" ? "/yr" : "";
+  return `$${plan.price}${suffix}`;
+}

@@ -205,7 +205,7 @@ export interface Plan {
   id: "starter" | "standard" | "pro";
   name: string;
   price: number | null;
-  period: "month" | null;
+  period: "month" | "year" | null;
   // Discounted annual price, when offered alongside the monthly tier.
   priceYearly?: number | null;
   // Free-trial label shown in place of the price (e.g. "Free for 3 months").
