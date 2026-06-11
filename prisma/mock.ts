@@ -50,6 +50,7 @@ async function clear() {
   await prisma.product.deleteMany();
   await prisma.service.deleteMany();
   await prisma.subscription.deleteMany();
+  await prisma.vendorPayment.deleteMany();
   await prisma.vendorApplication.deleteMany();
   await prisma.vendorProfile.deleteMany();
   await prisma.session.deleteMany();

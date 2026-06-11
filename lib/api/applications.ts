@@ -1,6 +1,7 @@
 import type { ApplicationKind, ApplicationStatus, SubscriptionPlanId } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
+import { getPlan } from "@/lib/api/plans";
 import {
   sendApplicationApprovedEmail,
   sendApplicationRejectedEmail,
@@ -136,6 +137,24 @@ export async function approveApplication(
           status: "active",
         },
       });
+
+      // If the chosen plan carries a one-time charge (today: the goods
+      // "Storefront" set-up fee), record it as a `pending` payment in the
+      // same transaction. The Stripe integration (next) settles it —
+      // sets the payment-intent id + paid_at and flips status to `paid`.
+      const plan = getPlan(subscriptionKind, app.planId);
+      if (plan?.billingType === "one_time" && (plan.amountCents ?? 0) > 0) {
+        await tx.vendorPayment.create({
+          data: {
+            vendorId: vendor.id,
+            planId: app.planId,
+            type: "setup_fee",
+            status: "pending",
+            amountCents: plan.amountCents!,
+            currency: "USD",
+          },
+        });
+      }
 
       // Auto-create the vendor's first draft Service from the data
       // already captured in the application. Skipped for goods-only

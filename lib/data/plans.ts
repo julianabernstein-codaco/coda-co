@@ -15,6 +15,7 @@ export const goodsPlans: Plan[] = [
     popular: false,
     transactionFee: "5% per sale",
     targetType: "goods",
+    billingType: "free",
   },
   {
     id: "standard",
@@ -31,6 +32,8 @@ export const goodsPlans: Plan[] = [
     popular: false,
     transactionFee: "5% per sale",
     targetType: "goods",
+    billingType: "one_time",
+    amountCents: 2800,
   },
 ];
 
@@ -49,6 +52,7 @@ export const servicePlans: Plan[] = [
     popular: false,
     transactionFee: "",
     targetType: "services",
+    billingType: "free",
   },
   {
     id: "standard",
@@ -64,6 +68,8 @@ export const servicePlans: Plan[] = [
     popular: true,
     transactionFee: "",
     targetType: "services",
+    billingType: "recurring",
+    amountCents: 1400,
   },
   {
     id: "pro",
@@ -80,5 +86,7 @@ export const servicePlans: Plan[] = [
     popular: false,
     transactionFee: "",
     targetType: "services",
+    billingType: "recurring",
+    amountCents: 2900,
   },
 ];
