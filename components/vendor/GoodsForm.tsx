@@ -164,16 +164,9 @@ export function GoodsForm() {
                     },
                     {
                       id: "standard" as const,
-                      name: "Standard",
-                      price: "$12/mo",
-                      features: ["Unlimited listings", "Verified badge", "Customer reviews", "5% transaction fee"],
-                      popular: true,
-                    },
-                    {
-                      id: "pro" as const,
-                      name: "Pro",
-                      price: "$29/mo",
-                      features: ["Featured placement", "Analytics", "Priority support", "3% transaction fee"],
+                      name: "Storefront",
+                      price: "$28 one-time set-up",
+                      features: ["Unlimited listings", "Customer reviews", "5% transaction fee"],
                       popular: false,
                     },
                   ].map((p) => {
