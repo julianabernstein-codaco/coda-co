@@ -15,39 +15,25 @@ export const goodsPlans: Plan[] = [
     popular: false,
     transactionFee: "5% per sale",
     targetType: "goods",
+    billingType: "free",
   },
   {
     id: "standard",
-    name: "Standard",
-    price: 12,
-    period: "month",
+    name: "Storefront",
+    // One-time set-up fee, not a recurring subscription — `period: null`
+    // renders the price as a bare "$28" with no "/month" suffix.
+    price: 28,
+    period: null,
     features: [
+      "One-time set-up fee — no monthly cost",
       "Unlimited listings",
-      "Verified seller badge",
       "Customer reviews",
-      "Priority in search results",
-      "Sales analytics dashboard",
-    ],
-    popular: true,
-    transactionFee: "5% per sale",
-    targetType: "goods",
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 29,
-    period: "month",
-    features: [
-      "Everything in Standard",
-      "Featured placement in categories",
-      "Reduced 3% transaction fee",
-      "Advanced analytics",
-      "Priority seller support",
-      "Early access to new features",
     ],
     popular: false,
-    transactionFee: "3% per sale",
+    transactionFee: "5% per sale",
     targetType: "goods",
+    billingType: "one_time",
+    amountCents: 2800,
   },
 ];
 
@@ -73,6 +59,7 @@ export const servicePlans: Plan[] = [
     popular: false,
     transactionFee: "",
     targetType: "services",
+    billingType: "free",
   },
   {
     id: "standard",
@@ -83,6 +70,8 @@ export const servicePlans: Plan[] = [
     popular: true,
     transactionFee: "",
     targetType: "services",
+    billingType: "recurring",
+    amountCents: 1400,
   },
   {
     id: "pro",
@@ -93,6 +82,8 @@ export const servicePlans: Plan[] = [
     popular: false,
     transactionFee: "",
     targetType: "services",
+    billingType: "recurring",
+    amountCents: 2900,
   },
 ];
 

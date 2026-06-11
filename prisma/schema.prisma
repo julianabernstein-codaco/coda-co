@@ -180,6 +180,13 @@ model VendorProfile {
   // clients filter to find them. Stored as a TEXT[] mirroring lifeStages.
   specializations String[] @default([])
 
+  // Goods sellers set up their shop self-serve (no admin review of the
+  // shop itself); instead their FIRST product listing is reviewed by
+  // CodaCo. This flips true once that first listing is approved — after
+  // which every later listing the vendor publishes goes live instantly,
+  // no per-listing review. See app/admin/listings + setProductStatus.
+  listingsAutoApprove Boolean @default(false) @map("listings_auto_approve")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -189,6 +196,7 @@ model VendorProfile {
   vendorReviews VendorReview[]
   inquiries     VendorInquiry[]
   subscriptions Subscription[]
+  payments      VendorPayment[]
 
   @@map("vendor_profile")
 }
@@ -295,11 +303,62 @@ model Subscription {
   @@map("subscriptions")
 }
 
+// One-time charges owed by / collected from a vendor — today just the
+// Storefront plan's set-up fee. Kept separate from `subscriptions`
+// (which model the recurring plan relationship) so one-time charges,
+// refunds, and their Stripe references don't muddy subscription
+// semantics. Rows are created at signup in `pending`; the Stripe
+// integration (next) sets `stripe_payment_intent_id` + `paid_at` and
+// flips the status to `paid`.
+enum VendorPaymentType {
+  unknown
+  setup_fee
+}
+
+enum VendorPaymentStatus {
+  unknown
+  pending
+  paid
+  failed
+  refunded
+}
+
+model VendorPayment {
+  id          String              @id @default(cuid())
+  vendorId    String              @map("vendor_id")
+  // Snapshot of the plan this charge was for. Plans are code-defined
+  // (no plans table), so we store the enum value rather than FK it.
+  planId      SubscriptionPlanId  @default(unknown) @map("plan_id")
+  type        VendorPaymentType   @default(unknown)
+  status      VendorPaymentStatus @default(unknown)
+  amountCents Int                 @map("amount_cents")
+  currency    String              @default("USD")
+
+  // Stripe linkage — null until the Stripe integration settles the
+  // charge. stripeCustomerId is the Stripe Customer; paymentIntent is
+  // the one-time charge object.
+  stripeCustomerId      String?   @map("stripe_customer_id")
+  stripePaymentIntentId String?   @map("stripe_payment_intent_id")
+  paidAt                DateTime? @map("paid_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  vendor VendorProfile @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@index([status])
+  @@map("vendor_payments")
+}
+
 // ── Catalog: products ─────────────────────────────────────────────────────────
 
 enum ProductStatus {
   unknown
   draft
+  // A vendor's first listing sits here after they submit it — hidden from
+  // /shop until a CodaCo admin approves it (see VendorProfile.listingsAutoApprove).
+  pending_review
   published
   archived
 }
