@@ -96,12 +96,11 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
   if (!input.city.trim() || !input.state.trim()) {
     return { error: "Add a city and state." };
   }
-  // Zip is required for service providers — it drives the geographic
-  // search filter (zip + radius). Goods-only sellers ship nationwide and
-  // don't need one.
+  // Zip is required for every applicant — it drives the geographic
+  // search filter (zip + radius for services; location for goods).
   const normalizedZip = normalizeZip(input.zip);
-  if ((input.kind === "services" || input.kind === "both") && !normalizedZip) {
-    return { error: "Add a valid 5-digit zip code so clients can find you." };
+  if (!normalizedZip) {
+    return { error: "Add a valid 5-digit zip code so buyers can find you." };
   }
   if (!input.bio.trim()) {
     return { error: "Tell clients a bit about you (the 'About you' field)." };

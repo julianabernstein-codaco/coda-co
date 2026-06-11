@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { submitGoodsApplication } from "@/app/list-with-us/actions";
 import { StepsBar } from "@/components/ui/StepsBar";
+import { normalizeZip } from "@/lib/geo/zip";
 import { LIFE_STAGES } from "@/lib/format/lifeStage";
 import type { LifeStage } from "@/lib/types";
 
@@ -47,6 +48,7 @@ interface FormData {
   website: string;
   city: string;
   state: string;
+  zip: string;
   bio: string;
   productName: string;
   category: string;
@@ -71,6 +73,7 @@ export function GoodsForm() {
     website: "",
     city: "",
     state: "",
+    zip: "",
     bio: "",
     productName: "",
     category: CATEGORIES[0],
@@ -114,6 +117,7 @@ export function GoodsForm() {
         bio: data.bio,
         city: data.city,
         state: data.state,
+        zip: data.zip,
         planId: plan,
       });
       // The action redirects on success, so we only land here on a
@@ -162,7 +166,7 @@ export function GoodsForm() {
                 <FormField label="Facebook page (optional)">
                   <input className={inputCls} placeholder="facebook.com/yourpage" {...field("facebook")} />
                 </FormField>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-[2fr_1fr_1fr] gap-4">
                   <FormField label="City">
                     <input className={inputCls} placeholder="Portland" {...field("city")} />
                   </FormField>
@@ -172,6 +176,16 @@ export function GoodsForm() {
                         <option key={s}>{s}</option>
                       ))}
                     </select>
+                  </FormField>
+                  <FormField label="Zip" required>
+                    <input
+                      className={inputCls}
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      maxLength={10}
+                      placeholder="97201"
+                      {...field("zip")}
+                    />
                   </FormField>
                 </div>
                 <FormField label="About you (shown on your profile)">
@@ -361,7 +375,10 @@ export function GoodsForm() {
             {/* Navigation */}
             <div className="flex justify-between mt-6">
               <button
-                onClick={() => setStep((s) => s - 1)}
+                onClick={() => {
+                  setSubmitError(null);
+                  setStep((s) => s - 1);
+                }}
                 disabled={step === 0}
                 className="px-6 py-2.5 rounded-full border border-[rgba(44,40,37,.2)] text-[13px] text-ink cursor-pointer hover:border-ch transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -369,7 +386,17 @@ export function GoodsForm() {
               </button>
               {step < STEPS.length - 1 ? (
                 <button
-                  onClick={() => setStep((s) => s + 1)}
+                  onClick={() => {
+                    // Zip is required and powers geo search — gate Step 1 so
+                    // the seller fixes it here rather than bouncing back from
+                    // the final submit.
+                    if (step === 0 && !normalizeZip(data.zip)) {
+                      setSubmitError("Enter a valid 5-digit zip code so buyers can find you.");
+                      return;
+                    }
+                    setSubmitError(null);
+                    setStep((s) => s + 1);
+                  }}
                   className="px-8 py-2.5 rounded-full bg-tr text-white text-[13px] cursor-pointer hover:bg-tr-d transition-colors"
                 >
                   Continue →
@@ -422,10 +449,21 @@ export function GoodsForm() {
   );
 }
 
-function FormField({ label, children }: { label: string; children: React.ReactNode }) {
+function FormField({
+  label,
+  required,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div className="mb-4">
-      <label className="block text-[12px] font-medium text-ch mb-1.5">{label}</label>
+      <label className="block text-[12px] font-medium text-ch mb-1.5">
+        {label}
+        {required && <span className="text-tr ml-0.5">*</span>}
+      </label>
       {children}
     </div>
   );
