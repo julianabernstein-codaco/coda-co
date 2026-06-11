@@ -66,7 +66,10 @@ export const servicePlans: Plan[] = [
     price: null,
     period: null,
     trial: "Free for 3 months",
-    features: [],
+    features: [
+      "Risk free trial with all of the features",
+      "Then sign up for a monthly or annual plan",
+    ],
     popular: false,
     transactionFee: "",
     targetType: "services",
