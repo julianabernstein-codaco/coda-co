@@ -11,7 +11,10 @@ import {
 import { isValidSpecialization } from "@/lib/data/specializations";
 import { normalizeZip, parseRadiusLabel } from "@/lib/geo/zip";
 import { prisma } from "@/lib/db";
-import { sendApplicationSubmittedEmail } from "@/lib/email/templates";
+import {
+  sendApplicationSubmittedEmail,
+  sendListYourGoodsEmail,
+} from "@/lib/email/templates";
 import { log } from "@/lib/log";
 
 export interface ApplicationFormState {
@@ -181,6 +184,28 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     serviceTypeSlug,
     serviceLocationType,
   });
+
+  // Pure goods shops are self-serve: we don't review the shop page itself,
+  // only the vendor's first product listing (see the per-listing review
+  // gate in app/admin/listings + setProductStatus). Auto-approve silently
+  // so the maker lands straight in their dashboard, then send the
+  // "list your goods" welcome/nudge instead of the generic approval email.
+  // Services / both still go through manual review below.
+  if (input.kind === "goods") {
+    await autoApproveAsAdmin(app.id, { notify: false });
+    const nudge = await sendListYourGoodsEmail({
+      toEmail: session.user.email!,
+      toName: session.user.name ?? null,
+      displayName: input.displayName.trim(),
+    });
+    if (!nudge.ok) {
+      log.warn("application.list_goods_email_failed", {
+        applicationId: app.id,
+        err: nudge.error,
+      });
+    }
+    redirect("/dashboard");
+  }
 
   // Demo auto-approve: a single env flag flips the admin queue off so a
   // prospect can sign up and have a working dashboard in under a minute.

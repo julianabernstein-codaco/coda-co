@@ -25,6 +25,16 @@ function listingUrl(slug: string): string {
   return base ? `${base}/services/${slug}` : `/services/${slug}`;
 }
 
+function productUrl(slug: string): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  return base ? `${base}/shop/${slug}` : `/shop/${slug}`;
+}
+
+function productsDashboardUrl(): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  return base ? `${base}/dashboard/products` : "/dashboard/products";
+}
+
 // Minimal house style. Inline styles because most clients strip <style>.
 function layout(bodyHtml: string): string {
   return `<!doctype html>
@@ -206,6 +216,116 @@ export async function sendApplicationRejectedEmail(
   args: ApplicationRejectedArgs,
 ): Promise<SendResult> {
   return sendEmail({ to: args.toEmail, ...buildApplicationRejectedEmail(args) });
+}
+
+// Sent right after a goods seller sets up their shop (self-serve, no admin
+// review of the shop itself). Welcomes them and nudges them to add their
+// first listing — which DOES get reviewed before it goes live.
+export interface ListYourGoodsArgs {
+  toEmail: string;
+  toName: string | null;
+  displayName: string;
+}
+
+export function buildListYourGoodsEmail(args: ListYourGoodsArgs): EmailPayload {
+  const greeting = args.toName ? `Hi ${args.toName},` : "Hi,";
+  const subject = "Your CodaCo shop is ready — add your first listing";
+  const products = productsDashboardUrl();
+
+  const text = [
+    greeting,
+    "",
+    `Your shop "${args.displayName}" is set up on CodaCo. The next step is to list your goods — add photos and prices for each item you want to sell.`,
+    "",
+    `Add your goods:  ${products}`,
+    "",
+    "A quick note on how listings go live: your first listing is reviewed by our team before it appears in the marketplace (it usually takes a day or two). After that first one is approved, every listing you add publishes instantly — no waiting.",
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">${greeting}</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      Your shop <strong>${escapeHtml(args.displayName)}</strong> is set up on CodaCo.
+      The next step is to list your goods — add photos and prices for each item you
+      want to sell.
+    </p>
+    <p style="margin:24px 0;">
+      <a href="${products}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        Add your goods
+      </a>
+    </p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      A quick note on how listings go live: your <strong>first</strong> listing is reviewed
+      by our team before it appears in the marketplace (usually a day or two). After that
+      first one is approved, every listing you add publishes instantly — no waiting.
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendListYourGoodsEmail(
+  args: ListYourGoodsArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildListYourGoodsEmail(args) });
+}
+
+// Sent when an admin approves a vendor's first listing. Doubles as the
+// "you're now cleared to publish on your own" note.
+export interface ListingApprovedArgs {
+  toEmail: string;
+  toName: string | null;
+  productTitle: string;
+  productSlug: string;
+}
+
+export function buildListingApprovedEmail(
+  args: ListingApprovedArgs,
+): EmailPayload {
+  const greeting = args.toName ? `Hi ${args.toName},` : "Hi,";
+  const subject = "Your listing is live on CodaCo";
+  const listing = productUrl(args.productSlug);
+
+  const text = [
+    greeting,
+    "",
+    `Good news — your listing "${args.productTitle}" has been approved and is now live in the CodaCo marketplace.`,
+    "",
+    `See it live:  ${listing}`,
+    "",
+    "That was your first listing, so you're all set: any listings you add from here on publish instantly, no review needed.",
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">${greeting}</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      Good news — your listing <strong>${escapeHtml(args.productTitle)}</strong> has been
+      approved and is now live in the CodaCo marketplace.
+    </p>
+    <p style="margin:24px 0;">
+      <a href="${listing}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        See it live
+      </a>
+    </p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      That was your first listing, so you're all set: any listings you add from here on
+      publish instantly, no review needed.
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendListingApprovedEmail(
+  args: ListingApprovedArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildListingApprovedEmail(args) });
 }
 
 export interface VendorInquiryArgs {

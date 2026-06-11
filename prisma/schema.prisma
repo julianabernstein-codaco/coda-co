@@ -180,6 +180,13 @@ model VendorProfile {
   // clients filter to find them. Stored as a TEXT[] mirroring lifeStages.
   specializations String[] @default([])
 
+  // Goods sellers set up their shop self-serve (no admin review of the
+  // shop itself); instead their FIRST product listing is reviewed by
+  // CodaCo. This flips true once that first listing is approved — after
+  // which every later listing the vendor publishes goes live instantly,
+  // no per-listing review. See app/admin/listings + setProductStatus.
+  listingsAutoApprove Boolean @default(false) @map("listings_auto_approve")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -300,6 +307,9 @@ model Subscription {
 enum ProductStatus {
   unknown
   draft
+  // A vendor's first listing sits here after they submit it — hidden from
+  // /shop until a CodaCo admin approves it (see VendorProfile.listingsAutoApprove).
+  pending_review
   published
   archived
 }

@@ -90,7 +90,15 @@ export async function getApplication(id: string) {
 // Approval is the only place a vendor_profile + subscription gets created
 // outside the mock script. We do both rows in one transaction so a half-
 // approved application can't leave a vendor without a subscription.
-export async function approveApplication(applicationId: string, reviewerId: string) {
+export async function approveApplication(
+  applicationId: string,
+  reviewerId: string,
+  // Self-serve goods shops auto-approve silently and send their own
+  // welcome/"list your goods" email instead — pass notify:false there so
+  // the applicant doesn't also get the generic "application approved" note.
+  opts: { notify?: boolean } = {},
+) {
+  const notify = opts.notify ?? true;
   try {
     const { vendor, applicant } = await prisma.$transaction(async (tx) => {
       const app = await tx.vendorApplication.findUnique({
@@ -195,19 +203,22 @@ export async function approveApplication(applicationId: string, reviewerId: stri
 
     // Best-effort approval email — never roll the transaction back over
     // a transport failure. The vendor row is the source of truth; a
-    // missed email is a logged warning, not a broken approval.
-    const emailResult = await sendApplicationApprovedEmail({
-      toEmail: applicant.email,
-      toName: applicant.name ?? null,
-      displayName: vendor.displayName,
-      vendorSlug: vendor.slug,
-    });
-    if (!emailResult.ok) {
-      log.warn("application.approval_email_failed", {
-        applicationId,
-        vendorId: vendor.id,
-        err: emailResult.error,
+    // missed email is a logged warning, not a broken approval. Skipped
+    // when notify:false (self-serve goods sends its own welcome email).
+    if (notify) {
+      const emailResult = await sendApplicationApprovedEmail({
+        toEmail: applicant.email,
+        toName: applicant.name ?? null,
+        displayName: vendor.displayName,
+        vendorSlug: vendor.slug,
       });
+      if (!emailResult.ok) {
+        log.warn("application.approval_email_failed", {
+          applicationId,
+          vendorId: vendor.id,
+          err: emailResult.error,
+        });
+      }
     }
     return vendor;
   } catch (err) {
@@ -249,7 +260,10 @@ export async function rejectApplication(applicationId: string, reviewerId: strin
 }
 
 // Convenience used by demo auto-approve and the admin queue alike.
-export async function autoApproveAsAdmin(applicationId: string) {
+export async function autoApproveAsAdmin(
+  applicationId: string,
+  opts: { notify?: boolean } = {},
+) {
   // Find any admin to attribute the auto-approval to so the audit trail
   // shows it didn't happen out of nowhere. Falls back to the applicant's
   // own id only if no admin exists (dev edge case).
@@ -264,7 +278,7 @@ export async function autoApproveAsAdmin(applicationId: string) {
     reviewerId,
     selfReview: !admin,
   });
-  return approveApplication(applicationId, reviewerId);
+  return approveApplication(applicationId, reviewerId, opts);
 }
 
 export async function requireAdmin() {

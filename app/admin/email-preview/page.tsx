@@ -47,6 +47,22 @@ const SECTIONS: PreviewSection[] = [
     payload: buildSample("rejected"),
   },
   {
+    key: "list-goods",
+    title: "List your goods (goods welcome)",
+    sentWhen:
+      "Right after a goods seller sets up their shop (self-serve — no admin review of the shop itself). Welcomes them and nudges them to add their first listing.",
+    editFn: "buildListYourGoodsEmail",
+    payload: buildSample("list-goods"),
+  },
+  {
+    key: "listing-approved",
+    title: "Listing approved",
+    sentWhen:
+      "When an admin approves a seller's first listing in /admin/listings. The listing goes live and the seller is cleared to publish future listings without review.",
+    editFn: "buildListingApprovedEmail",
+    payload: buildSample("listing-approved"),
+  },
+  {
     key: "inquiry",
     title: "Vendor inquiry",
     sentWhen:
