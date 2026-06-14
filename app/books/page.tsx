@@ -148,7 +148,8 @@ export default function BooksPage() {
               Books on death &amp; dying
             </h1>
             <p className="text-[13px] text-cl">
-              Honest, beautifully written guides for the journey
+              Honest, beautifully written guides for the journey. Handpicked for
+              you by the CodaCo team.
             </p>
           </div>
           <BooksGrid books={books} />
