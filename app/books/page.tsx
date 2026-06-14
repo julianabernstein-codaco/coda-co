@@ -69,6 +69,7 @@ const books = [
     title: "The Party of Your Life",
     author: "Erika Dillman",
     isbn: "9781595800626",
+    localCover: true,
     bg: "#6B4561",
     desc: "A practical, surprisingly buoyant workbook for designing the funeral you actually want — and sparing the people you love a guessing game.",
     overlay: (
@@ -84,7 +85,6 @@ const books = [
     title: "A Beginner's Guide to the End",
     author: "BJ Miller & Shoshana Berger",
     isbn: "9781501157219",
-    localCover: true,
     bg: "#4A5A5C",
     desc: "A palliative-care physician and a writer team up on a thorough, compassionate field manual for everything dying asks of us.",
     overlay: (
@@ -105,6 +105,7 @@ const books = [
     title: "Never Can Say Goodbye",
     author: "Darnell Lamont Walker",
     isbn: "9780063421837",
+    localCover: true,
     bg: "#5C3A38",
     desc: "A working death doula's memoir of holding space at the bedside, and what the dying have to teach the rest of us about a peaceful end.",
     overlay: (
