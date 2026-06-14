@@ -14,16 +14,22 @@ type BookCoverProps = {
   bg: string;
   /** Fallback geometric overlay, used when no cover image is available. */
   overlay: ReactNode;
+  /** Prefer a self-hosted `/public/books/<isbn>.jpg` over Open Library. Set
+   * for titles whose Open Library cover is missing or poor. */
+  localCover?: boolean;
   /** Called once when no cover is available and the spine fallback is shown. */
   onMissing?: () => void;
 };
 
 /**
- * Book cover for a /books tile. Loads the cover from Open Library by ISBN
- * (`?default=false` makes a missing cover 404 rather than return a blank
- * pixel, so `onError` fires). On any miss or load failure it falls back to
- * the original colored spine + geometric overlay, so the tile is never a
- * broken image.
+ * Book cover for a /books tile, sourced in priority order:
+ *   1. self-hosted `/public/books/<isbn>.jpg` (most reliable, if present)
+ *   2. Open Library by ISBN (`?default=false` makes a missing cover 404
+ *      rather than return a blank pixel, so `onError` fires)
+ *   3. the original colored spine + geometric overlay
+ * Each tier falls through to the next on load failure, so the tile is never a
+ * broken image. `onMissing` fires only when every image tier fails and the
+ * spine shows (used by the grid to sink cover-less tiles).
  */
 export function BookCover({
   isbn,
@@ -32,11 +38,16 @@ export function BookCover({
   author,
   bg,
   overlay,
+  localCover,
   onMissing,
 }: BookCoverProps) {
-  const [failed, setFailed] = useState(false);
+  const sources = [
+    ...(localCover ? [`/books/${isbn}.jpg`] : []),
+    `https://covers.openlibrary.org/b/isbn/${coverIsbn ?? isbn}-L.jpg?default=false`,
+  ];
+  const [tier, setTier] = useState(0);
 
-  if (failed) {
+  if (tier >= sources.length) {
     return (
       <div
         className="h-[168px] flex items-end p-3.5 relative overflow-hidden"
@@ -56,14 +67,14 @@ export function BookCover({
   return (
     <div className="h-[168px] relative overflow-hidden bg-white">
       <Image
-        src={`https://covers.openlibrary.org/b/isbn/${coverIsbn ?? isbn}-L.jpg?default=false`}
+        src={sources[tier]}
         alt={`${title} by ${author}`}
         fill
         sizes="(max-width: 768px) 50vw, 220px"
         className="object-contain p-2"
         onError={() => {
-          setFailed(true);
-          onMissing?.();
+          if (tier + 1 >= sources.length) onMissing?.();
+          setTier((t) => t + 1);
         }}
         unoptimized
       />

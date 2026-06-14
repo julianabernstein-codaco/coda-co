@@ -11,6 +11,8 @@ export type Book = {
   /** Override the cover-image ISBN when a cleaner cover lives on another
    * edition; the buy link still uses `isbn`. */
   coverIsbn?: string;
+  /** Prefer a self-hosted `/public/books/<isbn>.jpg` cover. */
+  localCover?: boolean;
   bg: string;
   desc: string;
   overlay: ReactNode;
@@ -51,6 +53,7 @@ export function BooksGrid({ books }: { books: Book[] }) {
         author={b.author}
         bg={b.bg}
         overlay={b.overlay}
+        localCover={b.localCover}
         onMissing={() => markMissing(b.isbn)}
       />
       <div className="px-4 py-3">
