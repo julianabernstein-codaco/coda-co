@@ -85,6 +85,7 @@ const books = [
     title: "A Beginner's Guide to the End",
     author: "BJ Miller & Shoshana Berger",
     isbn: "9781501157219",
+    localCover: true,
     bg: "#4A5A5C",
     desc: "A palliative-care physician and a writer team up on a thorough, compassionate field manual for everything dying asks of us.",
     overlay: (
