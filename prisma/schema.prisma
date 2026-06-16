@@ -187,6 +187,12 @@ model VendorProfile {
   // no per-listing review. See app/admin/listings + setProductStatus.
   listingsAutoApprove Boolean @default(false) @map("listings_auto_approve")
 
+  // One Stripe Customer per vendor, reused for both the services
+  // subscription and the goods one-time set-up fee. Null until the vendor
+  // first opens Checkout. (VendorPayment also stores the id for audit, but
+  // this is the canonical reference for reuse.)
+  stripeCustomerId String? @unique @map("stripe_customer_id")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -232,9 +238,20 @@ enum SubscriptionKind {
 
 enum SubscriptionStatus {
   unknown
+  incomplete
+  trialing
   active
   past_due
+  unpaid
   cancelled
+}
+
+// Billing cadence for a recurring (services) subscription. Set from the
+// Stripe subscription's price interval. Free/one-time plans stay `unknown`.
+enum SubscriptionInterval {
+  unknown
+  month
+  year
 }
 
 // Submitted before a vendor exists; on approval, an admin (or the demo
@@ -288,14 +305,22 @@ model VendorApplication {
 // (one goods, one services) — that's why kind lives on the row rather
 // than the vendor.
 model Subscription {
-  id               String             @id @default(cuid())
-  vendorId         String             @map("vendor_id")
-  planId           SubscriptionPlanId @default(unknown) @map("plan_id")
-  kind             SubscriptionKind   @default(unknown)
-  status           SubscriptionStatus @default(unknown)
-  currentPeriodEnd DateTime?          @map("current_period_end")
-  createdAt        DateTime           @default(now()) @map("created_at")
-  updatedAt        DateTime           @updatedAt @map("updated_at")
+  id               String               @id @default(cuid())
+  vendorId         String               @map("vendor_id")
+  planId           SubscriptionPlanId   @default(unknown) @map("plan_id")
+  kind             SubscriptionKind     @default(unknown)
+  status           SubscriptionStatus   @default(unknown)
+  interval         SubscriptionInterval @default(unknown)
+  currentPeriodEnd DateTime?            @map("current_period_end")
+
+  // Stripe Billing linkage for recurring (services) plans. Both null until
+  // the vendor completes Checkout from the dashboard; the webhook fills
+  // them in. Goods one-time charges live in VendorPayment, not here.
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  stripePriceId        String? @map("stripe_price_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   vendor VendorProfile @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 

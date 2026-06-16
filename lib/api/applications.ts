@@ -110,6 +110,7 @@ export async function approveApplication(
       if (app.status !== "submitted") throw new Error("Application is not pending review");
 
       const subscriptionKind = app.kind === "services" ? "services" : "goods";
+      const plan = getPlan(subscriptionKind, app.planId);
 
       const vendor = await tx.vendorProfile.create({
         data: {
@@ -134,15 +135,19 @@ export async function approveApplication(
           vendorId: vendor.id,
           planId: app.planId,
           kind: subscriptionKind,
-          status: "active",
+          // Recurring (services) plans start unpaid: the vendor completes
+          // Stripe Checkout from the dashboard and the webhook flips this
+          // to active. Free + one-time (goods) plans are active right
+          // away — goods access is gated by the set-up-fee payment and
+          // the first-listing review, not the subscription row.
+          status: plan?.billingType === "recurring" ? "incomplete" : "active",
         },
       });
 
       // If the chosen plan carries a one-time charge (today: the goods
       // "Storefront" set-up fee), record it as a `pending` payment in the
-      // same transaction. The Stripe integration (next) settles it —
-      // sets the payment-intent id + paid_at and flips status to `paid`.
-      const plan = getPlan(subscriptionKind, app.planId);
+      // same transaction. The Stripe webhook settles it — sets the
+      // payment-intent id + paid_at and flips status to `paid`.
       if (plan?.billingType === "one_time" && (plan.amountCents ?? 0) > 0) {
         await tx.vendorPayment.create({
           data: {
