@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { ImageGalleryUploader } from "@/components/ui/ImageGalleryUploader";
 import type { ProductImage } from "@/lib/types";
 import {
@@ -65,6 +66,7 @@ export function ProductEditor({
   const [statusError, setStatusError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   function saveProduct() {
     // Drop empty-keyed rows and de-dupe by key (last write wins) so the
@@ -114,15 +116,17 @@ export function ProductEditor({
   }
 
   // A "publish" request: for trusted vendors it goes live; for everyone
-  // else the server parks it in pending_review. Either way the page
-  // revalidates and re-renders with the new status, so we just surface
-  // any error here.
+  // else the server parks it in pending_review. On success we send the
+  // maker back to their products list — staying on the editor made it
+  // look like nothing happened (the status just flipped up top). The
+  // list shows the new "In review" / "Published" badge, which is clear
+  // feedback, and gives a natural jumping-off point to add another.
   function requestGoLive() {
     setStatusError(null);
     startTransition(async () => {
       const result = await setProductStatus(product.id, "published");
       if (result.ok) {
-        setSavedAt(new Date().toLocaleTimeString());
+        router.push("/dashboard/products");
       } else {
         setStatusError(result.error);
       }
@@ -179,57 +183,32 @@ export function ProductEditor({
           ? "Draft only. Hidden from /shop until you publish."
           : "Draft only. Submit it for review — CodaCo approves your first listing before it goes live. After that, your listings publish instantly.";
 
+  // Short prompt shown next to the action button in the bottom bar.
+  const actionPrompt = isPublished
+    ? "This listing is live on /shop."
+    : isPending
+      ? "This listing is in review. We'll email you when it's approved."
+      : !hasCover
+        ? `Add a cover photo above to enable ${canSelfPublish ? "publishing" : "review"}.`
+        : canSelfPublish
+          ? "Publish this listing to /shop when you're ready."
+          : "Submit this listing to CodaCo for review.";
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-[10px] border border-line p-6">
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <div className="min-w-0">
-            <p className="text-[11px] tracking-[.08em] uppercase text-cl mb-0.5">Status</p>
-            <span
-              className={[
-                "inline-block text-[11px] font-medium px-2 py-0.5 rounded-full",
-                statusMeta.cls,
-              ].join(" ")}
-            >
-              {statusMeta.label}
-            </span>
-            <p className="text-[12px] text-cl mt-1.5">{statusBlurb}</p>
-          </div>
-          {isPublished ? (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={returnToDraft}
-              className="shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-pl2 text-cm hover:bg-pl"
-            >
-              Unpublish
-            </button>
-          ) : isPending ? (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={returnToDraft}
-              className="shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-pl2 text-cm hover:bg-pl"
-            >
-              Withdraw
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled={pending || !hasCover}
-              onClick={requestGoLive}
-              className="shrink-0 px-4 py-2 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-tr text-white hover:bg-tr-d"
-              title={!hasCover ? "Add a cover photo first" : undefined}
-            >
-              {goLiveLabel}
-            </button>
-          )}
+        <div className="mb-4">
+          <p className="text-[11px] tracking-[.08em] uppercase text-cl mb-0.5">Status</p>
+          <span
+            className={[
+              "inline-block text-[11px] font-medium px-2 py-0.5 rounded-full",
+              statusMeta.cls,
+            ].join(" ")}
+          >
+            {statusMeta.label}
+          </span>
+          <p className="text-[12px] text-cl mt-1.5">{statusBlurb}</p>
         </div>
-        {statusError && (
-          <p className="text-[12px] text-tr-d bg-tr-p border border-tr-l rounded px-2.5 py-1.5 mb-3">
-            {statusError}
-          </p>
-        )}
 
         <Field label="Title">
           <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -384,6 +363,57 @@ export function ProductEditor({
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Go-live action lives at the bottom so the maker reaches it right
+          after filling in details, photos, and pricing above — no
+          scrolling back to the top. */}
+      <div className="bg-white rounded-[10px] border border-line p-6">
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-[13px] text-cm min-w-0">{actionPrompt}</p>
+          {isPublished ? (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={returnToDraft}
+              className="shrink-0 px-5 py-2.5 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-pl2 text-cm hover:bg-pl"
+            >
+              Unpublish
+            </button>
+          ) : isPending ? (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={returnToDraft}
+              className="shrink-0 px-5 py-2.5 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-pl2 text-cm hover:bg-pl"
+            >
+              Withdraw
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={pending || !hasCover}
+              onClick={requestGoLive}
+              className="shrink-0 px-6 py-2.5 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-tr text-white hover:bg-tr-d"
+              title={!hasCover ? "Add a cover photo first" : undefined}
+            >
+              {goLiveLabel}
+            </button>
+          )}
+        </div>
+        {statusError && (
+          <p className="text-[12px] text-tr-d bg-tr-p border border-tr-l rounded px-2.5 py-1.5 mt-3">
+            {statusError}
+          </p>
+        )}
+        <div className="mt-3">
+          <a
+            href="/dashboard/products"
+            className="text-[12px] text-tr no-underline hover:underline"
+          >
+            ← Back to products
+          </a>
+        </div>
       </div>
     </div>
   );
