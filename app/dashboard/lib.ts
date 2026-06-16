@@ -10,7 +10,7 @@ export async function requireVendor() {
 
   const vendor = await prisma.vendorProfile.findUnique({
     where: { userId: session.user.id },
-    include: { subscriptions: true },
+    include: { subscriptions: true, payments: true },
   });
   if (!vendor) redirect("/list-with-us");
 

@@ -165,7 +165,7 @@ export function GoodsForm() {
                     {
                       id: "standard" as const,
                       name: "Storefront",
-                      price: "$28 one-time set-up",
+                      price: "$29 one-time set-up",
                       features: ["Unlimited listings", "Customer reviews", "5% transaction fee"],
                       popular: false,
                     },

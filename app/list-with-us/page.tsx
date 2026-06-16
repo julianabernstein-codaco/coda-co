@@ -101,7 +101,7 @@ const testimonials = [
 const faqs = [
   {
     q: "Is there a fee to list on CodaCo?",
-    a: "Starter is free with up to 3 listings. Standard is $12/month with unlimited listings. Pro is $29/month with featured placement. A 5% transaction fee applies on goods sales.",
+    a: "Listing goods is free for up to 3 products; unlock unlimited listings with a one-time $29 Storefront set-up fee. A 5% transaction fee applies on goods sales. Service providers choose a free trial, then a $15/month or $160/year subscription.",
   },
   {
     q: "How long does approval take?",

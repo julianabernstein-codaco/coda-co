@@ -30,7 +30,22 @@ export default async function DashboardPage() {
     prisma.vendorInquiry.count({ where: { vendorId: vendor.id, readAt: null } }),
   ]);
 
-  const subscription = vendor.subscriptions[0];
+  // Billing summary differs by kind: services run on a subscription, goods
+  // on the free plan or a one-time Storefront set-up fee.
+  const offersServices = vendor.kind === "services" || vendor.kind === "both";
+  const servicesSub = vendor.subscriptions.find((s) => s.kind === "services");
+  const setupFee = vendor.payments.find((p) => p.type === "setup_fee");
+  const subActive =
+    servicesSub && ["active", "trialing"].includes(servicesSub.status);
+  const billingLabel = offersServices
+    ? subActive
+      ? `${servicesSub!.planId} plan`
+      : "Subscription needs setup"
+    : setupFee
+      ? setupFee.status === "paid"
+        ? "Storefront"
+        : "Set-up fee due"
+      : "Free plan";
 
   return (
     <>
@@ -45,10 +60,7 @@ export default async function DashboardPage() {
             <h1 className="font-serif text-[32px] font-light text-ch">{vendor.displayName}</h1>
             <p className="text-[13px] text-cl mt-1.5">
               {vendor.kind === "services" ? "Services provider" : "Goods seller"} ·{" "}
-              {subscription
-                ? `${subscription.planId} plan`
-                : "No active subscription"}{" "}
-              · {vendor.location}
+              {billingLabel} · {vendor.location}
             </p>
           </div>
 
@@ -105,6 +117,22 @@ export default async function DashboardPage() {
               }
               href="/dashboard/messages"
               cta="View messages →"
+            />
+            <DashCard
+              title="Billing"
+              body={
+                offersServices
+                  ? subActive
+                    ? "Your subscription is active. Update your card or plan."
+                    : "Finish setting up your subscription to publish."
+                  : setupFee
+                    ? setupFee.status === "paid"
+                      ? "Storefront set-up fee paid."
+                      : "Pay your one-time Storefront set-up fee."
+                    : "You're on the free goods plan."
+              }
+              href="/dashboard/billing"
+              cta="Manage billing →"
             />
           </div>
         </Container>

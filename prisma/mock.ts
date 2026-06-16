@@ -122,21 +122,26 @@ async function main() {
         serviceDescription: v.serviceDescription,
         pricingNotes: v.pricingNotes,
         specializations: v.specializations,
+        // Demo shops are established — their listings publish without the
+        // first-listing review so the marketplace looks populated.
+        listingsAutoApprove: true,
         user: { connect: { id: user.id } },
       },
     });
     vendorBySlug.set(v.id, created);
 
-    // A mock vendor without an active subscription would land in the
-    // dashboard's "No active subscription" path on first sign-in, which
-    // hides what the demo is meant to show. Give every mock vendor a
-    // starter subscription matching their listing kind.
+    // Give every mock vendor an active subscription so first sign-in lands
+    // on a healthy billing state, not the "needs setup" path. Demo service
+    // vendors sit on the paid Monthly plan; goods on the free Starter plan
+    // (their one-time Storefront fee, if any, is a real-signup concern).
+    const subKind = v.kind === "services" ? "services" : "goods";
     await prisma.subscription.create({
       data: {
         vendorId: created.id,
-        planId: "starter",
-        kind: v.kind === "services" ? "services" : "goods",
+        planId: subKind === "services" ? "standard" : "starter",
+        kind: subKind,
         status: "active",
+        interval: subKind === "services" ? "month" : "unknown",
       },
     });
   }

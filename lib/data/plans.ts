@@ -21,8 +21,8 @@ export const goodsPlans: Plan[] = [
     id: "standard",
     name: "Storefront",
     // One-time set-up fee, not a recurring subscription — `period: null`
-    // renders the price as a bare "$28" with no "/month" suffix.
-    price: 28,
+    // renders the price as a bare "$29" with no "/month" suffix.
+    price: 29,
     period: null,
     features: [
       "One-time set-up fee — no monthly cost",
@@ -33,7 +33,7 @@ export const goodsPlans: Plan[] = [
     transactionFee: "5% per sale",
     targetType: "goods",
     billingType: "one_time",
-    amountCents: 2800,
+    amountCents: 2900,
   },
 ];
 
@@ -71,7 +71,7 @@ export const servicePlans: Plan[] = [
     transactionFee: "",
     targetType: "services",
     billingType: "recurring",
-    amountCents: 1400,
+    amountCents: 1500,
   },
   {
     id: "pro",
@@ -83,7 +83,7 @@ export const servicePlans: Plan[] = [
     transactionFee: "",
     targetType: "services",
     billingType: "recurring",
-    amountCents: 2900,
+    amountCents: 16000,
   },
 ];
 
