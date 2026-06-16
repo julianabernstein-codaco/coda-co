@@ -113,11 +113,14 @@ export function GoodsForm() {
                   <input className={inputCls} placeholder="facebook.com/yourpage" {...field("facebook")} />
                 </FormField>
                 <div className="grid grid-cols-[2fr_1fr_1fr] gap-4">
-                  <FormField label="City">
+                  <FormField label="City" required>
                     <input className={inputCls} placeholder="Portland" {...field("city")} />
                   </FormField>
-                  <FormField label="State">
+                  <FormField label="State" required>
                     <select className={inputCls} {...field("state")}>
+                      <option value="" disabled>
+                        State…
+                      </option>
                       {["OR", "CA", "NY", "TX", "WA", "FL", "CO", "MA"].map((s) => (
                         <option key={s}>{s}</option>
                       ))}
@@ -227,12 +230,27 @@ export function GoodsForm() {
               {step < STEPS.length - 1 ? (
                 <button
                   onClick={() => {
-                    // Zip is required and powers geo search — gate Step 1 so
-                    // the seller fixes it here rather than bouncing back from
-                    // the final submit.
-                    if (step === 0 && !normalizeZip(data.zip)) {
-                      setSubmitError("Enter a valid 5-digit zip code so buyers can find you.");
-                      return;
+                    // Validate every required Step 1 field here so the seller
+                    // fixes them in place rather than bouncing back from the
+                    // final submit on Step 2 (the State <select> in particular
+                    // defaults to empty, which is easy to miss otherwise).
+                    if (step === 0) {
+                      if (!shopName) {
+                        setSubmitError("Add your name or a company name for your shop.");
+                        return;
+                      }
+                      if (!data.city.trim() || !data.state.trim()) {
+                        setSubmitError("Choose your city and state.");
+                        return;
+                      }
+                      if (!normalizeZip(data.zip)) {
+                        setSubmitError("Enter a valid 5-digit zip code so buyers can find you.");
+                        return;
+                      }
+                      if (!data.bio.trim()) {
+                        setSubmitError("Add a short bio in the About you field.");
+                        return;
+                      }
                     }
                     setSubmitError(null);
                     setStep((s) => s + 1);

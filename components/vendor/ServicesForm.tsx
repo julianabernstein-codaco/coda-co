@@ -175,11 +175,14 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                   <input className={inputCls} placeholder="facebook.com/yourpage" {...field("facebook")} />
                 </FormField>
                 <div className="grid grid-cols-[2fr_1fr_1fr] gap-4">
-                  <FormField label="City">
+                  <FormField label="City" required>
                     <input className={inputCls} placeholder="Brooklyn" {...field("city")} />
                   </FormField>
-                  <FormField label="State">
+                  <FormField label="State" required>
                     <select className={inputCls} {...field("state")}>
+                      <option value="" disabled>
+                        State…
+                      </option>
                       {["NY", "CA", "OR", "TX", "WA", "FL", "CO", "MA"].map((s) => (
                         <option key={s}>{s}</option>
                       ))}
@@ -465,12 +468,19 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
             {step < STEPS.length - 1 ? (
               <button
                 onClick={() => {
-                  // Zip is required and powers geo search — gate Step 1 so
-                  // the applicant fixes it here rather than bouncing back
-                  // from the final submit.
-                  if (step === 0 && !normalizeZip(data.zip)) {
-                    setSubmitError("Enter a valid 5-digit zip code so clients can find you.");
-                    return;
+                  // Gate the required Step 1 fields here so the applicant
+                  // fixes them in place rather than bouncing back from the
+                  // final submit. The State <select> in particular defaults
+                  // to empty, which is easy to miss otherwise.
+                  if (step === 0) {
+                    if (!data.city.trim() || !data.state.trim()) {
+                      setSubmitError("Choose your city and state.");
+                      return;
+                    }
+                    if (!normalizeZip(data.zip)) {
+                      setSubmitError("Enter a valid 5-digit zip code so clients can find you.");
+                      return;
+                    }
                   }
                   setSubmitError(null);
                   setStep((s) => s + 1);
