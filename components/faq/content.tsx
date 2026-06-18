@@ -627,6 +627,56 @@ export const guidanceCategories: FaqCategory[] = [
       },
     ],
   },
+  {
+    heading: "Death cleaning",
+    faqs: [
+      {
+        q: "What is Swedish death cleaning?",
+        a: "It's a philosophy called döstädning in Swedish — a thoughtful, intentional way of going through a person's belongings, keeping what truly matters and finding good homes for the rest. Despite the name, it's really not morbid. It's actually quite loving.",
+      },
+      {
+        q: "Do I have to do this right away after losing someone?",
+        a: "Absolutely not. There are no rules about timing. A drawer one weekend, a closet a month later — whatever pace feels right. You don't owe anyone speed, especially right now.",
+      },
+      {
+        q: "Can I do this proactively with my own belongings?",
+        a: "Yes! And what a gift for your loved ones to cherish what you've left them rather than a basement full of moldy stuff. Same as above — start small, don't get overwhelmed.",
+      },
+      {
+        q: "Isn't it just... throwing everything away?",
+        a: "Not at all. Think of it less as discarding and more as redistributing love. Their books going to someone who'll read them. Their tools going to someone who'll use them. It's less like loss and more like one last gift from them to the world.",
+      },
+      {
+        q: "How do I decide what to keep?",
+        a: "Try separating what carries memory from what carries meaning. A ratty old sweater might carry enormous memory — and that's worth keeping for as long as you need it. There's no wrong answer here.",
+      },
+      {
+        q: "What if I cry over something completely silly?",
+        a: "Good. Cry over the wooden spoon. Cry over the half-used bottle of their cologne. That's not strange and that's not weakness — that's love.",
+      },
+      {
+        q: "Does it have to feel like erasing them?",
+        a: "It doesn't, and it shouldn't. Think of it as curating their life with care and intention — honoring who they were through the choices you make about what stays and what moves on.",
+      },
+      {
+        q: "Do I have to do it alone?",
+        a: (
+          <>
+            You do not have to do this alone.{" "}
+            <Link
+              href="/services?type=cleaner"
+              className="text-sg-d hover:underline"
+            >
+              Find the right Swedish death cleaner here
+            </Link>
+            .
+          </>
+        ),
+        searchText:
+          "Do I have to do it alone? You do not have to do this alone. Find the right Swedish death cleaner here.",
+      },
+    ],
+  },
 ];
 
 // Functional, transactional help — surfaced on /faq (the Help Center).
