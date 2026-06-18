@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <>
       <footer className="bg-ch font-sans arc-top">
-        <div className="max-w-[880px] mx-auto px-10 pt-12 pb-8 grid grid-cols-[1fr_auto_auto_auto] gap-10">
+        <div className="max-w-[880px] mx-auto px-10 pt-12 pb-8 grid grid-cols-[1fr_auto_auto] gap-10">
           {/* Brand */}
           <div>
             <div className="font-serif text-[28px] font-medium leading-none mb-3">
@@ -19,29 +19,18 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Shop column */}
-          <FooterColumn heading="Shop">
-            <FooterLink href="/shop?category=urns">Urns &amp; vessels</FooterLink>
-            <FooterLink href="/shop?category=jewelry">Ash jewelry</FooterLink>
-            <FooterLink href="/shop?category=shrouds">Burial shrouds</FooterLink>
-            <FooterLink href="/light-and-dark">Grief meets humor</FooterLink>
-          </FooterColumn>
-
-          {/* Services column */}
-          <FooterColumn heading="Services">
-            <FooterLink href="/services?type=doula">Death doulas</FooterLink>
-            <FooterLink href="/services?type=attorney">Estate attorneys</FooterLink>
-            <FooterLink href="/services?type=cleaner">Death cleaning</FooterLink>
-            <FooterLink href="/services?type=celebrant">Celebrants</FooterLink>
-          </FooterColumn>
-
           {/* Company column */}
           <FooterColumn heading="Company">
             <FooterLink href="/about">About CodaCo</FooterLink>
             <FooterLink href="/list-with-us">List with us</FooterLink>
+            <FooterLink href="/faq">Help Center</FooterLink>
+            <FooterLink href="#">Privacy</FooterLink>
+          </FooterColumn>
+
+          {/* Support column */}
+          <FooterColumn heading="Support">
             <FooterLink href="/where-to-start">Where to start</FooterLink>
             <FooterLink href="/guidance">Guidance</FooterLink>
-            <FooterLink href="/faq">Help Center</FooterLink>
           </FooterColumn>
         </div>
 
