@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { FaqCategory } from "@/components/faq/FaqBrowser";
 
 // Sensitive, editorial guidance content — surfaced on /guidance.
@@ -525,8 +526,14 @@ export const guidanceCategories: FaqCategory[] = [
               for your family&apos;s needs and values.
             </p>
             <p>
-              For more guidance, see our &ldquo;Questions to Ask Potential
-              Hospice Providers.&rdquo;
+              For more guidance, see our{" "}
+              <Link
+                href="/guidance/hospice-questions"
+                className="text-sg-d hover:underline"
+              >
+                Questions to Ask Potential Hospice Providers
+              </Link>
+              .
             </p>
           </div>
         ),
