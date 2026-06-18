@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import type { SubscriptionPlanId } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { log } from "@/lib/log";
 import { mapStripeInterval, mapStripeStatus } from "./catalog";
 
@@ -67,6 +68,29 @@ export async function syncStripeSubscription(sub: Stripe.Subscription): Promise<
     stripeSubscriptionId: sub.id,
     status: data.status,
   });
+}
+
+// Self-heal: pull the vendor's current subscription straight from Stripe
+// and sync it. Used on the billing page when a webhook may have been
+// missed (e.g. the endpoint isn't configured yet), so a refresh reflects
+// reality instead of sitting at "incomplete" forever. Best-effort — never
+// throws into the page render.
+export async function reconcileServicesSubscription(
+  vendorId: string,
+  stripeCustomerId: string | null,
+): Promise<void> {
+  if (!isStripeConfigured() || !stripeCustomerId) return;
+  try {
+    const subs = await stripe.subscriptions.list({
+      customer: stripeCustomerId,
+      status: "all",
+      limit: 1,
+    });
+    const sub = subs.data[0];
+    if (sub) await syncStripeSubscription(sub);
+  } catch (err) {
+    log.warn("billing.reconcile_failed", { vendorId, err });
+  }
 }
 
 // Settle a goods set-up fee after its one-time payment completes: flip the

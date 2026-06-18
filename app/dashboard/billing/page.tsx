@@ -3,6 +3,8 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { servicePlans, planPriceLabel } from "@/lib/data/plans";
 import { getPlan } from "@/lib/api/plans";
+import { prisma } from "@/lib/db";
+import { reconcileServicesSubscription } from "@/lib/billing/sync";
 import { isStripeConfigured } from "@/lib/stripe";
 import { requireVendor } from "../lib";
 import { PortalButton, SetupFeeButton, SubscribeButton } from "./BillingButtons";
@@ -23,8 +25,25 @@ export default async function BillingPage({
 
   const offersServices = vendor.kind === "services" || vendor.kind === "both";
   const offersGoods = vendor.kind === "goods" || vendor.kind === "both";
-  const servicesSub = vendor.subscriptions.find((s) => s.kind === "services");
+  let servicesSub = vendor.subscriptions.find((s) => s.kind === "services");
   const setupFee = vendor.payments.find((p) => p.type === "setup_fee");
+
+  // Self-heal a missed webhook: if the vendor has paid (has a Stripe
+  // customer) but the services subscription isn't active yet, pull the
+  // live status from Stripe so a refresh reflects reality instead of
+  // sitting on "Choose a plan" forever.
+  if (
+    offersServices &&
+    vendor.stripeCustomerId &&
+    isStripeConfigured() &&
+    !(servicesSub && ACTIVE.has(servicesSub.status))
+  ) {
+    await reconcileServicesSubscription(vendor.id, vendor.stripeCustomerId);
+    servicesSub =
+      (await prisma.subscription.findFirst({
+        where: { vendorId: vendor.id, kind: "services" },
+      })) ?? servicesSub;
+  }
 
   return (
     <>
