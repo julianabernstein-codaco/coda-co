@@ -12,6 +12,10 @@ export interface ServiceFilters {
   vendorId?: string;
   serviceType?: ServiceType;
   locationType?: ServiceLocationType;
+  // Owner-preview: include draft services alongside published ones (never
+  // archived). Used on the vendor's own profile so they can see their
+  // unpublished work. Defaults to published-only for the public.
+  includeUnpublished?: boolean;
 }
 
 type DbService = Prisma.ServiceGetPayload<{
@@ -34,7 +38,9 @@ function toService(s: DbService): Service {
 }
 
 export async function getServices(filters: ServiceFilters = {}): Promise<Service[]> {
-  const where: Prisma.ServiceWhereInput = { status: "published" };
+  const where: Prisma.ServiceWhereInput = filters.includeUnpublished
+    ? { status: { in: ["draft", "published"] } }
+    : { status: "published" };
   if (filters.vendorId) where.vendor = { slug: filters.vendorId };
   if (filters.serviceType) where.serviceType = { slug: filters.serviceType };
   if (filters.locationType && filters.locationType !== "unknown") {

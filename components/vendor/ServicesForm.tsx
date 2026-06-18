@@ -512,6 +512,8 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                       serviceTypeSlug: data.serviceType,
                       inHome: data.inHome,
                       virtual: data.virtual,
+                      availableDays: data.availableDays,
+                      availableHours: data.availableHours,
                     });
                     if (result?.error) setSubmitError(result.error);
                   });

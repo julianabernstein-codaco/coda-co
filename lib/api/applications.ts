@@ -29,6 +29,26 @@ export interface ApplicationDraft {
   // auto-create the vendor's first draft Service. Null for goods.
   serviceTypeSlug: string | null;
   serviceLocationType: "unknown" | "virtual" | "in_person" | "both";
+  // Availability pills (joined) carried onto the profile at approval.
+  serviceDays: string | null;
+  serviceHours: string | null;
+}
+
+// Human-readable "Formats" label derived from the service location type,
+// used to populate the profile's service-area card at approval.
+function formatsLabel(
+  locationType: "unknown" | "virtual" | "in_person" | "both",
+): string | null {
+  switch (locationType) {
+    case "both":
+      return "In-home & virtual";
+    case "in_person":
+      return "In-home";
+    case "virtual":
+      return "Virtual";
+    default:
+      return null;
+  }
 }
 
 // Slug must be URL-safe and unique. We strip everything but lowercase
@@ -60,6 +80,8 @@ export async function createApplication(draft: ApplicationDraft) {
       lifeStages: draft.lifeStages,
       serviceTypeSlug: draft.serviceTypeSlug,
       serviceLocationType: draft.serviceLocationType,
+      serviceDays: draft.serviceDays,
+      serviceHours: draft.serviceHours,
       status: "submitted",
     },
   });
@@ -124,6 +146,14 @@ export async function approveApplication(
           specializations: app.specializations,
           zip: app.zip,
           serviceRadiusMi: app.serviceRadiusMi,
+          // Populate the public "Service area & availability" card from
+          // the signup answers so it isn't blank until the vendor edits
+          // it. All vendor-editable later from Dashboard → Profile.
+          serviceRadius:
+            app.serviceRadiusMi != null ? `${app.serviceRadiusMi}-mile radius` : null,
+          serviceFormats: formatsLabel(app.serviceLocationType),
+          serviceDays: app.serviceDays,
+          serviceHours: app.serviceHours,
           serviceDescription: app.serviceDescription,
           pricingNotes: app.pricingNotes,
           lifeStages: app.lifeStages,
