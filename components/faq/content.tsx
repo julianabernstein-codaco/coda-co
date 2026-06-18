@@ -409,6 +409,217 @@ export const guidanceCategories: FaqCategory[] = [
       },
     ],
   },
+  {
+    heading: "Hospice Care",
+    faqs: [
+      {
+        q: "What is hospice care?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Hospice is a type of care for people living with a serious
+              illness when the focus shifts from trying to cure the disease to
+              making sure they&apos;re as comfortable as possible. It&apos;s all
+              about quality of life, comfort, and dignity.
+            </p>
+            <p>
+              Hospice care looks at the whole person. Not only do services
+              target physical symptoms, but also emotional, social, and
+              spiritual needs. It also supports family members and caregivers
+              along the way. Care is provided by a team that may include nurses,
+              doctors, aides, social workers, chaplains, and volunteers.
+            </p>
+            <p>
+              In the U.S., hospice is a Medicare benefit and is often available
+              at little or no cost for people with Medicare or Medicaid.
+            </p>
+          </div>
+        ),
+        searchText:
+          "What is hospice care? Hospice is a type of care for people living with a serious illness when the focus shifts from trying to cure the disease to making sure they're as comfortable as possible. It's all about quality of life, comfort, and dignity. Hospice care looks at the whole person, targeting physical symptoms as well as emotional, social, and spiritual needs, and supports family members and caregivers. Care is provided by a team that may include nurses, doctors, aides, social workers, chaplains, and volunteers. In the U.S., hospice is a Medicare benefit and is often available at little or no cost for people with Medicare or Medicaid.",
+      },
+      {
+        q: "When is it time to consider hospice?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Many families start thinking about hospice when treatments are no
+              longer helping, no longer wanted, or are causing more burden than
+              benefit.
+            </p>
+            <p>
+              Some signs might include frequent trips to the hospital, ongoing
+              decline in health, increasing symptoms, noticeable weight loss, or
+              needing more help at home. If you&apos;re unsure whether it&apos;s
+              the right time, a doctor or hospice provider can help you
+              understand the options and determine eligibility.
+            </p>
+          </div>
+        ),
+        searchText:
+          "When is it time to consider hospice? Many families start thinking about hospice when treatments are no longer helping, no longer wanted, or are causing more burden than benefit. Some signs might include frequent trips to the hospital, ongoing decline in health, increasing symptoms, noticeable weight loss, or needing more help at home. If you're unsure whether it's the right time, a doctor or hospice provider can help you understand the options and determine eligibility.",
+      },
+      {
+        q: "What services does hospice provide?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Hospice provides a wide range of support based on each
+              person&apos;s needs and goals.
+            </p>
+            <p>
+              This often includes pain and symptom management, nursing visits,
+              support from physicians, hospice aides for personal care, social
+              workers, spiritual care, caregiver education, medical equipment
+              and supplies, medications related to the hospice diagnosis, and
+              grief support for loved ones.
+            </p>
+            <p>
+              The goal is to make life as comfortable and meaningful as possible
+              while providing support for the entire family.
+            </p>
+          </div>
+        ),
+        searchText:
+          "What services does hospice provide? Hospice provides a wide range of support based on each person's needs and goals. This often includes pain and symptom management, nursing visits, support from physicians, hospice aides for personal care, social workers, spiritual care, caregiver education, medical equipment and supplies, medications related to the hospice diagnosis, and grief support for loved ones. The goal is to make life as comfortable and meaningful as possible while providing support for the entire family.",
+      },
+      {
+        q: "What are the different types of hospice care?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Hospice can be provided wherever a person feels most at home,
+              including a private residence, assisted living community, nursing
+              facility, hospice residence, or hospital.
+            </p>
+            <p>
+              There are also different levels of care depending on what&apos;s
+              needed. Some people receive routine visits at home, while others
+              may need short-term inpatient care for symptom management,
+              around-the-clock support during a crisis, or respite care that
+              gives family caregivers a chance to rest and recharge.
+            </p>
+            <p>
+              Your hospice team can help determine which type of care fits your
+              situation best.
+            </p>
+          </div>
+        ),
+        searchText:
+          "What are the different types of hospice care? Hospice can be provided wherever a person feels most at home, including a private residence, assisted living community, nursing facility, hospice residence, or hospital. There are also different levels of care depending on what's needed. Some people receive routine visits at home, while others may need short-term inpatient care for symptom management, around-the-clock support during a crisis, or respite care that gives family caregivers a chance to rest and recharge. Your hospice team can help determine which type of care fits your situation best.",
+      },
+      {
+        q: "How do I choose the right hospice provider?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Choosing a hospice provider is a personal decision, and
+              it&apos;s okay to ask lots of questions.
+            </p>
+            <p>
+              You may want to learn about their experience, how quickly they
+              respond to calls, what support is available after hours, how they
+              communicate with families, and whether they offer any specialized
+              programs. Meeting with a hospice representative can also help you
+              get a feel for their approach and whether it feels like a good fit
+              for your family&apos;s needs and values.
+            </p>
+            <p>
+              For more guidance, see our &ldquo;Questions to Ask Potential
+              Hospice Providers.&rdquo;
+            </p>
+          </div>
+        ),
+        searchText:
+          "How do I choose the right hospice provider? Choosing a hospice provider is a personal decision, and it's okay to ask lots of questions. You may want to learn about their experience, how quickly they respond to calls, what support is available after hours, how they communicate with families, and whether they offer any specialized programs. Meeting with a hospice representative can also help you get a feel for their approach and whether it feels like a good fit for your family's needs and values. For more guidance, see our Questions to Ask Potential Hospice Providers.",
+      },
+      {
+        q: "Does choosing hospice mean giving up hope?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Absolutely not. Hospice is redefining what hope looks like.
+              Instead of focusing on curing an illness, hospice focuses on
+              comfort, dignity, meaningful moments, and making the most of the
+              time that remains.
+            </p>
+            <p>
+              Many families find that hospice helps them spend more quality time
+              together, reduces stress, and improves day-to-day comfort.
+              Research has also shown that hospice care does not shorten life
+              and, for some patients, may even help them live as long as—or
+              sometimes longer than—those receiving aggressive treatments near
+              the end of life.
+            </p>
+          </div>
+        ),
+        searchText:
+          "Does choosing hospice mean giving up hope? Absolutely not. Hospice is redefining what hope looks like. Instead of focusing on curing an illness, hospice focuses on comfort, dignity, meaningful moments, and making the most of the time that remains. Many families find that hospice helps them spend more quality time together, reduces stress, and improves day-to-day comfort. Research has also shown that hospice care does not shorten life and, for some patients, may even help them live as long as or sometimes longer than those receiving aggressive treatments near the end of life.",
+      },
+      {
+        q: "Who pays for hospice care?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Hospice is often covered by Medicare, Medicaid, Veterans Affairs
+              benefits, and many private insurance plans.
+            </p>
+            <p>
+              Coverage usually includes visits from the hospice team,
+              medications related to the terminal illness, medical equipment,
+              and supplies. Since every insurance plan is different, it&apos;s
+              always a good idea to ask the hospice provider about what&apos;s
+              covered and whether there could be any out-of-pocket costs.
+            </p>
+          </div>
+        ),
+        searchText:
+          "Who pays for hospice care? Hospice is often covered by Medicare, Medicaid, Veterans Affairs benefits, and many private insurance plans. Coverage usually includes visits from the hospice team, medications related to the terminal illness, medical equipment, and supplies. Since every insurance plan is different, it's always a good idea to ask the hospice provider about what's covered and whether there could be any out-of-pocket costs.",
+      },
+      {
+        q: "Can hospice care be provided at home?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              Yes. In fact, most hospice care takes place wherever the patient
+              calls home.
+            </p>
+            <p>
+              The hospice team visits regularly and works closely with family
+              caregivers to create a plan of care. This allows many people to
+              remain in familiar surroundings while receiving professional
+              support, symptom management, medical equipment, and help whenever
+              it&apos;s needed.
+            </p>
+          </div>
+        ),
+        searchText:
+          "Can hospice care be provided at home? Yes. In fact, most hospice care takes place wherever the patient calls home. The hospice team visits regularly and works closely with family caregivers to create a plan of care. This allows many people to remain in familiar surroundings while receiving professional support, symptom management, medical equipment, and help whenever it's needed.",
+      },
+      {
+        q: "Can hospice care be stopped or changed?",
+        a: (
+          <div className="space-y-3">
+            <p>Absolutely. Hospice is always a choice.</p>
+            <p>
+              If someone decides they want to pursue treatment again or their
+              goals change, they can leave hospice at any time. If a
+              person&apos;s condition improves, they may no longer qualify and
+              can be discharged from hospice care. If they become eligible again
+              in the future, they can return.
+            </p>
+            <p>
+              While eligibility is reviewed regularly, hospice care can continue
+              well beyond six months as long as a patient continues to meet the
+              necessary criteria.
+            </p>
+          </div>
+        ),
+        searchText:
+          "Can hospice care be stopped or changed? Absolutely. Hospice is always a choice. If someone decides they want to pursue treatment again or their goals change, they can leave hospice at any time. If a person's condition improves, they may no longer qualify and can be discharged from hospice care. If they become eligible again in the future, they can return. While eligibility is reviewed regularly, hospice care can continue well beyond six months as long as a patient continues to meet the necessary criteria.",
+      },
+    ],
+  },
 ];
 
 // Functional, transactional help — surfaced on /faq (the Help Center).
