@@ -52,6 +52,10 @@ interface SubmitInput {
   serviceTypeSlug?: string;
   inHome?: boolean;
   virtual?: boolean;
+  // Services form only — the availability day/hour pills the applicant
+  // picked. Joined and carried onto the profile's display fields.
+  availableDays?: string[];
+  availableHours?: string[];
 }
 
 const VALID_LIFE_STAGES = new Set<string>([
@@ -150,6 +154,11 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
   const serviceRadiusMi = parseRadiusLabel(input.radius);
   const serviceDescription = input.serviceDescription?.trim() || null;
   const pricingNotes = input.pricingNotes?.trim() || null;
+  // Join the availability pills into the free-text display strings the
+  // profile's service-area card renders. Capped so a tampered client
+  // can't overrun the column.
+  const serviceDays = (input.availableDays ?? []).join(", ").slice(0, 200) || null;
+  const serviceHours = (input.availableHours ?? []).join(", ").slice(0, 200) || null;
 
   // For services applicants, look up the picked service type so we
   // only persist a slug that resolves at approval time. For goods, no
@@ -183,6 +192,8 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     lifeStages,
     serviceTypeSlug,
     serviceLocationType,
+    serviceDays,
+    serviceHours,
   });
 
   // Pure goods shops are self-serve: we don't review the shop page itself,

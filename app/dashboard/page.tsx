@@ -37,9 +37,10 @@ export default async function DashboardPage() {
   const setupFee = vendor.payments.find((p) => p.type === "setup_fee");
   const subActive =
     servicesSub && ["active", "trialing"].includes(servicesSub.status);
+  const intervalWord = servicesSub?.interval === "year" ? "annual" : "monthly";
   const billingLabel = offersServices
     ? subActive
-      ? `${servicesSub!.planId} plan`
+      ? `${intervalWord} subscription`
       : "Subscription needs setup"
     : setupFee
       ? setupFee.status === "paid"
@@ -123,7 +124,7 @@ export default async function DashboardPage() {
               body={
                 offersServices
                   ? subActive
-                    ? "Your subscription is active. Update your card or plan."
+                    ? `Your ${intervalWord} subscription is active. Update your card or plan.`
                     : "Finish setting up your subscription to publish."
                   : setupFee
                     ? setupFee.status === "paid"

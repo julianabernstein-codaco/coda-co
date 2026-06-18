@@ -2,12 +2,17 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { servicePlans, planPriceLabel } from "@/lib/data/plans";
-import { getPlan } from "@/lib/api/plans";
 import { prisma } from "@/lib/db";
-import { reconcileServicesSubscription } from "@/lib/billing/sync";
+import { getLiveSubscription, reconcileServicesSubscription } from "@/lib/billing/sync";
 import { isStripeConfigured } from "@/lib/stripe";
 import { requireVendor } from "../lib";
-import { PortalButton, SetupFeeButton, SubscribeButton } from "./BillingButtons";
+import {
+  CancelSubButton,
+  PortalButton,
+  SetupFeeButton,
+  SubscribeButton,
+  UpgradeAnnualButton,
+} from "./BillingButtons";
 
 export const metadata: Metadata = { title: "Billing — CodaCo" };
 export const dynamic = "force-dynamic";
@@ -43,6 +48,14 @@ export default async function BillingPage({
       (await prisma.subscription.findFirst({
         where: { vendorId: vendor.id, kind: "services" },
       })) ?? servicesSub;
+  }
+
+  // cancel_at_period_end isn't persisted locally, so read it live to show a
+  // scheduled cancellation on the page (not just in the Stripe portal).
+  let cancelScheduled = false;
+  if (servicesSub?.stripeSubscriptionId && ACTIVE.has(servicesSub.status)) {
+    const live = await getLiveSubscription(servicesSub.stripeSubscriptionId);
+    cancelScheduled = live?.cancel_at_period_end ?? false;
   }
 
   return (
@@ -86,7 +99,11 @@ export default async function BillingPage({
           )}
 
           {offersServices && (
-            <ServicesBilling status={servicesSub?.status} planId={servicesSub?.planId} />
+            <ServicesBilling
+              status={servicesSub?.status}
+              interval={servicesSub?.interval}
+              cancelScheduled={cancelScheduled}
+            />
           )}
           {offersGoods && (
             <GoodsBilling status={setupFee?.status} hasFee={Boolean(setupFee)} />
@@ -106,16 +123,30 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
-function ServicesBilling({ status, planId }: { status?: string; planId?: string }) {
+function ServicesBilling({
+  status,
+  interval,
+  cancelScheduled,
+}: {
+  status?: string;
+  interval?: string;
+  cancelScheduled?: boolean;
+}) {
   if (status && ACTIVE.has(status)) {
-    const plan = planId ? getPlan("services", planId) : undefined;
+    const intervalWord = interval === "year" ? "annual" : "monthly";
     return (
       <Panel title="Your services subscription">
         <p className="text-[13px] text-cm mb-4 leading-relaxed">
-          You’re subscribed{plan ? ` on the ${plan.name} plan` : ""}. Manage your card,
-          switch plans, or cancel anytime.
+          Your <span className="text-ch">{intervalWord}</span> subscription is active.
+          {cancelScheduled
+            ? " It’s set to cancel at the end of the current billing period — reactivate from Manage billing."
+            : " Manage your card, switch plans, or cancel anytime."}
         </p>
-        <PortalButton />
+        <div className="flex flex-wrap gap-2">
+          {!cancelScheduled && interval !== "year" && <UpgradeAnnualButton />}
+          <PortalButton />
+          {!cancelScheduled && <CancelSubButton />}
+        </div>
       </Panel>
     );
   }

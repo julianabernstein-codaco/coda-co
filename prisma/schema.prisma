@@ -290,6 +290,11 @@ model VendorApplication {
   // /dashboard/services/new form on the way in.
   serviceTypeSlug    String?              @map("service_type_slug")
   serviceLocationType ServiceLocationType @default(unknown) @map("service_location_type")
+  // Availability the applicant picked at signup (joined day/hour pills).
+  // Copied to the vendor_profile's display fields on approval so the
+  // public "Service area & availability" card is populated from day one.
+  serviceDays         String?             @map("service_days")
+  serviceHours        String?             @map("service_hours")
   createdAt          DateTime             @default(now()) @map("created_at")
   updatedAt          DateTime             @updatedAt @map("updated_at")
 

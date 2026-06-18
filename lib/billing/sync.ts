@@ -93,8 +93,22 @@ export async function reconcileServicesSubscription(
   }
 }
 
-// Settle a goods set-up fee after its one-time payment completes: flip the
-// vendor's pending VendorPayment to paid and record the Stripe references.
+// Fetch the live Stripe subscription for display-only state the
+// webhook/reconcile doesn't persist locally (e.g. cancel-at-period-end).
+// Best-effort — returns null on any error so it never breaks the page.
+export async function getLiveSubscription(
+  stripeSubscriptionId: string,
+): Promise<Stripe.Subscription | null> {
+  if (!isStripeConfigured()) return null;
+  try {
+    return await stripe.subscriptions.retrieve(stripeSubscriptionId);
+  } catch (err) {
+    log.warn("billing.retrieve_failed", { stripeSubscriptionId, err });
+    return null;
+  }
+}
+
+// Settle a goods set-up fee after its one-time payment completes: flip the vendor's pending VendorPayment to paid and record the Stripe references.
 // Idempotent — re-running only touches still-pending rows.
 export async function markSetupFeePaid(
   vendorId: string,
