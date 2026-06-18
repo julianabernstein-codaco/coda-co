@@ -72,12 +72,14 @@ this plan was drafted):
 | 2.5 | **Maker payout onboarding** — Stripe Connect account + dashboard flow (prerequisite for PR 3) | Yes (`stripeConnectAccountId`) |
 | 3  | Real Stripe Checkout for buyers + stock reservation + Connect split | No (reuses PR 2/2.5 schema) |
 | 4  | Vendor `/dashboard/orders` + "Mark shipped" + new-order email | Maybe (`order_item_events`) |
+| 5  | **Shipping labels** — buy/print a real label via EasyPost (replaces manual tracking entry) | Yes (parcel + label fields) |
 
 PR 1 is independently demoable and unblocks everyone. PRs 2–4 are
 additive; gate any not-yet-ready surface behind route checks, not
 branches (per the migration workflow conventions). **PR 2.5 must land
 before PR 3** — buyers can't pay for a product whose maker hasn't set up
-a payout account (there'd be nowhere for the money to go).
+a payout account (there'd be nowhere for the money to go). **PR 5 builds
+on PR 4** and needs the parcel/ship-from data called out below.
 
 ---
 
@@ -215,7 +217,9 @@ Summarized here; full detail in the data-model doc.
   `vendorId`, grouped by `fulfillmentStatus` (Pending tab first).
 - "Mark shipped" → carrier + tracking number; sets `shippedAt`,
   `trackingCarrier`, `trackingNumber`, `fulfillmentStatus = shipped`;
-  emails the buyer.
+  emails the buyer. (PR 5 adds a "Buy a label" path that fills these in
+  automatically; this manual entry stays as the fallback for makers who
+  ship outside CodaCo.)
 - New-order transactional email (Resend or Postmark) to each vendor with
   an item on the order, sent when the rows are created.
 - `order_item_events` audit log (`id, orderItemId, status, actorUserId,
@@ -223,6 +227,84 @@ Summarized here; full detail in the data-model doc.
 - `orders.status` is derived from its items (`paid` on creation,
   `fulfilled` once every item is `delivered`, `cancelled` if all items
   cancelled) — recompute on read first; a trigger later if needed.
+
+### PR 5 — Shipping labels (EasyPost)
+
+Lets a maker **buy and print a real shipping label from the dashboard**
+instead of going to the carrier themselves and pasting a tracking number
+back in. Provider is **EasyPost** (one API for rates + label purchase +
+tracking, and its tracker webhook also closes out the long-deferred
+`deliveredAt` polling). See `docs/how-a-purchase-works.md` for the
+plain-language version.
+
+**The label workflow (maker side):**
+
+1. A **paid** order item sits in `/dashboard/orders` → Pending.
+2. Maker clicks **"Buy shipping label."** CodaCo assembles an EasyPost
+   *Shipment* from three inputs: **ship-from** (the maker's address),
+   **ship-to** (the order's address snapshot), and the **parcel**
+   (weight + dimensions of the item).
+3. EasyPost returns **rates**. Maker picks a service (or CodaCo
+   auto-selects cheapest / a default carrier).
+4. Maker confirms; CodaCo **buys the label** via EasyPost. Postage is
+   funded per the cost model chosen below.
+5. EasyPost returns a **label (PDF/PNG)** + **tracking number** +
+   **tracking URL**. CodaCo stores them on the `order_item`, sets
+   `fulfillmentStatus = shipped` and `shippedAt`, and emails the buyer
+   the tracking link — the same notification PR 4 already sends.
+6. Maker **downloads and prints** the label, attaches it, and drops the
+   package off (or schedules a pickup, an EasyPost extra later).
+7. EasyPost's **tracker webhook** updates `deliveredAt` /
+   `fulfillmentStatus = delivered` automatically — no buyer/admin
+   self-marking needed once this lands.
+
+**What else we'd need for this to work** (the real gaps — most of these
+don't exist today):
+
+- **Structured parcel data (data gap).** Labels need a numeric **weight**
+  and **length/width/height**. Today products only have free-form
+  `details.weight` / `details.dimensions` *display strings* — unusable
+  for an API. Add real numeric fields on **`product_variants`** (variants
+  differ in size/weight) and collect them in the product editor. Without
+  this, no rate or label can be generated. Block "Buy a label" (and, in
+  the buyer-pays model, purchasability) until a product has parcel data.
+- **A structured ship-from address (data gap).** `VendorProfile` has a
+  free-text `location` + `zip`, not a full street address. EasyPost needs
+  a complete, verified from-address (name, line1/2, city, state, postal,
+  country). Add structured ship-from fields to the vendor profile (or
+  reuse the address already on their Stripe Connect account) and verify
+  it via EasyPost address verification.
+- **Ship-to address** — *already covered.* The order's
+  `shippingAddress` JSONB snapshot is the to-address.
+- **EasyPost client + key.** `lib/shipping/easypost.ts` — a lazy client
+  mirroring `lib/stripe.ts`'s proxy (key read on first use), plus an
+  `isShippingConfigured()` guard so environments without a key fall back
+  to PR 4's manual tracking entry.
+- **New persistence (schema).** Extend `order_items` with
+  `shippingLabelUrl`, `easypostShipmentId`, and `postageCostCents`
+  (+ `currency`); the `trackingCarrier` / `trackingNumber` / `shippedAt`
+  / `deliveredAt` columns from PR 4 are reused.
+- **A tracking webhook route.** `app/api/easypost/webhook/route.ts` for
+  tracker events → `deliveredAt`. Mirror the Stripe webhook's
+  signature-verify-then-reconcile shape.
+- **Postage cost model — open decision (documented both ways):**
+  - *Buyer pays shipping at checkout.* The buyer is charged calculated
+    shipping as a real line on the order. **This reaches back into PR 3:**
+    to quote a rate at checkout we need parcel data at listing time **and**
+    the buyer's address before payment, so checkout makes an EasyPost
+    *rate* call and adds `shippingCents` to the total (activating the
+    deferred `shipping_cents` column). Most transparent; more moving parts.
+  - *Maker absorbs (free shipping).* Matches the "Free shipping" copy
+    already in `AddToCart`. No rate quote at checkout; the maker pays
+    postage when buying the label, **deducted from their Stripe Connect
+    payout** (reduce the transfer by `postageCostCents`) or charged to a
+    card on file. Simpler checkout; postage is a maker cost of doing
+    business.
+  - Pick before building PR 5; the buyer-pays path changes PR 3, the
+    maker-absorbs path doesn't.
+- **Fallback path stays.** International, oversized, or
+  EasyPost-down cases fall back to PR 4's manual "enter your own tracking
+  number." Never hard-block a maker from fulfilling.
 
 ## Open questions / deferred
 

@@ -118,9 +118,27 @@ The moment an order is placed, the maker is notified two ways:
    dashboard**, under a "Pending" list, and stays there until they mark it
    shipped.
 
-When the maker ships the item, they enter the **carrier and tracking
-number** in their dashboard, and CodaCo automatically **emails the customer**
-the shipping update so they know it's on the way.
+### Printing a shipping label
+
+The maker doesn't have to go to the post office counter to figure out
+postage. Right from their CodaCo dashboard, they click **"Buy shipping
+label"** for the order. CodaCo already knows where it's going (the
+customer's address) and how big the item is, so it shows the available
+shipping options and prices. The maker picks one, and CodaCo **buys the
+label and gives them a ready-to-print label** with a tracking number
+built in. The maker prints it, sticks it on the box, and drops it off (or
+schedules a pickup).
+
+The moment the label is created, CodaCo automatically **emails the
+customer** the tracking link so they know the item is on its way — and
+the order updates to "delivered" on its own once the carrier confirms it
+arrived.
+
+*A couple of practical notes:* to print labels, each maker provides their
+**return (ship-from) address** once, and each product needs its **weight
+and size** filled in (so the right postage can be calculated). Makers who
+prefer to ship their own way can still just paste in a tracking number
+instead.
 
 ---
 
