@@ -1,16 +1,24 @@
 "use server";
 
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 import type { SubscriptionPlanId } from "@prisma/client";
 import { requireVendor } from "../lib";
 import { getPlan } from "@/lib/api/plans";
-import { checkoutLineItem } from "@/lib/billing/catalog";
+import { CURRENCY, checkoutLineItem } from "@/lib/billing/catalog";
 import { ensureStripeCustomer } from "@/lib/billing/customer";
+import { syncStripeSubscription } from "@/lib/billing/sync";
 import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { log } from "@/lib/log";
 
 export interface CheckoutResult {
   url?: string;
+  error?: string;
+}
+
+// For in-place actions (no Stripe redirect) — the page refreshes on ok.
+export interface ActionResult {
+  ok?: boolean;
   error?: string;
 }
 
@@ -90,6 +98,75 @@ export async function startGoodsSetupCheckout(): Promise<CheckoutResult> {
   } catch (err) {
     log.error("billing.goods_setup_checkout_failed", { vendorId: vendor.id, err });
     return { error: "Could not start checkout. Try again." };
+  }
+}
+
+// Upgrade a monthly services subscription to the annual plan in place —
+// no new Checkout, no re-entering card details. Switches the subscription
+// item to an annual price (created inline, since plans live in code) and
+// prorates the difference. Synced back immediately so the page reflects it.
+export async function upgradeToAnnual(): Promise<ActionResult> {
+  if (!isStripeConfigured()) return { error: "Billing is not configured yet." };
+  const { vendor } = await requireVendor();
+
+  const sub = vendor.subscriptions.find(
+    (s) => s.kind === "services" && s.stripeSubscriptionId,
+  );
+  if (!sub?.stripeSubscriptionId) return { error: "No active subscription to upgrade." };
+  if (sub.interval === "year") return { error: "You're already on the annual plan." };
+
+  const annual = getPlan("services", "pro");
+  if (!annual?.amountCents) return { error: "The annual plan is unavailable." };
+
+  try {
+    const stripeSub = await stripe.subscriptions.retrieve(sub.stripeSubscriptionId);
+    const price = await stripe.prices.create({
+      currency: CURRENCY,
+      unit_amount: annual.amountCents,
+      recurring: { interval: "year" },
+      product_data: { name: "CodaCo Services — Annual" },
+    });
+    const updated = await stripe.subscriptions.update(sub.stripeSubscriptionId, {
+      items: [{ id: stripeSub.items.data[0].id, price: price.id }],
+      proration_behavior: "create_prorations",
+      // Keep metadata in sync so the webhook/reconcile records the new plan.
+      metadata: { vendorId: vendor.id, planId: "pro", kind: "services" },
+    });
+    await syncStripeSubscription(updated);
+    revalidatePath("/dashboard/billing");
+    revalidatePath("/dashboard");
+    log.info("billing.upgraded_to_annual", { vendorId: vendor.id });
+    return { ok: true };
+  } catch (err) {
+    log.error("billing.upgrade_failed", { vendorId: vendor.id, err });
+    return { error: "Could not upgrade. Try again." };
+  }
+}
+
+// Cancel the services subscription at the end of the current billing period
+// (keeps access until then). Stripe leaves status "active" with
+// cancel_at_period_end until the period ends; the billing page reads that
+// flag live to show the scheduled cancellation.
+export async function cancelServiceSubscription(): Promise<ActionResult> {
+  if (!isStripeConfigured()) return { error: "Billing is not configured yet." };
+  const { vendor } = await requireVendor();
+
+  const sub = vendor.subscriptions.find(
+    (s) => s.kind === "services" && s.stripeSubscriptionId,
+  );
+  if (!sub?.stripeSubscriptionId) return { error: "No active subscription to cancel." };
+
+  try {
+    await stripe.subscriptions.update(sub.stripeSubscriptionId, {
+      cancel_at_period_end: true,
+    });
+    revalidatePath("/dashboard/billing");
+    revalidatePath("/dashboard");
+    log.info("billing.cancel_scheduled", { vendorId: vendor.id });
+    return { ok: true };
+  } catch (err) {
+    log.error("billing.cancel_failed", { vendorId: vendor.id, err });
+    return { error: "Could not cancel. Try again." };
   }
 }
 
