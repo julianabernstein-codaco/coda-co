@@ -69,12 +69,15 @@ this plan was drafted):
 |----|-------|-----------------|
 | 1  | Cart visibility: nav cart count + `/cart` page | No |
 | 2  | `orders` / `order_items` schema + `createOrder` transaction + dev stub-paid checkout | Yes |
-| 3  | Real Stripe Checkout for buyers + stock reservation | No (reuses PR 2 schema) |
+| 2.5 | **Maker payout onboarding** — Stripe Connect account + dashboard flow (prerequisite for PR 3) | Yes (`stripeConnectAccountId`) |
+| 3  | Real Stripe Checkout for buyers + stock reservation + Connect split | No (reuses PR 2/2.5 schema) |
 | 4  | Vendor `/dashboard/orders` + "Mark shipped" + new-order email | Maybe (`order_item_events`) |
 
 PR 1 is independently demoable and unblocks everyone. PRs 2–4 are
 additive; gate any not-yet-ready surface behind route checks, not
-branches (per the migration workflow conventions).
+branches (per the migration workflow conventions). **PR 2.5 must land
+before PR 3** — buyers can't pay for a product whose maker hasn't set up
+a payout account (there'd be nowhere for the money to go).
 
 ---
 
@@ -145,6 +148,32 @@ paid" control flips it to `paid`. This lets the entire flow ship and demo
 before Stripe. (Explicitly the sequencing the data-model doc calls for:
 "First pass uses a stub 'Mark as paid' button in dev; real Stripe
 Checkout is a follow-up.")
+
+### PR 2.5 — Maker payout onboarding (prerequisite for PR 3)
+
+Stripe Connect splits each payment at charge time, so a maker can only be
+paid once they have a **connected account**. This must exist before any
+real buyer payment can route money — hence its own PR, landed before PR 3.
+
+- **Schema.** Add `stripeConnectAccountId String? @unique` to
+  `VendorProfile` (the previously deferred `payout_account_id`). Null
+  until the maker starts onboarding.
+- **Onboarding flow.** A "Set up payouts" action in the vendor dashboard
+  creates a Stripe **Express** connected account and an **Account Link**,
+  then redirects the maker to Stripe's hosted onboarding (bank details,
+  identity — all collected by Stripe, never by CodaCo). Mirror the
+  existing hosted-Checkout redirect pattern in
+  `app/dashboard/billing/actions.ts`.
+- **Status tracking.** Reconcile onboarding completion via the Connect
+  webhook (`account.updated` → store that `charges_enabled` /
+  `payouts_enabled` are true). The dashboard shows "Payouts: not set up /
+  pending / ready."
+- **Purchasability gate.** A product is only buyable when its maker's
+  account is payout-ready. Surface this to the maker (a banner on their
+  products) and enforce it at checkout — a cart line for a not-yet-ready
+  maker is blocked with a clear message, never silently charged.
+- **Demo/dev.** Behind `isStripeConfigured()`, fall back to the PR 2 stub
+  path so the flow still works without live Connect keys.
 
 ### PR 3 — Stripe Checkout for buyers (with Connect)
 

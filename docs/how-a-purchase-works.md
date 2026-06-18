@@ -85,8 +85,11 @@ this automatically.
 Here's the key idea:
 
 - Each maker sets up their **own connected payment account** with Stripe
-  (a guided, one-time setup). This is *their* account — their bank details,
-  their money.
+  (a guided, one-time setup) — *before* their items can be sold. This is
+  *their* account — their bank details, their money. If a maker hasn't
+  finished this setup, their items simply aren't available to buy yet, so
+  a customer is never charged for something that has nowhere to send the
+  money.
 - When a customer pays, Stripe **splits the payment at the moment of the
   sale**:
   - The **maker's share goes directly into the maker's own account.**
