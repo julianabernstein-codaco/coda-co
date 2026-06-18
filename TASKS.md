@@ -8,7 +8,9 @@ see `docs/data-model-evolution.md`. For day-to-day admin operations, see
 
 Orders + checkout + vendor notifications. Not on the demo path, so not
 blocking, but the natural next phase. Full scope lives in
-`docs/data-model-evolution.md` under "Phase E". High-level pieces:
+`docs/data-model-evolution.md` under "Phase E"; the build-ordered
+cart & checkout workflow is in `docs/phase-e-checkout-plan.md`.
+High-level pieces:
 
 - Cart drawer / cart icon in nav + working "Checkout" CTA (today the cart
   writes to localStorage but has no UI to view it).
