@@ -146,15 +146,27 @@ before Stripe. (Explicitly the sequencing the data-model doc calls for:
 "First pass uses a stub 'Mark as paid' button in dev; real Stripe
 Checkout is a follow-up.")
 
-### PR 3 — Stripe Checkout for buyers
+### PR 3 — Stripe Checkout for buyers (with Connect)
 
-Reuse the vendor-billing pattern verbatim (`app/dashboard/billing/
-actions.ts` is the reference):
+Reuse the vendor-billing Checkout + webhook pattern (`app/dashboard/
+billing/actions.ts` is the reference), extended for **Stripe Connect** —
+the marketplace money-flow model chosen for this workflow (see
+`docs/how-a-purchase-works.md` for the plain-language version).
 
 - After `createOrder` writes the `pending` order, call
   `stripe.checkout.sessions.create({ mode: "payment", line_items,
   success_url, cancel_url, metadata: { orderId } })` and redirect to
   `session.url`.
+- **Connect / money split.** Each maker has a **connected account**;
+  payment is split at charge time so the maker's share lands in **their**
+  account and CodaCo retains a **platform/application fee**. Use
+  destination charges (or separate charges-and-transfers). A multi-vendor
+  cart fans out to one transfer per maker.
+- **Connect onboarding.** Add `stripeConnectAccountId` to
+  `VendorProfile` (the deferred `payout_account_id`) and a dashboard
+  onboarding link (Stripe Account Links / Express). A product can't be
+  purchased until its maker has completed onboarding — gate or flag
+  accordingly.
 - **Reconcile in the webhook, never in the action** —
   `app/api/stripe/webhook/route.ts` flips the order `pending → paid` on
   `checkout.session.completed`, keyed by `metadata.orderId`. Same
