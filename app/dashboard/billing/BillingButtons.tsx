@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { SubscriptionPlanId } from "@prisma/client";
 import {
+  cancelServiceSubscription,
   openBillingPortal,
   startGoodsSetupCheckout,
   startServiceSubscriptionCheckout,
+  upgradeToAnnual,
+  type ActionResult,
   type CheckoutResult,
 } from "./actions";
 
@@ -61,6 +65,65 @@ export function SetupFeeButton({ label }: { label: string }) {
         className="btn-primary btn-md disabled:opacity-60"
       >
         {pending ? "Starting…" : label}
+      </button>
+      {error && <p className="text-[12px] text-tr mt-1.5">{error}</p>}
+    </div>
+  );
+}
+
+// Run an in-place action (no redirect), then refresh the page to reflect
+// the new state. Errors surface inline.
+function useAction() {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const run = (action: () => Promise<ActionResult>) => {
+    setError(null);
+    startTransition(async () => {
+      const res = await action();
+      if (res.error) setError(res.error);
+      else router.refresh();
+    });
+  };
+  return { run, pending, error };
+}
+
+export function UpgradeAnnualButton() {
+  const { run, pending, error } = useAction();
+  return (
+    <div>
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => run(() => upgradeToAnnual())}
+        className="btn-primary btn-md disabled:opacity-60"
+      >
+        {pending ? "Upgrading…" : "Upgrade to annual membership"}
+      </button>
+      {error && <p className="text-[12px] text-tr mt-1.5">{error}</p>}
+    </div>
+  );
+}
+
+export function CancelSubButton() {
+  const { run, pending, error } = useAction();
+  return (
+    <div>
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => {
+          if (
+            window.confirm(
+              "Cancel your subscription? It stays active until the end of the current billing period.",
+            )
+          ) {
+            run(() => cancelServiceSubscription());
+          }
+        }}
+        className="btn-ghost btn-md disabled:opacity-60"
+      >
+        {pending ? "Cancelling…" : "Cancel subscription"}
       </button>
       {error && <p className="text-[12px] text-tr mt-1.5">{error}</p>}
     </div>
