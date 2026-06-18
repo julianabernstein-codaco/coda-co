@@ -40,7 +40,18 @@ export async function proxy(req: NextRequest) {
   const password = process.env.PREVIEW_PASSWORD;
   if (!password) return passThrough;
 
-  if (PUBLIC_EXACT.has(pathname) || isAsset(pathname)) return passThrough;
+  // Programmatic endpoints (Stripe webhooks, NextAuth callbacks) are hit by
+  // external services or the app itself — never by a human typing the shared
+  // password — so they must bypass the gate. Without this, Stripe's webhook
+  // POST is answered with a 307 → /preview-access and no events are ever
+  // processed (subscriptions stay "incomplete", set-up fees never settle).
+  if (
+    pathname.startsWith("/api/") ||
+    PUBLIC_EXACT.has(pathname) ||
+    isAsset(pathname)
+  ) {
+    return passThrough;
+  }
 
   const cookie = req.cookies.get(PREVIEW_COOKIE_NAME)?.value;
   if (cookie) {
