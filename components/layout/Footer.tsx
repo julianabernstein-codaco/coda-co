@@ -24,7 +24,6 @@ export function Footer() {
             <FooterLink href="/about">About CodaCo</FooterLink>
             <FooterLink href="/list-with-us">List with us</FooterLink>
             <FooterLink href="/faq">Help Center</FooterLink>
-            <FooterLink href="#">Privacy</FooterLink>
           </FooterColumn>
 
           {/* Support column */}
