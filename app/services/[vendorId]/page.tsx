@@ -222,16 +222,6 @@ export default async function VendorProfilePage({ params }: PageProps) {
                   </li>
                 ))}
               </ul>
-              {vendor.pricingNotes && (
-                <>
-                  <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-1">
-                    Pricing
-                  </div>
-                  <p className="text-[13px] text-cm leading-relaxed mb-5 whitespace-pre-line">
-                    {vendor.pricingNotes}
-                  </p>
-                </>
-              )}
               {vendor.credentials && (
                 <>
                   <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-1">
@@ -259,6 +249,16 @@ export default async function VendorProfilePage({ params }: PageProps) {
                   <ProfileRow label="Hours">{vendor.serviceHours}</ProfileRow>
                 )}
               </dl>
+              {vendor.pricingNotes && (
+                <div className="mt-5 pt-5 border-t border-line">
+                  <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-1">
+                    Pricing
+                  </div>
+                  <p className="text-[13px] text-cm leading-relaxed whitespace-pre-line">
+                    {vendor.pricingNotes}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </Container>
