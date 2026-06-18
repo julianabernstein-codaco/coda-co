@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ContactVendorForm } from "@/components/services/ContactVendorForm";
 import { Container } from "@/components/ui/Container";
@@ -8,6 +9,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Stars } from "@/components/ui/Stars";
 import { VendorPhoto } from "@/components/ui/VendorPhoto";
 import { WaveDivider } from "@/components/ui/WaveDivider";
+import { prisma } from "@/lib/db";
 import { getServices } from "@/lib/api/services";
 import { getVendor } from "@/lib/api/vendors";
 import { getVendorReviews } from "@/lib/api/vendor-reviews";
@@ -41,12 +43,21 @@ function bioParagraphs(bio: string): string[] {
 
 export default async function VendorProfilePage({ params }: PageProps) {
   const { vendorId } = await params;
-  const [vendor, vendorServices, vendorReviewList] = await Promise.all([
+  const session = await auth();
+  const [vendor, vendorReviewList, ownerUserId] = await Promise.all([
     getVendor(vendorId),
-    getServices({ vendorId }),
     getVendorReviews(vendorId),
+    prisma.vendorProfile
+      .findUnique({ where: { slug: vendorId }, select: { userId: true } })
+      .then((v) => v?.userId ?? null),
   ]);
   if (!vendor) notFound();
+
+  // The signed-in owner viewing their own profile sees draft services
+  // (tagged, with a nudge to publish); the public sees published only.
+  const isOwner = Boolean(session?.user) && session!.user.id === ownerUserId;
+  const vendorServices = await getServices({ vendorId, includeUnpublished: isOwner });
+  const draftCount = vendorServices.filter((s) => s.status !== "published").length;
 
   const primaryType = vendorServices[0]?.serviceType;
 
@@ -173,16 +184,40 @@ export default async function VendorProfilePage({ params }: PageProps) {
                   {vendor.serviceDescription}
                 </p>
               )}
+              {isOwner && draftCount > 0 && (
+                <div className="bg-tr-vp border border-tr-p rounded-[8px] px-4 py-3 mb-5 text-[12px] text-ink">
+                  {draftCount === 1
+                    ? "Your service is still a draft — only you can see it."
+                    : `${draftCount} of your services are still drafts — only you can see them.`}{" "}
+                  <Link
+                    href="/dashboard/services"
+                    className="text-tr no-underline hover:underline"
+                  >
+                    Publish from your dashboard →
+                  </Link>
+                </div>
+              )}
               <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-3">
                 Services offered
               </div>
               <ul className="space-y-3 mb-5">
                 {vendorServices.length === 0 && (
-                  <li className="text-[13px] text-cl italic">No services listed yet.</li>
+                  <li className="text-[13px] text-cl italic">
+                    {isOwner
+                      ? "You haven’t added a service yet — add one from your dashboard."
+                      : "This provider hasn’t published any services yet."}
+                  </li>
                 )}
                 {vendorServices.map((s) => (
                   <li key={s.id} className="border-b border-line last:border-b-0 pb-2 last:pb-0">
-                    <div className="text-[13px] font-medium text-ch">{s.title}</div>
+                    <div className="text-[13px] font-medium text-ch flex items-center gap-2">
+                      {s.title}
+                      {s.status !== "published" && (
+                        <span className="text-[10px] tracking-[.06em] uppercase bg-pl2 text-cl border border-line px-1.5 py-0.5 rounded-full">
+                          Draft
+                        </span>
+                      )}
+                    </div>
                     <p className="text-[12px] text-cm leading-relaxed mt-0.5">{s.description}</p>
                   </li>
                 ))}
