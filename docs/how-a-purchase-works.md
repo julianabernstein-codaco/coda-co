@@ -142,6 +142,47 @@ instead.
 
 ---
 
+## Cancelling an order or getting a refund
+
+Two things matter here. First, **when** in the journey the customer asks.
+Second, **why** — because CodaCo's small platform fee was already taken
+the moment the sale happened, and whether that fee comes back depends on
+the reason.
+
+### Before the item ships
+The customer can **cancel the order themselves** from their order history,
+and the refund is **automatic and complete** — the full amount, including
+CodaCo's fee, goes back to their card. Nothing has shipped, so the maker
+isn't out anything, and the item goes back in stock. The maker is emailed
+"don't ship this" so nothing goes out by mistake.
+
+### After the item ships
+Now it's a **return request**. The customer asks for a refund and gives a
+reason; the maker reviews it (CodaCo can step in if needed). What happens
+to CodaCo's fee depends on **whose fault it was**:
+
+- **Something went wrong** — the item arrived damaged, it was the wrong
+  item, or it never showed up: the customer gets a **full refund, and
+  CodaCo also returns its fee.** The maker isn't penalized with CodaCo's
+  cut on a sale that went bad, and the customer is made whole.
+- **The customer simply changed their mind:** they're **refunded for the
+  item**, but **CodaCo's small fee is not returned** (and return shipping
+  may be deducted). Accepting "changed my mind" returns is a normal cost
+  of selling, so the maker covers CodaCo's fee in that case.
+
+### A few practical notes
+- Refunds always go back to the **same card** the customer paid with, and
+  take a few business days to appear — that's the bank's timing, not ours.
+- **Personalized or made-to-order items** generally can't be returned for
+  a change of mind (they can't be resold), but a genuinely defective one
+  is always refundable.
+- The money is pulled back fairly: the maker's share is returned from
+  their account to fund the refund, so CodaCo never quietly eats the cost
+  of a refund — and the maker never pays twice when something was CodaCo's
+  or their own fault.
+
+---
+
 ## What's saved, and what isn't
 
 | Information | Saved by CodaCo? |
@@ -165,3 +206,6 @@ instead.
    own account, CodaCo keeps a platform fee.
 5. The maker is emailed instantly and sees the order in their dashboard.
 6. The maker ships the item and the customer gets a tracking email.
+7. If the customer cancels before it ships, they're refunded in full
+   automatically; after it ships it's a return request, and whether
+   CodaCo's fee comes back depends on the reason.

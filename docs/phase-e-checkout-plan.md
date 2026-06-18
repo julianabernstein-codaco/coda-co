@@ -73,6 +73,7 @@ this plan was drafted):
 | 3  | Real Stripe Checkout for buyers + stock reservation + Connect split | No (reuses PR 2/2.5 schema) |
 | 4  | Vendor `/dashboard/orders` + "Mark shipped" + new-order email | Maybe (`order_item_events`) |
 | 5  | **Shipping labels** — buy/print a real label via EasyPost (replaces manual tracking entry) | Yes (parcel + label fields) |
+| 6  | **Cancellations & refunds** — self-cancel pre-ship, maker-reviewed returns after, Connect-aware refunds | Yes (`refunds` / refund fields) |
 
 PR 1 is independently demoable and unblocks everyone. PRs 2–4 are
 additive; gate any not-yet-ready surface behind route checks, not
@@ -305,6 +306,86 @@ don't exist today):
 - **Fallback path stays.** International, oversized, or
   EasyPost-down cases fall back to PR 4's manual "enter your own tracking
   number." Never hard-block a maker from fulfilling.
+
+### PR 6 — Cancellations & refunds
+
+Because CodaCo uses **Stripe Connect destination charges**, the sale
+already split at payment time — the maker's share sits in *their*
+connected account and CodaCo's platform fee was taken up front. That
+shapes every refund: a refund is paid from CodaCo's platform balance, so
+to avoid CodaCo eating the whole thing we **reverse the maker's transfer**
+to claw their share back, and *separately* decide whether CodaCo's fee
+comes back too. See `docs/how-a-purchase-works.md` for the
+plain-language version.
+
+**Three paths, by where the order is in its life:**
+
+**1. Cancel before payment** (order is `pending`, never paid).
+Already handled by the abandoned-checkout path: release the reserved
+stock, set order `cancelled`. No Stripe call — no money moved.
+
+**2. Self-cancel after payment, before shipment** (order `paid`; no
+label bought, item not `shipped`). The buyer clicks **"Cancel order"**
+in their order history and gets an **automatic full refund** — no maker
+approval needed, since nothing has shipped:
+- Stripe: full refund of the charge with `reverse_transfer: true` (pull
+  the maker's share back) **and** `refund_application_fee: true` — a
+  pre-ship cancel delivered no value, so the buyer is made whole and the
+  maker isn't charged CodaCo's cut on a sale that never happened.
+- Restock the inventory; set order `cancelled`, items `cancelled`.
+- Email the maker ("Order cancelled — do not ship") and the buyer.
+- **Gate:** once a label is bought or the item is marked `shipped`,
+  self-cancel disappears and the buyer sees "Request a return" instead.
+
+**3. Refund / return request after shipment** (item `shipped` or
+`delivered`). The buyer submits a **return request with a reason**; the
+maker reviews and approves/declines from `/dashboard/orders` (CodaCo
+admin can step in as backstop). On approval, the **fee treatment depends
+on the reason** (the chosen policy):
+- *CodaCo/maker at fault* — defective, wrong item, never arrived: full
+  refund with `reverse_transfer: true` **and**
+  `refund_application_fee: true`. Buyer made whole; CodaCo returns its
+  fee so the maker isn't penalized twice.
+- *Buyer's choice* — changed mind, no longer needed: refund the item
+  price with `reverse_transfer: true` but `refund_application_fee:
+  false` — **CodaCo keeps its fee**, the maker bears it as the cost of
+  accepting a return (optionally minus return shipping).
+- Restock only if the item comes back in sellable condition; set item
+  `returned`, order `refunded` (or `partially refunded` for multi-item
+  orders).
+
+**Mechanics to get right:**
+
+- **Reconcile via webhook, not the sync response.** Add `charge.refunded`
+  / `refund.updated` handling to `app/api/stripe/webhook/route.ts`; flip
+  order → `refunded` and item → `returned`/`cancelled` there, same
+  discipline as payment. The button only *requests* the refund.
+- **Partial & multi-item refunds.** A cart can span makers and items;
+  refund per `order_item` (its own charge portion + transfer reversal),
+  not per whole order. Order status becomes `refunded` only when every
+  item is refunded.
+- **Void an unused label.** If a label was bought but the package never
+  shipped, request an EasyPost label refund (unused labels are
+  refundable) so postage isn't lost.
+- **Non-returnable items.** Personalized/made-to-order goods are excluded
+  from buyer's-choice returns (the PDP already says "Returns within 14
+  days for non-personalized items") — enforce at request time, still
+  allow fault-based refunds.
+
+**Schema:**
+- Add a small **`refunds`** table (`id`, `orderItemId`, `amountCents`,
+  `currency`, `reason` enum, `faultParty` enum, `stripeRefundId`,
+  `status` enum, `createdAt`) rather than scalar columns — a single item
+  can be partially refunded more than once, and we want an auditable
+  trail. Feed `order_item_events` too.
+- Reuse the existing `orders.status` (`cancelled`, `refunded`) and
+  `order_items.fulfillment_status` (`cancelled`, `returned`) enum members
+  — they were defined for exactly this.
+
+**Deferred:** who pays **return shipping** (buyer vs maker, by reason) —
+follows the same fault logic; wire it once the EasyPost label flow (PR 5)
+exists so CodaCo can generate the return label. Dispute/chargeback
+handling (`charge.dispute.created`) is its own follow-up.
 
 ## Open questions / deferred
 
