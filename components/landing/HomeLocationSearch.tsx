@@ -39,7 +39,7 @@ export function HomeLocationSearch({ initialZip }: { initialZip: string }) {
         className="flex-1 min-w-0 border-0 bg-transparent font-sans text-[13px] text-tr font-medium outline-none placeholder:text-cl placeholder:font-normal"
       />
       <button onClick={apply} className="btn-secondary btn-sm">
-        Change
+        Search
       </button>
     </div>
   );
