@@ -22,6 +22,9 @@ export interface ProductFilters {
   verified?: boolean;
   ids?: string[];
   lifeStage?: LifeStage | LifeStage[];
+  // Free-text keyword. Case-insensitive substring match over the product
+  // title and description.
+  q?: string;
 }
 
 type DbProduct = Prisma.ProductGetPayload<{
@@ -120,6 +123,13 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   if (filters.ids) where.slug = { in: filters.ids };
   if (filters.lifeStage) {
     where.lifeStages = { hasSome: expandLifeStageFilter(filters.lifeStage) };
+  }
+  if (filters.q && filters.q.trim()) {
+    const q = filters.q.trim();
+    where.OR = [
+      { title: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
+    ];
   }
 
   const rows = await prisma.product.findMany({

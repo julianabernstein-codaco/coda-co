@@ -5,6 +5,8 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { LocationSearch } from "@/components/services/LocationSearch";
 import { ServiceFilters } from "@/components/services/ServiceFilters";
 import { ServiceGrid } from "@/components/services/ServiceGrid";
+import { ServiceKeywordSearch } from "@/components/services/ServiceKeywordSearch";
+import { ServiceSort } from "@/components/services/ServiceSort";
 import { Container } from "@/components/ui/Container";
 import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 import { WaveDivider } from "@/components/ui/WaveDivider";
@@ -14,7 +16,12 @@ import { getVendors } from "@/lib/api/vendors";
 import { isKnownZip } from "@/lib/geo";
 import { parseSpecializationsParam } from "@/lib/data/specializations";
 import { parseLifeStageParam } from "@/lib/format/lifeStage";
-import type { Service, ServiceLocationType, ServiceType } from "@/lib/types";
+import type {
+  Service,
+  ServiceLocationType,
+  ServiceType,
+  VendorWithRating,
+} from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Find services — CodaCo",
@@ -31,6 +38,8 @@ interface ServicesPageProps {
     lifeStage?: string;
     specializations?: string;
     near?: string;
+    q?: string;
+    sort?: string;
   }>;
 }
 
@@ -49,6 +58,8 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     lifeStage,
     specializations: specsParam,
     near,
+    q,
+    sort,
   } = await searchParams;
 
   const serviceType = (type ?? undefined) as ServiceType | undefined;
@@ -69,24 +80,27 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
       minRating: minRating ? parseFloat(minRating) : undefined,
       specializations,
       near,
+      q,
     }),
     getServiceTypes(),
   ]);
 
-  const typeLabelBySlug = new Map(serviceTypes.map((t) => [t.slug, t.name]));
-
   const vendorIds = new Set(matchedServices.map((s) => s.vendorId));
   const vendors = allVendors.filter((v) => vendorIds.has(v.id));
 
-  // With a location active, default to nearest-first. Vendors with no
-  // measured distance (virtual / nationwide) sort to the end.
-  if (nearActive) {
-    vendors.sort(
-      (a, b) =>
-        (a.distanceMi ?? Number.POSITIVE_INFINITY) -
-        (b.distanceMi ?? Number.POSITIVE_INFINITY),
-    );
-  }
+  // Order the results. An explicit `sort` wins; otherwise "best match"
+  // falls back to nearest-first when a location is active and the natural
+  // (creation) order when it isn't. Vendors with no measured distance
+  // (virtual / nationwide) sort to the end.
+  const byDistance = (a: VendorWithRating, b: VendorWithRating) =>
+    (a.distanceMi ?? Number.POSITIVE_INFINITY) -
+    (b.distanceMi ?? Number.POSITIVE_INFINITY);
+  vendors.sort((a, b) => {
+    if (sort === "rating") return b.rating - a.rating || b.reviewCount - a.reviewCount;
+    if (sort === "most-reviewed") return b.reviewCount - a.reviewCount;
+    if (sort === "nearest") return byDistance(a, b);
+    return nearActive ? byDistance(a, b) : 0;
+  });
 
   // Group services by vendor for card display.
   const servicesByVendor = new Map<string, Service[]>();
@@ -105,6 +119,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     verified === "1" ||
     lifeStage != null ||
     nearActive ||
+    (q != null && q !== "") ||
     (specializations != null && specializations.length > 0);
 
   return (
@@ -119,19 +134,9 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           </h1>
         </Container>
         <Container width="mid" className="flex gap-2.5 items-center flex-wrap">
-          <div className="flex flex-1 min-w-[200px] border-[1.5px] border-[rgba(193,99,79,.22)] rounded-[8px] overflow-hidden bg-white">
-            <div className="px-3 py-2.5 border-r border-line flex items-center">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <circle cx="7" cy="7" r="5" stroke="#9A9189" strokeWidth="1.3" />
-                <line x1="11" y1="11" x2="15" y2="15" stroke="#9A9189" strokeWidth="1.3" strokeLinecap="round" />
-              </svg>
-            </div>
-            <input
-              className="flex-1 border-0 px-3.5 py-2.5 font-sans text-[13px] text-ch outline-none bg-transparent"
-              defaultValue={type ? typeLabelBySlug.get(type) ?? type : ""}
-              placeholder="Service type…"
-            />
-          </div>
+          <Suspense>
+            <ServiceKeywordSearch />
+          </Suspense>
           <Suspense>
             <LocationSearch />
           </Suspense>
@@ -173,15 +178,9 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                   <>{totalProviders} providers</>
                 )}
               </span>
-              <div className="flex items-center gap-[7px]">
-                <label className="text-[12px] text-ink">Sort by</label>
-                <select className="text-[12px] text-cm border border-line-bold rounded-[6px] px-2.5 py-[5px] bg-white font-sans outline-none">
-                  <option>Best match</option>
-                  <option>Rating: high to low</option>
-                  <option>Nearest first</option>
-                  <option>Most reviewed</option>
-                </select>
-              </div>
+              <Suspense>
+                <ServiceSort />
+              </Suspense>
             </div>
 
             <ServiceGrid vendors={vendors} servicesByVendor={servicesByVendor} />
