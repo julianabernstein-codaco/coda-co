@@ -24,6 +24,9 @@ export interface VendorFilters {
   // radius; their distance from the searcher is attached as distanceMi.
   // Vendors without a service area (virtual / nationwide) always pass.
   near?: string;
+  // Free-text keyword. Case-insensitive substring match over the vendor's
+  // name, bio, service description, and credentials.
+  q?: string;
 }
 
 type DbVendor = Prisma.VendorProfileGetPayload<{}>;
@@ -109,6 +112,15 @@ export async function getVendors(filters: VendorFilters = {}): Promise<VendorWit
   }
   if (filters.specializations && filters.specializations.length > 0) {
     where.specializations = { hasSome: filters.specializations };
+  }
+  if (filters.q && filters.q.trim()) {
+    const q = filters.q.trim();
+    where.OR = [
+      { displayName: { contains: q, mode: "insensitive" } },
+      { bio: { contains: q, mode: "insensitive" } },
+      { serviceDescription: { contains: q, mode: "insensitive" } },
+      { credentials: { contains: q, mode: "insensitive" } },
+    ];
   }
 
   const rows = await prisma.vendorProfile.findMany({ where, orderBy: { createdAt: "asc" } });

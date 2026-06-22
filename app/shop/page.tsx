@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FilterStrip } from "@/components/shop/FilterStrip";
+import { Pagination } from "@/components/shop/Pagination";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/ui/ProductCard";
@@ -17,17 +18,28 @@ export const metadata: Metadata = {
     "Handmade, purposeful goods — urns, jewelry, burial shrouds, planning documents, and more.",
 };
 
+// One screen of the grid. The auto-fill grid is 4–5 wide on desktop, so a
+// multiple of those keeps rows even.
+const PAGE_SIZE = 12;
+
 interface ShopPageProps {
-  searchParams: Promise<{ category?: string; sort?: string; lifeStage?: string }>;
+  searchParams: Promise<{
+    category?: string;
+    sort?: string;
+    lifeStage?: string;
+    q?: string;
+    page?: string;
+  }>;
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
-  const { category, sort, lifeStage } = await searchParams;
+  const { category, sort, lifeStage, q, page } = await searchParams;
 
   const [products, featuredProducts] = await Promise.all([
     getProducts({
       productType: category as ProductType | undefined,
       lifeStage: parseLifeStageParam(lifeStage),
+      q,
     }),
     getFeaturedProducts(4),
   ]);
@@ -42,6 +54,19 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     // featured: verified first
     return (b.verified ? 1 : 0) - (a.verified ? 1 : 0);
   });
+
+  // Paginate the sorted results. `page` is clamped to the valid range so a
+  // stale/out-of-bounds value (e.g. after narrowing filters) never yields
+  // an empty page.
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const currentPage = Math.min(
+    Math.max(1, parseInt(page ?? "1", 10) || 1),
+    totalPages,
+  );
+  const pageProducts = sorted.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   return (
     <>
@@ -79,17 +104,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             <FilterStrip />
           </Suspense>
 
-          <ProductGrid products={sorted} />
+          <ProductGrid products={pageProducts} />
 
-          <div className="flex justify-center items-center gap-2 mt-8">
-            <button className="bg-white border border-line-bold text-cl px-4 py-1.5 rounded-[7px] text-[13px] cursor-pointer">
-              ← Prev
-            </button>
-            <span className="text-[13px] text-cm">Page 1 of 3</span>
-            <button className="bg-tr border-none text-white px-4 py-1.5 rounded-[7px] text-[13px] cursor-pointer hover:bg-tr-d transition-colors">
-              Next →
-            </button>
-          </div>
+          <Suspense>
+            <Pagination page={currentPage} totalPages={totalPages} />
+          </Suspense>
         </Container>
       </section>
     </>
