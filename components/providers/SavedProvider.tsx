@@ -20,6 +20,10 @@ interface SavedEntry {
 interface SavedContextType {
   saved: SavedEntry[];
   count: number;
+  // False until localStorage has been read on mount. Consumers that render
+  // saved state (e.g. the /saved page) wait on this to avoid flashing an
+  // empty state during hydration.
+  hydrated: boolean;
   isSaved: (kind: SavedKind, slug: string) => boolean;
   toggle: (kind: SavedKind, slug: string) => void;
 }
@@ -37,6 +41,7 @@ function sameEntry(e: SavedEntry, kind: SavedKind, slug: string) {
 // for the eventual account-synced version), so saves live in the browser.
 export function SavedProvider({ children }: { children: React.ReactNode }) {
   const [saved, setSaved] = useState<SavedEntry[]>([]);
+  const [hydrated, setHydrated] = useState(false);
 
   // Hydrate from localStorage on mount
   useEffect(() => {
@@ -46,6 +51,7 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore
     }
+    setHydrated(true);
   }, []);
 
   // Persist on change
@@ -69,7 +75,7 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
   const count = saved.length;
 
   return (
-    <SavedContext.Provider value={{ saved, count, isSaved, toggle }}>
+    <SavedContext.Provider value={{ saved, count, hydrated, isSaved, toggle }}>
       {children}
     </SavedContext.Provider>
   );

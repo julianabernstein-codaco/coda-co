@@ -56,7 +56,9 @@ submission) haven't started.
   localStorage-backed, deliberately mirrors Cart). Entries are
   `{ kind: 'product' | 'vendor', slug }`. Don't call the hook in markup —
   use the `<SaveButton>` primitive, which handles the toggle + saved
-  state. (Saved items have no viewing surface yet, same as the cart.)
+  state. Saved items are listed at `/saved` (the `loadSavedItems` server
+  action in `app/saved/actions.ts` hydrates the stored slugs into cards);
+  `SavedNavLink` shows the count in the nav.
 - **Filters**: URL `searchParams` are the source of truth for shop/service
   filtering. Client filter components update the URL; the page RSC re-renders.
 - **Tokens**: brand colors live in `app/globals.css` under `@theme`. Use
