@@ -23,6 +23,21 @@ export function useFilterParams() {
     [params, pathname, router],
   );
 
+  // Apply several param updates in a single navigation. Empty values are
+  // deleted. Use this when one interaction changes more than one param —
+  // e.g. changing a filter while resetting `page` back to the first page.
+  const setParams = useCallback(
+    (updates: Record<string, string>) => {
+      const next = new URLSearchParams(params.toString());
+      for (const [key, value] of Object.entries(updates)) {
+        if (value) next.set(key, value);
+        else next.delete(key);
+      }
+      router.push(`${pathname}?${next.toString()}`);
+    },
+    [params, pathname, router],
+  );
+
   const toggleBool = useCallback(
     (key: string) => {
       const next = new URLSearchParams(params.toString());
@@ -37,5 +52,5 @@ export function useFilterParams() {
     router.push(pathname);
   }, [pathname, router]);
 
-  return { get, setParam, toggleBool, clearAll };
+  return { get, setParam, setParams, toggleBool, clearAll };
 }
