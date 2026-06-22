@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroSearch } from "@/components/landing/HeroSearch";
+import { HomeLocationSearch } from "@/components/landing/HomeLocationSearch";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { VendorCard } from "@/components/ui/VendorCard";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getServices } from "@/lib/api/services";
-import { getHomeFeaturedVendors } from "@/lib/api/vendors";
+import { getHomeFeaturedVendors, getVendors } from "@/lib/api/vendors";
+import { isKnownZip } from "@/lib/geo";
 
 export const metadata: Metadata = {
   title: "CodaCo — Curated end-of-life goods, services & planning resources",
@@ -121,14 +123,34 @@ const categories = [
   },
 ];
 
-export default async function LandingPage() {
-  const featuredVendors = await getHomeFeaturedVendors();
-  const featuredVendorIds = featuredVendors.map((v) => v.id);
+interface LandingPageProps {
+  searchParams: Promise<{ near?: string }>;
+}
+
+export default async function LandingPage({ searchParams }: LandingPageProps) {
+  const { near } = await searchParams;
+  // A `near` value only filters when it resolves to a known zip; anything
+  // else falls back to the curated featured set (and is flagged below).
+  const nearActive = near != null && near !== "" && isKnownZip(near);
+
+  // With a location set, show the nearest providers; otherwise the curated
+  // "featured" set. Capped to four either way to keep the section a teaser.
+  const vendors = nearActive
+    ? (await getVendors({ near }))
+        .sort(
+          (a, b) =>
+            (a.distanceMi ?? Number.POSITIVE_INFINITY) -
+            (b.distanceMi ?? Number.POSITIVE_INFINITY),
+        )
+        .slice(0, 4)
+    : await getHomeFeaturedVendors();
+
+  const vendorIds = vendors.map((v) => v.id);
   const allServices = await Promise.all(
-    featuredVendorIds.map((id) => getServices({ vendorId: id })),
+    vendorIds.map((id) => getServices({ vendorId: id })),
   );
   const servicesByVendor = new Map<string, typeof allServices[number]>();
-  featuredVendorIds.forEach((id, i) => servicesByVendor.set(id, allServices[i]));
+  vendorIds.forEach((id, i) => servicesByVendor.set(id, allServices[i]));
 
   return (
     <>
@@ -192,28 +214,31 @@ export default async function LandingPage() {
             subtitle="Vetted providers · search by zip or city"
           />
 
-          <div className="flex items-center gap-2.5 bg-white border border-line rounded-[8px] px-4 py-2.5 mb-6">
-            <span className="text-[13px] text-cm flex-1">
-              Showing results near:
-            </span>
-            <input
-              defaultValue="Boulder, CO 80301"
-              className="border-0 bg-transparent font-sans text-[13px] text-tr font-medium outline-none w-[200px]"
-            />
-            <button className="btn-secondary btn-sm">
-              Change
-            </button>
+          <div className="mb-6">
+            <HomeLocationSearch initialZip={near ?? ""} />
+            {near && !nearActive && (
+              <p className="text-[12px] text-tr-d mt-2">
+                We couldn&apos;t find that zip code — showing featured providers.
+              </p>
+            )}
           </div>
 
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3.5">
-            {featuredVendors.map((v) => (
-              <VendorCard
-                key={v.id}
-                vendor={v}
-                services={servicesByVendor.get(v.id) ?? []}
-              />
-            ))}
-          </div>
+          {vendors.length > 0 ? (
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3.5">
+              {vendors.map((v) => (
+                <VendorCard
+                  key={v.id}
+                  vendor={v}
+                  services={servicesByVendor.get(v.id) ?? []}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-[13px] text-cm text-center py-8">
+              No providers found near that location. Try a different zip, or
+              browse all providers below.
+            </p>
+          )}
 
           <div className="text-center mt-5">
             <Link
