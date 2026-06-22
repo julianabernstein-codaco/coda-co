@@ -51,6 +51,12 @@ submission) haven't started.
 - **Cart**: `useCart()` from `components/providers/CartProvider.tsx`
   (client-only, localStorage-backed). Items are
   `{ productId, variantId, qty }` — no copied title/price/thumb.
+- **Saved / wishlist**: `useSaved()` from
+  `components/providers/SavedProvider.tsx` (client-only,
+  localStorage-backed, deliberately mirrors Cart). Entries are
+  `{ kind: 'product' | 'vendor', slug }`. Don't call the hook in markup —
+  use the `<SaveButton>` primitive, which handles the toggle + saved
+  state. (Saved items have no viewing surface yet, same as the cart.)
 - **Filters**: URL `searchParams` are the source of truth for shop/service
   filtering. Client filter components update the URL; the page RSC re-renders.
 - **Tokens**: brand colors live in `app/globals.css` under `@theme`. Use
@@ -200,6 +206,7 @@ inline (see Decision rules below).
 | `<Avatar>`       | `initials`, `size='sm'\|'md'\|'lg'`, `tone='sage'\|'terracotta'`, `className?` | Circular initials badge. | `components/ui/Avatar.tsx`                |
 | `<VendorPhoto>`  | `src?`, `alt?`, `initials`, `size='sm'\|'md'\|'lg'\|'xl'`, `tone='sage'\|'terracotta'`, `className?` | Vendor headshot — B&W photo (or initials fallback) inside a cream circle, framed by a sage or terracotta square. Used by `<VendorCard>` (sm/md/lg) and the vendor profile hero (xl). | `components/ui/VendorPhoto.tsx`           |
 | `<Stars>`        | `rating`, `reviewCount?`, `className?`                        | Rating display. Pass `reviewCount` to append " · N reviews" inline. Wrap in a `text-tr` parent if you want the suffix terracotta-colored. | `components/ui/Stars.tsx`                 |
+| `<SaveButton>`   | `kind: 'product'\|'vendor'`, `slug`, `label?`, `savedLabel?`, `className?`, `activeClassName?` | Wishlist toggle (heart + label) backed by `useSaved()`. Use anywhere a product or vendor can be saved instead of a bare `<button>`. | `components/ui/SaveButton.tsx`             |
 | `<VendorCard>`   | `vendor`, `layout='compact'\|'search'`                        | Vendor list item. `compact` for grid tiles, `search` for service-search rows. | `components/ui/VendorCard.tsx`            |
 | `<ProductCard>`  | `product`                                                     | Product grid tile.                                            | `components/ui/ProductCard.tsx`           |
 | `<ReviewCard>`   | `review`                                                      | One review row with stars + body. Accepts a `Review` or `VendorReview`. | `components/ui/ReviewCard.tsx`            |
