@@ -4,6 +4,7 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { FilterStrip } from "@/components/shop/FilterStrip";
 import { Pagination } from "@/components/shop/Pagination";
 import { ProductGrid } from "@/components/shop/ProductGrid";
+import { SavedLink } from "@/components/saved/SavedLink";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -98,6 +99,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             <p className="text-[13px] text-cl">
               Handmade, purposeful goods — available locally or shipped anywhere in the US
             </p>
+          </div>
+
+          <div className="flex justify-end mb-3">
+            <SavedLink />
           </div>
 
           <Suspense>

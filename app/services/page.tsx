@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { LocationSearch } from "@/components/services/LocationSearch";
 import { ServiceFilters } from "@/components/services/ServiceFilters";
 import { ServiceGrid } from "@/components/services/ServiceGrid";
+import { SavedLink } from "@/components/saved/SavedLink";
 import { ServiceKeywordSearch } from "@/components/services/ServiceKeywordSearch";
 import { ServiceSort } from "@/components/services/ServiceSort";
 import { Container } from "@/components/ui/Container";
@@ -178,9 +179,12 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                   <>{totalProviders} providers</>
                 )}
               </span>
-              <Suspense>
-                <ServiceSort />
-              </Suspense>
+              <div className="flex items-center gap-4">
+                <SavedLink />
+                <Suspense>
+                  <ServiceSort />
+                </Suspense>
+              </div>
             </div>
 
             <ServiceGrid vendors={vendors} servicesByVendor={servicesByVendor} />

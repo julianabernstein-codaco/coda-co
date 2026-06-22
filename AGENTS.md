@@ -58,7 +58,8 @@ submission) haven't started.
   use the `<SaveButton>` primitive, which handles the toggle + saved
   state. Saved items are listed at `/saved` (the `loadSavedItems` server
   action in `app/saved/actions.ts` hydrates the stored slugs into cards);
-  `SavedNavLink` shows the count in the nav.
+  the `<SavedLink>` entry point (heart + count) lives on the `/shop` and
+  `/services` listing pages and in the footer — not the top nav.
 - **Filters**: URL `searchParams` are the source of truth for shop/service
   filtering. Client filter components update the URL; the page RSC re-renders.
 - **Tokens**: brand colors live in `app/globals.css` under `@theme`. Use
