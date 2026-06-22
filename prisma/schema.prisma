@@ -65,6 +65,7 @@ model User {
   vendorProfile VendorProfile?
   applications  VendorApplication[] @relation("VendorApplicationsApplicant")
   reviewedApps  VendorApplication[] @relation("VendorApplicationsReviewer")
+  orders        Order[]
 
   @@map("users")
 }
@@ -203,6 +204,7 @@ model VendorProfile {
   inquiries     VendorInquiry[]
   subscriptions Subscription[]
   payments      VendorPayment[]
+  orderItems    OrderItem[]
 
   @@map("vendor_profile")
 }
@@ -458,7 +460,8 @@ model ProductVariant {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
 
   @@index([productId])
   @@map("product_variants")
@@ -567,4 +570,83 @@ model VendorInquiry {
 
   @@index([vendorId])
   @@map("vendor_inquiries")
+}
+
+// ── Commerce: orders ──────────────────────────────────────────────────────────
+
+enum OrderStatus {
+  unknown
+  pending
+  paid
+  fulfilled
+  cancelled
+  refunded
+}
+
+enum OrderItemFulfillmentStatus {
+  unknown
+  pending
+  shipped
+  delivered
+  cancelled
+  returned
+}
+
+// One order per checkout. Can span multiple vendors; per-vendor fulfillment
+// lives on the items. The cart stays client-side (localStorage) — this is the
+// first row written, by createOrder at checkout. Money columns are an
+// integer-cents + currency snapshot taken at order time.
+model Order {
+  id          String      @id @default(cuid())
+  buyerUserId String      @map("buyer_user_id")
+  status      OrderStatus @default(unknown)
+  totalCents  Int         @map("total_cents")
+  currency    String      @default("USD")
+  // JSONB snapshot of the shipping address taken at checkout, so historical
+  // orders survive later edits/deletions to any saved-address record.
+  shippingAddress Json     @map("shipping_address")
+  placedAt        DateTime @default(now()) @map("placed_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  buyer User        @relation(fields: [buyerUserId], references: [id], onDelete: Cascade)
+  items OrderItem[]
+
+  @@index([buyerUserId])
+  @@index([status])
+  @@map("orders")
+}
+
+// One row per cart line. Carries price/title/variant snapshots so historical
+// orders survive product edits or deletes. productVariantId and vendorId are
+// nullable FKs (SetNull) for the same reason — deleting the underlying
+// product/vendor must not erase the order record. vendorId is what PR 4's
+// /dashboard/orders scopes by.
+model OrderItem {
+  id               String  @id @default(cuid())
+  orderId          String  @map("order_id")
+  productVariantId String? @map("product_variant_id")
+  vendorId         String? @map("vendor_id")
+  quantity         Int
+  unitPriceCents   Int     @map("unit_price_cents")
+  currency         String  @default("USD")
+  // Snapshots — frozen at order time so edits/deletes to the product don't
+  // rewrite history.
+  productTitleSnapshot String @map("product_title_snapshot")
+  variantLabelSnapshot String @map("variant_label_snapshot")
+
+  fulfillmentStatus OrderItemFulfillmentStatus @default(unknown) @map("fulfillment_status")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+  vendor         VendorProfile?  @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([vendorId])
+  @@index([productVariantId])
+  @@map("order_items")
 }
