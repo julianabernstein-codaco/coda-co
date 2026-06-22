@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/components/providers/CartProvider";
+import { SaveButton } from "@/components/ui/SaveButton";
 import type { Product } from "@/lib/types";
 
 interface AddToCartProps {
@@ -140,9 +141,14 @@ export function AddToCart({ product }: AddToCartProps) {
         {added ? "Added to cart ✓" : `Add to cart — $${price}`}
       </button>
 
-      <button className="w-full py-3 rounded-full text-[14px] text-cm border border-line-bold hover:border-tr hover:text-tr transition-all cursor-pointer">
-        Save to wishlist
-      </button>
+      <SaveButton
+        kind="product"
+        slug={product.id}
+        label="Save to wishlist"
+        savedLabel="Saved to wishlist"
+        className="w-full py-3 rounded-full text-[14px] border transition-all text-cm border-line-bold hover:border-tr hover:text-tr"
+        activeClassName="text-tr border-tr bg-tr-p hover:text-tr"
+      />
 
       {/* Trust signals */}
       <div className="space-y-2 pt-1">

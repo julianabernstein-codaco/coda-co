@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Service, VendorWithRating } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
+import { SaveButton } from "@/components/ui/SaveButton";
 import { Stars } from "@/components/ui/Stars";
 import { VendorPhoto } from "@/components/ui/VendorPhoto";
 import { serviceTypeLabel, vendorLocationSuffix } from "@/lib/format/vendor";
@@ -121,7 +122,12 @@ function VendorSearchCard({
         >
           View profile →
         </Link>
-        <button className="btn-ghost btn-sm w-full mt-1.5">Save</button>
+        <SaveButton
+          kind="vendor"
+          slug={vendor.id}
+          className="btn-ghost btn-sm w-full mt-1.5"
+          activeClassName="text-tr border-tr"
+        />
       </div>
     </Card>
   );

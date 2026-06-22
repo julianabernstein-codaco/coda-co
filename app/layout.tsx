@@ -5,6 +5,7 @@ import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/components/providers/CartProvider";
+import { SavedProvider } from "@/components/providers/SavedProvider";
 
 const serif = Crimson_Pro({
   subsets: ["latin"],
@@ -47,9 +48,11 @@ export default async function RootLayout({
       <body>
         {showChrome ? (
           <CartProvider>
-            <Nav />
-            <main>{children}</main>
-            <Footer />
+            <SavedProvider>
+              <Nav />
+              <main>{children}</main>
+              <Footer />
+            </SavedProvider>
           </CartProvider>
         ) : (
           <main>{children}</main>

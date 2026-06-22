@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ContactVendorForm } from "@/components/services/ContactVendorForm";
 import { Container } from "@/components/ui/Container";
+import { SaveButton } from "@/components/ui/SaveButton";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Stars } from "@/components/ui/Stars";
 import { VendorPhoto } from "@/components/ui/VendorPhoto";
@@ -151,7 +152,12 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 <a href="#contact" className="btn-primary btn-md no-underline">
                   Contact ↗
                 </a>
-                <button className="btn-ghost btn-md">Save</button>
+                <SaveButton
+                  kind="vendor"
+                  slug={vendor.id}
+                  className="btn-ghost btn-md"
+                  activeClassName="text-tr border-tr"
+                />
               </div>
             </div>
           </div>
