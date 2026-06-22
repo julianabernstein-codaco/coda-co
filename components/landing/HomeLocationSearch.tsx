@@ -4,33 +4,32 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { normalizeZip } from "@/lib/geo/zip";
 
-// Location box for the home "Support in your area" section. Writes the
-// searcher's zip into the `near` query param; the page RSC re-renders and
-// swaps the curated featured set for the nearest providers. Accepts a bare
-// zip or free text containing one ("Boulder, CO 80301"); a 5-digit zip is
-// pulled out on submit. Clearing it returns to the featured set.
+// Location box for the home "Support in your area" section. On submit it
+// hands off to the full /services search with the searcher's zip in the
+// `near` param, so they land on the complete, filterable results list
+// (rather than filtering a teaser grid in place).
 //
 // Imports only the client-safe helper from lib/geo/zip — never lib/geo —
 // so the zipcodes dataset stays out of the client bundle.
-export function HomeLocationSearch({ initialZip }: { initialZip: string }) {
+export function HomeLocationSearch() {
   const router = useRouter();
-  const [value, setValue] = useState(initialZip);
+  const [value, setValue] = useState("");
 
-  function apply() {
+  function search() {
     const zip = normalizeZip(value) ?? "";
-    // scroll:false keeps the viewer on this section rather than jumping to
-    // the top of the page when the results re-render.
-    router.push(zip ? `/?near=${zip}` : "/", { scroll: false });
+    // A resolvable zip pre-filters the services search; anything else just
+    // opens the full provider list.
+    router.push(zip ? `/services?near=${zip}` : "/services");
   }
 
   return (
     <div className="flex items-center gap-2.5 bg-white border border-line rounded-[8px] px-4 py-2.5">
-      <span className="text-[13px] text-cm whitespace-nowrap">Showing results near:</span>
+      <span className="text-[13px] text-cm whitespace-nowrap">Find providers near you:</span>
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") apply();
+          if (e.key === "Enter") search();
         }}
         inputMode="numeric"
         autoComplete="postal-code"
@@ -38,8 +37,8 @@ export function HomeLocationSearch({ initialZip }: { initialZip: string }) {
         aria-label="Search providers by zip code"
         className="flex-1 min-w-0 border-0 bg-transparent font-sans text-[13px] text-tr font-medium outline-none placeholder:text-cl placeholder:font-normal"
       />
-      <button onClick={apply} className="btn-secondary btn-sm">
-        Change
+      <button onClick={search} className="btn-secondary btn-sm">
+        Search
       </button>
     </div>
   );

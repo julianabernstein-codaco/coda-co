@@ -7,8 +7,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { VendorCard } from "@/components/ui/VendorCard";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getServices } from "@/lib/api/services";
-import { getHomeFeaturedVendors, getVendors } from "@/lib/api/vendors";
-import { isKnownZip } from "@/lib/geo";
+import { getHomeFeaturedVendors } from "@/lib/api/vendors";
 
 export const metadata: Metadata = {
   title: "CodaCo — Curated end-of-life goods, services & planning resources",
@@ -123,28 +122,10 @@ const categories = [
   },
 ];
 
-interface LandingPageProps {
-  searchParams: Promise<{ near?: string }>;
-}
-
-export default async function LandingPage({ searchParams }: LandingPageProps) {
-  const { near } = await searchParams;
-  // A `near` value only filters when it resolves to a known zip; anything
-  // else falls back to the curated featured set (and is flagged below).
-  const nearActive = near != null && near !== "" && isKnownZip(near);
-
-  // With a location set, show the nearest providers; otherwise the curated
-  // "featured" set. Capped to four either way to keep the section a teaser.
-  const vendors = nearActive
-    ? (await getVendors({ near }))
-        .sort(
-          (a, b) =>
-            (a.distanceMi ?? Number.POSITIVE_INFINITY) -
-            (b.distanceMi ?? Number.POSITIVE_INFINITY),
-        )
-        .slice(0, 4)
-    : await getHomeFeaturedVendors();
-
+export default async function LandingPage() {
+  // Curated "featured" providers shown as a preview. The location box hands
+  // off to /services for the real, filterable search.
+  const vendors = await getHomeFeaturedVendors();
   const vendorIds = vendors.map((v) => v.id);
   const allServices = await Promise.all(
     vendorIds.map((id) => getServices({ vendorId: id })),
@@ -215,30 +196,18 @@ export default async function LandingPage({ searchParams }: LandingPageProps) {
           />
 
           <div className="mb-6">
-            <HomeLocationSearch initialZip={near ?? ""} />
-            {near && !nearActive && (
-              <p className="text-[12px] text-tr-d mt-2">
-                We couldn&apos;t find that zip code — showing featured providers.
-              </p>
-            )}
+            <HomeLocationSearch />
           </div>
 
-          {vendors.length > 0 ? (
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3.5">
-              {vendors.map((v) => (
-                <VendorCard
-                  key={v.id}
-                  vendor={v}
-                  services={servicesByVendor.get(v.id) ?? []}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-[13px] text-cm text-center py-8">
-              No providers found near that location. Try a different zip, or
-              browse all providers below.
-            </p>
-          )}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3.5">
+            {vendors.map((v) => (
+              <VendorCard
+                key={v.id}
+                vendor={v}
+                services={servicesByVendor.get(v.id) ?? []}
+              />
+            ))}
+          </div>
 
           <div className="text-center mt-5">
             <Link
