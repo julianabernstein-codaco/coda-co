@@ -11,6 +11,7 @@ import {
   claimGiftCard,
   findPoolByContributeToken,
   deliverPooledGiftCard,
+  reconcilePendingByCode,
   formatCents,
   GiftCardError,
   GIFT_CARD_MIN_CENTS,
@@ -81,7 +82,8 @@ export async function purchaseGiftCard(
     // it's fine in their post-checkout redirect.
     const successUrl = card.organizerToken
       ? `${origin}/gift-cards/manage/${card.organizerToken}?status=success`
-      : `${origin}/gift-cards?status=success`;
+      : // Carry the card id so the success page can self-heal a missed webhook.
+        `${origin}/gift-cards?status=success&card=${card.id}`;
     const checkout = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: purchaserEmail,
@@ -154,7 +156,13 @@ export async function contributeToPool(
         contributorName: input.contributorName?.trim() || "",
       },
       payment_intent_data: {
-        metadata: { kind: "gift_card", giftCardId: card.id },
+        // contributorName on the PI too (not just the session) so a webhook
+        // miss recovered via reconcileCard still attributes the contribution.
+        metadata: {
+          kind: "gift_card",
+          giftCardId: card.id,
+          contributorName: input.contributorName?.trim() || "",
+        },
       },
     });
     return { url: checkout.url ?? undefined };
@@ -200,9 +208,12 @@ export async function deliverGiftCardAction(
   return { ok: true };
 }
 
-// Check a code's balance from the redeem page. Public-safe DTO only.
+// Check a code's balance from the redeem page. Public-safe DTO only. Self-heals
+// a stranded card first, so a recipient who got their code but whose funding
+// webhook failed still sees the real balance instead of "not active yet".
 export async function lookupGiftCardAction(code: string): Promise<GiftCardLookup> {
   if (!code?.trim()) return { found: false };
+  await reconcilePendingByCode(code);
   return lookupGiftCard(code);
 }
 
@@ -213,5 +224,6 @@ export async function claimGiftCardAction(code: string): Promise<ClaimResult> {
   if (!session?.user) {
     return { ok: false, error: "Sign in to add this gift card to your account." };
   }
+  await reconcilePendingByCode(code);
   return claimGiftCard(code, session.user.id);
 }
