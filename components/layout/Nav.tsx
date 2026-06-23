@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import { Logo } from "@/components/ui/Logo";
-import { SavedNavLink } from "@/components/layout/SavedNavLink";
 import { prisma } from "@/lib/db";
 
 interface NavProps {
@@ -56,7 +55,6 @@ export async function Nav({ active }: NavProps) {
         {link("Find services", "/services", "services")}
         {link("Bookshop", "/books", "books")}
         {link("List with us", "/list-with-us", "list")}
-        <SavedNavLink />
         {session?.user ? (
           <SignedInControls user={session.user} hasVendorProfile={vendor != null} />
         ) : (

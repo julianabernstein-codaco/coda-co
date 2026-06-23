@@ -30,6 +30,7 @@ export function Footer() {
           <FooterColumn heading="Support">
             <FooterLink href="/where-to-start">Where to start</FooterLink>
             <FooterLink href="/guidance">Guidance</FooterLink>
+            <FooterLink href="/saved">Saved items</FooterLink>
           </FooterColumn>
         </div>
 
