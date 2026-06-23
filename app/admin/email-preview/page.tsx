@@ -70,6 +70,14 @@ const SECTIONS: PreviewSection[] = [
     editFn: "buildVendorInquiryEmail",
     payload: buildSample("inquiry"),
   },
+  {
+    key: "gift-card",
+    title: "Gift card delivery",
+    sentWhen:
+      "When a gift card's purchase payment confirms (Stripe webhook). Sent to the recipient if the buyer entered one, otherwise back to the buyer. Carries the code and a link to check the balance.",
+    editFn: "buildGiftCardDeliveryEmail",
+    payload: buildSample("gift-card"),
+  },
 ];
 
 export default async function AdminEmailPreviewPage() {

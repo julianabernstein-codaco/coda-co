@@ -35,6 +35,11 @@ function productsDashboardUrl(): string {
   return base ? `${base}/dashboard/products` : "/dashboard/products";
 }
 
+function giftCardRedeemUrl(): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  return base ? `${base}/gift-cards/redeem` : "/gift-cards/redeem";
+}
+
 // Minimal house style. Inline styles because most clients strip <style>.
 function layout(bodyHtml: string): string {
   return `<!doctype html>
@@ -389,6 +394,84 @@ export async function sendVendorInquiryEmail(
     replyTo: args.clientEmail,
     ...buildVendorInquiryEmail(args),
   });
+}
+
+// Sent once a gift card's purchase payment confirms. Goes to the recipient
+// if the buyer entered one, otherwise back to the buyer. Carries the code and
+// a link to check the balance / claim it to an account.
+export interface GiftCardDeliveryArgs {
+  toEmail: string;
+  recipientName?: string | null;
+  // The buyer — shown to a gift recipient ("a gift from …") and unused when
+  // the buyer sent the card to themselves.
+  purchaserEmail: string;
+  isSelfPurchase: boolean;
+  code: string;
+  amountLabel: string;
+  message?: string | null;
+}
+
+export function buildGiftCardDeliveryEmail(
+  args: GiftCardDeliveryArgs,
+): EmailPayload {
+  const greeting = args.recipientName ? `Hi ${args.recipientName},` : "Hi,";
+  const redeem = giftCardRedeemUrl();
+  const subject = args.isSelfPurchase
+    ? `Your ${args.amountLabel} CodaCo gift card`
+    : `You've received a ${args.amountLabel} CodaCo gift card`;
+
+  const intro = args.isSelfPurchase
+    ? `Thanks for your purchase. Here's your ${args.amountLabel} CodaCo gift card — use it toward goods and services in the marketplace.`
+    : `${args.purchaserEmail} has sent you a ${args.amountLabel} CodaCo gift card — to use toward goods and services in the marketplace.`;
+
+  const messageBlock = args.message?.trim()
+    ? `\nTheir message:\n${args.message.trim()}\n`
+    : "";
+
+  const text = [
+    greeting,
+    "",
+    intro,
+    "",
+    `Gift card code:  ${args.code}`,
+    `Balance:         ${args.amountLabel}`,
+    messageBlock,
+    `Check your balance or add it to your account:  ${redeem}`,
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const messageHtml = args.message?.trim()
+    ? `<div style="margin:0 0 16px;padding:12px 14px;background:#f5f1ec;border-radius:8px;font-size:14px;line-height:1.55;color:#2c2825;">
+         <strong style="display:block;margin-bottom:4px;font-size:12px;color:#7a7570;text-transform:uppercase;letter-spacing:.06em;">Their message</strong>
+         ${escapeHtml(args.message.trim()).replace(/\n/g, "<br>")}
+       </div>`
+    : "";
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">${greeting}</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">${escapeHtml(intro)}</p>
+    <div style="margin:0 0 20px;padding:20px;background:#f5f1ec;border-radius:12px;text-align:center;">
+      <div style="font-size:12px;color:#7a7570;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Gift card code</div>
+      <div style="font-family:Georgia,serif;font-size:26px;letter-spacing:.06em;color:#2c2825;">${escapeHtml(args.code)}</div>
+      <div style="margin-top:10px;font-size:14px;color:#7a7570;">Balance ${escapeHtml(args.amountLabel)}</div>
+    </div>
+    ${messageHtml}
+    <p style="margin:24px 0;">
+      <a href="${redeem}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        Check your balance
+      </a>
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendGiftCardDeliveryEmail(
+  args: GiftCardDeliveryArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildGiftCardDeliveryEmail(args) });
 }
 
 // Basic HTML-escape — applicant-supplied strings render unescaped

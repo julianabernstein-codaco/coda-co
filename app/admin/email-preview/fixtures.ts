@@ -6,6 +6,7 @@ import {
   buildApplicationApprovedEmail,
   buildApplicationRejectedEmail,
   buildApplicationSubmittedEmail,
+  buildGiftCardDeliveryEmail,
   buildListingApprovedEmail,
   buildListYourGoodsEmail,
   buildVendorInquiryEmail,
@@ -26,6 +27,7 @@ export const TEMPLATE_KEYS = [
   "list-goods",
   "listing-approved",
   "inquiry",
+  "gift-card",
 ] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
@@ -62,6 +64,16 @@ export function buildSample(key: TemplateKey): EmailPayload {
         clientEmail: "jordan.lee@example.com",
         message:
           "Hi — my mother is in hospice and we're hoping to arrange a home vigil in the next couple of weeks. Are you available, and what does that look like?",
+      });
+    case "gift-card":
+      return buildGiftCardDeliveryEmail({
+        toEmail: FIXTURE.toEmail,
+        recipientName: "Jordan Lee",
+        purchaserEmail: "sam.rivera@example.com",
+        isSelfPurchase: false,
+        code: "Q7KP-3MWX-RBND",
+        amountLabel: "$100",
+        message: "Thinking of you and your family. With love, Sam.",
       });
   }
 }

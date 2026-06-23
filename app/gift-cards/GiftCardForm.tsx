@@ -1,0 +1,216 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { purchaseGiftCard } from "./actions";
+import {
+  GIFT_CARD_PRESETS_CENTS,
+  GIFT_CARD_MIN_CENTS,
+  GIFT_CARD_MAX_CENTS,
+  formatCents,
+} from "@/lib/format/giftCard";
+
+export function GiftCardForm() {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const [preset, setPreset] = useState<number | "custom">(GIFT_CARD_PRESETS_CENTS[1]);
+  const [customDollars, setCustomDollars] = useState("");
+  const [forSomeoneElse, setForSomeoneElse] = useState(false);
+
+  const [purchaserEmail, setPurchaserEmail] = useState("");
+  const [recipientEmail, setRecipientEmail] = useState("");
+  const [recipientName, setRecipientName] = useState("");
+  const [giftMessage, setGiftMessage] = useState("");
+
+  function resolveAmountCents(): number | null {
+    if (preset !== "custom") return preset;
+    const dollars = Number.parseFloat(customDollars);
+    if (!Number.isFinite(dollars)) return null;
+    return Math.round(dollars * 100);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+
+    const amountCents = resolveAmountCents();
+    if (amountCents == null || amountCents < GIFT_CARD_MIN_CENTS || amountCents > GIFT_CARD_MAX_CENTS) {
+      setError(
+        `Choose an amount between ${formatCents(GIFT_CARD_MIN_CENTS)} and ${formatCents(GIFT_CARD_MAX_CENTS)}.`,
+      );
+      return;
+    }
+
+    startTransition(async () => {
+      const res = await purchaseGiftCard({
+        amountCents,
+        purchaserEmail,
+        recipientEmail: forSomeoneElse ? recipientEmail : undefined,
+        recipientName: forSomeoneElse ? recipientName : undefined,
+        giftMessage: forSomeoneElse ? giftMessage : undefined,
+      });
+      if (res.url) {
+        window.location.href = res.url;
+      } else {
+        setError(res.error ?? "Something went wrong.");
+      }
+    });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-7">
+      {/* Amount */}
+      <fieldset className="space-y-3">
+        <legend className="text-[12px] font-medium text-ch uppercase tracking-wide mb-1">Amount</legend>
+        <div className="grid-auto-130">
+          {GIFT_CARD_PRESETS_CENTS.map((cents) => (
+            <AmountButton
+              key={cents}
+              label={formatCents(cents)}
+              active={preset === cents}
+              onClick={() => setPreset(cents)}
+            />
+          ))}
+          <AmountButton
+            label="Custom"
+            active={preset === "custom"}
+            onClick={() => setPreset("custom")}
+          />
+        </div>
+        {preset === "custom" && (
+          <label className="block max-w-[200px]">
+            <span className="text-[12px] text-cl">Custom amount (USD)</span>
+            <div className="mt-1 flex items-center rounded-[8px] border border-line-bold focus-within:border-tr px-3">
+              <span className="text-[14px] text-cl">$</span>
+              <input
+                type="number"
+                min={GIFT_CARD_MIN_CENTS / 100}
+                max={GIFT_CARD_MAX_CENTS / 100}
+                step="1"
+                value={customDollars}
+                onChange={(e) => setCustomDollars(e.target.value)}
+                className="w-full py-2 pl-1 text-[14px] text-ch outline-none bg-transparent"
+                placeholder="75"
+              />
+            </div>
+          </label>
+        )}
+      </fieldset>
+
+      {/* Buyer */}
+      <Field
+        label="Your email"
+        type="email"
+        value={purchaserEmail}
+        onChange={setPurchaserEmail}
+        hint="We'll send a receipt here."
+      />
+
+      {/* Gift toggle */}
+      <label className="flex items-center gap-2.5 text-[14px] text-ch">
+        <input
+          type="checkbox"
+          checked={forSomeoneElse}
+          onChange={(e) => setForSomeoneElse(e.target.checked)}
+          className="accent-tr w-4 h-4"
+        />
+        This is a gift for someone else
+      </label>
+
+      {forSomeoneElse && (
+        <div className="space-y-4 border-l-2 border-tr-l pl-4">
+          <Field
+            label="Recipient email"
+            type="email"
+            value={recipientEmail}
+            onChange={setRecipientEmail}
+            hint="We'll email the gift card here once payment clears."
+          />
+          <Field
+            label="Recipient name (optional)"
+            value={recipientName}
+            onChange={setRecipientName}
+            required={false}
+          />
+          <label className="block">
+            <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
+              Message (optional)
+            </span>
+            <textarea
+              value={giftMessage}
+              onChange={(e) => setGiftMessage(e.target.value)}
+              rows={3}
+              maxLength={500}
+              className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none resize-none"
+              placeholder="A few words to go with the gift…"
+            />
+          </label>
+        </div>
+      )}
+
+      {error && <p className="text-[13px] text-tr">{error}</p>}
+
+      <button type="submit" disabled={pending} className="btn-primary btn-md w-full disabled:opacity-50">
+        {pending ? "Starting checkout…" : "Continue to payment"}
+      </button>
+      <p className="text-[12px] text-cl text-center">
+        You'll be sent to Stripe to pay securely. The gift card is issued once payment clears.
+      </p>
+    </form>
+  );
+}
+
+function AmountButton({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`py-2.5 rounded-[10px] border text-[15px] font-medium transition-colors ${
+        active
+          ? "border-tr bg-tr-p text-tr-d"
+          : "border-line-bold text-ch hover:border-tr-l"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  type = "text",
+  required = true,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  required?: boolean;
+  hint?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="text-[12px] font-medium text-ch uppercase tracking-wide">{label}</span>
+      <input
+        type={type}
+        value={value}
+        required={required}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none"
+      />
+      {hint && <span className="mt-1 block text-[12px] text-cl">{hint}</span>}
+    </label>
+  );
+}

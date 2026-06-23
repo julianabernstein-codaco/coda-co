@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { log } from "@/lib/log";
 import { markSetupFeePaid, syncStripeSubscription } from "@/lib/billing/sync";
+import { activateGiftCardFromCheckout, formatCents } from "@/lib/api/giftCards";
+import { sendGiftCardDeliveryEmail } from "@/lib/email/templates";
 
 // Stripe webhook. Signature-verified against STRIPE_WEBHOOK_SECRET, so the
 // payload is trusted. Stripe retries on non-2xx and may deliver events more
@@ -59,6 +61,34 @@ export async function POST(req: Request) {
               ? session.customer
               : (session.customer?.id ?? null);
           await markSetupFeePaid(session.metadata.vendorId, paymentIntentId, customerId);
+        } else if (
+          session.mode === "payment" &&
+          session.metadata?.kind === "gift_card" &&
+          session.metadata.giftCardId
+        ) {
+          const paymentIntentId =
+            typeof session.payment_intent === "string"
+              ? session.payment_intent
+              : (session.payment_intent?.id ?? null);
+          // Returns the card only on the first (pending → active) transition,
+          // so Stripe's at-least-once delivery never double-credits or
+          // double-emails.
+          const card = await activateGiftCardFromCheckout(
+            session.metadata.giftCardId,
+            paymentIntentId,
+          );
+          if (card) {
+            const isSelfPurchase = !card.recipientEmail;
+            await sendGiftCardDeliveryEmail({
+              toEmail: card.recipientEmail ?? card.purchaserEmail,
+              recipientName: card.recipientName,
+              purchaserEmail: card.purchaserEmail,
+              isSelfPurchase,
+              code: card.code,
+              amountLabel: formatCents(card.initialAmountCents),
+              message: card.giftMessage,
+            });
+          }
         }
         break;
       }
