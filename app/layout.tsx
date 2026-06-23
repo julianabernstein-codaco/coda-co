@@ -6,6 +6,8 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { SavedProvider } from "@/components/providers/SavedProvider";
+import { auth } from "@/auth";
+import { getCart } from "@/lib/api/cart";
 
 const serif = Crimson_Pro({
   subsets: ["latin"],
@@ -43,11 +45,22 @@ export default async function RootLayout({
   const pathname = (await headers()).get("x-pathname") ?? "";
   const showChrome = !CHROMELESS_PATHS.has(pathname);
 
+  // Seed the account cart server-side so the nav badge is correct on first
+  // paint. Sign-in only — signed-out visitors get an empty cart. Keyed by
+  // user id below so the provider remounts cleanly on sign-in/out.
+  const session = showChrome ? await auth() : null;
+  const isSignedIn = !!session?.user;
+  const initialCart = isSignedIn ? await getCart(session!.user.id) : [];
+
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable}`}>
       <body>
         {showChrome ? (
-          <CartProvider>
+          <CartProvider
+            key={session?.user?.id ?? "anon"}
+            initialItems={initialCart}
+            isSignedIn={isSignedIn}
+          >
             <SavedProvider>
               <Nav />
               <main>{children}</main>

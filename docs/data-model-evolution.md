@@ -27,7 +27,10 @@ User-confirmed decisions:
   field that has to live on it; in the meantime "being a buyer" is implicit
   (a user with a `shipping_address` or `order`).
 - Vendor signup is manually reviewed.
-- Cart stays client-only (localStorage); the order is written at checkout.
+- ~~Cart stays client-only (localStorage); the order is written at
+  checkout.~~ **Revised:** the cart is **account-linked** — a `cart_items`
+  table scoped to the user, so it persists across devices. Sign-in only
+  (no guest cart). See the `cart_items` entry under Commerce.
 
 ## Phase status
 
@@ -193,11 +196,24 @@ enum (default `unknown`), `tracking_carrier?`, `tracking_number?`,
 - The tracking + timestamp fields are how CodaCo learns the lifecycle
   state — see [Vendor notifications and order lifecycle](#vendor-notifications-and-order-lifecycle).
 
-**Cart — no table.** Existing `CartProvider` + localStorage stays. At
-checkout, the client posts cart contents to a server action that creates
-the `orders` + `order_items` rows in a transaction (revalidates price
-against current variant, decrements stock, rejects oversells). Cart shape
-slims to `{ productId, variantId, qty }` — no copied product fields.
+**`cart_items`** — `id` (PK), `user_id` (FK → `users.id`),
+`product_variant_id` (FK → `product_variants.id`), `quantity`,
+`created_at`, `updated_at`. Unique on `(user_id, product_variant_id)` —
+re-adding a variant bumps its quantity.
+- *(This revises the original "cart stays client-only / no table"
+  decision.)* The cart is now **account-linked**: it persists server-side
+  so a signed-in shopper's cart follows them across devices, and it's
+  **sign-in only** — there is no guest/anonymous cart (add-to-cart prompts
+  sign-in). `CartProvider` is now seeded from this table (loaded in the
+  root layout) and mutates it through server actions, replacing the old
+  localStorage store. The client cart shape stays `{ productId, variantId,
+  qty }`.
+- Holds **no price/title snapshot** — only a variant reference + quantity.
+  Price is always read live at checkout; the snapshots live on
+  `order_items`, not here.
+- At checkout, `createOrder` revalidates price against the current variant,
+  decrements stock, rejects oversells, and **clears the user's
+  `cart_items`** once the order rows are written.
 
 ### Vendor lifecycle
 

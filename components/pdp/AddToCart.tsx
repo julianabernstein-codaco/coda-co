@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useCart } from "@/components/providers/CartProvider";
 import { SaveButton } from "@/components/ui/SaveButton";
 import type { Product } from "@/lib/types";
@@ -10,7 +11,7 @@ interface AddToCartProps {
 }
 
 export function AddToCart({ product }: AddToCartProps) {
-  const { addItem } = useCart();
+  const { addItem, isSignedIn } = useCart();
   const [qty, setQty] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [selectedGlaze, setSelectedGlaze] = useState(0);
@@ -20,9 +21,9 @@ export function AddToCart({ product }: AddToCartProps) {
   const price = variant?.price ?? 0;
   const glazes = product.details.glazes;
 
-  function handleAdd() {
+  async function handleAdd() {
     if (!variant) return;
-    addItem({
+    await addItem({
       productId: product.id,
       variantId: variant.id,
       qty,
@@ -128,18 +129,26 @@ export function AddToCart({ product }: AddToCartProps) {
         purchase.
       </div>
 
-      {/* CTA */}
-      <button
-        onClick={handleAdd}
-        className={[
-          "w-full py-3.5 rounded-full text-[15px] font-medium transition-all cursor-pointer",
-          added
-            ? "bg-sg text-white"
-            : "bg-tr text-white hover:bg-tr-d",
-        ].join(" ")}
-      >
-        {added ? "Added to cart ✓" : `Add to cart — $${price}`}
-      </button>
+      {/* CTA — the cart is sign-in only, so signed-out shoppers get a
+          sign-in prompt that returns them to this product. */}
+      {isSignedIn ? (
+        <button
+          onClick={handleAdd}
+          className={[
+            "w-full py-3.5 rounded-full text-[15px] font-medium transition-all cursor-pointer",
+            added ? "bg-sg text-white" : "bg-tr text-white hover:bg-tr-d",
+          ].join(" ")}
+        >
+          {added ? "Added to cart ✓" : `Add to cart — $${price}`}
+        </button>
+      ) : (
+        <Link
+          href={`/login?next=/shop/${product.id}`}
+          className="block w-full py-3.5 rounded-full text-[15px] font-medium text-center bg-tr text-white hover:bg-tr-d transition-all no-underline"
+        >
+          Sign in to add to cart
+        </Link>
+      )}
 
       <SaveButton
         kind="product"
