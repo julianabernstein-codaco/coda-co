@@ -3,6 +3,7 @@ import Link from "next/link";
 import { HeroSearch } from "@/components/landing/HeroSearch";
 import { HomeLocationSearch } from "@/components/landing/HomeLocationSearch";
 import { Container } from "@/components/ui/Container";
+import { GiftCardCallout } from "@/components/ui/GiftCardCallout";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { VendorCard } from "@/components/ui/VendorCard";
 import { WaveDivider } from "@/components/ui/WaveDivider";
@@ -224,6 +225,10 @@ export default async function LandingPage() {
             >
               Not sure what you need? See our guide for recently bereaved →
             </Link>
+          </div>
+
+          <div className="mt-12">
+            <GiftCardCallout />
           </div>
         </Container>
       </section>
