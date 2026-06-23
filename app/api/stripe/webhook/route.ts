@@ -41,7 +41,20 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, secret);
   } catch (err) {
-    log.warn("billing.webhook_bad_signature", { err });
+    // Diagnostic fingerprint — no secret is exposed. `secretLast4` lets you
+    // compare what THIS deployment is actually running against the signing
+    // secret revealed in the Stripe dashboard, since a Sensitive Vercel var
+    // can't be viewed there. If they differ, the live build predates your env
+    // change (redeploy). If they match but this still fails, it's a raw-body
+    // issue, not the secret. Remove once the webhook is verified green.
+    log.warn("billing.webhook_bad_signature", {
+      err,
+      secretLen: secret.length,
+      secretPrefixOk: secret.startsWith("whsec_"),
+      secretLast4: secret.slice(-4),
+      bodyLen: body.length,
+      sigPresent: Boolean(signature),
+    });
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
