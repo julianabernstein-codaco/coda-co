@@ -6,6 +6,9 @@ import {
   buildApplicationApprovedEmail,
   buildApplicationRejectedEmail,
   buildApplicationSubmittedEmail,
+  buildGiftCardDeliveryEmail,
+  buildGiftCardPoolCreatedEmail,
+  buildGiftCardContributionEmail,
   buildListingApprovedEmail,
   buildListYourGoodsEmail,
   buildVendorInquiryEmail,
@@ -26,6 +29,9 @@ export const TEMPLATE_KEYS = [
   "list-goods",
   "listing-approved",
   "inquiry",
+  "gift-card",
+  "gift-pool-created",
+  "gift-contribution",
 ] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
@@ -62,6 +68,31 @@ export function buildSample(key: TemplateKey): EmailPayload {
         clientEmail: "jordan.lee@example.com",
         message:
           "Hi — my mother is in hospice and we're hoping to arrange a home vigil in the next couple of weeks. Are you available, and what does that look like?",
+      });
+    case "gift-card":
+      return buildGiftCardDeliveryEmail({
+        toEmail: FIXTURE.toEmail,
+        recipientName: "Jordan Lee",
+        purchaserEmail: "sam.rivera@example.com",
+        isSelfPurchase: false,
+        code: "Q7KP-3MWX-RBND",
+        amountLabel: "$100",
+        message: "Thinking of you and your family. With love, Sam.",
+      });
+    case "gift-pool-created":
+      return buildGiftCardPoolCreatedEmail({
+        toEmail: FIXTURE.toEmail,
+        balanceLabel: "$50",
+        contributeToken: "Zr8kP2mWxQ1nB4t",
+        organizerToken: "9Lc7Hv3Ke0Nd5Ry",
+      });
+    case "gift-contribution":
+      return buildGiftCardContributionEmail({
+        toEmail: FIXTURE.toEmail,
+        contributorName: "Jordan Lee",
+        amountLabel: "$25",
+        balanceLabel: "$75",
+        organizerToken: "9Lc7Hv3Ke0Nd5Ry",
       });
   }
 }

@@ -70,6 +70,29 @@ const SECTIONS: PreviewSection[] = [
     editFn: "buildVendorInquiryEmail",
     payload: buildSample("inquiry"),
   },
+  {
+    key: "gift-card",
+    title: "Gift card delivery",
+    sentWhen:
+      "When a gift card's purchase payment confirms (Stripe webhook). Sent to the recipient if the buyer entered one, otherwise back to the buyer. Carries the code and a link to check the balance.",
+    editFn: "buildGiftCardDeliveryEmail",
+    payload: buildSample("gift-card"),
+  },
+  {
+    key: "gift-pool-created",
+    title: "Group gift — pool ready",
+    sentWhen:
+      "To the organizer when their group-gift pool is funded (first contribution clears). Carries the public share link and the private manage link — no account needed for either.",
+    editFn: "buildGiftCardPoolCreatedEmail",
+    payload: buildSample("gift-pool-created"),
+  },
+  {
+    key: "gift-contribution",
+    title: "Group gift — new contribution",
+    sentWhen: "To the organizer when someone new chips into the pool.",
+    editFn: "buildGiftCardContributionEmail",
+    payload: buildSample("gift-contribution"),
+  },
 ];
 
 export default async function AdminEmailPreviewPage() {

@@ -67,6 +67,12 @@ model User {
   reviewedApps  VendorApplication[] @relation("VendorApplicationsReviewer")
   orders        Order[]
 
+  // Gift cards a user bought / claimed into their account. Both are
+  // optional links (a guest can buy or redeem without an account), so the
+  // FK SetNull-detaches rather than cascade-deletes the card.
+  giftCardsPurchased GiftCard[] @relation("GiftCardsPurchased")
+  giftCardsClaimed   GiftCard[] @relation("GiftCardsClaimed")
+
   @@map("users")
 }
 
@@ -649,4 +655,120 @@ model OrderItem {
   @@index([vendorId])
   @@index([productVariantId])
   @@map("order_items")
+}
+
+// ── Gift cards ────────────────────────────────────────────────────────────────
+//
+// A gift card is prepaid balance held by CodaCo as a liability. The spendable
+// balance is NEVER stored as a column — it's SUM(amount_cents) over the card's
+// ledger entries (signed: + loads value, − spends it). This deliberately
+// avoids the denormalized-aggregate drift the project already got burned by
+// (see docs/data-model-evolution.md). Full plan:
+// docs/gift-cards-and-client-billing-plan.md.
+
+enum GiftCardStatus {
+  unknown
+  pending // purchased, awaiting Stripe confirmation — not yet spendable
+  active // funded; has (or had) a spendable balance
+  depleted // balance reached zero
+  void // cancelled / refunded in full before use
+}
+
+// The purchasable instrument. `code` is the private SPEND credential — only
+// the recipient ever sees it (in the delivery email). Purchaser/recipient
+// fields are snapshots so a delivered card survives later account changes;
+// purchaserUserId is null for guests.
+//
+// Group gifting ("pool"): when contributeToken is set, many people can chip in
+// to one card before it's gifted. The two tokens deliberately separate
+// concerns from `code`:
+//   • contributeToken — PUBLIC, shareable. /gift-cards/contribute/[token].
+//     Anyone with it can add funds (guest → Stripe). Never grants spend.
+//   • organizerToken  — SECRET, the creator's magic link (no account needed).
+//     /gift-cards/manage/[token]. Lets them watch the pool and send the gift.
+// Top-ups stay open indefinitely (always-open): delivering sets deliveredAt
+// but doesn't lock the card.
+model GiftCard {
+  id                 String         @id @default(cuid())
+  code               String         @unique
+  initialAmountCents Int            @map("initial_amount_cents")
+  currency           String         @default("USD")
+  status             GiftCardStatus @default(unknown)
+
+  purchaserUserId String?   @map("purchaser_user_id")
+  purchaserEmail  String    @map("purchaser_email")
+  recipientEmail  String?   @map("recipient_email")
+  recipientName   String?   @map("recipient_name")
+  giftMessage     String?   @map("gift_message")
+  deliverAt       DateTime? @map("deliver_at")
+
+  // Group-gift tokens (null on a plain single-purchase card). pooled =
+  // contributeToken != null.
+  contributeToken String? @unique @map("contribute_token")
+  organizerToken  String? @unique @map("organizer_token")
+
+  // Set the first time the card is sent to its recipient. Top-ups remain
+  // open afterward, so this is a delivery marker, not a lock.
+  deliveredAt DateTime? @map("delivered_at")
+
+  // First-funding timestamp (pending → active). The per-charge Stripe
+  // PaymentIntent lives on each ledger entry, not here — a pool has many.
+  fundedAt DateTime? @map("funded_at")
+
+  // Optional: claimed into an account so the balance surfaces automatically
+  // at checkout without re-entering the code. Null = redeem-by-code only.
+  claimedByUserId String? @map("claimed_by_user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  purchaser User? @relation("GiftCardsPurchased", fields: [purchaserUserId], references: [id], onDelete: SetNull)
+  claimedBy User? @relation("GiftCardsClaimed", fields: [claimedByUserId], references: [id], onDelete: SetNull)
+  ledger    GiftCardLedgerEntry[]
+
+  @@index([purchaserUserId])
+  @@index([claimedByUserId])
+  @@index([status])
+  @@map("gift_cards")
+}
+
+enum GiftCardEntryType {
+  unknown
+  purchase // + : initial load
+  redemption // − : spent on an order or invoice
+  refund // + : value returned to the card
+  adjustment // ± : manual correction (admin)
+}
+
+// Append-only signed ledger; balance = SUM(amount_cents). Corrections are new
+// entries, never edits. On a redemption exactly one of orderId /
+// invoicePaymentId points at what it paid for; both are plain nullable columns
+// for now — the goods link lands in PR 2, the invoice link in PR 3.
+//
+// Each money-in entry (purchase / contribution) carries its own
+// stripePaymentIntentId — unique, so recording it is the idempotency lock
+// under Stripe's at-least-once webhook delivery. contributorName/Email
+// attribute a group-gift contribution ("from Sam").
+model GiftCardLedgerEntry {
+  id          String            @id @default(cuid())
+  giftCardId  String            @map("gift_card_id")
+  type        GiftCardEntryType @default(unknown)
+  amountCents Int               @map("amount_cents")
+  currency    String            @default("USD")
+
+  stripePaymentIntentId String? @unique @map("stripe_payment_intent_id")
+  contributorName       String? @map("contributor_name")
+  contributorEmail      String? @map("contributor_email")
+
+  orderId          String? @map("order_id")
+  invoicePaymentId String? @map("invoice_payment_id")
+
+  createdByUserId String?  @map("created_by_user_id")
+  note            String?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  giftCard GiftCard @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+
+  @@index([giftCardId])
+  @@map("gift_card_ledger_entries")
 }

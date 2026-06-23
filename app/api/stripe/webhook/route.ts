@@ -3,6 +3,16 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { log } from "@/lib/log";
 import { markSetupFeePaid, syncStripeSubscription } from "@/lib/billing/sync";
+import {
+  recordGiftCardContribution,
+  isPooled,
+  formatCents,
+} from "@/lib/api/giftCards";
+import {
+  sendGiftCardDeliveryEmail,
+  sendGiftCardPoolCreatedEmail,
+  sendGiftCardContributionEmail,
+} from "@/lib/email/templates";
 
 // Stripe webhook. Signature-verified against STRIPE_WEBHOOK_SECRET, so the
 // payload is trusted. Stripe retries on non-2xx and may deliver events more
@@ -59,6 +69,65 @@ export async function POST(req: Request) {
               ? session.customer
               : (session.customer?.id ?? null);
           await markSetupFeePaid(session.metadata.vendorId, paymentIntentId, customerId);
+        } else if (
+          session.mode === "payment" &&
+          session.metadata?.kind === "gift_card" &&
+          session.metadata.giftCardId
+        ) {
+          const paymentIntentId =
+            typeof session.payment_intent === "string"
+              ? session.payment_intent
+              : (session.payment_intent?.id ?? null);
+          // Credits the amount Stripe actually collected. Idempotent on the
+          // PaymentIntent, so a retried event returns { recorded: false } and
+          // no duplicate credit or email goes out.
+          const res = await recordGiftCardContribution({
+            giftCardId: session.metadata.giftCardId,
+            paymentIntentId,
+            amountCents: session.amount_total ?? 0,
+            currency: (session.currency ?? "usd").toUpperCase(),
+            contributorName: session.metadata.contributorName ?? null,
+            contributorEmail:
+              session.customer_details?.email ??
+              session.metadata.contributorEmail ??
+              null,
+          });
+
+          if (res.recorded) {
+            const { card } = res;
+            if (isPooled(card)) {
+              // Group pool: never auto-deliver — the organizer sends it. Just
+              // notify them: pool ready on the first contribution, otherwise a
+              // "someone chipped in" nudge.
+              if (res.wasFirst) {
+                await sendGiftCardPoolCreatedEmail({
+                  toEmail: card.purchaserEmail,
+                  balanceLabel: formatCents(res.balanceCents),
+                  contributeToken: card.contributeToken!,
+                  organizerToken: card.organizerToken!,
+                });
+              } else {
+                await sendGiftCardContributionEmail({
+                  toEmail: card.purchaserEmail,
+                  contributorName: res.contributorName,
+                  amountLabel: formatCents(res.amountCents),
+                  balanceLabel: formatCents(res.balanceCents),
+                  organizerToken: card.organizerToken!,
+                });
+              }
+            } else if (res.wasFirst) {
+              // Single-purchase card: deliver on payment, as before.
+              await sendGiftCardDeliveryEmail({
+                toEmail: card.recipientEmail ?? card.purchaserEmail,
+                recipientName: card.recipientName,
+                purchaserEmail: card.purchaserEmail,
+                isSelfPurchase: !card.recipientEmail,
+                code: card.code,
+                amountLabel: formatCents(res.balanceCents),
+                message: card.giftMessage,
+              });
+            }
+          }
         }
         break;
       }

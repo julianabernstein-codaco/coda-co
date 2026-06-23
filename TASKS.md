@@ -25,6 +25,18 @@ blocking, but the natural next phase. Full scope lives in
 Verified-purchase-gated review submission. Adds `verified_purchase` +
 `order_item_id` columns to `product_reviews`. Depends on Phase E.
 
+## Gift cards & client billing (parallel workstream)
+
+CodaCo-held gift card balance + vendor-bills-client-through-CodaCo ("Option
+B" / "Direct client payments through CodaCo"). One shared money model: a
+gift card is prepaid balance held as a liability; billing spends a balance
+or a card and pays a vendor. Full scope in
+`docs/gift-cards-and-client-billing-plan.md`. PRs 1–3 (gift card balance →
+spend on goods → vendor invoicing with manual payout settlement) are
+unblocked; PR 4 (automated payouts) needs Stripe Connect. PR 1 (balance core)
+and PR 1.5 (group-gift pools — shareable contribution link + magic organizer
+link, account-free) have landed.
+
 ## Image storage (parallel workstream)
 
 User-uploaded images for vendor headshots and product photos. Three-phase
