@@ -4,31 +4,35 @@
 customer buys an item from a maker on CodaCo. Written for anyone — no
 technical background needed.*
 
-> **At a glance:** A customer adds an item to their cart, signs in, enters
-> their shipping address and pays by card on a secure payment screen. CodaCo
-> never sees or stores the card number. The money is split automatically —
-> the maker receives their share directly, and CodaCo keeps a small platform
-> fee. The maker is emailed about the sale right away and ships the item.
+> **At a glance:** A customer signs in (their cart is saved to their
+> account), adds an item, enters their shipping address and pays by card on
+> a secure payment screen. CodaCo never sees or stores the card number. The
+> money is split automatically — the maker receives their share directly,
+> and CodaCo keeps a small platform fee. The maker is emailed about the sale
+> right away and ships the item.
 
 ---
 
 ## Step by step
 
-### 1. The customer adds an item to their cart
-On a product page, the customer clicks **"Add to cart."** The cart lives
-only in their own web browser at this point — like a notepad on their
-device. Nothing is sent to CodaCo yet, and no purchase has happened.
+### 1. The customer signs in
+A CodaCo cart is tied to the customer's **account**, not just their browser,
+so the first step is to sign in (or create an account). Because the cart
+lives with their account, it's **saved on CodaCo and follows them across
+devices** — they can start on their phone and finish on a laptop, and it'll
+still be there. (If someone clicks "Add to cart" while signed out, CodaCo
+simply asks them to sign in first.)
 
-### 2. The customer reviews their cart
+### 2. The customer adds an item to their cart
+On a product page, the customer clicks **"Add to cart."** The item is saved
+to their account cart on CodaCo right away. No purchase has happened yet — a
+cart is just a saved list they can change anytime.
+
+### 3. The customer reviews their cart
 The customer opens the **CodaCo cart page**, where they see everything
 they've added: each item, the chosen size/option, the quantity, the price,
 and a running total. They can change quantities or remove items. When ready,
 they click **"Checkout."**
-
-### 3. The customer signs in
-To check out, the customer needs a CodaCo account (they can sign in or
-create one in a moment). This lets us tie the order to a real person, send
-order updates, and show them their order history later.
 
 ### 4. The customer enters their shipping address
 On the **CodaCo checkout page**, the customer sees a summary of their order
@@ -187,7 +191,7 @@ to CodaCo's fee depends on **whose fault it was**:
 
 | Information | Saved by CodaCo? |
 |---|---|
-| Items in the cart (before checkout) | No — only in the customer's browser until they check out |
+| Items in the cart (before checkout) | Yes — saved to the customer's account (sign-in required), so the cart persists across devices |
 | Shipping address | Yes — saved with the order |
 | The order details and prices | Yes |
 | **Credit / debit card number** | **No — handled entirely by Stripe, never stored by CodaCo** |
@@ -198,8 +202,9 @@ to CodaCo's fee depends on **whose fault it was**:
 
 ## The short version
 
-1. Customer adds items to their CodaCo cart.
-2. Customer signs in and enters a shipping address on CodaCo's checkout page.
+1. Customer signs in (the cart is saved to their account and follows them
+   across devices) and adds items to their CodaCo cart.
+2. Customer enters a shipping address on CodaCo's checkout page.
 3. Customer pays by card on Stripe's secure screen — CodaCo never sees the
    card number.
 4. The payment is split automatically: the maker gets their share in their

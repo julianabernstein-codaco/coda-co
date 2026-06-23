@@ -9,16 +9,23 @@ chunk.
 
 ## What exists today
 
-- **Cart is client-only.** `components/providers/CartProvider.tsx` holds
-  `{ productId, variantId, qty }` line items in `localStorage` (key
-  `coda-cart`). `useCart()` exposes `items`, `count`, `addItem`,
-  `removeItem`, `updateQty`, `clear`.
-- **No way to *see* the cart.** Add-to-cart works from the PDP
-  (`components/pdp/AddToCart.tsx`), but there's no nav cart icon and no
-  cart view. This is called out in `TASKS.md` ("Cart count in nav",
-  "Cart drawer / cart icon in nav").
-- **No `orders` / `order_items` tables.** `prisma/schema.prisma` has no
-  commerce models yet.
+- **Cart is account-linked.** *(Originally planned as client-only
+  localStorage; revised — see the note below.)* The cart lives in a
+  `cart_items` table scoped to the user (`{ user, product_variant,
+  quantity }`), is **sign-in only** (no guest cart), and persists across
+  devices. `CartProvider` is seeded from the DB in the root layout and
+  mutates it through server actions (`app/cart/actions.ts`); `useCart()`
+  exposes `items`, `count`, `isSignedIn`, `addItem`, `removeItem`,
+  `updateQty`, `clear`.
+  *(PRs 1–2 below have since landed, so the cart view and orders schema
+  described as "to build" already exist on `main`; this section reflects
+  the current state.)*
+- **The cart is viewable.** A nav cart badge (`NavCartLink`) and a
+  dedicated `/cart` page exist (PR 1). The old `TASKS.md` gaps ("Cart count
+  in nav", "Cart drawer / cart icon in nav") are closed.
+- **`orders` / `order_items` tables exist** (PR 2), with `createOrder` and
+  an auth-gated `/checkout` + `/checkout/success`. Buyer payment is still a
+  dev-only "Mark as paid" stub pending PR 3 (Stripe).
 - **Stripe is already integrated — for vendor billing only.**
   `lib/stripe.ts`, `lib/billing/*`, `app/api/stripe/webhook/route.ts`,
   and the `VendorPayment` model implement hosted Stripe Checkout +
@@ -28,11 +35,14 @@ chunk.
 ## Customer flow (happy path)
 
 ```
-PDP "Add to cart"  →  cart count appears in Nav
+PDP "Add to cart"  (signed out → /login?next=back to product)
+        │  (cart is account-only; sign-in required to add)
+        ▼
+item saved to account cart  →  cart count appears in Nav
         │
         ▼
 /cart  (review line items, qty edit, remove, subtotal)
-        │  "Checkout" CTA  (→ /login?next=/checkout if anon)
+        │  "Checkout" CTA
         ▼
 /checkout  (shipping address form + order summary)
         │  "Place order"
@@ -60,8 +70,12 @@ this plan was drafted):
 - **Checkout requires sign-in.** Anonymous buyers hit
   `/login?next=/checkout` (the existing role-gate redirect pattern, e.g.
   `app/admin/page.tsx`). Guest checkout is deferred.
-- **Cart stays client-only.** No cart table; the order is the first thing
-  written to the DB, at checkout.
+- **Cart is account-linked (revised).** The original plan kept the cart
+  client-only (localStorage, no cart table). That was changed: the cart now
+  persists server-side in `cart_items`, scoped to the user, and is
+  **sign-in only** — there is no guest cart (add-to-cart prompts sign-in).
+  It follows the shopper across devices, and `createOrder` clears it once
+  the order is written.
 
 ## Build sequence (one PR per row)
 
@@ -86,10 +100,10 @@ on PR 4** and needs the parcel/ship-from data called out below.
 
 ### PR 1 — Cart visibility (no DB)
 
-- **Nav cart count.** `Nav` needs client-side access to `useCart().count`.
-  Either make the cart icon a small client island inside the server-
-  rendered nav, or mirror the count into a cookie the server can read.
-  Island is simpler and avoids cookie/localStorage sync. Hide the badge
+- **Nav cart count.** A small client island (`NavCartLink`) inside the
+  server-rendered nav reads `useCart().count`. The count is correct on
+  first paint because the provider is seeded server-side from `cart_items`
+  in the root layout (no cookie/localStorage sync needed). Hide the badge
   when `count === 0`.
 - **`/cart` page** (`app/cart/page.tsx`). The cart stores only ids, so
   the page hydrates display data via `getProducts({ ids })`
