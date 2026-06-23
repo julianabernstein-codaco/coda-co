@@ -98,13 +98,13 @@ export function GoodsForm() {
                 <FormField label="Company name (optional)">
                   <input className={inputCls} placeholder="Earthen Studio" {...field("companyName")} />
                 </FormField>
-                <FormField label="Website (optional)">
+                <FormField label="Website">
                   <input className={inputCls} placeholder="https://" {...field("website")} />
                 </FormField>
-                <FormField label="Instagram (optional)">
+                <FormField label="Instagram">
                   <input className={inputCls} placeholder="@yourhandle" {...field("instagram")} />
                 </FormField>
-                <FormField label="Facebook page (optional)">
+                <FormField label="Facebook page">
                   <input className={inputCls} placeholder="facebook.com/yourpage" {...field("facebook")} />
                 </FormField>
                 <div className="grid grid-cols-[2fr_1fr_1fr] gap-4">
