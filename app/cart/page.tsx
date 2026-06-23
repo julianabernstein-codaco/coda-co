@@ -11,7 +11,7 @@ import type { ProductWithRating } from "@/lib/types";
 import { getCartProducts } from "./actions";
 
 export default function CartPage() {
-  const { items, updateQty, removeItem } = useCart();
+  const { items, updateQty, removeItem, isSignedIn } = useCart();
   const [products, setProducts] = useState<ProductWithRating[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,13 +53,29 @@ export default function CartPage() {
   );
 
   if (items.length === 0) {
+    // The cart is account-linked (sign-in only), so prompt signed-out
+    // visitors to sign in rather than just showing "empty".
     return (
       <Container width="mid" className="py-16">
         <h1 className="font-serif text-[34px] font-light text-ch mb-3">Your cart</h1>
-        <p className="text-[15px] text-cl mb-6">Your cart is empty.</p>
-        <Link href="/shop" className="btn-primary btn-md no-underline">
-          Browse goods
-        </Link>
+        {isSignedIn ? (
+          <>
+            <p className="text-[15px] text-cl mb-6">Your cart is empty.</p>
+            <Link href="/shop" className="btn-primary btn-md no-underline">
+              Browse goods
+            </Link>
+          </>
+        ) : (
+          <>
+            <p className="text-[15px] text-cl mb-6">
+              Sign in to start a cart — your cart is saved to your account and
+              follows you across devices.
+            </p>
+            <Link href="/login?next=/cart" className="btn-primary btn-md no-underline">
+              Sign in
+            </Link>
+          </>
+        )}
       </Container>
     );
   }

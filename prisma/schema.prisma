@@ -66,6 +66,7 @@ model User {
   applications  VendorApplication[] @relation("VendorApplicationsApplicant")
   reviewedApps  VendorApplication[] @relation("VendorApplicationsReviewer")
   orders        Order[]
+  cartItems     CartItem[]
 
   // Gift cards a user bought / claimed into their account. Both are
   // optional links (a guest can buy or redeem without an account), so the
@@ -468,6 +469,7 @@ model ProductVariant {
 
   product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
+  cartItems  CartItem[]
 
   @@index([productId])
   @@map("product_variants")
@@ -771,4 +773,26 @@ model GiftCardLedgerEntry {
 
   @@index([giftCardId])
   @@map("gift_card_ledger_entries")
+}
+
+// Account-linked cart. One row per (user, variant); persists server-side so a
+// signed-in shopper's cart follows them across devices. Cart is sign-in only —
+// there is no guest/anonymous cart. Cleared when the order is placed. Distinct
+// from order_items: the cart holds no price snapshot (price is always read live
+// at checkout), just a reference to the variant and a quantity.
+model CartItem {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  productVariantId String   @map("product_variant_id")
+  quantity         Int
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+  // One line per variant per user — adding an existing variant bumps quantity.
+  @@unique([userId, productVariantId])
+  @@index([userId])
+  @@map("cart_items")
 }

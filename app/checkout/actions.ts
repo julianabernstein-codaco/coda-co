@@ -9,6 +9,7 @@ import {
   type CartLineInput,
   type ShippingAddressInput,
 } from "@/lib/api/orders";
+import { clearCart } from "@/lib/api/cart";
 
 export interface PlaceOrderResult {
   orderId?: string;
@@ -31,6 +32,9 @@ export async function placeOrder(input: {
       lines: input.lines,
       shippingAddress: input.shippingAddress,
     });
+    // Empty the account cart server-side once the order exists, so it can't
+    // re-appear if the client navigation drops before the provider clears.
+    await clearCart(session.user.id);
     return { orderId };
   } catch (err) {
     if (err instanceof CheckoutError) return { error: err.message };
