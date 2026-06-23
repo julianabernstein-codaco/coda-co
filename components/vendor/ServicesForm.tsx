@@ -39,7 +39,6 @@ interface FormData {
   lastName: string;
   companyName: string;
   credentials: string;
-  email: string;
   instagram: string;
   facebook: string;
   website: string;
@@ -69,7 +68,6 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
     lastName: "",
     companyName: "",
     credentials: "",
-    email: "",
     instagram: "",
     facebook: "",
     website: "",
@@ -161,9 +159,6 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 </FormField>
                 <FormField label="Credentials or certification (optional)">
                   <input className={inputCls} placeholder="CEND, INELDA, J.D., etc." {...field("credentials")} />
-                </FormField>
-                <FormField label="Email address">
-                  <input className={inputCls} type="email" placeholder="you@example.com" {...field("email")} />
                 </FormField>
                 <FormField label="Website (optional)">
                   <input className={inputCls} placeholder="https://" {...field("website")} />

@@ -13,7 +13,6 @@ interface FormData {
   firstName: string;
   lastName: string;
   companyName: string;
-  email: string;
   instagram: string;
   facebook: string;
   website: string;
@@ -32,7 +31,6 @@ export function GoodsForm() {
     firstName: "",
     lastName: "",
     companyName: "",
-    email: "",
     instagram: "",
     facebook: "",
     website: "",
@@ -99,9 +97,6 @@ export function GoodsForm() {
                 </div>
                 <FormField label="Company name (optional)">
                   <input className={inputCls} placeholder="Earthen Studio" {...field("companyName")} />
-                </FormField>
-                <FormField label="Email address">
-                  <input className={inputCls} type="email" placeholder="you@example.com" {...field("email")} />
                 </FormField>
                 <FormField label="Website (optional)">
                   <input className={inputCls} placeholder="https://" {...field("website")} />
