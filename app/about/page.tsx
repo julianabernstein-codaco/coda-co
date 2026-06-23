@@ -9,25 +9,6 @@ export const metadata: Metadata = {
     "Death is not the opposite of life, but a part of it — and those who help us navigate it deserve a place as honored as any healer.",
 };
 
-const principles: { lead: string; detail?: string }[] = [
-  {
-    lead: "Inclusive of all traditions",
-    detail:
-      "we welcome providers from every cultural, religious, and secular background.",
-  },
-  {
-    lead: "No upselling, no pressure",
-    detail:
-      "listings are straightforward. We flag providers who offer sliding-scale fees.",
-  },
-  {
-    lead: "Privacy by default",
-    detail:
-      "your searches are never stored or shared with third parties.",
-  },
-  { lead: "Built with intention." },
-];
-
 export default function AboutPage() {
   return (
     <>
@@ -83,23 +64,6 @@ export default function AboutPage() {
               of death and dying, and honor the people they love.
             </p>
           </div>
-
-          <ul className="space-y-3">
-            {principles.map((p) => (
-              <li
-                key={p.lead}
-                className="flex gap-3 text-[14px] text-ink leading-[1.7]"
-              >
-                <span className="text-tr-d mt-[2px] flex-shrink-0" aria-hidden="true">
-                  •
-                </span>
-                <span>
-                  <span className="font-medium">{p.lead}</span>
-                  {p.detail && <> — {p.detail}</>}
-                </span>
-              </li>
-            ))}
-          </ul>
         </Container>
       </section>
     </>
