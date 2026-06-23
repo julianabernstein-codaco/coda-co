@@ -6,6 +6,7 @@ import { Pagination } from "@/components/shop/Pagination";
 import { ProductGrid } from "@/components/shop/ProductGrid";
 import { SavedLink } from "@/components/saved/SavedLink";
 import { Container } from "@/components/ui/Container";
+import { GiftCardCallout } from "@/components/ui/GiftCardCallout";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WaveDivider } from "@/components/ui/WaveDivider";
@@ -85,6 +86,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             {featuredProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
+          </div>
+
+          <div className="mt-12">
+            <GiftCardCallout />
           </div>
         </Container>
       </section>

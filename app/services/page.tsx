@@ -9,6 +9,7 @@ import { SavedLink } from "@/components/saved/SavedLink";
 import { ServiceKeywordSearch } from "@/components/services/ServiceKeywordSearch";
 import { ServiceSort } from "@/components/services/ServiceSort";
 import { Container } from "@/components/ui/Container";
+import { GiftCardCallout } from "@/components/ui/GiftCardCallout";
 import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getServices } from "@/lib/api/services";
@@ -198,6 +199,10 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               </Link>
             </div>
           </div>
+        </Container>
+
+        <Container width="mid" className="mt-8">
+          <GiftCardCallout />
         </Container>
       </section>
     </>
