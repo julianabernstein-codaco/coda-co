@@ -106,10 +106,10 @@ service invoice.
   `lib/data/plans.ts`) — note this is currently *display copy only*, not yet
   enforced in `createOrder`. Payout math will be the place it's applied.
 - **Services** advertise client payments with **no transaction fee shown**.
-  Whether CodaCo takes a cut on service billing is an **open product
-  decision** (see below). The model stores the fee per-payout
-  (`feeCents`), so a 0% fee is just `feeCents = 0` — no schema change needed
-  to start free and add a fee later.
+  **Decided: no fee to start** — service billing launches at 0%
+  (`feeCents = 0` / `platformFeeBps = 0`), matching the current copy. A fee
+  may be added later; because the rate is stored per-payout, turning one on
+  is a config change, not a migration.
 
 ## Data model
 
@@ -413,14 +413,16 @@ PRs 1–3 are unblocked today. PR 4 is the only one that needs new infra
 before Connect exists — exactly how `VendorPayment` shipped ahead of its
 Stripe integration.
 
+## Decisions
+
+1. **Platform fee on service billing — DECIDED: no fee to start (0%).**
+   Service billing launches at `platformFeeBps = 0`, matching the current
+   "no fee shown" copy. A fee may be added later; the rate is stored
+   per-payout (`feeCents`), so enabling one is a config change, not a
+   migration. (Goods keep their advertised 5%.)
+
 ## Open decisions (need product input before PR 1)
 
-1. **Platform fee on service billing?** Goods take 5%; services currently
-   advertise client payments with no fee. 0%, 5%-to-match, or a different
-   number? Stored as `feeCents`/`platformFeeBps`, so starting at 0 and
-   adding a fee later is a config change, not a migration. *(Default if
-   unspecified: 0% to start — match the current "no fee shown" copy — and
-   revisit with Connect.)*
 2. **Settlement for PR 3 — manual payouts acceptable to ship Option B before
    Connect?** *(Recommended: yes. Mirrors how `VendorPayment` shipped.)*
 3. **Guest vs. account-required** for buying and for redeeming a gift card.
