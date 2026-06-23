@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
-import { getManageView } from "@/lib/api/giftCards";
+import { getManageView, reconcilePendingByOrganizerToken } from "@/lib/api/giftCards";
 import { formatCents } from "@/lib/format/giftCard";
 import { ShareLink, DeliverForm } from "./ManagePanel";
 
@@ -28,6 +28,9 @@ export default async function ManagePoolPage({
 }) {
   const { token } = await params;
   const { status } = await searchParams;
+  // Self-heal: if the funding webhook was missed/failed, recover the card from
+  // Stripe before rendering so the organizer doesn't see a stuck "pending" pot.
+  await reconcilePendingByOrganizerToken(token);
   const view = await getManageView(token);
   if (!view.found) notFound();
 

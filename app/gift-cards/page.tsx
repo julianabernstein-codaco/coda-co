@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { isStripeConfigured } from "@/lib/stripe";
+import { reconcilePendingGiftCardById } from "@/lib/api/giftCards";
 import { GiftCardForm } from "./GiftCardForm";
 
 export const metadata: Metadata = {
@@ -14,9 +15,13 @@ export const metadata: Metadata = {
 export default async function GiftCardsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; card?: string }>;
 }) {
-  const { status } = await searchParams;
+  const { status, card } = await searchParams;
+  // After a single-purchase checkout we land back here with ?card=<id>. If the
+  // funding webhook was missed, recover it from Stripe so the recipient's
+  // delivery email actually goes out.
+  if (card) await reconcilePendingGiftCardById(card);
 
   return (
     <Container width="mid" className="py-12">

@@ -1,6 +1,8 @@
 import { randomInt, randomBytes } from "node:crypto";
 import { Prisma, type GiftCard } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { stripe, isStripeConfigured } from "@/lib/stripe";
+import { log } from "@/lib/log";
 import {
   GIFT_CARD_MIN_CENTS,
   GIFT_CARD_MAX_CENTS,
@@ -212,6 +214,66 @@ export async function recordGiftCardContribution(
     }
     throw err;
   }
+}
+
+// ── Self-heal: reconcile a stranded card against Stripe ───────────────────────
+//
+// The whole flow hangs off the checkout.session.completed webhook. If that
+// event is missed or fails (e.g. a misconfigured signing secret), a paid card
+// is left `pending` with an empty ledger — money taken, nothing credited.
+// These helpers recover it: pull the card's succeeded PaymentIntents straight
+// from Stripe (matched by the giftCardId we stamp into each PI's metadata) and
+// replay them through recordGiftCardContribution, which is idempotent. Mirrors
+// reconcileServicesSubscription in lib/billing/sync.ts.
+//
+// Guarded to `pending` so a healthy (active) card makes no Stripe call — these
+// run on page load, and we don't want a search per view for working cards.
+// Best-effort: never throws into a render.
+async function reconcileCard(card: GiftCard): Promise<void> {
+  if (card.status !== "pending") return;
+  if (!isStripeConfigured()) return;
+  try {
+    const found = await stripe.paymentIntents.search({
+      query: `metadata['giftCardId']:'${card.id}'`,
+      limit: 100,
+    });
+    for (const pi of found.data) {
+      if (pi.status !== "succeeded") continue;
+      await recordGiftCardContribution({
+        giftCardId: card.id,
+        paymentIntentId: pi.id,
+        amountCents: pi.amount_received || pi.amount,
+        currency: (pi.currency ?? "usd").toUpperCase(),
+        contributorName: pi.metadata?.contributorName || null,
+        contributorEmail: pi.receipt_email ?? null,
+      });
+    }
+  } catch (err) {
+    log.warn("giftcard.reconcile_failed", { giftCardId: card.id, err });
+  }
+}
+
+export async function reconcilePendingGiftCardById(id: string): Promise<void> {
+  const card = await prisma.giftCard.findUnique({ where: { id } });
+  if (card) await reconcileCard(card);
+}
+
+export async function reconcilePendingByOrganizerToken(token: string): Promise<void> {
+  if (!token) return;
+  const card = await prisma.giftCard.findUnique({ where: { organizerToken: token } });
+  if (card) await reconcileCard(card);
+}
+
+export async function reconcilePendingByContributeToken(token: string): Promise<void> {
+  const card = await findPoolByContributeToken(token);
+  if (card) await reconcileCard(card);
+}
+
+export async function reconcilePendingByCode(rawCode: string): Promise<void> {
+  const code = normalizeGiftCardCode(rawCode);
+  if (!code) return;
+  const card = await prisma.giftCard.findUnique({ where: { code } });
+  if (card) await reconcileCard(card);
 }
 
 // Spendable balance = SUM(amount_cents) over the card's ledger. Pending cards

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { isStripeConfigured } from "@/lib/stripe";
-import { getContributeView } from "@/lib/api/giftCards";
+import { getContributeView, reconcilePendingByContributeToken } from "@/lib/api/giftCards";
 import { formatCents } from "@/lib/format/giftCard";
 import { ContributeForm } from "./ContributeForm";
 
@@ -21,6 +21,9 @@ export default async function ContributePage({
 }) {
   const { token } = await params;
   const { status } = await searchParams;
+  // Self-heal a missed funding webhook (e.g. a contributor lands here right
+  // after the creating payment) before reading the pool's state.
+  await reconcilePendingByContributeToken(token);
   const view = await getContributeView(token);
   if (!view.found) notFound();
 
