@@ -170,15 +170,12 @@ export default function CartPage() {
           <p className="text-[12px] text-cl">
             Shipping & taxes calculated at checkout.
           </p>
-          {/* Checkout lands in PR 2 (/checkout). Disabled until then so the
-              button never points at a 404. */}
-          <button
-            disabled
-            className="btn-primary btn-md w-full opacity-50 cursor-not-allowed"
-            title="Checkout is coming soon"
+          <Link
+            href="/checkout"
+            className="btn-primary btn-md w-full text-center no-underline block"
           >
-            Checkout — coming soon
-          </button>
+            Checkout
+          </Link>
           <Link
             href="/shop"
             className="block text-center text-[13px] text-cm hover:text-tr no-underline"
