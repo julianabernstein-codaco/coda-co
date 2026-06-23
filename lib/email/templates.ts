@@ -40,6 +40,30 @@ function giftCardRedeemUrl(): string {
   return base ? `${base}/gift-cards/redeem` : "/gift-cards/redeem";
 }
 
+function giftCardContributeUrl(token: string): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  const path = `/gift-cards/contribute/${token}`;
+  return base ? `${base}${path}` : path;
+}
+
+function giftCardManageUrl(token: string): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  const path = `/gift-cards/manage/${token}`;
+  return base ? `${base}${path}` : path;
+}
+
+// "Sam", "Sam and Jo", "Sam, Jo and Kim", "Sam, Jo, Kim and 2 others".
+function joinNames(names: string[]): string {
+  if (names.length === 0) return "Several people";
+  const shown = names.slice(0, 3);
+  const extra = names.length - shown.length;
+  if (extra > 0) {
+    return `${shown.join(", ")} and ${extra} other${extra > 1 ? "s" : ""}`;
+  }
+  if (shown.length === 1) return shown[0];
+  return `${shown.slice(0, -1).join(", ")} and ${shown[shown.length - 1]}`;
+}
+
 // Minimal house style. Inline styles because most clients strip <style>.
 function layout(bodyHtml: string): string {
   return `<!doctype html>
@@ -396,19 +420,22 @@ export async function sendVendorInquiryEmail(
   });
 }
 
-// Sent once a gift card's purchase payment confirms. Goes to the recipient
-// if the buyer entered one, otherwise back to the buyer. Carries the code and
-// a link to check the balance / claim it to an account.
+// Sent when a gift card is delivered to its recipient: on payment confirm for
+// a single-purchase card, or when the organizer sends a group pool. Carries
+// the spend code and a link to check the balance / claim it to an account.
 export interface GiftCardDeliveryArgs {
   toEmail: string;
   recipientName?: string | null;
-  // The buyer — shown to a gift recipient ("a gift from …") and unused when
-  // the buyer sent the card to themselves.
-  purchaserEmail: string;
-  isSelfPurchase: boolean;
   code: string;
   amountLabel: string;
   message?: string | null;
+  // Sender context (mutually exclusive):
+  //  • contributorNames present → group gift ("Sam, Jo and 2 others chipped in")
+  //  • isSelfPurchase           → the buyer bought it for themselves
+  //  • otherwise                → a single gift from purchaserEmail
+  isSelfPurchase?: boolean;
+  purchaserEmail?: string;
+  contributorNames?: string[];
 }
 
 export function buildGiftCardDeliveryEmail(
@@ -416,13 +443,17 @@ export function buildGiftCardDeliveryEmail(
 ): EmailPayload {
   const greeting = args.recipientName ? `Hi ${args.recipientName},` : "Hi,";
   const redeem = giftCardRedeemUrl();
+  const isGroup = Boolean(args.contributorNames && args.contributorNames.length > 0);
+
   const subject = args.isSelfPurchase
     ? `Your ${args.amountLabel} CodaCo gift card`
     : `You've received a ${args.amountLabel} CodaCo gift card`;
 
-  const intro = args.isSelfPurchase
-    ? `Thanks for your purchase. Here's your ${args.amountLabel} CodaCo gift card — use it toward goods and services in the marketplace.`
-    : `${args.purchaserEmail} has sent you a ${args.amountLabel} CodaCo gift card — to use toward goods and services in the marketplace.`;
+  const intro = isGroup
+    ? `${joinNames(args.contributorNames!)} chipped in to send you a ${args.amountLabel} CodaCo gift card — to use toward goods and services in the marketplace.`
+    : args.isSelfPurchase
+      ? `Thanks for your purchase. Here's your ${args.amountLabel} CodaCo gift card — use it toward goods and services in the marketplace.`
+      : `${args.purchaserEmail} has sent you a ${args.amountLabel} CodaCo gift card — to use toward goods and services in the marketplace.`;
 
   const messageBlock = args.message?.trim()
     ? `\nTheir message:\n${args.message.trim()}\n`
@@ -472,6 +503,117 @@ export async function sendGiftCardDeliveryEmail(
   args: GiftCardDeliveryArgs,
 ): Promise<SendResult> {
   return sendEmail({ to: args.toEmail, ...buildGiftCardDeliveryEmail(args) });
+}
+
+// Sent to the organizer once their group-gift pool is funded (first
+// contribution clears). Carries the public link to share for contributions
+// and the secret link to manage + send the gift — no account needed for either.
+export interface GiftCardPoolCreatedArgs {
+  toEmail: string;
+  balanceLabel: string;
+  contributeToken: string;
+  organizerToken: string;
+}
+
+export function buildGiftCardPoolCreatedEmail(
+  args: GiftCardPoolCreatedArgs,
+): EmailPayload {
+  const subject = "Your CodaCo group gift is ready to share";
+  const contribute = giftCardContributeUrl(args.contributeToken);
+  const manage = giftCardManageUrl(args.organizerToken);
+
+  const text = [
+    "Hi,",
+    "",
+    `Your CodaCo group gift is started with ${args.balanceLabel} in the pot.`,
+    "",
+    `Share this link so others can chip in (no account needed):`,
+    contribute,
+    "",
+    `Manage the gift and send it to the recipient when you're ready:`,
+    manage,
+    "",
+    "Keep the manage link private — it's how you send the gift. The share link above is safe to send to anyone.",
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">Hi,</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      Your CodaCo group gift is started with <strong>${escapeHtml(args.balanceLabel)}</strong> in the pot.
+    </p>
+    <p style="margin:0 0 8px;font-size:14px;color:#7a7570;">Share this link so others can chip in (no account needed):</p>
+    <p style="margin:0 0 20px;"><a href="${contribute}" style="color:#c1634f;word-break:break-all;">${contribute}</a></p>
+    <p style="margin:24px 0;">
+      <a href="${manage}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        Manage &amp; send the gift
+      </a>
+    </p>
+    <p style="margin:0 0 16px;font-size:13px;color:#7a7570;line-height:1.55;">
+      Keep the manage link private — it's how you send the gift. The share link above is safe to send to anyone.
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendGiftCardPoolCreatedEmail(
+  args: GiftCardPoolCreatedArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildGiftCardPoolCreatedEmail(args) });
+}
+
+// Sent to the organizer when someone new chips into the pool.
+export interface GiftCardContributionArgs {
+  toEmail: string;
+  contributorName?: string | null;
+  amountLabel: string;
+  balanceLabel: string;
+  organizerToken: string;
+}
+
+export function buildGiftCardContributionEmail(
+  args: GiftCardContributionArgs,
+): EmailPayload {
+  const who = args.contributorName?.trim() || "Someone";
+  const subject = `${who} chipped in to your CodaCo gift`;
+  const manage = giftCardManageUrl(args.organizerToken);
+
+  const text = [
+    "Hi,",
+    "",
+    `${who} added ${args.amountLabel} to your CodaCo group gift.`,
+    `The pot is now ${args.balanceLabel}.`,
+    "",
+    `Manage the gift or send it when you're ready:`,
+    manage,
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">Hi,</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      <strong>${escapeHtml(who)}</strong> added ${escapeHtml(args.amountLabel)} to your CodaCo group gift.
+      The pot is now <strong>${escapeHtml(args.balanceLabel)}</strong>.
+    </p>
+    <p style="margin:24px 0;">
+      <a href="${manage}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        Manage &amp; send the gift
+      </a>
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendGiftCardContributionEmail(
+  args: GiftCardContributionArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildGiftCardContributionEmail(args) });
 }
 
 // Basic HTML-escape — applicant-supplied strings render unescaped

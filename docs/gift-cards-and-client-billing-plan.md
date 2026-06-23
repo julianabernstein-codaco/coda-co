@@ -203,6 +203,44 @@ A user's total available balance ("wallet") is **derived**, not a table:
 `claimed_by_user_id = user`. If a dedicated wallet view is wanted later it's a
 read-layer aggregation, not a new source of truth.
 
+### Group gifting (pools) — shipped in PR 1.5
+
+Several people can chip into **one** card before it's gifted. The ledger
+already models this — each contribution is just another `+` entry — so the
+work is sharing + lifecycle, not money. Decisions taken:
+
+- **Separate contribution link, never the spend code.** Two tokens on
+  `gift_cards`, distinct from the private `code`:
+  - `contribute_token` — **public**, shareable
+    (`/gift-cards/contribute/[token]`). Anyone with it adds funds as a guest →
+    straight to Stripe. Never grants spend.
+  - `organizer_token` — **secret** magic link
+    (`/gift-cards/manage/[token]`), emailed to the creator. No account needed
+    to create, watch, or send the gift. `pooled = contribute_token != null`.
+- **Always-open top-ups.** The card is spendable as soon as it's funded, and
+  contributions stay open indefinitely. Sending to the recipient sets
+  `delivered_at` (a marker) but does **not** lock the card.
+- **Account-free for everyone.** Contributors and the organizer all act via
+  tokens; a signed-in buyer is still recorded as `purchaser_user_id` when
+  present, but it's never required.
+- **One unified credit path.** `recordGiftCardContribution` handles both the
+  creating purchase and every later top-up. It credits exactly what Stripe
+  collected (`session.amount_total`), and the per-entry unique
+  `stripe_payment_intent_id` is the idempotency lock. "First contribution"
+  (which funds the card and triggers the organizer's pool-ready email) is
+  decided atomically by a conditional `updateMany(status: pending → active)`,
+  so concurrent first-contributions can't both win.
+- **Emails.** Organizer gets a *pool-ready* email (share + manage links) on
+  first funding and a *new-contribution* nudge thereafter; the recipient gets
+  the existing delivery email — now group-aware ("Sam, Jo and 2 others chipped
+  in") — when the organizer sends it.
+
+Schema delta (migration `add_gift_card_contributions`): `contribute_token`,
+`organizer_token`, `delivered_at` on `gift_cards`; `stripe_payment_intent_id`
+(unique), `contributor_name`, `contributor_email` on
+`gift_card_ledger_entries` (the PaymentIntent reference **moved off** the card,
+since a pool has many charges).
+
 ### Client billing (Option B)
 
 ```prisma
@@ -394,6 +432,10 @@ behind route-gating/flags until ready, per the project's migration workflow.
   `getGiftCardBalance`, `claimGiftCard`). `/gift-cards` purchase +
   `/gift-cards/redeem`. Webhook activates the card. Delivery email. **No
   spending yet.**
+- **PR 1.5 — Group gifting (pools).** ✅ Shipped. Contribution + organizer
+  tokens, the `/gift-cards/contribute/[token]` and `/gift-cards/manage/[token]`
+  pages, the unified `recordGiftCardContribution` credit path, and the
+  organizer pool-ready / new-contribution emails. See "Group gifting" above.
 - **PR 2 — Spend balance on goods.** Apply gift balance in goods checkout;
   split tender with a card; write the redemption entry inside `createOrder`.
   Refund-to-balance path.

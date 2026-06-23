@@ -674,9 +674,20 @@ enum GiftCardStatus {
   void // cancelled / refunded in full before use
 }
 
-// The purchasable instrument. `code` is what the recipient enters to check or
-// claim the balance. Purchaser/recipient fields are snapshots so a delivered
-// card survives later account changes; purchaserUserId is null for guests.
+// The purchasable instrument. `code` is the private SPEND credential — only
+// the recipient ever sees it (in the delivery email). Purchaser/recipient
+// fields are snapshots so a delivered card survives later account changes;
+// purchaserUserId is null for guests.
+//
+// Group gifting ("pool"): when contributeToken is set, many people can chip in
+// to one card before it's gifted. The two tokens deliberately separate
+// concerns from `code`:
+//   • contributeToken — PUBLIC, shareable. /gift-cards/contribute/[token].
+//     Anyone with it can add funds (guest → Stripe). Never grants spend.
+//   • organizerToken  — SECRET, the creator's magic link (no account needed).
+//     /gift-cards/manage/[token]. Lets them watch the pool and send the gift.
+// Top-ups stay open indefinitely (always-open): delivering sets deliveredAt
+// but doesn't lock the card.
 model GiftCard {
   id                 String         @id @default(cuid())
   code               String         @unique
@@ -691,12 +702,18 @@ model GiftCard {
   giftMessage     String?   @map("gift_message")
   deliverAt       DateTime? @map("deliver_at")
 
-  // How the purchase was funded. Null until the Stripe webhook confirms the
-  // Checkout payment, which also flips status → active and writes the
-  // +purchase ledger entry. Mirrors the VendorPayment "row first, Stripe ids
-  // via webhook later" pattern.
-  stripePaymentIntentId String?   @unique @map("stripe_payment_intent_id")
-  fundedAt              DateTime? @map("funded_at")
+  // Group-gift tokens (null on a plain single-purchase card). pooled =
+  // contributeToken != null.
+  contributeToken String? @unique @map("contribute_token")
+  organizerToken  String? @unique @map("organizer_token")
+
+  // Set the first time the card is sent to its recipient. Top-ups remain
+  // open afterward, so this is a delivery marker, not a lock.
+  deliveredAt DateTime? @map("delivered_at")
+
+  // First-funding timestamp (pending → active). The per-charge Stripe
+  // PaymentIntent lives on each ledger entry, not here — a pool has many.
+  fundedAt DateTime? @map("funded_at")
 
   // Optional: claimed into an account so the balance surfaces automatically
   // at checkout without re-entering the code. Null = redeem-by-code only.
@@ -727,12 +744,21 @@ enum GiftCardEntryType {
 // entries, never edits. On a redemption exactly one of orderId /
 // invoicePaymentId points at what it paid for; both are plain nullable columns
 // for now — the goods link lands in PR 2, the invoice link in PR 3.
+//
+// Each money-in entry (purchase / contribution) carries its own
+// stripePaymentIntentId — unique, so recording it is the idempotency lock
+// under Stripe's at-least-once webhook delivery. contributorName/Email
+// attribute a group-gift contribution ("from Sam").
 model GiftCardLedgerEntry {
   id          String            @id @default(cuid())
   giftCardId  String            @map("gift_card_id")
   type        GiftCardEntryType @default(unknown)
   amountCents Int               @map("amount_cents")
   currency    String            @default("USD")
+
+  stripePaymentIntentId String? @unique @map("stripe_payment_intent_id")
+  contributorName       String? @map("contributor_name")
+  contributorEmail      String? @map("contributor_email")
 
   orderId          String? @map("order_id")
   invoicePaymentId String? @map("invoice_payment_id")

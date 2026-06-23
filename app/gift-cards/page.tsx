@@ -62,6 +62,11 @@ export default async function GiftCardsPage({
             3. The balance is spent at checkout on goods, and toward services billed
             through CodaCo. Any unused balance stays on the card.
           </p>
+          <p className="pt-1 border-t border-line">
+            <span className="text-ch font-medium">Giving as a group?</span> Pick “Group
+            gift” to get a shareable link so others can chip in to one card — no account
+            needed — before you send it on.
+          </p>
           <p className="pt-1">
             Already have a card?{" "}
             <Link href="/gift-cards/redeem" className="text-tr underline">

@@ -1,4 +1,4 @@
-import { randomInt } from "node:crypto";
+import { randomInt, randomBytes } from "node:crypto";
 import { Prisma, type GiftCard } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import {
@@ -39,6 +39,18 @@ function generateGiftCardCode(): string {
   return groups.join("-");
 }
 
+// URL-safe random token for the public contribution link and the secret
+// organizer link. ~22 chars of base64url ≈ 128 bits — unguessable, distinct
+// from the human-typed spend `code`.
+function generateToken(): string {
+  return randomBytes(16).toString("base64url");
+}
+
+// pooled = the card accepts group contributions (has a contributeToken).
+export function isPooled(card: Pick<GiftCard, "contributeToken">): boolean {
+  return card.contributeToken != null;
+}
+
 export interface CreateGiftCardInput {
   amountCents: number;
   purchaserEmail: string;
@@ -46,6 +58,9 @@ export interface CreateGiftCardInput {
   recipientEmail?: string | null;
   recipientName?: string | null;
   giftMessage?: string | null;
+  // When true, the card is a group-gift pool: mint contribute + organizer
+  // tokens and don't auto-deliver on first funding (the organizer sends it).
+  pooled?: boolean;
 }
 
 // Thrown for expected, user-facing gift card failures (bad amount, unknown
@@ -87,6 +102,8 @@ export async function createPendingGiftCard(
           recipientEmail: input.recipientEmail ?? null,
           recipientName: input.recipientName ?? null,
           giftMessage: input.giftMessage ?? null,
+          contributeToken: input.pooled ? generateToken() : null,
+          organizerToken: input.pooled ? generateToken() : null,
         },
       });
     } catch (err) {
@@ -94,7 +111,7 @@ export async function createPendingGiftCard(
         err instanceof Prisma.PrismaClientKnownRequestError &&
         err.code === "P2002"
       ) {
-        continue; // code collision — try a fresh code
+        continue; // code / token collision — try fresh ones
       }
       throw err;
     }
@@ -102,40 +119,99 @@ export async function createPendingGiftCard(
   throw new Error("Could not allocate a unique gift card code");
 }
 
-// Settle a gift card after its Checkout payment completes: flip pending →
-// active, record the PaymentIntent, and write the one +purchase ledger entry.
-// Idempotent: the conditional updateMany is the lock, so Stripe's at-least-once
-// delivery can't double-credit. Returns the card on the first activation,
-// null on a duplicate event (so the caller only emails once).
-export async function activateGiftCardFromCheckout(
-  giftCardId: string,
-  paymentIntentId: string | null,
-): Promise<GiftCard | null> {
-  return prisma.$transaction(async (tx) => {
-    const updated = await tx.giftCard.updateMany({
-      where: { id: giftCardId, status: "pending" },
-      data: {
-        status: "active",
-        fundedAt: new Date(),
-        stripePaymentIntentId: paymentIntentId,
-      },
-    });
-    if (updated.count !== 1) return null; // already active or gone — no-op
+export interface RecordContributionInput {
+  giftCardId: string;
+  paymentIntentId: string | null;
+  amountCents: number;
+  currency?: string;
+  contributorName?: string | null;
+  contributorEmail?: string | null;
+}
 
-    const card = await tx.giftCard.findUnique({ where: { id: giftCardId } });
-    if (!card) return null;
+export type RecordContributionResult =
+  | { recorded: false }
+  | {
+      recorded: true;
+      card: GiftCard;
+      // True only for the very first contribution (the one that funds the
+      // card, pending → active). Drives "first" vs "another" emails.
+      wasFirst: boolean;
+      amountCents: number;
+      balanceCents: number;
+      contributorName: string | null;
+    };
 
-    await tx.giftCardLedgerEntry.create({
-      data: {
-        giftCardId: card.id,
-        type: "purchase",
-        amountCents: card.initialAmountCents,
-        currency: card.currency,
-        note: "Gift card purchase",
-      },
+// Credit a confirmed Checkout payment to a card — used for BOTH the creating
+// purchase and every later top-up. The amount is what Stripe actually
+// collected (session.amount_total), never trusted from the client.
+//
+// Idempotent: the unique stripePaymentIntentId on the ledger entry is the lock,
+// so Stripe's at-least-once delivery can't double-credit (a duplicate event
+// hits the unique constraint and returns { recorded: false }).
+export async function recordGiftCardContribution(
+  input: RecordContributionInput,
+): Promise<RecordContributionResult> {
+  const amountCents = Math.round(input.amountCents);
+  if (!Number.isInteger(amountCents) || amountCents <= 0) {
+    return { recorded: false };
+  }
+
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const card = await tx.giftCard.findUnique({ where: { id: input.giftCardId } });
+      if (!card) return { recorded: false };
+
+      // The flip is the atomic "is this the first contribution?" test. The
+      // conditional updateMany re-checks status === "pending" after taking the
+      // row lock, so under concurrent first-contributions exactly one sees
+      // count === 1; the rest wait, then match 0 (already active).
+      const flip = await tx.giftCard.updateMany({
+        where: { id: card.id, status: "pending" },
+        data: { status: "active", fundedAt: new Date() },
+      });
+      const wasFirst = flip.count === 1;
+
+      // The unique PaymentIntent makes this the idempotency lock. A retried
+      // webhook throws P2002 here and is caught below as a no-op.
+      await tx.giftCardLedgerEntry.create({
+        data: {
+          giftCardId: card.id,
+          type: "purchase",
+          amountCents,
+          currency: input.currency ?? card.currency,
+          stripePaymentIntentId: input.paymentIntentId,
+          contributorName: input.contributorName ?? null,
+          contributorEmail: input.contributorEmail ?? null,
+          note: wasFirst ? "Gift card purchase" : "Gift card contribution",
+        },
+      });
+
+      const [fresh, agg] = await Promise.all([
+        tx.giftCard.findUnique({ where: { id: card.id } }),
+        tx.giftCardLedgerEntry.aggregate({
+          where: { giftCardId: card.id },
+          _sum: { amountCents: true },
+        }),
+      ]);
+
+      return {
+        recorded: true as const,
+        card: fresh ?? card,
+        wasFirst,
+        amountCents,
+        balanceCents: agg._sum.amountCents ?? 0,
+        contributorName: input.contributorName ?? null,
+      };
     });
-    return card;
-  });
+  } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      return { recorded: false }; // duplicate PaymentIntent — already credited
+    }
+    throw err;
+  }
 }
 
 // Spendable balance = SUM(amount_cents) over the card's ledger. Pending cards
@@ -222,4 +298,161 @@ export async function claimGiftCard(
     });
   }
   return { ok: true, balanceCents: await getGiftCardBalanceCents(card.id) };
+}
+
+// ── Group gifting (pools) ─────────────────────────────────────────────────────
+
+export interface ContributionSummary {
+  name: string | null;
+  amountCents: number;
+  note: string | null;
+  at: Date;
+}
+
+// Money-in entries (purchases / contributions), newest first. Used to show
+// "who chipped in" on the manage page and in the delivery email.
+async function getContributions(giftCardId: string): Promise<ContributionSummary[]> {
+  const rows = await prisma.giftCardLedgerEntry.findMany({
+    where: { giftCardId, type: "purchase" },
+    orderBy: { createdAt: "desc" },
+  });
+  return rows.map((r) => ({
+    name: r.contributorName,
+    amountCents: r.amountCents,
+    note: null,
+    at: r.createdAt,
+  }));
+}
+
+// Server-internal: the card behind a public contribution token, or null. The
+// action needs the id (for Stripe metadata) and status; never sent to a client.
+export async function findPoolByContributeToken(
+  token: string,
+): Promise<GiftCard | null> {
+  if (!token) return null;
+  return prisma.giftCard.findUnique({ where: { contributeToken: token } });
+}
+
+// Public, account-free view for the contribute page. Deliberately omits the
+// spend code, the organizer token, emails, and the internal id.
+export type ContributeView =
+  | { found: false }
+  | {
+      found: true;
+      status: GiftCard["status"];
+      recipientName: string | null;
+      giftMessage: string | null;
+      balanceCents: number;
+      contributorCount: number;
+      delivered: boolean;
+    };
+
+export async function getContributeView(token: string): Promise<ContributeView> {
+  const card = await findPoolByContributeToken(token);
+  if (!card) return { found: false };
+  const contributions = await getContributions(card.id);
+  return {
+    found: true,
+    status: card.status,
+    recipientName: card.recipientName,
+    giftMessage: card.giftMessage,
+    balanceCents: contributions.reduce((n, c) => n + c.amountCents, 0),
+    contributorCount: contributions.length,
+    delivered: card.deliveredAt != null,
+  };
+}
+
+// Organizer (secret-token) view for the manage page: fuller, but still never
+// the spend code.
+export type ManageView =
+  | { found: false }
+  | {
+      found: true;
+      status: GiftCard["status"];
+      balanceCents: number;
+      currency: string;
+      recipientEmail: string | null;
+      recipientName: string | null;
+      giftMessage: string | null;
+      deliveredAt: Date | null;
+      contributeToken: string;
+      contributions: ContributionSummary[];
+    };
+
+export async function getManageView(token: string): Promise<ManageView> {
+  if (!token) return { found: false };
+  const card = await prisma.giftCard.findUnique({ where: { organizerToken: token } });
+  if (!card || !card.contributeToken) return { found: false };
+  const contributions = await getContributions(card.id);
+  return {
+    found: true,
+    status: card.status,
+    balanceCents: contributions.reduce((n, c) => n + c.amountCents, 0),
+    currency: card.currency,
+    recipientEmail: card.recipientEmail,
+    recipientName: card.recipientName,
+    giftMessage: card.giftMessage,
+    deliveredAt: card.deliveredAt,
+    contributeToken: card.contributeToken,
+    contributions,
+  };
+}
+
+export interface DeliverInput {
+  recipientEmail: string;
+  recipientName?: string | null;
+  giftMessage?: string | null;
+}
+
+export type DeliverResult =
+  | { ok: false; error: string }
+  | {
+      ok: true;
+      card: GiftCard;
+      balanceCents: number;
+      contributorNames: string[];
+    };
+
+// Organizer sends the pooled card to its recipient. Sets the recipient fields
+// + deliveredAt and hands back what the action needs to email the card. Stays
+// "always-open": top-ups can still land afterward, and re-sending is allowed
+// (e.g. corrected address) — deliveredAt just records the first send.
+export async function deliverPooledGiftCard(
+  organizerToken: string,
+  input: DeliverInput,
+): Promise<DeliverResult> {
+  const card = await prisma.giftCard.findUnique({ where: { organizerToken } });
+  if (!card || !card.contributeToken) {
+    return { ok: false, error: "We couldn't find that gift pool." };
+  }
+  if (card.status === "pending") {
+    return { ok: false, error: "Wait until the first contribution clears before sending." };
+  }
+  if (card.status === "void") {
+    return { ok: false, error: "This gift pool is no longer valid." };
+  }
+  const recipientEmail = input.recipientEmail?.trim();
+  if (!recipientEmail) {
+    return { ok: false, error: "Enter the recipient's email." };
+  }
+
+  const updated = await prisma.giftCard.update({
+    where: { id: card.id },
+    data: {
+      recipientEmail,
+      recipientName: input.recipientName?.trim() || null,
+      giftMessage: input.giftMessage?.trim() || card.giftMessage,
+      deliveredAt: card.deliveredAt ?? new Date(),
+    },
+  });
+
+  const contributions = await getContributions(card.id);
+  return {
+    ok: true,
+    card: updated,
+    balanceCents: contributions.reduce((n, c) => n + c.amountCents, 0),
+    contributorNames: contributions
+      .map((c) => c.name?.trim())
+      .filter((n): n is string => Boolean(n)),
+  };
 }

@@ -78,6 +78,21 @@ const SECTIONS: PreviewSection[] = [
     editFn: "buildGiftCardDeliveryEmail",
     payload: buildSample("gift-card"),
   },
+  {
+    key: "gift-pool-created",
+    title: "Group gift — pool ready",
+    sentWhen:
+      "To the organizer when their group-gift pool is funded (first contribution clears). Carries the public share link and the private manage link — no account needed for either.",
+    editFn: "buildGiftCardPoolCreatedEmail",
+    payload: buildSample("gift-pool-created"),
+  },
+  {
+    key: "gift-contribution",
+    title: "Group gift — new contribution",
+    sentWhen: "To the organizer when someone new chips into the pool.",
+    editFn: "buildGiftCardContributionEmail",
+    payload: buildSample("gift-contribution"),
+  },
 ];
 
 export default async function AdminEmailPreviewPage() {

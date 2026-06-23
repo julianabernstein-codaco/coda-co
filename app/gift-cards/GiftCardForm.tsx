@@ -9,10 +9,13 @@ import {
   formatCents,
 } from "@/lib/format/giftCard";
 
+type Mode = "solo" | "group";
+
 export function GiftCardForm() {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  const [mode, setMode] = useState<Mode>("solo");
   const [preset, setPreset] = useState<number | "custom">(GIFT_CARD_PRESETS_CENTS[1]);
   const [customDollars, setCustomDollars] = useState("");
   const [forSomeoneElse, setForSomeoneElse] = useState(false);
@@ -41,13 +44,17 @@ export function GiftCardForm() {
       return;
     }
 
+    const group = mode === "group";
     startTransition(async () => {
       const res = await purchaseGiftCard({
         amountCents,
         purchaserEmail,
-        recipientEmail: forSomeoneElse ? recipientEmail : undefined,
-        recipientName: forSomeoneElse ? recipientName : undefined,
-        giftMessage: forSomeoneElse ? giftMessage : undefined,
+        pooled: group,
+        // A group gift defers the recipient to the manage page; a solo gift
+        // optionally names a recipient now.
+        recipientEmail: !group && forSomeoneElse ? recipientEmail : undefined,
+        recipientName: !group && forSomeoneElse ? recipientName : undefined,
+        giftMessage: group || forSomeoneElse ? giftMessage : undefined,
       });
       if (res.url) {
         window.location.href = res.url;
@@ -59,9 +66,27 @@ export function GiftCardForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7">
+      {/* Mode */}
+      <div className="grid grid-cols-2 gap-2">
+        <ModeButton
+          label="Just from me"
+          sub="A gift card from you"
+          active={mode === "solo"}
+          onClick={() => setMode("solo")}
+        />
+        <ModeButton
+          label="Group gift"
+          sub="Let others chip in"
+          active={mode === "group"}
+          onClick={() => setMode("group")}
+        />
+      </div>
+
       {/* Amount */}
       <fieldset className="space-y-3">
-        <legend className="text-[12px] font-medium text-ch uppercase tracking-wide mb-1">Amount</legend>
+        <legend className="text-[12px] font-medium text-ch uppercase tracking-wide mb-1">
+          {mode === "group" ? "Your starting contribution" : "Amount"}
+        </legend>
         <div className="grid-auto-130">
           {GIFT_CARD_PRESETS_CENTS.map((cents) => (
             <AmountButton
@@ -71,11 +96,7 @@ export function GiftCardForm() {
               onClick={() => setPreset(cents)}
             />
           ))}
-          <AmountButton
-            label="Custom"
-            active={preset === "custom"}
-            onClick={() => setPreset("custom")}
-          />
+          <AmountButton label="Custom" active={preset === "custom"} onClick={() => setPreset("custom")} />
         </div>
         {preset === "custom" && (
           <label className="block max-w-[200px]">
@@ -103,38 +124,19 @@ export function GiftCardForm() {
         type="email"
         value={purchaserEmail}
         onChange={setPurchaserEmail}
-        hint="We'll send a receipt here."
+        hint={mode === "group" ? "We'll send your share link and manage link here." : "We'll send a receipt here."}
       />
 
-      {/* Gift toggle */}
-      <label className="flex items-center gap-2.5 text-[14px] text-ch">
-        <input
-          type="checkbox"
-          checked={forSomeoneElse}
-          onChange={(e) => setForSomeoneElse(e.target.checked)}
-          className="accent-tr w-4 h-4"
-        />
-        This is a gift for someone else
-      </label>
-
-      {forSomeoneElse && (
+      {mode === "group" ? (
         <div className="space-y-4 border-l-2 border-tr-l pl-4">
-          <Field
-            label="Recipient email"
-            type="email"
-            value={recipientEmail}
-            onChange={setRecipientEmail}
-            hint="We'll email the gift card here once payment clears."
-          />
-          <Field
-            label="Recipient name (optional)"
-            value={recipientName}
-            onChange={setRecipientName}
-            required={false}
-          />
+          <p className="text-[13px] text-cm leading-relaxed">
+            After you pay your starting contribution, you'll get a private link to manage the
+            gift and a shareable link so others can chip in — no account needed for anyone.
+            You choose the recipient and send the gift whenever you're ready.
+          </p>
           <label className="block">
             <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
-              Message (optional)
+              Message for the recipient (optional)
             </span>
             <textarea
               value={giftMessage}
@@ -142,21 +144,90 @@ export function GiftCardForm() {
               rows={3}
               maxLength={500}
               className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none resize-none"
-              placeholder="A few words to go with the gift…"
+              placeholder="You can edit this later before you send the gift…"
             />
           </label>
         </div>
+      ) : (
+        <>
+          <label className="flex items-center gap-2.5 text-[14px] text-ch">
+            <input
+              type="checkbox"
+              checked={forSomeoneElse}
+              onChange={(e) => setForSomeoneElse(e.target.checked)}
+              className="accent-tr w-4 h-4"
+            />
+            This is a gift for someone else
+          </label>
+
+          {forSomeoneElse && (
+            <div className="space-y-4 border-l-2 border-tr-l pl-4">
+              <Field
+                label="Recipient email"
+                type="email"
+                value={recipientEmail}
+                onChange={setRecipientEmail}
+                hint="We'll email the gift card here once payment clears."
+              />
+              <Field
+                label="Recipient name (optional)"
+                value={recipientName}
+                onChange={setRecipientName}
+                required={false}
+              />
+              <label className="block">
+                <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
+                  Message (optional)
+                </span>
+                <textarea
+                  value={giftMessage}
+                  onChange={(e) => setGiftMessage(e.target.value)}
+                  rows={3}
+                  maxLength={500}
+                  className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none resize-none"
+                  placeholder="A few words to go with the gift…"
+                />
+              </label>
+            </div>
+          )}
+        </>
       )}
 
       {error && <p className="text-[13px] text-tr">{error}</p>}
 
       <button type="submit" disabled={pending} className="btn-primary btn-md w-full disabled:opacity-50">
-        {pending ? "Starting checkout…" : "Continue to payment"}
+        {pending ? "Starting checkout…" : mode === "group" ? "Start the group gift" : "Continue to payment"}
       </button>
       <p className="text-[12px] text-cl text-center">
         You'll be sent to Stripe to pay securely. The gift card is issued once payment clears.
       </p>
     </form>
+  );
+}
+
+function ModeButton({
+  label,
+  sub,
+  active,
+  onClick,
+}: {
+  label: string;
+  sub: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`text-left px-4 py-3 rounded-[10px] border transition-colors ${
+        active ? "border-tr bg-tr-p" : "border-line-bold hover:border-tr-l"
+      }`}
+    >
+      <span className="block text-[14px] font-medium text-ch">{label}</span>
+      <span className="block text-[12px] text-cl">{sub}</span>
+    </button>
   );
 }
 
@@ -175,9 +246,7 @@ function AmountButton({
       onClick={onClick}
       aria-pressed={active}
       className={`py-2.5 rounded-[10px] border text-[15px] font-medium transition-colors ${
-        active
-          ? "border-tr bg-tr-p text-tr-d"
-          : "border-line-bold text-ch hover:border-tr-l"
+        active ? "border-tr bg-tr-p text-tr-d" : "border-line-bold text-ch hover:border-tr-l"
       }`}
     >
       {label}
