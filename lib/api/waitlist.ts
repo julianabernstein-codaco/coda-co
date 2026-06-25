@@ -73,7 +73,9 @@ export async function getWaitlistInterestCounts(): Promise<
 // "you're on the list" vs "we've updated your spot" copy).
 export async function createWaitlistSignup(input: {
   email: string;
-  interest: WaitlistInterest;
+  // `unknown` is a valid stored value — it's what we record when the
+  // signer didn't pick an interest (the field is optional in the form).
+  interest: WaitlistInterest | "unknown";
 }): Promise<{ created: boolean }> {
   const existing = await prisma.waitlistSignup.findUnique({
     where: { email: input.email },

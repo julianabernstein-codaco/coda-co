@@ -56,7 +56,8 @@ export function WaitlistForm() {
 
       <fieldset className="mb-5">
         <legend className="block text-[12px] font-medium text-ch mb-2.5">
-          I&apos;m interested as a…
+          I&apos;m interested as a…{" "}
+          <span className="font-normal text-cl">(optional)</span>
         </legend>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           {ROLES.map((role) => {
@@ -65,7 +66,9 @@ export function WaitlistForm() {
               <button
                 type="button"
                 key={role.value}
-                onClick={() => setInterest(role.value)}
+                // Optional + deselectable: clicking the active choice
+                // clears it back to "no pick".
+                onClick={() => setInterest(active ? "" : role.value)}
                 aria-pressed={active}
                 className={`rounded-[10px] border px-3.5 py-3 text-left transition-colors ${
                   active
@@ -105,14 +108,14 @@ export function WaitlistForm() {
 
       <button
         type="submit"
-        disabled={pending || interest === ""}
+        disabled={pending}
         className="btn-primary btn-lg w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {pending ? "Adding you…" : "Notify me at launch"}
       </button>
 
       <p className="text-[12px] text-cl text-center mt-3 leading-relaxed">
-        No spam, ever. One email when we go live in Boulder &amp; Portland.
+        No spam, ever.
       </p>
     </form>
   );

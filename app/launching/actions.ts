@@ -25,14 +25,16 @@ export async function joinWaitlist(
   formData: FormData,
 ): Promise<WaitlistState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const interest = String(formData.get("interest") ?? "");
+  const rawInterest = String(formData.get("interest") ?? "");
 
   if (!EMAIL_RE.test(email)) {
     return { error: "Please enter a valid email address." };
   }
-  if (!isWaitlistInterest(interest)) {
-    return { error: "Let us know whether you're a customer, vendor, or maker." };
-  }
+
+  // Interest is optional. An empty pick — or any tampered value — is
+  // stored as `unknown` (the enum's default member), which is exactly
+  // what "no interest picked" means. Only the email is required.
+  const interest = isWaitlistInterest(rawInterest) ? rawInterest : "unknown";
 
   // Cheap signup-spam shield, keyed by IP — mirrors the account signup
   // flow. The window is generous so a legit retry after a typo isn't blocked.
@@ -56,7 +58,10 @@ export async function joinWaitlist(
     if (created) {
       const result = await sendWaitlistConfirmationEmail({
         toEmail: email,
-        interestLabel: WAITLIST_INTEREST_LABELS[interest],
+        // No pick → omit the label so the email uses its generic copy
+        // rather than "interested as a unspecified".
+        interestLabel:
+          interest === "unknown" ? undefined : WAITLIST_INTEREST_LABELS[interest],
       });
       if (!result.ok) {
         log.warn("waitlist.confirmation_email_failed", { email, err: result.error });
