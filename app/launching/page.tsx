@@ -48,6 +48,10 @@ const previewCategories = [
   "Celebrants",
   "Ash jewelry",
   "Planning docs",
+  "Grief counselors",
+  "Event planners",
+  "Death cafés",
+  "Keepsake items",
 ];
 
 export default function LaunchingPage() {
@@ -64,22 +68,20 @@ export default function LaunchingPage() {
             </span>
           </div>
 
-          <p className="text-overline text-tr mb-4">Launching soon</p>
-
-          <h1 className="font-serif italic text-[40px] sm:text-[52px] font-light leading-[1.1] text-ch mb-5">
-            Death is a part of life.
-            <br />
-            <span className="text-tr not-italic">Support should be easy to find.</span>
+          {/* The launch announcement is the hero — large, then the two
+              cities immediately beneath it. */}
+          <h1 className="font-serif text-[46px] sm:text-[64px] font-light leading-[1.02] text-tr mb-4">
+            Launching soon
           </h1>
 
-          {/* Launch-city badges — the headline of the whole page. */}
+          {/* Launch-city badges — sit directly under the announcement. */}
           <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
             {launchCities.map(({ city, state }) => (
               <span
                 key={city}
-                className="inline-flex items-center gap-1.5 bg-white border border-tr-l rounded-pill pl-2.5 pr-3.5 py-1.5 text-[13px] font-medium text-ch"
+                className="inline-flex items-center gap-1.5 bg-white border border-tr-l rounded-pill pl-3 pr-4 py-2 text-[14px] font-medium text-ch"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
                     d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"
                     stroke="var(--color-tr)"
@@ -92,6 +94,11 @@ export default function LaunchingPage() {
               </span>
             ))}
           </div>
+
+          <p className="font-serif italic text-[22px] sm:text-[26px] font-light leading-[1.25] text-ch mb-5">
+            Death is a part of life.{" "}
+            <span className="text-tr not-italic">Support should be easy to find.</span>
+          </p>
 
           <p className="text-[15px] text-cm max-w-[520px] mx-auto leading-[1.78]">
             CodaCo is a carefully curated marketplace for end-of-life goods,
