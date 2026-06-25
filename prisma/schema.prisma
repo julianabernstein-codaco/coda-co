@@ -796,3 +796,29 @@ model CartItem {
   @@index([userId])
   @@map("cart_items")
 }
+
+// ── Marketing: launch waitlist ─────────────────────────────────────────────────
+//
+// Pre-launch email capture from the public `/launching` teaser. One row per
+// email (unique) — re-submitting updates the captured interest rather than
+// erroring, so someone can change their mind without creating a duplicate.
+// `interest` records how the signer relates to CodaCo (buyer vs. service
+// vendor vs. goods maker) so the launch-day announcement can be segmented.
+// `unknown` is the default so a missing value is visible state, per the
+// project's enum convention.
+enum WaitlistInterest {
+  unknown
+  customer
+  vendor
+  maker
+}
+
+model WaitlistSignup {
+  id        String           @id @default(cuid())
+  email     String           @unique
+  interest  WaitlistInterest @default(unknown)
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@map("waitlist_signups")
+}
