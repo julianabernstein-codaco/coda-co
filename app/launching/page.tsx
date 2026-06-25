@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
 import { WaveDivider } from "@/components/ui/WaveDivider";
@@ -68,34 +69,43 @@ export default function LaunchingPage() {
             </span>
           </div>
 
-          {/* The launch announcement is the hero — large, then the two
-              cities immediately beneath it. */}
-          <h1 className="font-serif text-[46px] sm:text-[64px] font-light leading-[1.02] text-tr mb-4">
-            Launching soon
-          </h1>
-
-          {/* Launch-city badges — sit directly under the announcement. */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
-            {launchCities.map(({ city, state }) => (
-              <span
-                key={city}
-                className="inline-flex items-center gap-1.5 bg-white border border-tr-l rounded-pill pl-3 pr-4 py-2 text-[14px] font-medium text-ch"
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"
-                    stroke="var(--color-tr)"
-                    strokeWidth="1.8"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="12" cy="10" r="2.4" stroke="var(--color-tr)" strokeWidth="1.8" />
-                </svg>
-                {city}, {state}
-              </span>
-            ))}
+          {/* Announcement kicker — small, letter-spaced, flanked by hairlines. */}
+          <div className="flex items-center justify-center gap-3 mb-5">
+            <span className="h-px w-9 bg-tr-l" aria-hidden="true" />
+            <span className="text-[12px] sm:text-[13px] tracking-[.26em] uppercase font-semibold text-tr">
+              Launching soon
+            </span>
+            <span className="h-px w-9 bg-tr-l" aria-hidden="true" />
           </div>
 
-          <p className="font-serif italic text-[22px] sm:text-[26px] font-light leading-[1.25] text-ch mb-5">
+          {/* The two launch cities are the visual hero. */}
+          <h1 className="font-serif font-light leading-[1.04] mb-4">
+            <span className="block text-[20px] sm:text-[24px] italic text-cm mb-1.5">
+              Now coming to
+            </span>
+            <span className="block text-[50px] sm:text-[70px] text-ch">
+              Boulder <span className="text-sg italic font-normal">&amp;</span> Portland
+            </span>
+          </h1>
+
+          {/* State + pin, kept as a quiet caption under the city names. */}
+          <p className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[13px] sm:text-[14px] text-cm mb-8">
+            {launchCities.map(({ city, state }, i) => (
+              <Fragment key={city}>
+                {i > 0 && (
+                  <span className="text-cl" aria-hidden="true">
+                    ·
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1.5">
+                  <LocationPin />
+                  {city}, {state}
+                </span>
+              </Fragment>
+            ))}
+          </p>
+
+          <p className="font-serif italic text-[21px] sm:text-[25px] font-light leading-[1.3] text-ch mb-5">
             Death is a part of life.{" "}
             <span className="text-tr not-italic">Support should be easy to find.</span>
           </p>
@@ -159,9 +169,11 @@ export default function LaunchingPage() {
             <span className="text-tr">Coda</span>
             <span className="text-sg">Co</span>
           </div>
-          <p className="text-[13px] text-cl leading-relaxed max-w-[420px] mx-auto mb-5">
-            A curated marketplace for death and dying. Launching soon in
-            Boulder, CO &amp; Portland, OR.
+          <p className="text-[13px] text-cl leading-relaxed max-w-[420px] mx-auto mb-2">
+            A curated marketplace for death and dying.
+          </p>
+          <p className="text-[13px] text-sg-vp leading-relaxed mb-5">
+            Launching soon in Boulder, CO &amp; Portland, OR.
           </p>
           <p className="text-[12px] text-cl">
             © {new Date().getFullYear()} CodaCo, Inc. · Made with intention.
@@ -169,5 +181,19 @@ export default function LaunchingPage() {
         </Container>
       </footer>
     </div>
+  );
+}
+
+function LocationPin() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"
+        stroke="var(--color-tr)"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="10" r="2.4" stroke="var(--color-tr)" strokeWidth="1.8" />
+    </svg>
   );
 }
