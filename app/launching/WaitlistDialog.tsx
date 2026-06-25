@@ -24,7 +24,7 @@ export function WaitlistDialog() {
 
   return (
     <>
-      <button type="button" onClick={openDialog} className="btn-primary btn-lg">
+      <button type="button" onClick={openDialog} className="btn-secondary btn-lg">
         Get notified at launch
       </button>
 
@@ -60,9 +60,8 @@ export function WaitlistDialog() {
               Get notified at launch
             </h2>
             <p className="text-[14px] text-ink/80 leading-relaxed">
-              Drop your email below. Tell us how you&apos;d like to take part if
-              you like — it&apos;s optional — and we&apos;ll send a single note
-              the day we open.
+              Drop your email below, and we&apos;ll send you a single note when
+              we launch.
             </p>
           </div>
 
