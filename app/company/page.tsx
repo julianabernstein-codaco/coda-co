@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { Avatar } from "@/components/ui/Avatar";
+import { VendorPhoto } from "@/components/ui/VendorPhoto";
 import { Card } from "@/components/ui/Card";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 
@@ -17,15 +17,17 @@ type Founder = {
   role: string;
   bio: string;
   tone: "sage" | "terracotta";
+  photo?: string;
 };
 
 const founders: Founder[] = [
   {
     name: "Julie Bernstein",
     initials: "JB",
-    role: "Founder",
+    role: "Co-founder",
     bio: "Julie is a geriatric physician associate turned entrepreneur who has spent nearly two decades helping people face death with dignity, agency, and even joy. After sixteen years in geriatric and palliative medicine and three more in the business for living funerals and celebrations of life, she founded CodaCo Market—a marketplace for everything families need, but rarely know exists, when a loved one is dying.",
     tone: "terracotta",
+    photo: "/vendors/julie-bernstein.jpg",
   },
   {
     name: "Founder Name",
@@ -67,7 +69,13 @@ export default function CompanyPage() {
             {founders.map((f, i) => (
               <Card key={i} padding="md">
                 <div className="flex flex-col items-center text-center gap-4">
-                  <Avatar initials={f.initials} size="lg" tone={f.tone} />
+                  <VendorPhoto
+                    src={f.photo}
+                    alt={f.name}
+                    initials={f.initials}
+                    size="xl"
+                    tone={f.tone}
+                  />
                   <div>
                     <h3 className="font-serif text-[22px] font-light text-ch">
                       {f.name}
