@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
 import { WaveDivider } from "@/components/ui/WaveDivider";
-import { WaitlistForm } from "./WaitlistForm";
+import { WaitlistDialog } from "./WaitlistDialog";
 
 // Public, shareable "launching soon" teaser for social media. Unlike the
 // rest of the site (and the /homepage marketing teaser), this page is
@@ -114,48 +114,34 @@ export default function LaunchingPage() {
             CodaCo is a carefully curated marketplace for end-of-life goods,
             services, and planning resources — bringing trusted makers and
             providers together in one calm, considered place. We&apos;re opening
-            first in Boulder and Portland. Be the first to know.
+            first in Boulder and Portland.
           </p>
+
+          {/* Signup lives in a modal so the hero stays focused on the
+              announcement. */}
+          <div className="mt-8">
+            <WaitlistDialog />
+          </div>
         </Container>
       </section>
 
       <WaveDivider topColor="var(--color-pl)" bottomColor="var(--color-tr-vp)" />
 
-      {/* Signup */}
-      <section className="bg-tr-vp px-6 pt-12 pb-14">
-        <Container width="narrow">
-          <div className="max-w-[480px] mx-auto">
-            <div className="text-center mb-6">
-              <h2 className="font-serif text-[26px] font-light text-ink mb-1.5">
-                Get notified at launch
-              </h2>
-              <p className="text-[14px] text-ink/80 leading-relaxed">
-                Tell us how you&apos;d like to take part, and we&apos;ll send a
-                single note the day we open.
-              </p>
-            </div>
-            <WaitlistForm />
-          </div>
-        </Container>
-      </section>
-
-      <WaveDivider topColor="var(--color-tr-vp)" bottomColor="var(--color-white)" />
-
-      {/* What you'll find */}
-      <section className="bg-white px-6 pt-12 pb-14 text-center">
+      {/* What you'll find — in the terracotta banner */}
+      <section className="bg-tr-vp px-6 pt-12 pb-14 text-center">
         <Container width="narrow">
           <p className="text-overline text-sg-d mb-3">What you&apos;ll find</p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
             {previewCategories.map((label) => (
               <span
                 key={label}
-                className="bg-pl2 border border-line rounded-pill px-4 py-2 text-[13px] text-cm"
+                className="bg-white border border-line rounded-pill px-4 py-2 text-[13px] text-cm"
               >
                 {label}
               </span>
             ))}
           </div>
-          <p className="text-[14px] text-cl max-w-[440px] mx-auto leading-relaxed">
+          <p className="text-[14px] text-ink/75 max-w-[440px] mx-auto leading-relaxed">
             From planning ahead to a recent loss — thoughtful goods and vetted
             local support, gathered with care.
           </p>

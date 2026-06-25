@@ -45,6 +45,7 @@ const ALLOWLIST = new Set([
   "app/admin/applications/page.tsx::section-header",
   "app/admin/email-preview/page.tsx::section-header",
   "app/admin/listings/page.tsx::section-header",
+  "app/admin/waitlist/page.tsx::section-header",
 ]);
 
 // Each rule:

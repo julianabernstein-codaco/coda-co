@@ -616,6 +616,60 @@ export async function sendGiftCardContributionEmail(
   return sendEmail({ to: args.toEmail, ...buildGiftCardContributionEmail(args) });
 }
 
+// Sent right after someone joins the pre-launch waitlist on /launching.
+// A light "you're on the list" confirmation that also validates the
+// address (a bounced send tells us the email was a typo). Best-effort:
+// the signup is already saved, so a send failure never blocks the form.
+export interface WaitlistConfirmationArgs {
+  toEmail: string;
+  // The captured interest ("customer" | "vendor" | "maker"), already
+  // mapped to a display label by the caller. Omitted/empty falls back to
+  // generic copy.
+  interestLabel?: string;
+}
+
+export function buildWaitlistConfirmationEmail(
+  args: WaitlistConfirmationArgs,
+): EmailPayload {
+  const subject = "You're on the CodaCo waitlist";
+  const interestLine = args.interestLabel
+    ? `We've noted you're interested as a ${args.interestLabel.toLowerCase()} — we'll tailor what we send you accordingly.`
+    : "We'll be in touch with a single email the moment we open.";
+
+  const text = [
+    "Hi,",
+    "",
+    "Thanks for joining the CodaCo waitlist. You're on the list.",
+    "",
+    interestLine,
+    "",
+    "We're launching first in Boulder and Portland. When we go live, you'll be among the first to know — one email, no spam.",
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">Hi,</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      Thanks for joining the CodaCo waitlist. <strong>You're on the list.</strong>
+    </p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">${escapeHtml(interestLine)}</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      We're launching first in Boulder and Portland. When we go live, you'll be among
+      the first to know — one email, no spam.
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendWaitlistConfirmationEmail(
+  args: WaitlistConfirmationArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildWaitlistConfirmationEmail(args) });
+}
+
 // Basic HTML-escape — applicant-supplied strings render unescaped
 // inside templates otherwise, and could break the layout (or worse).
 function escapeHtml(s: string): string {

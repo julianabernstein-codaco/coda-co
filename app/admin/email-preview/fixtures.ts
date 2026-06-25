@@ -12,6 +12,7 @@ import {
   buildListingApprovedEmail,
   buildListYourGoodsEmail,
   buildVendorInquiryEmail,
+  buildWaitlistConfirmationEmail,
   type EmailPayload,
 } from "@/lib/email/templates";
 
@@ -32,6 +33,7 @@ export const TEMPLATE_KEYS = [
   "gift-card",
   "gift-pool-created",
   "gift-contribution",
+  "waitlist-confirmation",
 ] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
@@ -93,6 +95,11 @@ export function buildSample(key: TemplateKey): EmailPayload {
         amountLabel: "$25",
         balanceLabel: "$75",
         organizerToken: "9Lc7Hv3Ke0Nd5Ry",
+      });
+    case "waitlist-confirmation":
+      return buildWaitlistConfirmationEmail({
+        toEmail: FIXTURE.toEmail,
+        interestLabel: "Maker",
       });
   }
 }
