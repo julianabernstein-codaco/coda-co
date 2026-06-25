@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WaveDivider } from "@/components/ui/WaveDivider";
@@ -65,6 +66,13 @@ export default function AboutPage() {
             </p>
           </div>
         </Container>
+      </section>
+
+      {/* White space before the footer — invitation to meet the founders */}
+      <section className="bg-white px-10 py-16 text-center">
+        <Link href="/company" className="btn-secondary btn-md no-underline">
+          Meet the founders
+        </Link>
       </section>
     </>
   );
