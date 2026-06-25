@@ -33,6 +33,10 @@ const hasDb = Boolean(process.env.DATABASE_URL);
 if (hasDb) {
   run("prisma migrate deploy");
   run("prisma db seed");
+  // Attach static cover photos (public/products/<slug>.<ext>) to the
+  // example listings. Non-destructive + idempotent — safe on every
+  // deploy, unlike db:mock. See prisma/backfill-covers.ts.
+  run("tsx prisma/backfill-covers.ts");
 } else {
   console.log("[build] DATABASE_URL not set; skipping Prisma steps");
 }
