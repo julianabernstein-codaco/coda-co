@@ -6,6 +6,8 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { config } from "dotenv";
 import { products } from "../lib/data/products";
 import { vendors } from "../lib/data/vendors";
@@ -39,6 +41,24 @@ const prisma = new PrismaClient({ adapter });
 // system — the mock script hard-fails in production for that reason.
 const DEV_PASSWORD = "codaco-dev";
 const ADMIN_EMAIL = "admin@codaco.local";
+
+// Cover images for example listings live as static files in
+// public/products, named by the product slug (e.g. urn-sage-001.jpg).
+// Drop a slug-named image there and it attaches on the next db:mock —
+// no per-product code edit. Returns the public path (served by Next at
+// /products/<slug>.<ext>) or null when no file is present, in which case
+// the listing falls back to its SVG icon. See public/products/README.md.
+const COVER_EXTS = ["jpg", "jpeg", "png", "webp"];
+
+function coverImageForSlug(slug: string): string | null {
+  for (const ext of COVER_EXTS) {
+    const rel = `products/${slug}.${ext}`;
+    if (existsSync(path.join(process.cwd(), "public", rel))) {
+      return `/${rel}`;
+    }
+  }
+  return null;
+}
 
 async function clear() {
   // Order matters — children before parents. Cascade deletes would also
@@ -164,6 +184,7 @@ async function main() {
         status: p.status,
         verified: p.verified,
         lifeStages: p.lifeStages,
+        coverImageUrl: coverImageForSlug(p.id),
         vendor: { connect: { id: vendor.id } },
         productType: { connect: { id: productType.id } },
         variants: {
