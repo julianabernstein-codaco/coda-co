@@ -32,6 +32,8 @@ export default async function AdminWaitlistPage() {
     { label: "Customers", count: counts.customer, color: "bg-sg-p border-sg-l/40" },
     { label: "Vendors", count: counts.vendor, color: "bg-sg-p border-sg-l/40" },
     { label: "Makers", count: counts.maker, color: "bg-tr-p border-tr-l/40" },
+    // "No interest picked" signups — Total minus the three above.
+    { label: "Unspecified", count: counts.unknown, color: "bg-pl2 border-line" },
   ];
 
   return (
@@ -63,7 +65,7 @@ export default async function AdminWaitlistPage() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-7">
             {summary.map(({ label, count, color }) => (
               <div key={label} className={`rounded-lg border px-4 py-3 ${color}`}>
                 <p className="text-2xl font-serif text-ch tabular-nums">{count}</p>
