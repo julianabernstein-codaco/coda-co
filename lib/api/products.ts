@@ -216,12 +216,28 @@ export async function getRelatedProducts(product: Product): Promise<ProductWithR
   return attachRatings(combined.map((p) => ({ dbId: p.id, ...toProduct(p) })));
 }
 
+// Hand-picked products for the "Featured in the marketplace" /
+// "Handpicked goods" strip on /shop, in display order. Edit this list to
+// curate the featured row. (This was previously a verified-first
+// heuristic; an explicit list matches the "handpicked" framing and gives
+// direct control over what leads the page.)
+const FEATURED_PRODUCT_SLUGS = [
+  "portrait-custom-001",
+  "pendant-silver-001",
+  "shroud-cotton-001",
+  "planning-workbook-001",
+];
+
 export async function getFeaturedProducts(limit = 6): Promise<ProductWithRating[]> {
   const rows = await prisma.product.findMany({
-    where: { verified: true, status: "published" },
+    where: { slug: { in: FEATURED_PRODUCT_SLUGS }, status: "published" },
     include: { vendor: true, productType: true, variants: true },
-    orderBy: { createdAt: "asc" },
-    take: limit,
   });
-  return attachRatings(rows.map((p) => ({ dbId: p.id, ...toProduct(p) })));
+  // Prisma's `in` doesn't preserve order, so re-order by the curated list
+  // and cap to `limit`. A slug that isn't published is simply skipped.
+  const bySlug = new Map(rows.map((p) => [p.slug, p]));
+  const ordered = FEATURED_PRODUCT_SLUGS.map((slug) => bySlug.get(slug))
+    .filter((p): p is (typeof rows)[number] => p != null)
+    .slice(0, limit);
+  return attachRatings(ordered.map((p) => ({ dbId: p.id, ...toProduct(p) })));
 }
