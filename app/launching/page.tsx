@@ -81,7 +81,7 @@ export default function LaunchingPage() {
           {/* The two launch cities are the visual hero. */}
           <h1 className="font-serif font-light leading-[1.04] mb-4">
             <span className="block text-[20px] sm:text-[24px] italic text-cm mb-1.5">
-              Now coming to
+              in
             </span>
             <span className="block text-[50px] sm:text-[70px] text-ch">
               Boulder <span className="text-sg italic font-normal">&amp;</span> Portland
