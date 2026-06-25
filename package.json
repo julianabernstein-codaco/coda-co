@@ -12,6 +12,7 @@
     "check-drift": "node scripts/check-drift.mjs",
     "db:seed": "prisma db seed",
     "db:mock": "tsx prisma/mock.ts",
+    "db:backfill-covers": "tsx prisma/backfill-covers.ts",
     "db:reset": "prisma migrate reset --force"
   },
   "dependencies": {
