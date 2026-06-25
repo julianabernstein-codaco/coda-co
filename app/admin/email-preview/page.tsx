@@ -93,6 +93,14 @@ const SECTIONS: PreviewSection[] = [
     editFn: "buildGiftCardContributionEmail",
     payload: buildSample("gift-contribution"),
   },
+  {
+    key: "waitlist-confirmation",
+    title: "Waitlist confirmation",
+    sentWhen:
+      "Right after someone joins the pre-launch waitlist on /launching (new signups only — an interest edit doesn't re-send). Best-effort: a send failure is logged but never blocks the signup.",
+    editFn: "buildWaitlistConfirmationEmail",
+    payload: buildSample("waitlist-confirmation"),
+  },
 ];
 
 export default async function AdminEmailPreviewPage() {

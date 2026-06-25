@@ -16,6 +16,56 @@ export function isWaitlistInterest(value: string): value is WaitlistInterest {
   return (WAITLIST_INTERESTS as readonly string[]).includes(value);
 }
 
+// Display labels for the three captured interests plus the `unknown`
+// fallback (a row predating the form, or one where the value was lost).
+// Keyed by the full enum so the admin view can render any stored value.
+export const WAITLIST_INTEREST_LABELS: Record<
+  WaitlistInterest | "unknown",
+  string
+> = {
+  customer: "Customer",
+  vendor: "Vendor",
+  maker: "Maker",
+  unknown: "Unspecified",
+};
+
+export interface WaitlistSignupRow {
+  id: string;
+  email: string;
+  interest: WaitlistInterest | "unknown";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Full signup list for the admin view / CSV export, newest first.
+export async function getWaitlistSignups(): Promise<WaitlistSignupRow[]> {
+  return prisma.waitlistSignup.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+// Per-interest tallies for the admin summary cards. Returns every enum
+// member (including `unknown`) so the labels and counts stay aligned even
+// when an interest has zero signups.
+export async function getWaitlistInterestCounts(): Promise<
+  Record<WaitlistInterest | "unknown", number>
+> {
+  const grouped = await prisma.waitlistSignup.groupBy({
+    by: ["interest"],
+    _count: { _all: true },
+  });
+  const counts: Record<WaitlistInterest | "unknown", number> = {
+    customer: 0,
+    vendor: 0,
+    maker: 0,
+    unknown: 0,
+  };
+  for (const row of grouped) {
+    counts[row.interest] = row._count._all;
+  }
+  return counts;
+}
+
 // Capture a pre-launch signup. Idempotent on email: re-submitting with a
 // different interest updates the row rather than failing the unique
 // constraint, so someone can correct their selection without a duplicate.

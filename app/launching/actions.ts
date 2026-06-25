@@ -5,7 +5,9 @@ import { clientIp, rateLimit } from "@/lib/rate-limit";
 import {
   createWaitlistSignup,
   isWaitlistInterest,
+  WAITLIST_INTEREST_LABELS,
 } from "@/lib/api/waitlist";
+import { sendWaitlistConfirmationEmail } from "@/lib/email/templates";
 
 export interface WaitlistState {
   ok?: boolean;
@@ -44,6 +46,23 @@ export async function joinWaitlist(
   try {
     const { created } = await createWaitlistSignup({ email, interest });
     log.info("waitlist.signup", { email, interest, created });
+
+    // Confirmation email — only for brand-new signers (an interest edit
+    // shouldn't re-trigger it). Best-effort: the signup is already saved,
+    // so a send failure is logged but never surfaced to the user. `await`
+    // is fine inside the server action; the client only sees the form
+    // result after this resolves, but the send is quick and the failure
+    // path is non-blocking.
+    if (created) {
+      const result = await sendWaitlistConfirmationEmail({
+        toEmail: email,
+        interestLabel: WAITLIST_INTEREST_LABELS[interest],
+      });
+      if (!result.ok) {
+        log.warn("waitlist.confirmation_email_failed", { email, err: result.error });
+      }
+    }
+
     return {
       ok: true,
       message: created

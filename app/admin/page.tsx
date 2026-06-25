@@ -88,6 +88,12 @@ export default async function AdminPage() {
             >
               Email preview →
             </a>
+            <a
+              href="/admin/waitlist"
+              className="btn-secondary btn-sm no-underline"
+            >
+              Waitlist →
+            </a>
           </div>
         </div>
 
