@@ -145,6 +145,14 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   if (filters.minPrice != null) mapped = mapped.filter((p) => p.priceMin >= filters.minPrice!);
   if (filters.maxPrice != null) mapped = mapped.filter((p) => p.priceMax <= filters.maxPrice!);
 
+  // Surface listings that have a cover photo first — a grid led by real
+  // photos reads better than one led by placeholder icons. The sort is
+  // stable (ES2019+), so the `createdAt asc` order from the query is
+  // preserved within the with-cover and without-cover groups.
+  mapped.sort(
+    (a, b) => Number(Boolean(b.coverImageUrl)) - Number(Boolean(a.coverImageUrl)),
+  );
+
   return attachRatings(mapped);
 }
 
