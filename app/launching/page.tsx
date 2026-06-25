@@ -83,7 +83,7 @@ export default function LaunchingPage() {
             <span className="block text-[20px] sm:text-[24px] italic text-cm mb-1.5">
               in
             </span>
-            <span className="block text-[50px] sm:text-[70px] text-ch">
+            <span className="block text-[42px] sm:text-[58px] text-ch">
               Boulder <span className="text-sg italic font-normal">&amp;</span> Portland
             </span>
           </h1>
