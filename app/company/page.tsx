@@ -27,7 +27,7 @@ const founders: Founder[] = [
     role: "Co-founder",
     bio: "Julie is a geriatric physician associate turned entrepreneur who has spent nearly two decades helping people face death with dignity, agency, and even joy. After sixteen years in geriatric and palliative medicine and three more in the business for living funerals and celebrations of life, she founded CodaCo Market—a marketplace for everything families need, but rarely know exists, when a loved one is dying.",
     tone: "terracotta",
-    photo: "/vendors/julie-bernstein.jpg",
+    photo: "/vendors/cofounder.JMB.photo",
   },
   {
     name: "Founder Name",
