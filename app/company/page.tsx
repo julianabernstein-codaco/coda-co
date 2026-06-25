@@ -15,7 +15,7 @@ type Founder = {
   name: string;
   initials: string;
   role: string;
-  bio: string;
+  bio: string[];
   tone: "sage" | "terracotta";
   photo?: string;
 };
@@ -25,7 +25,12 @@ const founders: Founder[] = [
     name: "Julie Bernstein",
     initials: "JB",
     role: "Co-founder",
-    bio: "Julie is a geriatric physician associate turned entrepreneur who has spent nearly two decades helping people face death with dignity, agency, and even joy. After sixteen years in geriatric and palliative medicine and three more in the business for living funerals and celebrations of life, she founded CodaCo Market—a marketplace for everything families need, but rarely know exists, when a loved one is dying.",
+    bio: [
+      "Julie has spent her career on the side of death most people never see until they're forced to—and has made it her life's work to make that moment less frightening and more human.",
+      "A geriatric physician associate for fourteen years, Julie trained at Brown and Oregon Health & Science University, then built what wasn't there: OHSU's first in-hospital geriatric consult program, which she led for six years, and its Office of Advanced Practice, where she served as founding Director. Her work didn't just change how patients were cared for—it moved the institution, helping inspire a major philanthropic gift to the university. Along the way she earned some of her field's top honors, named a leading geriatric clinician and her state's PA of the year. She has spoken nationally on aging, frailty, and end-of-life planning, and published research on the profound impact of geriatric expertise in the hospital setting.",
+      "But Julie's real work happened at the bedside. She has helped people plan for death and helped them die. She has ensured patients can be home when home is where they wanted to go, and made sure final wishes were honored.",
+      "Then Julie left the hospital to make death joyful, founding a business creating living funerals and celebrations of life, helping people plan events that allow the joy and celebration that stem from a life well lived, even at the end of life. CodaCo Market is what comes next: everything a family needs, all in one place, when someone they love is dying.",
+    ],
     tone: "terracotta",
     photo: "/vendors/cofounder.JMB.photo.jpg",
   },
@@ -33,7 +38,9 @@ const founders: Founder[] = [
     name: "Founder Name",
     initials: "FN",
     role: "Co-founder",
-    bio: "Short bio placeholder — share what drew this founder to the work of supporting families through loss.",
+    bio: [
+      "Short bio placeholder — share what drew this founder to the work of supporting families through loss.",
+    ],
     tone: "sage",
   },
 ];
@@ -84,7 +91,11 @@ export default function CompanyPage() {
                       {f.role}
                     </p>
                   </div>
-                  <p className="text-[14px] text-ink leading-[1.7]">{f.bio}</p>
+                  <div className="space-y-3 text-[14px] text-ink leading-[1.7] text-left">
+                    {f.bio.map((para, j) => (
+                      <p key={j}>{para}</p>
+                    ))}
+                  </div>
                 </div>
               </Card>
             ))}
