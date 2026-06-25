@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 // Routes that render their own chrome (logo bar, footer). proxy.ts
 // sets x-pathname so we can branch here without restructuring every
 // other route into a route group.
-const CHROMELESS_PATHS = new Set(["/homepage", "/preview-access"]);
+const CHROMELESS_PATHS = new Set(["/homepage", "/launching", "/preview-access"]);
 
 export default async function RootLayout({
   children,

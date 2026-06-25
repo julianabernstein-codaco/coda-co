@@ -11,7 +11,15 @@ import { PREVIEW_COOKIE_NAME, previewToken } from "@/lib/preview-gate";
 // Lives at `proxy.ts` (Next 16+ name) — the older `middleware.ts`
 // convention is deprecated but functionally identical.
 
-const PUBLIC_EXACT = new Set(["/homepage", "/preview-access", "/robots.txt"]);
+const PUBLIC_EXACT = new Set([
+  "/homepage",
+  "/launching",
+  // The /launching OpenGraph image is served from this nested route; it
+  // must bypass the gate too so social crawlers can fetch the preview.
+  "/launching/opengraph-image",
+  "/preview-access",
+  "/robots.txt",
+]);
 
 function isAsset(pathname: string): boolean {
   if (pathname.startsWith("/_next/")) return true;
