@@ -97,9 +97,6 @@ export function buildSample(key: TemplateKey): EmailPayload {
         organizerToken: "9Lc7Hv3Ke0Nd5Ry",
       });
     case "waitlist-confirmation":
-      return buildWaitlistConfirmationEmail({
-        toEmail: FIXTURE.toEmail,
-        interestLabel: "Maker",
-      });
+      return buildWaitlistConfirmationEmail({ toEmail: FIXTURE.toEmail });
   }
 }

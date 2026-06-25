@@ -5,7 +5,6 @@ import { clientIp, rateLimit } from "@/lib/rate-limit";
 import {
   createWaitlistSignup,
   isWaitlistInterest,
-  WAITLIST_INTEREST_LABELS,
 } from "@/lib/api/waitlist";
 import { sendWaitlistConfirmationEmail } from "@/lib/email/templates";
 
@@ -56,13 +55,7 @@ export async function joinWaitlist(
     // result after this resolves, but the send is quick and the failure
     // path is non-blocking.
     if (created) {
-      const result = await sendWaitlistConfirmationEmail({
-        toEmail: email,
-        // No pick → omit the label so the email uses its generic copy
-        // rather than "interested as a unspecified".
-        interestLabel:
-          interest === "unknown" ? undefined : WAITLIST_INTEREST_LABELS[interest],
-      });
+      const result = await sendWaitlistConfirmationEmail({ toEmail: email });
       if (!result.ok) {
         log.warn("waitlist.confirmation_email_failed", { email, err: result.error });
       }
