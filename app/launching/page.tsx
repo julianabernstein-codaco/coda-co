@@ -118,17 +118,9 @@ export default function LaunchingPage() {
           </p>
 
           {/* Signup lives in a modal so the hero stays focused on the
-              announcement; "Learn more" opens the survey in a new tab. */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              announcement. */}
+          <div className="mt-8">
             <WaitlistDialog />
-            <a
-              href="https://tally.so/r/kdkb6Z"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-ghost btn-lg no-underline"
-            >
-              Learn more
-            </a>
           </div>
         </Container>
       </section>
@@ -153,6 +145,18 @@ export default function LaunchingPage() {
             From planning ahead to a recent loss — thoughtful goods and vetted
             local support, gathered with care.
           </p>
+
+          {/* "Learn more" opens the survey in a new tab. */}
+          <div className="mt-7">
+            <a
+              href="https://tally.so/r/kdkb6Z"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost btn-lg no-underline"
+            >
+              Learn more
+            </a>
+          </div>
         </Container>
       </section>
 
