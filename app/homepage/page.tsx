@@ -311,11 +311,15 @@ function StaticTopBar() {
 function StaticHeroSearch() {
   return (
     <>
+      {/* Inert preview placeholders. Muted (neutral fill, soft text, no
+          hover) so they read as "coming soon" rather than impersonating
+          the live waitlist CTA below — the fake Search pill in particular
+          used to mirror the terracotta of the real survey button. */}
       <div className="flex max-w-[500px] mx-auto mb-4">
-        <div className="flex-1 px-5 py-3.5 border-[1.5px] border-r-0 border-[rgba(193,99,79,.25)] rounded-l-[28px] bg-white text-[14px] text-cl">
+        <div className="flex-1 px-5 py-3.5 border-[1.5px] border-r-0 border-line-strong rounded-l-[28px] bg-pl text-[14px] text-cl">
           Search goods, services, books…
         </div>
-        <div className="bg-tr text-white border-0 px-6 py-3.5 rounded-r-[28px] text-[13px] flex items-center">
+        <div className="bg-pl2 text-cl border-[1.5px] border-l-0 border-line-strong px-6 py-3.5 rounded-r-[28px] text-[13px] flex items-center">
           Search
         </div>
       </div>
@@ -328,7 +332,7 @@ function StaticHeroSearch() {
           {heroEntries.map((label) => (
             <div
               key={label}
-              className="bg-white border border-line-strong rounded-[8px] px-4 py-3 text-[13px] text-ch text-center"
+              className="bg-pl border border-line rounded-[8px] px-4 py-3 text-[13px] text-cl text-center"
             >
               {label}
             </div>
@@ -336,11 +340,19 @@ function StaticHeroSearch() {
         </div>
       </div>
 
+      {/* Scopes the "coming soon" note to the search + quick-link
+          placeholders above — named explicitly so it can't be misread as
+          applying to the live button below. */}
+      <p className="max-w-[500px] mx-auto mt-2.5 text-center text-[11px] uppercase tracking-[.1em] text-cl">
+        Search &amp; browsing — coming soon at launch
+      </p>
+
       {/* Active waitlist capture — like the survey CTA below, this is an
           intentional exception to the page's inert placeholders. Reuses
           the /launching dialog so the popup, DB write, and confirmation
-          email are identical. */}
-      <div className="max-w-[500px] mx-auto mt-4 text-center">
+          email are identical. The extra top gap and solid sage fill set
+          it apart from the muted placeholders. */}
+      <div className="max-w-[500px] mx-auto mt-6 text-center">
         <WaitlistDialog
           triggerLabel="Get notified when we launch"
           triggerClassName="btn-secondary btn-lg bg-sg-d hover:bg-sg w-full"
