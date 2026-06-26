@@ -7,6 +7,7 @@ import { VendorPhoto } from "@/components/ui/VendorPhoto";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { Card } from "@/components/ui/Card";
 import { Logo } from "@/components/ui/Logo";
+import { WaitlistDialog } from "@/app/launching/WaitlistDialog";
 import { serviceTypeLabel, vendorLocationSuffix } from "@/lib/format/vendor";
 import { getServices } from "@/lib/api/services";
 import { getHomeFeaturedVendors } from "@/lib/api/vendors";
@@ -333,6 +334,17 @@ function StaticHeroSearch() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Active waitlist capture — like the survey CTA below, this is an
+          intentional exception to the page's inert placeholders. Reuses
+          the /launching dialog so the popup, DB write, and confirmation
+          email are identical. */}
+      <div className="max-w-[500px] mx-auto mt-4 text-center">
+        <WaitlistDialog
+          triggerLabel="Get notified when we launch"
+          triggerClassName="btn-secondary btn-lg bg-sg-d hover:bg-sg w-full"
+        />
       </div>
     </>
   );

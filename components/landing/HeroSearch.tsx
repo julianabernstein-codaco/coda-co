@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { WaitlistDialog } from "@/app/launching/WaitlistDialog";
 
 const entries = [
   {
@@ -66,13 +65,6 @@ export function HeroSearch() {
             </Link>
           ))}
         </div>
-      </div>
-
-      <div className="max-w-[500px] mx-auto mt-4 text-center">
-        <WaitlistDialog
-          triggerLabel="Get notified when we launch"
-          triggerClassName="btn-secondary btn-lg bg-sg-d hover:bg-sg w-full"
-        />
       </div>
     </>
   );
