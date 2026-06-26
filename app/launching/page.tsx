@@ -146,13 +146,14 @@ export default function LaunchingPage() {
             local support, gathered with care.
           </p>
 
-          {/* "Learn more" opens the survey in a new tab. */}
+          {/* "Learn more" opens the survey in a new tab. White pill to
+              match the category chips above, on the terracotta banner. */}
           <div className="mt-7">
             <a
               href="https://tally.so/r/kdkb6Z"
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-ghost btn-lg no-underline"
+              className="btn-ghost btn-lg no-underline bg-white border-line text-ch hover:text-ch hover:bg-pl2 hover:border-line"
             >
               Learn more
             </a>
