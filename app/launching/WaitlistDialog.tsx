@@ -6,7 +6,16 @@ import { WaitlistForm } from "./WaitlistForm";
 // Trigger button on the hero that opens the signup form in a standalone
 // modal. Uses the native <dialog> element via showModal() for built-in
 // focus trapping, Escape-to-close, and an inert backdrop — no library.
-export function WaitlistDialog() {
+// The trigger's label and styling are overridable so the same dialog
+// (and its DB-write + confirmation-email chain) can be reused elsewhere
+// (e.g. the homepage hero) without duplicating the form logic.
+export function WaitlistDialog({
+  triggerLabel = "Get notified at launch",
+  triggerClassName = "btn-secondary btn-lg",
+}: {
+  triggerLabel?: string;
+  triggerClassName?: string;
+} = {}) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   // Drives whether the form is mounted. Remounting on each open gives a
   // fresh form after a previous success (the form swaps to a thank-you
@@ -24,8 +33,8 @@ export function WaitlistDialog() {
 
   return (
     <>
-      <button type="button" onClick={openDialog} className="btn-secondary btn-lg">
-        Get notified at launch
+      <button type="button" onClick={openDialog} className={triggerClassName}>
+        {triggerLabel}
       </button>
 
       <dialog
