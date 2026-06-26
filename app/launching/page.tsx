@@ -116,27 +116,13 @@ export default function LaunchingPage() {
             providers together in one calm, considered place. We&apos;re opening
             first in Boulder and Portland.
           </p>
-
-          {/* "Learn more" (survey, new tab) sits just above the signup
-              CTA; the signup itself opens in a modal. */}
-          <div className="mt-8 flex flex-col items-center gap-3">
-            <a
-              href="https://tally.so/r/kdkb6Z"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-ghost btn-lg no-underline bg-white border-line text-ch hover:text-ch hover:bg-pl2 hover:border-line"
-            >
-              Learn more
-            </a>
-            <WaitlistDialog />
-          </div>
         </Container>
       </section>
 
       <WaveDivider topColor="var(--color-pl)" bottomColor="var(--color-tr-vp)" />
 
       {/* What you'll find — in the terracotta banner */}
-      <section className="bg-tr-vp px-6 pt-12 pb-14 text-center">
+      <section className="bg-tr-vp px-6 pt-5 pb-14 text-center">
         <Container width="narrow">
           <p className="text-overline text-sg-d mb-3">What you&apos;ll find</p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
@@ -153,6 +139,20 @@ export default function LaunchingPage() {
             From planning ahead to a recent loss — thoughtful goods and vetted
             local support, gathered with care.
           </p>
+
+          {/* "Learn more" (survey, new tab) sits just above the signup
+              CTA, which opens in a modal. */}
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <a
+              href="https://tally.so/r/kdkb6Z"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost btn-lg no-underline bg-white border-line text-ch hover:text-ch hover:bg-pl2 hover:border-line"
+            >
+              Learn more
+            </a>
+            <WaitlistDialog />
+          </div>
         </Container>
       </section>
 
