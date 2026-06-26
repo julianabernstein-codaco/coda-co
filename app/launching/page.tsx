@@ -118,9 +118,17 @@ export default function LaunchingPage() {
           </p>
 
           {/* Signup lives in a modal so the hero stays focused on the
-              announcement. */}
-          <div className="mt-8">
+              announcement; "Learn more" opens the survey in a new tab. */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <WaitlistDialog />
+            <a
+              href="https://tally.so/r/kdkb6Z"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost btn-lg no-underline"
+            >
+              Learn more
+            </a>
           </div>
         </Container>
       </section>
