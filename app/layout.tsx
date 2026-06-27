@@ -6,6 +6,7 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { SavedProvider } from "@/components/providers/SavedProvider";
+import { Analytics } from "@vercel/analytics/next";
 import { auth } from "@/auth";
 import { getCart } from "@/lib/api/cart";
 
@@ -70,6 +71,7 @@ export default async function RootLayout({
         ) : (
           <main>{children}</main>
         )}
+        <Analytics />
       </body>
     </html>
   );
