@@ -106,7 +106,7 @@ export default function LaunchingPage() {
           </p>
 
           <p className="font-serif italic text-[21px] sm:text-[25px] font-light leading-[1.3] text-ch mb-5">
-            Death is a part of life.{" "}
+            <span className="text-sg">Death is a part of life.</span>{" "}
             <span className="text-tr not-italic">Support should be easy to find.</span>
           </p>
 
