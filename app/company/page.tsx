@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "The people behind CodaCo Market — building a welcoming home for the goods and services that help families navigate loss.",
 };
 
-type Founder = {
+type Person = {
   name: string;
   initials: string;
   role: string;
@@ -20,7 +20,7 @@ type Founder = {
   photo?: string;
 };
 
-const founders: Founder[] = [
+const people: Person[] = [
   {
     name: "Julie Bernstein",
     initials: "JB",
@@ -42,6 +42,16 @@ const founders: Founder[] = [
       "Naomi holds a B.A. in Economics from New York University.",
     ],
     tone: "sage",
+  },
+  {
+    name: "Alison Shmerling, MD, MPH",
+    initials: "AS",
+    role: "Advisor",
+    bio: [
+      "Dr. Alison Shmerling holds degrees from Northwestern University and Tufts University School of Medicine, and practices medicine in underserved care settings. Her passion is the intersection of underserved care and healthcare technology, building programs to change the way healthcare is delivered.",
+      "She first held an appreciation for death and dying when losing her grandmother, who passed away peacefully at home surrounded by loved ones. In contrast to deaths often witnessed in the hospital setting, this experience demonstrated CodaCo's mission: to make death and dying something that can be planned, supported, and experienced as the beautiful part of life that it is.",
+    ],
+    tone: "terracotta",
   },
 ];
 
@@ -72,9 +82,13 @@ export default function CompanyPage() {
             title="The people behind CodaCo"
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {founders.map((f, i) => (
-              <Card key={i} padding="md">
+          <div className="flex flex-wrap justify-center gap-6">
+            {people.map((f, i) => (
+              <Card
+                key={i}
+                padding="md"
+                className="w-full sm:w-[calc(50%-0.75rem)]"
+              >
                 <div className="flex flex-col items-center text-center gap-4">
                   <VendorPhoto
                     src={f.photo}
