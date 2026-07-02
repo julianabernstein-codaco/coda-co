@@ -26,7 +26,8 @@ const founders: Founder[] = [
     initials: "JB",
     role: "Co-founder",
     bio: [
-      "Julie is a geriatric physician associate turned entrepreneur who has spent nearly two decades helping people face death with dignity, agency, and even joy. After sixteen years in geriatric and palliative medicine and three more in the business for living funerals and celebrations of life, she founded CodaCo Market—a marketplace for everything families need, but rarely know exists, when a loved one is dying.",
+      "Juliana Bernstein is a geriatric physician associate turned entrepreneur who has spent nearly two decades helping people face death with dignity, agency, and even joy. After sixteen years in geriatric and palliative medicine, she launched Oregon's first event planning company dedicated to living funerals and celebrations of life - gatherings that welcome the blend of joy and sorrow that can exist together at the end of a life. CodaCo Market was a natural next direction—a marketplace for everything families need, but rarely know exists, when a loved one is dying.",
+      "Julie holds a B.A. from Brown University and a Master's degree from Oregon Health & Science University.",
     ],
     tone: "terracotta",
     photo: "/vendors/cofounder.JMB.photo.jpg",
