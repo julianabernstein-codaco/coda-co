@@ -52,7 +52,7 @@ const offerings: {
   },
   {
     title: "Information",
-    body: "Sometimes what we need most is gentle, direct, helpful information about what to do next, or what we can expect around the time of death and dying. Our Guidance page answers some of the most common questions about death, dying and the resources to help.",
+    body: "Sometimes what we need most is gentle, direct information about what to do next, or what we can expect around the time of death and dying. Our Guidance page answers some of the most common questions about death, dying and the resources to help.",
     cta: "Read our guidance",
     href: "/guidance",
   },
@@ -67,16 +67,15 @@ export default function WhatIsCodaCoPage() {
           What is CodaCo?
         </p>
         <h1 className="font-serif italic text-[44px] font-light leading-[1.25] text-ch max-w-[760px] mx-auto mb-6">
-          The death of a loved one is a
+          Death can be overwhelming.
           <br />
-          <span className="text-tr">massively overwhelming time.</span>
+          <span className="text-tr">CodaCo is here to help.</span>
         </h1>
         <p className="text-[16px] text-cm max-w-[620px] mx-auto leading-[1.78]">
-          CodaCo is here to help. This site helps you sift through the people
-          and services that can help during the overwhelming, stressful, sad
-          time when a loved one is dying. There are a lot of resources to make
-          this time easier to navigate — but most of us don&rsquo;t know about
-          them until after we need them.
+          There are so many resources to make the end of a life easier to
+          navigate — but most of us don&rsquo;t know about them until after we
+          need them. This site helps you sift through the people and services
+          that can help near the end of life — our own or a loved one&rsquo;s.
         </p>
       </section>
 
