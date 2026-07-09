@@ -2,8 +2,17 @@ import Link from "next/link";
 import type { FaqCategory } from "@/components/faq/FaqBrowser";
 
 // Sensitive, editorial guidance content — surfaced on /guidance.
-export const guidanceCategories: FaqCategory[] = [
+export interface GuidanceTopic {
+  slug: string;
+  heading: string;
+  blurb: string;
+  faqs: FaqCategory["faqs"];
+}
+
+export const guidanceTopics: GuidanceTopic[] = [
   {
+    slug: "when-someone-dies",
+    blurb: "The first steps — and what isn't an emergency.",
     heading: "When someone dies",
     faqs: [
       {
@@ -46,6 +55,8 @@ export const guidanceCategories: FaqCategory[] = [
     ],
   },
   {
+    slug: "funerals-and-body-disposition",
+    blurb: "Burial, cremation, green burial, and your rights.",
     heading: "Funerals & body disposition",
     faqs: [
       {
@@ -280,6 +291,8 @@ export const guidanceCategories: FaqCategory[] = [
     ],
   },
   {
+    slug: "death-doulas",
+    blurb: "Non-medical support through the end of life.",
     heading: "Death doulas (end-of-life doulas)",
     faqs: [
       {
@@ -411,6 +424,8 @@ export const guidanceCategories: FaqCategory[] = [
     ],
   },
   {
+    slug: "hospice-care",
+    blurb: "Comfort-focused care, and how to choose a provider.",
     heading: "Hospice Care",
     faqs: [
       {
@@ -628,6 +643,8 @@ export const guidanceCategories: FaqCategory[] = [
     ],
   },
   {
+    slug: "death-cleaning",
+    blurb: "Going through belongings with love, at your pace.",
     heading: "Death cleaning",
     faqs: [
       {
@@ -678,6 +695,10 @@ export const guidanceCategories: FaqCategory[] = [
     ],
   },
 ];
+
+export function getGuidanceTopic(slug: string): GuidanceTopic | undefined {
+  return guidanceTopics.find((topic) => topic.slug === slug);
+}
 
 // Functional, transactional help — surfaced on /faq (the Help Center).
 export const helpCenterCategories: FaqCategory[] = [
