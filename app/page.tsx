@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HeroSearch } from "@/components/landing/HeroSearch";
+import { HeroQuickLinks } from "@/components/landing/HeroQuickLinks";
+import { HeroSearchBar } from "@/components/landing/HeroSearchBar";
 import { HomeLocationSearch } from "@/components/landing/HomeLocationSearch";
 import { Container } from "@/components/ui/Container";
 import { GiftCardCallout } from "@/components/ui/GiftCardCallout";
@@ -151,7 +152,13 @@ export default async function LandingPage() {
           resources.
         </p>
 
-        <HeroSearch />
+        <div className="mb-8">
+          <Link href="/what-is-codaco" className="btn-primary btn-lg no-underline">
+            What is CodaCo?
+          </Link>
+        </div>
+
+        <HeroQuickLinks />
       </section>
 
       <WaveDivider topColor="var(--color-white)" bottomColor="var(--color-tr-vp)" />
@@ -229,6 +236,13 @@ export default async function LandingPage() {
 
           <div className="mt-12">
             <GiftCardCallout />
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-[15px] text-cm mb-4">
+              Looking for something specific? Search the marketplace.
+            </p>
+            <HeroSearchBar />
           </div>
         </Container>
       </section>
