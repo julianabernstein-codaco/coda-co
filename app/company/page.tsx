@@ -18,6 +18,8 @@ type Person = {
   bio: string[];
   tone: "sage" | "terracotta";
   photo?: string;
+  photoPosition?: string;
+  photoScale?: number;
 };
 
 const people: Person[] = [
@@ -43,6 +45,8 @@ const people: Person[] = [
     ],
     tone: "sage",
     photo: "/vendors/cofounder.nl.photo.JPG",
+    photoPosition: "50% 22%",
+    photoScale: 0.9,
   },
   {
     name: "Alison Shmerling, MD, MPH",
@@ -97,6 +101,8 @@ export default function CompanyPage() {
                     initials={f.initials}
                     size="xl"
                     tone={f.tone}
+                    objectPosition={f.photoPosition}
+                    objectScale={f.photoScale}
                   />
                   <div>
                     <h3 className="font-serif text-[22px] font-light text-ch">

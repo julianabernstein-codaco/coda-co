@@ -27,6 +27,16 @@ interface VendorPhotoProps {
   size?: VendorPhotoSize;
   tone?: VendorPhotoTone;
   className?: string;
+  /**
+   * CSS `object-position` for the cropped image (e.g. "50% 25%" to move the
+   * visible crop toward the top of the photo). Defaults to centered.
+   */
+  objectPosition?: string;
+  /**
+   * Scale the image inside the circle. Values < 1 shrink it, leaving a thin
+   * cream ring; the image is kept circular so it never shows square corners.
+   */
+  objectScale?: number;
 }
 
 export function VendorPhoto({
@@ -36,7 +46,19 @@ export function VendorPhoto({
   size = "md",
   tone = "sage",
   className = "",
+  objectPosition,
+  objectScale,
 }: VendorPhotoProps) {
+  const imgStyle =
+    objectPosition || objectScale !== undefined
+      ? {
+          objectPosition,
+          ...(objectScale !== undefined
+            ? { transform: `scale(${objectScale})`, borderRadius: "9999px" }
+            : {}),
+        }
+      : undefined;
+
   return (
     <span
       className={`vendor-photo ${sizeClass[size]} ${tone === "terracotta" ? "vendor-photo-tr" : ""} ${className}`.trim()}
@@ -49,6 +71,7 @@ export function VendorPhoto({
             fill
             sizes={sizesAttr[size]}
             className="vendor-photo-img"
+            style={imgStyle}
           />
         ) : (
           <span aria-hidden="true">{initials}</span>
