@@ -50,9 +50,9 @@ export default async function AdminWaitlistPage() {
         <Container width="wide">
           <div className="mb-7 flex items-start justify-between gap-4">
             <div>
-              <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Admin</p>
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Admin</p>
               <h1 className="font-serif text-[32px] font-light text-ch">Waitlist</h1>
-              <p className="text-[13px] text-cl mt-1.5">
+              <p className="text-[15px] text-cl mt-1.5">
                 Everyone who signed up on{" "}
                 <code className="text-ch bg-pl px-1 py-0.5 rounded">/launching</code>, newest
                 first. Re-signups update the existing row rather than duplicating.
@@ -76,14 +76,14 @@ export default async function AdminWaitlistPage() {
 
           {signups.length === 0 ? (
             <div className="bg-white rounded-[10px] border border-line p-10 text-center">
-              <p className="text-[14px] text-cm">
+              <p className="text-[16px] text-cm">
                 No signups yet. They&apos;ll appear here as soon as people join from the
                 launching page.
               </p>
             </div>
           ) : (
             <div className="bg-white rounded-[10px] border border-line overflow-hidden">
-              <table className="w-full text-left text-[13px]">
+              <table className="w-full text-left text-[15px]">
                 <thead>
                   <tr className="border-b border-line bg-pl2/60 text-cl">
                     <th className="font-medium px-4 py-2.5">Email</th>

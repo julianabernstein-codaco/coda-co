@@ -41,10 +41,10 @@ export function ServiceFilters({ serviceTypes }: { serviceTypes: ServiceTypeOpti
   return (
     <div className="pt-6 pr-5 pb-8 border-r border-line">
       <div className="flex items-center justify-between mb-5">
-        <span className="text-[13px] font-medium text-ch">Filters</span>
+        <span className="text-[15px] font-medium text-ch">Filters</span>
         <button
           onClick={clearAll}
-          className="text-[12px] text-ink bg-transparent border-0 font-sans cursor-pointer underline hover:text-tr"
+          className="text-[14px] text-ink bg-transparent border-0 font-sans cursor-pointer underline hover:text-tr"
         >
           Clear all
         </button>

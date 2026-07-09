@@ -10,8 +10,8 @@ export function ServiceGrid({ vendors, servicesByVendor }: ServiceGridProps) {
   if (vendors.length === 0) {
     return (
       <div className="text-center py-16 text-ink">
-        <p className="text-[15px] mb-2">No providers found.</p>
-        <p className="text-[13px] text-ink">Try different filters or broaden your search.</p>
+        <p className="text-[17px] mb-2">No providers found.</p>
+        <p className="text-[15px] text-ink">Try different filters or broaden your search.</p>
       </div>
     );
   }

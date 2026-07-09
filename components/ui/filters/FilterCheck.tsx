@@ -13,7 +13,7 @@ export function FilterCheck({ label, checked, onChange }: FilterCheckProps) {
         onChange={onChange}
         className="accent-tr w-[13px] h-[13px]"
       />
-      <span className="text-[12px] text-ink">{label}</span>
+      <span className="text-[14px] text-ink">{label}</span>
     </label>
   );
 }

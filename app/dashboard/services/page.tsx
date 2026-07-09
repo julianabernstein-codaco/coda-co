@@ -56,7 +56,7 @@ export default async function VendorServicesPage() {
         <Container width="wide">
           <div className="flex items-center justify-between mb-7">
             <div>
-              <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
               <h1 className="font-serif text-[32px] font-light text-ch">Your services</h1>
             </div>
             <form action={createBlankService}>
@@ -82,7 +82,7 @@ export default async function VendorServicesPage() {
                 {services.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center">
-                      <p className="text-[14px] text-cm mb-3">
+                      <p className="text-[16px] text-cm mb-3">
                         You haven&apos;t added any services yet.
                       </p>
                       <form action={createBlankService} className="inline-block">
@@ -96,16 +96,16 @@ export default async function VendorServicesPage() {
                   services.map((s) => (
                     <tr key={s.id} className="border-b border-pl2">
                       <td className="px-4 py-3">
-                        <div className="text-[13px] font-medium text-ch">{s.title}</div>
-                        <div className="text-[11px] text-cl">slug: {s.slug}</div>
+                        <div className="text-[15px] font-medium text-ch">{s.title}</div>
+                        <div className="text-[13px] text-cl">slug: {s.slug}</div>
                       </td>
-                      <td className="px-4 py-3 text-[12px] text-cm">{s.serviceType.name}</td>
-                      <td className="px-4 py-3 text-[12px] text-cm">
+                      <td className="px-4 py-3 text-[14px] text-cm">{s.serviceType.name}</td>
+                      <td className="px-4 py-3 text-[14px] text-cm">
                         {LOCATION_LABELS[s.locationType] ?? s.locationType}
                       </td>
-                      <td className="px-4 py-3 text-[12px] text-cm tabular-nums">
+                      <td className="px-4 py-3 text-[14px] text-cm tabular-nums">
                         {formatPrice(s.pricingModel, s.priceCents)}
-                        <div className="text-[11px] text-cl">
+                        <div className="text-[13px] text-cl">
                           {PRICING_LABELS[s.pricingModel] ?? s.pricingModel}
                         </div>
                       </td>
@@ -115,7 +115,7 @@ export default async function VendorServicesPage() {
                       <td className="px-4 py-3 text-right">
                         <Link
                           href={`/dashboard/services/${s.id}`}
-                          className="text-[12px] text-tr no-underline hover:underline"
+                          className="text-[14px] text-tr no-underline hover:underline"
                         >
                           Edit →
                         </Link>
@@ -149,7 +149,7 @@ function StatusBadge({ status }: { status: string }) {
         : "bg-pl2 text-cm";
   return (
     <span
-      className={`inline-block text-[11px] font-medium px-2 py-0.5 rounded-full capitalize ${styles}`}
+      className={`inline-block text-[13px] font-medium px-2 py-0.5 rounded-full capitalize ${styles}`}
     >
       {status}
     </span>

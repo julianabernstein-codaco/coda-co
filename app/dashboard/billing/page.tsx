@@ -71,14 +71,14 @@ export default async function BillingPage({
       <section className="bg-pl2 px-10 py-10 min-h-screen">
         <Container width="mid">
           <div className="mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
             <h1 className="font-serif text-[32px] font-light text-ch">Billing</h1>
-            <p className="text-[13px] text-cl mt-1.5">Manage how you pay to be on CodaCo.</p>
+            <p className="text-[15px] text-cl mt-1.5">Manage how you pay to be on CodaCo.</p>
           </div>
 
           {status === "success" && (
             <div className="bg-sg-p border border-sg-l rounded-[10px] px-5 py-4 mb-5">
-              <p className="text-[13px] text-sg-d">
+              <p className="text-[15px] text-sg-d">
                 Payment received — thank you. It can take a few seconds for your status
                 below to update.
               </p>
@@ -86,12 +86,12 @@ export default async function BillingPage({
           )}
           {status === "cancelled" && (
             <div className="bg-white border border-line rounded-[10px] px-5 py-4 mb-5">
-              <p className="text-[13px] text-cm">Checkout cancelled — no charge was made.</p>
+              <p className="text-[15px] text-cm">Checkout cancelled — no charge was made.</p>
             </div>
           )}
           {!isStripeConfigured() && (
             <div className="bg-white border border-line rounded-[10px] px-5 py-4 mb-5">
-              <p className="text-[13px] text-cm">
+              <p className="text-[15px] text-cm">
                 Billing isn’t configured in this environment yet. Buttons below are
                 inactive until Stripe keys are set.
               </p>
@@ -136,7 +136,7 @@ function ServicesBilling({
     const intervalWord = interval === "year" ? "annual" : "monthly";
     return (
       <Panel title="Your services subscription">
-        <p className="text-[13px] text-cm mb-4 leading-relaxed">
+        <p className="text-[15px] text-cm mb-4 leading-relaxed">
           Your <span className="text-ch">{intervalWord}</span> subscription is active.
           {cancelScheduled
             ? " It’s set to cancel at the end of the current billing period — reactivate from Manage billing."
@@ -153,7 +153,7 @@ function ServicesBilling({
   if (status && NEEDS_ATTENTION.has(status)) {
     return (
       <Panel title="Your services subscription">
-        <p className="text-[13px] text-tr mb-4 leading-relaxed">
+        <p className="text-[15px] text-tr mb-4 leading-relaxed">
           There’s a problem with your latest payment. Update your card to keep your
           listing live.
         </p>
@@ -165,7 +165,7 @@ function ServicesBilling({
   const recurring = servicePlans.filter((p) => p.billingType === "recurring");
   return (
     <Panel title="Choose a services plan">
-      <p className="text-[13px] text-cm mb-5 leading-relaxed">
+      <p className="text-[15px] text-cm mb-5 leading-relaxed">
         Subscribe to publish your services on CodaCo. Pick monthly or save with annual
         billing.
       </p>
@@ -188,7 +188,7 @@ function GoodsBilling({ status, hasFee }: { status?: string; hasFee: boolean }) 
   if (!hasFee) {
     return (
       <Panel title="Your goods plan">
-        <p className="text-[13px] text-cm leading-relaxed">
+        <p className="text-[15px] text-cm leading-relaxed">
           You’re on the free Starter plan — up to 3 listings, no charge.
         </p>
       </Panel>
@@ -197,7 +197,7 @@ function GoodsBilling({ status, hasFee }: { status?: string; hasFee: boolean }) 
   if (status === "paid") {
     return (
       <Panel title="Your goods storefront">
-        <p className="text-[13px] text-cm leading-relaxed">
+        <p className="text-[15px] text-cm leading-relaxed">
           Set-up fee paid — your Storefront is active with unlimited listings. This was a
           one-time payment; there’s nothing more to pay.
         </p>
@@ -206,7 +206,7 @@ function GoodsBilling({ status, hasFee }: { status?: string; hasFee: boolean }) 
   }
   return (
     <Panel title="Your goods storefront">
-      <p className="text-[13px] text-cm mb-5 leading-relaxed">
+      <p className="text-[15px] text-cm mb-5 leading-relaxed">
         Pay your one-time Storefront set-up fee to unlock unlimited listings. Pay once,
         never again.
       </p>

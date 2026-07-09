@@ -31,20 +31,20 @@ export function FilterStrip() {
     <div className="mb-6 space-y-2">
       <LifeStageChips />
       {activeQuery && (
-        <div className="flex items-center gap-2 text-[13px] text-cm">
+        <div className="flex items-center gap-2 text-[15px] text-cm">
           <span>
             Results for <strong className="text-ch">“{activeQuery}”</strong>
           </span>
           <button
             onClick={() => setParams({ q: "", page: "" })}
-            className="text-[12px] text-tr bg-transparent border-0 font-sans cursor-pointer underline hover:text-tr-d"
+            className="text-[14px] text-tr bg-transparent border-0 font-sans cursor-pointer underline hover:text-tr-d"
           >
             Clear search
           </button>
         </div>
       )}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-[13px] text-cl mr-1">Filter:</span>
+        <span className="text-[15px] text-cl mr-1">Filter:</span>
         {CATEGORIES.map((cat) => (
           <FilterPill
             key={cat.value}
@@ -54,12 +54,12 @@ export function FilterStrip() {
           />
         ))}
 
-        <div className="ml-auto flex items-center gap-2 text-[13px] text-cm">
+        <div className="ml-auto flex items-center gap-2 text-[15px] text-cm">
           <span>Sort:</span>
           <select
             value={activeSort}
             onChange={(e) => setParams({ sort: e.target.value, page: "" })}
-            className="border border-line-bold rounded-[6px] px-2 py-1 text-[13px] text-cm bg-white cursor-pointer"
+            className="border border-line-bold rounded-[6px] px-2 py-1 text-[15px] text-cm bg-white cursor-pointer"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>

@@ -49,7 +49,7 @@ export function SubscribeButton({
       >
         {pending ? "Starting…" : label}
       </button>
-      {error && <p className="text-[12px] text-tr mt-1.5">{error}</p>}
+      {error && <p className="text-[14px] text-tr mt-1.5">{error}</p>}
     </div>
   );
 }
@@ -66,7 +66,7 @@ export function SetupFeeButton({ label }: { label: string }) {
       >
         {pending ? "Starting…" : label}
       </button>
-      {error && <p className="text-[12px] text-tr mt-1.5">{error}</p>}
+      {error && <p className="text-[14px] text-tr mt-1.5">{error}</p>}
     </div>
   );
 }
@@ -100,7 +100,7 @@ export function UpgradeAnnualButton() {
       >
         {pending ? "Upgrading…" : "Upgrade to annual membership"}
       </button>
-      {error && <p className="text-[12px] text-tr mt-1.5">{error}</p>}
+      {error && <p className="text-[14px] text-tr mt-1.5">{error}</p>}
     </div>
   );
 }
@@ -125,7 +125,7 @@ export function CancelSubButton() {
       >
         {pending ? "Cancelling…" : "Cancel subscription"}
       </button>
-      {error && <p className="text-[12px] text-tr mt-1.5">{error}</p>}
+      {error && <p className="text-[14px] text-tr mt-1.5">{error}</p>}
     </div>
   );
 }
@@ -142,7 +142,7 @@ export function PortalButton() {
       >
         {pending ? "Opening…" : "Manage billing"}
       </button>
-      {error && <p className="text-[12px] text-tr mt-1.5">{error}</p>}
+      {error && <p className="text-[14px] text-tr mt-1.5">{error}</p>}
     </div>
   );
 }

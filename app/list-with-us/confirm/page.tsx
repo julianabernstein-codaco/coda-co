@@ -50,9 +50,9 @@ export default function ConfirmPage() {
           </svg>
         </div>
 
-        <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-2">Submitted</p>
+        <p className="text-[13px] tracking-[.14em] uppercase text-sg mb-2">Submitted</p>
         <h1 className="font-serif text-[42px] font-light text-ch mb-4">You&apos;re in the queue.</h1>
-        <p className="text-[15px] text-ink max-w-[460px] mx-auto leading-relaxed">
+        <p className="text-[17px] text-ink max-w-[460px] mx-auto leading-relaxed">
           Your listing has been received. Our team will review it within 1–2 business days and
           send you a confirmation email at the address you provided.
         </p>
@@ -70,8 +70,8 @@ export default function ConfirmPage() {
                   {step.num}
                 </div>
                 <div>
-                  <div className="text-[15px] font-medium text-ch mb-1">{step.heading}</div>
-                  <p className="text-[13px] text-cm leading-relaxed">{step.body}</p>
+                  <div className="text-[17px] font-medium text-ch mb-1">{step.heading}</div>
+                  <p className="text-[15px] text-cm leading-relaxed">{step.body}</p>
                 </div>
               </div>
             ))}
@@ -81,20 +81,20 @@ export default function ConfirmPage() {
 
       <section className="bg-sg-vp px-10 py-12 text-center">
         <h2 className="font-serif text-[24px] font-light text-ch mb-3">While you wait</h2>
-        <p className="text-[13px] text-cm max-w-[420px] mx-auto mb-6 leading-relaxed">
+        <p className="text-[15px] text-cm max-w-[420px] mx-auto mb-6 leading-relaxed">
           Explore the marketplace, see how other sellers present their work, and get inspired for
           your next listing.
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
           <Link
             href="/shop"
-            className="bg-sg text-white px-6 py-3 rounded-full text-[13px] no-underline hover:bg-sg-d transition-colors"
+            className="bg-sg text-white px-6 py-3 rounded-full text-[15px] no-underline hover:bg-sg-d transition-colors"
           >
             Browse the marketplace
           </Link>
           <Link
             href="/"
-            className="border border-[rgba(44,40,37,.25)] text-ch px-6 py-3 rounded-full text-[13px] no-underline hover:border-tr hover:text-tr transition-all"
+            className="border border-[rgba(44,40,37,.25)] text-ch px-6 py-3 rounded-full text-[15px] no-underline hover:border-tr hover:text-tr transition-all"
           >
             Return home
           </Link>

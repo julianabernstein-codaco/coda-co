@@ -114,31 +114,31 @@ export default async function VendorProfilePage({ params }: PageProps) {
                   {vendor.name}
                 </h1>
                 {vendor.verified && (
-                  <span className="text-[10px] tracking-[.06em] uppercase bg-sg-p text-sg-d border border-sg-l px-2.5 py-0.5 rounded-full">
+                  <span className="text-[12px] tracking-[.06em] uppercase bg-sg-p text-sg-d border border-sg-l px-2.5 py-0.5 rounded-full">
                     CodaCo verified
                   </span>
                 )}
                 {vendor.lifeStages.map((s) => (
                   <span
                     key={s}
-                    className="text-[10px] tracking-[.06em] uppercase bg-tr-p text-tr-d border border-tr-l px-2.5 py-0.5 rounded-full"
+                    className="text-[12px] tracking-[.06em] uppercase bg-tr-p text-tr-d border border-tr-l px-2.5 py-0.5 rounded-full"
                   >
                     {lifeStageLabel(s)}
                   </span>
                 ))}
               </div>
               {primaryType && (
-                <div className="text-[11px] tracking-[.14em] uppercase text-tr mb-3">
+                <div className="text-[13px] tracking-[.14em] uppercase text-tr mb-3">
                   {serviceTypeLabel(primaryType)}
                 </div>
               )}
               <div className="flex flex-wrap gap-x-4 gap-y-1 items-center mb-2">
-                <span className="text-[13px] text-cm">📍 {vendor.location}</span>
+                <span className="text-[15px] text-cm">📍 {vendor.location}</span>
                 {vendor.distanceMi != null && (
-                  <span className="text-[13px] text-cl">{vendor.distanceMi} mi away</span>
+                  <span className="text-[15px] text-cl">{vendor.distanceMi} mi away</span>
                 )}
                 {vendor.memberSince && (
-                  <span className="text-[13px] text-cl">
+                  <span className="text-[15px] text-cl">
                     CodaCo member since {formatMonthYear(vendor.memberSince)}
                   </span>
                 )}
@@ -146,7 +146,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
               <Stars
                 rating={vendor.rating}
                 reviewCount={vendor.reviewCount}
-                className="text-[13px]"
+                className="text-[15px]"
               />
               <div className="flex flex-wrap gap-3 items-center mt-5">
                 <a href="#contact" className="btn-primary btn-md no-underline">
@@ -164,7 +164,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
           {paragraphs.map((p, i) => (
             <p
               key={i}
-              className={`text-[14px] leading-[1.7] text-cm ${i < paragraphs.length - 1 ? "mb-4" : ""}`}
+              className={`text-[16px] leading-[1.7] text-cm ${i < paragraphs.length - 1 ? "mb-4" : ""}`}
             >
               {p}
             </p>
@@ -186,12 +186,12 @@ export default async function VendorProfilePage({ params }: PageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-[10px] p-6 border border-line">
               {vendor.serviceDescription && (
-                <p className="text-[13px] text-cm leading-relaxed mb-5 whitespace-pre-line">
+                <p className="text-[15px] text-cm leading-relaxed mb-5 whitespace-pre-line">
                   {vendor.serviceDescription}
                 </p>
               )}
               {isOwner && draftCount > 0 && (
-                <div className="bg-tr-vp border border-tr-p rounded-[8px] px-4 py-3 mb-5 text-[12px] text-ink">
+                <div className="bg-tr-vp border border-tr-p rounded-[8px] px-4 py-3 mb-5 text-[14px] text-ink">
                   {draftCount === 1
                     ? "Your service is still a draft — only you can see it."
                     : `${draftCount} of your services are still drafts — only you can see them.`}{" "}
@@ -203,12 +203,12 @@ export default async function VendorProfilePage({ params }: PageProps) {
                   </Link>
                 </div>
               )}
-              <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-3">
+              <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-3">
                 Services offered
               </div>
               <ul className="space-y-3 mb-5">
                 {vendorServices.length === 0 && (
-                  <li className="text-[13px] text-cl italic">
+                  <li className="text-[15px] text-cl italic">
                     {isOwner
                       ? "You haven’t added a service yet — add one from your dashboard."
                       : "This provider hasn’t published any services yet."}
@@ -216,33 +216,33 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 )}
                 {vendorServices.map((s) => (
                   <li key={s.id} className="border-b border-line last:border-b-0 pb-2 last:pb-0">
-                    <div className="text-[13px] font-medium text-ch flex items-center gap-2">
+                    <div className="text-[15px] font-medium text-ch flex items-center gap-2">
                       {s.title}
                       {s.status !== "published" && (
-                        <span className="text-[10px] tracking-[.06em] uppercase bg-pl2 text-cl border border-line px-1.5 py-0.5 rounded-full">
+                        <span className="text-[12px] tracking-[.06em] uppercase bg-pl2 text-cl border border-line px-1.5 py-0.5 rounded-full">
                           Draft
                         </span>
                       )}
                     </div>
-                    <p className="text-[12px] text-cm leading-relaxed mt-0.5">{s.description}</p>
+                    <p className="text-[14px] text-cm leading-relaxed mt-0.5">{s.description}</p>
                   </li>
                 ))}
               </ul>
               {vendor.credentials && (
                 <>
-                  <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-1">
+                  <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-1">
                     Credentials
                   </div>
-                  <div className="text-[13px] text-cm">{vendor.credentials}</div>
+                  <div className="text-[15px] text-cm">{vendor.credentials}</div>
                 </>
               )}
             </div>
 
             <div className="bg-white rounded-[10px] p-6 border border-line">
-              <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-3">
+              <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-3">
                 Service area & availability
               </div>
-              <dl className="text-[13px] space-y-2.5">
+              <dl className="text-[15px] space-y-2.5">
                 <ProfileRow label="Located in">{vendor.location}</ProfileRow>
                 {vendor.serviceRadius && (
                   <ProfileRow label="Radius">{vendor.serviceRadius}</ProfileRow>
@@ -257,10 +257,10 @@ export default async function VendorProfilePage({ params }: PageProps) {
               </dl>
               {vendor.pricingNotes && (
                 <div className="mt-5 pt-5 border-t border-line">
-                  <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-1">
+                  <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-1">
                     Pricing
                   </div>
-                  <p className="text-[13px] text-cm leading-relaxed whitespace-pre-line">
+                  <p className="text-[15px] text-cm leading-relaxed whitespace-pre-line">
                     {vendor.pricingNotes}
                   </p>
                 </div>
@@ -285,7 +285,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 <Stars
                   rating={vendor.rating}
                   reviewCount={vendor.reviewCount}
-                  className="text-[14px]"
+                  className="text-[16px]"
                 />
               </div>
               <div className="space-y-4">
@@ -294,11 +294,11 @@ export default async function VendorProfilePage({ params }: PageProps) {
                     key={r.id}
                     className="bg-white rounded-[10px] p-5 border border-line"
                   >
-                    <Stars rating={r.rating} className="text-[13px]" />
+                    <Stars rating={r.rating} className="text-[15px]" />
                     <p className="font-serif text-[16px] font-light text-ch leading-[1.7] italic my-3">
                       &ldquo;{r.body}&rdquo;
                     </p>
-                    <div className="text-[12px] text-cl">
+                    <div className="text-[14px] text-cl">
                       {r.reviewer} · {r.location} · {formatMonthYear(r.date)}
                     </div>
                   </div>
@@ -322,19 +322,19 @@ export default async function VendorProfilePage({ params }: PageProps) {
               <h2 className="font-serif text-[26px] font-light text-ch mb-3">
                 Reach out to {vendor.name}
               </h2>
-              <p className="text-[13px] text-ink max-w-[420px] mx-auto mb-6 leading-[1.75]">
+              <p className="text-[15px] text-ink max-w-[420px] mx-auto mb-6 leading-[1.75]">
                 Send a message and {vendor.name} will reply straight to your email. Initial
                 calls are free.
               </p>
             </div>
             <ContactVendorForm vendorSlug={vendor.id} vendorName={vendor.name} />
             <div className="text-center mt-4">
-              <Link href="/services" className="text-[13px] text-tr no-underline hover:underline">
+              <Link href="/services" className="text-[15px] text-tr no-underline hover:underline">
                 Browse other providers →
               </Link>
             </div>
             {(vendor.websiteUrl || instagramLabel) && (
-              <div className="text-[12px] text-cm pt-4 border-t border-tr-p mt-5 flex flex-wrap gap-x-3 gap-y-1 justify-center">
+              <div className="text-[14px] text-cm pt-4 border-t border-tr-p mt-5 flex flex-wrap gap-x-3 gap-y-1 justify-center">
                 {vendor.websiteUrl && (
                   <a
                     href={vendor.websiteUrl}

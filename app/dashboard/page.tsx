@@ -57,9 +57,9 @@ export default async function DashboardPage() {
       <section className="bg-pl2 px-10 py-10 min-h-screen">
         <Container width="wide">
           <div className="mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
             <h1 className="font-serif text-[32px] font-light text-ch">{vendor.displayName}</h1>
-            <p className="text-[13px] text-cl mt-1.5">
+            <p className="text-[15px] text-cl mt-1.5">
               {vendor.kind === "services" ? "Services provider" : "Goods seller"} ·{" "}
               {billingLabel} · {vendor.location}
             </p>
@@ -146,7 +146,7 @@ function DashStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="bg-white rounded-[10px] border border-line px-5 py-4">
       <p className="font-serif text-[28px] font-light text-ch tabular-nums">{value}</p>
-      <p className="text-[12px] text-cm mt-0.5">{label}</p>
+      <p className="text-[14px] text-cm mt-0.5">{label}</p>
     </div>
   );
 }
@@ -165,8 +165,8 @@ function DashCard({
   return (
     <div className="bg-white rounded-[10px] border border-line p-6">
       <h2 className="font-serif text-[20px] text-ch mb-2">{title}</h2>
-      <p className="text-[13px] text-cm mb-4 leading-relaxed">{body}</p>
-      <Link href={href} className="text-[13px] text-tr no-underline hover:underline">
+      <p className="text-[15px] text-cm mb-4 leading-relaxed">{body}</p>
+      <Link href={href} className="text-[15px] text-tr no-underline hover:underline">
         {cta}
       </Link>
     </div>

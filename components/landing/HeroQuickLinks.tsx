@@ -19,7 +19,7 @@ const entries = [
 export function HeroQuickLinks() {
   return (
     <div className="bg-sg-p border border-sg-l rounded-[12px] px-6 py-5 max-w-[500px] mx-auto">
-      <p className="text-[14px] text-cm mb-3 text-center">
+      <p className="text-[16px] text-cm mb-3 text-center">
         How can we help you today?
       </p>
       <div className="grid grid-cols-2 gap-2.5">
@@ -27,7 +27,7 @@ export function HeroQuickLinks() {
           <Link
             key={entry.label}
             href={entry.href}
-            className="bg-white border border-line-strong rounded-[8px] px-4 py-3 text-[13px] text-ch text-center no-underline hover:border-tr hover:text-tr transition-colors"
+            className="bg-white border border-line-strong rounded-[8px] px-4 py-3 text-[15px] text-ch text-center no-underline hover:border-tr hover:text-tr transition-colors"
           >
             {entry.label}
           </Link>

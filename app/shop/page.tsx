@@ -103,9 +103,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       <section className="bg-sg-vp px-10 py-10">
         <Container width="wide">
           <div className="text-center mb-8">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-2">All goods</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-2">All goods</p>
             <h1 className="font-serif text-[32px] font-light text-ch mb-1">The marketplace</h1>
-            <p className="text-[13px] text-cl">
+            <p className="text-[15px] text-cl">
               Handmade, purposeful goods — available locally or shipped anywhere in the US
             </p>
           </div>

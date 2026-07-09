@@ -25,7 +25,7 @@ export async function Nav({ active }: NavProps) {
       <Link
         href={href}
         className={[
-          "text-[13px] no-underline transition-colors duration-150",
+          "text-[15px] no-underline transition-colors duration-150",
           active === key
             ? "text-tr font-medium"
             : "text-cm hover:text-tr",
@@ -45,7 +45,7 @@ export async function Nav({ active }: NavProps) {
             <span className="text-tr">Coda</span>
             <span className="text-sg">Co</span>
           </div>
-          <div className="text-[10px] tracking-[.11em] uppercase text-cl mt-[3px] whitespace-nowrap">
+          <div className="text-[12px] tracking-[.11em] uppercase text-cl mt-[3px] whitespace-nowrap">
             A curated marketplace for death and dying
           </div>
         </div>
@@ -89,19 +89,19 @@ function SignedInControls({
     <>
       {hasVendorProfile && (
         <li>
-          <Link href="/dashboard" className="text-[13px] text-cm hover:text-tr no-underline">
+          <Link href="/dashboard" className="text-[15px] text-cm hover:text-tr no-underline">
             Dashboard
           </Link>
         </li>
       )}
       {user.role === "admin" && (
         <li>
-          <Link href="/admin" className="text-[13px] text-cm hover:text-tr no-underline">
+          <Link href="/admin" className="text-[15px] text-cm hover:text-tr no-underline">
             Admin
           </Link>
         </li>
       )}
-      <li className="text-[13px] text-cm">{display}</li>
+      <li className="text-[15px] text-cm">{display}</li>
       <li>
         <form
           action={async () => {

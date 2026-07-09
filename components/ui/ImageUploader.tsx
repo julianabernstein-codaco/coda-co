@@ -106,7 +106,7 @@ export function ImageUploader({
     <div className="space-y-4">
       <label
         htmlFor={inputId}
-        className="block text-[12px] font-medium text-ch"
+        className="block text-[14px] font-medium text-ch"
       >
         {label}
       </label>
@@ -127,7 +127,7 @@ export function ImageUploader({
             />
           </div>
           <div className="flex items-center gap-3 max-w-sm mx-auto">
-            <span className="text-[11px] text-cl w-10 shrink-0">Zoom</span>
+            <span className="text-[13px] text-cl w-10 shrink-0">Zoom</span>
             <input
               type="range"
               min={1}
@@ -139,7 +139,7 @@ export function ImageUploader({
               aria-label="Zoom"
             />
           </div>
-          <p className="text-[11px] text-cl text-center">
+          <p className="text-[13px] text-cl text-center">
             Drag to reposition, scroll or use the slider to zoom.
           </p>
         </div>
@@ -154,7 +154,7 @@ export function ImageUploader({
         <div
           className={`w-32 h-32 mx-auto ${previewRadius} border border-line-bold bg-pl2 flex items-center justify-center`}
         >
-          <span className="text-[11px] text-cl px-3 text-center">
+          <span className="text-[13px] text-cl px-3 text-center">
             No photo yet
           </span>
         </div>
@@ -168,22 +168,22 @@ export function ImageUploader({
           type="file"
           accept={ALLOWED_IMAGE_MIME.join(",")}
           onChange={onPick}
-          className="block text-[13px] text-cm file:mr-3 file:py-1.5 file:px-3 file:border file:border-line-bold file:rounded-full file:bg-white file:text-[13px] file:text-ch file:cursor-pointer hover:file:bg-pl2"
+          className="block text-[15px] text-cm file:mr-3 file:py-1.5 file:px-3 file:border file:border-line-bold file:rounded-full file:bg-white file:text-[15px] file:text-ch file:cursor-pointer hover:file:bg-pl2"
         />
-        <p className="text-[11px] text-cl">
+        <p className="text-[13px] text-cl">
           {hint ?? `${ALLOWED_IMAGE_LABEL}, under ${MAX_IMAGE_BYTES_LABEL}.`}
         </p>
         {sourceUrl && (
           <button
             type="button"
             onClick={clearSelection}
-            className="text-[12px] text-tr no-underline hover:underline"
+            className="text-[14px] text-tr no-underline hover:underline"
           >
             Cancel selection
           </button>
         )}
         {error && (
-          <p className="text-[12px] text-tr-d bg-tr-p border border-tr-l rounded px-2.5 py-1.5 inline-block">
+          <p className="text-[14px] text-tr-d bg-tr-p border border-tr-l rounded px-2.5 py-1.5 inline-block">
             {error}
           </p>
         )}

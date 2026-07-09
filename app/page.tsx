@@ -139,7 +139,7 @@ export default async function LandingPage() {
     <>
       {/* Hero */}
       <section className="bg-white px-10 pt-[4.5rem] pb-12 text-center">
-        <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
+        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">
           Welcome
         </p>
         <h1 className="font-serif italic text-[52px] font-light leading-[1.12] text-ch mb-5">
@@ -147,7 +147,7 @@ export default async function LandingPage() {
           <br />
           <span className="text-tr">Support should be easy to find.</span>
         </h1>
-        <p className="text-[15px] text-cm max-w-[560px] mx-auto leading-[1.78] mb-8">
+        <p className="text-[17px] text-cm max-w-[560px] mx-auto leading-[1.78] mb-8">
           Carefully curated end-of-life goods, services, and planning
           resources.
         </p>
@@ -182,7 +182,7 @@ export default async function LandingPage() {
                 <div className="w-10 h-10 mx-auto mb-2.5 flex items-center justify-center">
                   {cat.icon}
                 </div>
-                <div className="text-[12px] font-medium text-ch leading-tight">
+                <div className="text-[14px] font-medium text-ch leading-tight">
                   {cat.label}
                 </div>
               </Link>
@@ -220,7 +220,7 @@ export default async function LandingPage() {
           <div className="text-center mt-5">
             <Link
               href="/services"
-              className="inline-block text-[13px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d"
+              className="inline-block text-[15px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d"
             >
               Search all service providers →
             </Link>
@@ -228,7 +228,7 @@ export default async function LandingPage() {
           <div className="text-center mt-2">
             <Link
               href="/where-to-start"
-              className="inline-block text-[13px] text-sg border-b border-dotted border-sg-l no-underline hover:text-sg-d"
+              className="inline-block text-[15px] text-sg border-b border-dotted border-sg-l no-underline hover:text-sg-d"
             >
               Not sure what you need? See our guide for recently bereaved →
             </Link>
@@ -239,7 +239,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="mt-12 text-center">
-            <p className="text-[15px] text-cm mb-4">
+            <p className="text-[17px] text-cm mb-4">
               Looking for something specific? Search the marketplace.
             </p>
             <HeroSearchBar />

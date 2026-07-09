@@ -45,14 +45,14 @@ export default async function VendorProductEditorPage({ params }: PageProps) {
         <Container width="mid">
           <div className="flex items-center justify-between mb-7">
             <div>
-              <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
               <h1 className="font-serif text-[32px] font-light text-ch">{product.title}</h1>
-              <p className="text-[13px] text-cl mt-1.5">slug: {product.slug}</p>
+              <p className="text-[15px] text-cl mt-1.5">slug: {product.slug}</p>
             </div>
             {product.status === "published" && (
               <Link
                 href={`/shop/${product.slug}`}
-                className="text-[13px] text-tr no-underline hover:underline"
+                className="text-[15px] text-tr no-underline hover:underline"
               >
                 View live →
               </Link>

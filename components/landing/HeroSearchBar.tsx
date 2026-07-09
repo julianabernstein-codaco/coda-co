@@ -26,11 +26,11 @@ export function HeroSearchBar() {
         }}
         placeholder="Search goods, services, books…"
         aria-label="Search the marketplace"
-        className="flex-1 px-5 py-3.5 border-[1.5px] border-r-0 border-[rgba(193,99,79,.25)] rounded-l-[28px] bg-white text-[14px] text-ch outline-none focus:border-tr placeholder:text-cl"
+        className="flex-1 px-5 py-3.5 border-[1.5px] border-r-0 border-[rgba(193,99,79,.25)] rounded-l-[28px] bg-white text-[16px] text-ch outline-none focus:border-tr placeholder:text-cl"
       />
       <button
         onClick={search}
-        className="bg-tr text-white border-0 px-6 py-3.5 rounded-r-[28px] text-[13px] cursor-pointer hover:bg-tr-d transition-colors"
+        className="bg-tr text-white border-0 px-6 py-3.5 rounded-r-[28px] text-[15px] cursor-pointer hover:bg-tr-d transition-colors"
       >
         Search
       </button>

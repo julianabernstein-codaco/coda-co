@@ -42,17 +42,17 @@ function VendorCompactCard({
         tone={vendor.photoTone}
         className="mb-3"
       />
-      <div className="text-[14px] font-medium text-ch mb-[2px]">{vendor.name}</div>
-      <div className="text-[10px] tracking-[.08em] uppercase text-cl mb-[7px]">
+      <div className="text-[16px] font-medium text-ch mb-[2px]">{vendor.name}</div>
+      <div className="text-[12px] tracking-[.08em] uppercase text-cl mb-[7px]">
         {primaryTypeLabel(services)}
       </div>
-      <div className="text-[12px] text-cm mb-[5px]">
+      <div className="text-[14px] text-cm mb-[5px]">
         {vendorLocationSuffix(vendor, services.map((s) => s.locationType))}
       </div>
       <Stars
         rating={vendor.rating}
         reviewCount={vendor.reviewCount}
-        className="text-[12px]"
+        className="text-[14px]"
       />
     </Card>
   );
@@ -88,34 +88,34 @@ function VendorSearchCard({
       <div className="min-w-0">
         <Link
           href={`/services/${vendor.id}`}
-          className="text-[14px] font-medium text-ch mb-[2px] no-underline hover:text-tr block"
+          className="text-[16px] font-medium text-ch mb-[2px] no-underline hover:text-tr block"
         >
           {vendor.name}
         </Link>
-        <span className="inline-block text-[10px] tracking-[.07em] uppercase bg-sg-p text-sg-d border border-sg-l px-[9px] py-[2px] rounded-[10px] mb-[6px]">
+        <span className="inline-block text-[12px] tracking-[.07em] uppercase bg-sg-p text-sg-d border border-sg-l px-[9px] py-[2px] rounded-[10px] mb-[6px]">
           {primaryTypeLabel(services)}
         </span>
-        <div className="text-[12px] text-cm leading-[1.5] mb-[6px]">{vendor.bio}</div>
+        <div className="text-[14px] text-cm leading-[1.5] mb-[6px]">{vendor.bio}</div>
         <div className="flex flex-wrap gap-3">
-          <span className="text-[12px] text-cl">
+          <span className="text-[14px] text-cl">
             📍 <strong className="text-cm">{vendor.location}</strong>
             {vendor.distanceMi != null && ` · ${vendor.distanceMi} mi`}
           </span>
           {inPerson && virtual && (
-            <span className="text-[12px] text-cl">In-home &amp; virtual</span>
+            <span className="text-[14px] text-cl">In-home &amp; virtual</span>
           )}
           {inPerson && !virtual && (
-            <span className="text-[12px] text-cl">In-home</span>
+            <span className="text-[14px] text-cl">In-home</span>
           )}
           {!inPerson && virtual && (
-            <span className="text-[12px] text-cl">Virtual only</span>
+            <span className="text-[14px] text-cl">Virtual only</span>
           )}
         </div>
       </div>
 
       <div className="text-right">
-        <Stars rating={vendor.rating} className="text-[13px] whitespace-nowrap block" />
-        <div className="text-[11px] text-cl mb-[10px]">{vendor.reviewCount} reviews</div>
+        <Stars rating={vendor.rating} className="text-[15px] whitespace-nowrap block" />
+        <div className="text-[13px] text-cl mb-[10px]">{vendor.reviewCount} reviews</div>
         <Link
           href={`/services/${vendor.id}`}
           className="btn-primary btn-sm w-full no-underline"

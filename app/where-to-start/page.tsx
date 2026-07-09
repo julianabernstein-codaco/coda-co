@@ -121,11 +121,11 @@ export default function WhereToStartPage() {
 
       {/* Intro */}
       <section className="bg-white px-10 py-14 text-center">
-        <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-2">A gentle guide</p>
+        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-2">A gentle guide</p>
         <h1 className="font-serif text-[42px] font-light text-ch mb-4 leading-tight">
           Where to start
         </h1>
-        <p className="text-[15px] text-ink max-w-[480px] mx-auto leading-relaxed">
+        <p className="text-[17px] text-ink max-w-[480px] mx-auto leading-relaxed">
           Death touches everyone differently. These are starting points — not prescriptions. Use
           what helps.
         </p>
@@ -139,14 +139,14 @@ export default function WhereToStartPage() {
             <WaveDivider topColor={prevBg} bottomColor={sectionBgVar[section.bg]} />
             <section className={`${section.bg} px-10 pt-2 pb-16`}>
               <Container width="narrow">
-                <p className={`text-[11px] tracking-[.14em] uppercase ${section.accent} mb-2`}>
+                <p className={`text-[13px] tracking-[.14em] uppercase ${section.accent} mb-2`}>
                   {section.eyebrow}
                 </p>
                 <h2 className="font-serif text-[28px] font-light text-ch mb-4">
                   {section.heading}
                 </h2>
                 <p
-                  className={`text-[14px] leading-[1.8] mb-5 whitespace-pre-line ${
+                  className={`text-[16px] leading-[1.8] mb-5 whitespace-pre-line ${
                     section.bg === "bg-tr-vp" ? "text-ink" : "text-cm"
                   }`}
                 >
@@ -156,7 +156,7 @@ export default function WhereToStartPage() {
                   <p className="mb-5">
                     <Link
                       href={section.bodyLink.href}
-                      className={`text-[13px] ${section.accent} border-b border-dotted border-current pb-px hover:opacity-80 transition-opacity no-underline`}
+                      className={`text-[15px] ${section.accent} border-b border-dotted border-current pb-px hover:opacity-80 transition-opacity no-underline`}
                     >
                       {section.bodyLink.label}
                     </Link>
@@ -164,7 +164,7 @@ export default function WhereToStartPage() {
                 )}
                 {section.bodyAfter && (
                   <p
-                    className={`text-[14px] leading-[1.8] mb-5 ${
+                    className={`text-[16px] leading-[1.8] mb-5 ${
                       section.bg === "bg-tr-vp" ? "text-ink" : "text-cm"
                     }`}
                   >
@@ -176,7 +176,7 @@ export default function WhereToStartPage() {
                     <Link
                       key={l.href}
                       href={l.href}
-                      className={`text-[13px] ${section.accent} border-b border-dotted border-current pb-px hover:opacity-80 transition-opacity no-underline`}
+                      className={`text-[15px] ${section.accent} border-b border-dotted border-current pb-px hover:opacity-80 transition-opacity no-underline`}
                     >
                       {l.label}
                     </Link>
@@ -213,8 +213,8 @@ export default function WhereToStartPage() {
                 />
                 <div>
                   <div className="font-serif text-[15px] text-ch mb-0.5">{book.title}</div>
-                  <div className="text-[12px] text-cl mb-2 italic">{book.author}</div>
-                  <div className="text-[12px] text-cm leading-relaxed">{book.description}</div>
+                  <div className="text-[14px] text-cl mb-2 italic">{book.author}</div>
+                  <div className="text-[14px] text-cm leading-relaxed">{book.description}</div>
                 </div>
               </div>
             ))}
@@ -229,7 +229,7 @@ export default function WhereToStartPage() {
         <h2 className="font-serif text-[24px] font-light text-ch mb-3">
           You don&apos;t have to do this alone.
         </h2>
-        <p className="text-[13px] text-ink max-w-[480px] mx-auto mb-6 leading-[1.75]">
+        <p className="text-[15px] text-ink max-w-[480px] mx-auto mb-6 leading-[1.75]">
           Every provider listed on CodaCo has been vetted. If you&apos;re not sure who to contact
           first, a death doula is often the right starting point — they can help you figure out what
           else you need.
@@ -237,13 +237,13 @@ export default function WhereToStartPage() {
         <div className="flex gap-3 justify-center flex-wrap">
           <Link
             href="/services?type=doula"
-            className="bg-tr text-white px-7 py-3 rounded-full text-[14px] no-underline hover:bg-tr-d transition-colors"
+            className="bg-tr text-white px-7 py-3 rounded-full text-[16px] no-underline hover:bg-tr-d transition-colors"
           >
             Find a death doula near me →
           </Link>
           <Link
             href="/services"
-            className="border border-[rgba(44,40,37,.25)] text-ch px-7 py-3 rounded-full text-[13px] no-underline hover:border-tr hover:text-tr transition-all"
+            className="border border-[rgba(44,40,37,.25)] text-ch px-7 py-3 rounded-full text-[15px] no-underline hover:border-tr hover:text-tr transition-all"
           >
             Browse all services
           </Link>

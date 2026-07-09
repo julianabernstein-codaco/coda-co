@@ -159,7 +159,7 @@ export function ImageGalleryUploader({
 
       <div className="flex items-center justify-between gap-3 flex-wrap">
         {canAdd ? (
-          <label className="inline-flex items-center gap-2 text-[13px] text-ch border border-line-bold rounded-full px-3 py-1.5 cursor-pointer hover:bg-pl2">
+          <label className="inline-flex items-center gap-2 text-[15px] text-ch border border-line-bold rounded-full px-3 py-1.5 cursor-pointer hover:bg-pl2">
             + Add photos
             <input
               type="file"
@@ -173,21 +173,21 @@ export function ImageGalleryUploader({
             />
           </label>
         ) : (
-          <span className="text-[12px] text-cl">Gallery full.</span>
+          <span className="text-[14px] text-cl">Gallery full.</span>
         )}
-        <span className="text-[11px] text-cl">
+        <span className="text-[13px] text-cl">
           {images.length} / {max} used
           {uploading > 0 ? ` · uploading ${uploading}…` : ""}
         </span>
       </div>
 
-      <p className="text-[11px] text-cl">
+      <p className="text-[13px] text-cl">
         {ALLOWED_IMAGE_LABEL}, under {MAX_IMAGE_BYTES_LABEL}. Drag tiles to
         reorder; the first photo shows after the cover on the product page.
       </p>
 
       {error && (
-        <p className="text-[12px] text-tr-d bg-tr-p border border-tr-l rounded px-2.5 py-1.5 inline-block">
+        <p className="text-[14px] text-tr-d bg-tr-p border border-tr-l rounded px-2.5 py-1.5 inline-block">
           {error}
         </p>
       )}
@@ -236,7 +236,7 @@ function SortableTile({
         {...attributes}
         {...listeners}
         aria-label="Drag to reorder"
-        className="absolute top-1.5 left-1.5 w-7 h-7 rounded-full bg-white/90 text-cm text-[14px] leading-none flex items-center justify-center cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-1.5 left-1.5 w-7 h-7 rounded-full bg-white/90 text-cm text-[16px] leading-none flex items-center justify-center cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
       >
         ⠿
       </button>

@@ -18,7 +18,7 @@ export function SignupForm({ next }: { next: string }) {
       <input type="hidden" name="next" value={next} />
 
       <label className="block">
-        <span className="block text-[12px] font-medium text-ch mb-1.5">Name (optional)</span>
+        <span className="block text-[14px] font-medium text-ch mb-1.5">Name (optional)</span>
         <input
           name="name"
           type="text"
@@ -29,7 +29,7 @@ export function SignupForm({ next }: { next: string }) {
       </label>
 
       <label className="block">
-        <span className="block text-[12px] font-medium text-ch mb-1.5">Invite code</span>
+        <span className="block text-[14px] font-medium text-ch mb-1.5">Invite code</span>
         <input
           name="inviteCode"
           type="text"
@@ -41,7 +41,7 @@ export function SignupForm({ next }: { next: string }) {
       </label>
 
       <label className="block">
-        <span className="block text-[12px] font-medium text-ch mb-1.5">Email</span>
+        <span className="block text-[14px] font-medium text-ch mb-1.5">Email</span>
         <input
           name="email"
           type="email"
@@ -53,7 +53,7 @@ export function SignupForm({ next }: { next: string }) {
       </label>
 
       <label className="block">
-        <span className="block text-[12px] font-medium text-ch mb-1.5">Password</span>
+        <span className="block text-[14px] font-medium text-ch mb-1.5">Password</span>
         <input
           name="password"
           type="password"
@@ -66,7 +66,7 @@ export function SignupForm({ next }: { next: string }) {
       </label>
 
       {state?.error && (
-        <p className="text-[13px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
+        <p className="text-[15px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
           {state.error}
         </p>
       )}
@@ -74,12 +74,12 @@ export function SignupForm({ next }: { next: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="w-full h-10 bg-tr text-white text-[14px] font-medium rounded-full hover:bg-tr-d transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full h-10 bg-tr text-white text-[16px] font-medium rounded-full hover:bg-tr-d transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {pending ? "Creating account…" : "Create account"}
       </button>
 
-      <p className="text-[12px] text-cl text-center">
+      <p className="text-[14px] text-cl text-center">
         Already have an account?{" "}
         <Link href={`/login${next !== "/" ? `?next=${encodeURIComponent(next)}` : ""}`} className="text-tr no-underline hover:underline">
           Sign in

@@ -98,11 +98,11 @@ export default async function ProductDetailPage({ params }: PDPProps) {
             <div className="flex items-center gap-2 mb-4">
               <Avatar initials={product.seller.slice(0, 2).toUpperCase()} size="sm" />
               <div>
-                <div className="text-[14px] font-medium text-ch">{product.seller}</div>
-                <div className="text-[12px] text-cl">{product.location}</div>
+                <div className="text-[16px] font-medium text-ch">{product.seller}</div>
+                <div className="text-[14px] text-cl">{product.location}</div>
               </div>
               {product.verified && (
-                <span className="ml-auto text-[10px] bg-sg-p text-sg-d px-2 py-0.5 rounded-full border border-sg-l">
+                <span className="ml-auto text-[12px] bg-sg-p text-sg-d px-2 py-0.5 rounded-full border border-sg-l">
                   CodaCo verified
                 </span>
               )}
@@ -114,7 +114,7 @@ export default async function ProductDetailPage({ params }: PDPProps) {
 
             <div className="flex items-center gap-2 mb-3">
               <Stars rating={product.rating} />
-              <span className="text-[13px] text-cl">
+              <span className="text-[15px] text-cl">
                 {product.reviewCount > 0 ? product.rating.toFixed(1) : "—"} · {product.reviewCount} reviews
               </span>
             </div>
@@ -144,7 +144,7 @@ export default async function ProductDetailPage({ params }: PDPProps) {
       {related.length > 0 && (
         <section className="bg-sg-vp px-10 py-10">
           <Container width="mid">
-            <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-1">You might also like</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-sg mb-1">You might also like</p>
             <h2 className="font-serif text-[28px] font-light text-ch mb-6">
               More from this seller &amp; category
             </h2>

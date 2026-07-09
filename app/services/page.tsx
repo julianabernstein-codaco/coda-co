@@ -145,7 +145,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
         </Container>
         {near != null && near !== "" && !nearActive && (
           <Container width="mid" className="mt-2">
-            <p className="text-[12px] text-tr-d">
+            <p className="text-[14px] text-tr-d">
               We couldn&apos;t find that zip code — showing all providers.
             </p>
           </Container>
@@ -171,7 +171,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <div className="pt-6 pb-8 pl-6">
             {/* Count + sort */}
             <div className="flex items-center justify-between mb-5">
-              <span className="text-[13px] text-ink">
+              <span className="text-[15px] text-ink">
                 {hasActiveFilter ? (
                   <>
                     {totalProviders} providers · <strong className="text-ch">{filtered}</strong> after filters
@@ -193,7 +193,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             <div className="text-center mt-3">
               <Link
                 href="/where-to-start"
-                className="inline-block text-[13px] text-sg border-b border-dotted border-sg-l no-underline hover:text-sg-d"
+                className="inline-block text-[15px] text-sg border-b border-dotted border-sg-l no-underline hover:text-sg-d"
               >
                 Not sure what you need? See our guide →
               </Link>

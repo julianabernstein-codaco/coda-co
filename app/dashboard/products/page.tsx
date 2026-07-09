@@ -35,7 +35,7 @@ export default async function VendorProductsPage() {
         <Container width="wide">
           <div className="flex items-center justify-between mb-7">
             <div>
-              <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
               <h1 className="font-serif text-[32px] font-light text-ch">Your products</h1>
             </div>
             <Link href="/dashboard/products/new" className="btn-primary btn-md no-underline">
@@ -59,7 +59,7 @@ export default async function VendorProductsPage() {
                 {products.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center">
-                      <p className="text-[14px] text-cm mb-3">
+                      <p className="text-[16px] text-cm mb-3">
                         You haven&apos;t added any products yet.
                       </p>
                       <Link href="/dashboard/products/new" className="btn-primary btn-sm no-underline">
@@ -76,21 +76,21 @@ export default async function VendorProductsPage() {
                     return (
                       <tr key={p.id} className="border-b border-pl2">
                         <td className="px-4 py-3">
-                          <div className="text-[13px] font-medium text-ch">{p.title}</div>
-                          <div className="text-[11px] text-cl">slug: {p.slug}</div>
+                          <div className="text-[15px] font-medium text-ch">{p.title}</div>
+                          <div className="text-[13px] text-cl">slug: {p.slug}</div>
                         </td>
-                        <td className="px-4 py-3 text-[12px] text-cm">{p.productType.name}</td>
-                        <td className="px-4 py-3 text-[12px] text-cm tabular-nums">
+                        <td className="px-4 py-3 text-[14px] text-cm">{p.productType.name}</td>
+                        <td className="px-4 py-3 text-[14px] text-cm tabular-nums">
                           {formatPriceRange(priceMin, priceMax)}
                         </td>
-                        <td className="px-4 py-3 text-[12px] text-cm tabular-nums">{totalStock}</td>
+                        <td className="px-4 py-3 text-[14px] text-cm tabular-nums">{totalStock}</td>
                         <td className="px-4 py-3">
                           <StatusBadge status={p.status} />
                         </td>
                         <td className="px-4 py-3 text-right">
                           <Link
                             href={`/dashboard/products/${p.id}`}
-                            className="text-[12px] text-tr no-underline hover:underline"
+                            className="text-[14px] text-tr no-underline hover:underline"
                           >
                             Edit →
                           </Link>
@@ -126,7 +126,7 @@ function StatusBadge({ status }: { status: string }) {
   const label = status === "pending_review" ? "In review" : status;
   return (
     <span
-      className={`inline-block text-[11px] font-medium px-2 py-0.5 rounded-full capitalize ${styles}`}
+      className={`inline-block text-[13px] font-medium px-2 py-0.5 rounded-full capitalize ${styles}`}
     >
       {label}
     </span>

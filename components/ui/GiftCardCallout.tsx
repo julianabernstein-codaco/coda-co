@@ -11,13 +11,13 @@ export function GiftCardCallout() {
       <div className="flex flex-col items-center gap-6 px-6 py-7 text-center sm:flex-row sm:gap-8 sm:px-10 sm:py-8 sm:text-left">
         <GiftCardArt />
         <div className="flex-1">
-          <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
+          <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">
             A gift of support
           </p>
           <h3 className="font-serif text-[24px] sm:text-[26px] font-light text-ch mb-2 leading-snug">
             Give a CodaCo gift card
           </h3>
-          <p className="text-[14px] text-cm leading-relaxed max-w-[600px] mx-auto sm:mx-0">
+          <p className="text-[16px] text-cm leading-relaxed max-w-[600px] mx-auto sm:mx-0">
             For a friend, colleague, or loved one who is grieving — a balance they can put
             toward the goods and services they need, whenever they&apos;re ready. Give on your
             own or invite others to chip in together.
