@@ -64,12 +64,12 @@ export function ProductCoverForm({
       />
 
       {status.kind === "error" && (
-        <p className="text-[13px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
+        <p className="text-[15px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
           {status.message}
         </p>
       )}
       {status.kind === "ok" && (
-        <p className="text-[13px] text-sg-d bg-sg-p border border-sg-l rounded px-3 py-2">
+        <p className="text-[15px] text-sg-d bg-sg-p border border-sg-l rounded px-3 py-2">
           Cover updated.
         </p>
       )}

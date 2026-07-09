@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { sendVendorInquiry } from "@/app/services/contact-actions";
 
 const inputCls =
-  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[14px] text-ch bg-white outline-none focus:border-tr transition-colors";
+  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[16px] text-ch bg-white outline-none focus:border-tr transition-colors";
 
 // Public "get in touch" form on the vendor profile. Posts to the
 // sendVendorInquiry server action, which validates, spam-checks, saves
@@ -41,8 +41,8 @@ export function ContactVendorForm({
   if (done) {
     return (
       <div className="bg-white border border-tr-p rounded-[10px] p-6 text-center">
-        <p className="text-[14px] text-ch font-medium mb-1">Message sent</p>
-        <p className="text-[13px] text-cm">
+        <p className="text-[16px] text-ch font-medium mb-1">Message sent</p>
+        <p className="text-[15px] text-cm">
           {vendorName} will get back to you by email. Thanks for reaching out.
         </p>
       </div>
@@ -56,7 +56,7 @@ export function ContactVendorForm({
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="ci-name" className="block text-[12px] text-cm mb-1.5">
+          <label htmlFor="ci-name" className="block text-[14px] text-cm mb-1.5">
             Your name
           </label>
           <input
@@ -70,7 +70,7 @@ export function ContactVendorForm({
           />
         </div>
         <div>
-          <label htmlFor="ci-email" className="block text-[12px] text-cm mb-1.5">
+          <label htmlFor="ci-email" className="block text-[14px] text-cm mb-1.5">
             Your email
           </label>
           <input
@@ -87,7 +87,7 @@ export function ContactVendorForm({
       </div>
 
       <div>
-        <label htmlFor="ci-message" className="block text-[12px] text-cm mb-1.5">
+        <label htmlFor="ci-message" className="block text-[14px] text-cm mb-1.5">
           What are you looking for?
         </label>
         <textarea
@@ -111,7 +111,7 @@ export function ContactVendorForm({
       </div>
 
       {error && (
-        <p className="text-[13px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
+        <p className="text-[15px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
           {error}
         </p>
       )}
@@ -124,7 +124,7 @@ export function ContactVendorForm({
         >
           {pending ? "Sending…" : "Send message →"}
         </button>
-        <span className="text-[11px] text-cl">
+        <span className="text-[13px] text-cl">
           Your email is shared only with {vendorName}.
         </span>
       </div>

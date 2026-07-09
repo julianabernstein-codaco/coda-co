@@ -22,7 +22,7 @@ interface ServiceView {
 }
 
 const inputCls =
-  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[14px] text-ch bg-white outline-none focus:border-tr transition-colors";
+  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[16px] text-ch bg-white outline-none focus:border-tr transition-colors";
 
 const LOCATION_OPTIONS: { value: ServiceLocationType; label: string }[] = [
   { value: "unknown", label: "Choose…" },
@@ -139,12 +139,12 @@ export function ServiceEditor({
           )}
         </div>
         {status === "draft" && (
-          <p className="text-[12px] text-cl mt-3">
+          <p className="text-[14px] text-cl mt-3">
             Drafts are private. Publish once the description, location, and pricing are set.
           </p>
         )}
         {status === "archived" && (
-          <p className="text-[12px] text-cl mt-3">
+          <p className="text-[14px] text-cl mt-3">
             Archived services don&apos;t show on your public profile. Restore to edit again.
           </p>
         )}
@@ -230,7 +230,7 @@ export function ServiceEditor({
         )}
 
         <div className="flex items-center justify-between pt-2">
-          <div className="text-[12px] text-cl">
+          <div className="text-[14px] text-cl">
             {error ? (
               <span className="text-tr-d">{error}</span>
             ) : savedAt ? (
@@ -256,7 +256,7 @@ export function ServiceEditor({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-[12px] font-medium text-ch mb-1.5">{label}</span>
+      <span className="block text-[14px] font-medium text-ch mb-1.5">{label}</span>
       {children}
     </label>
   );
@@ -271,7 +271,7 @@ function StatusBadge({ status }: { status: string }) {
         : "bg-pl2 text-cm";
   return (
     <span
-      className={`inline-block text-[11px] font-medium px-2 py-0.5 rounded-full capitalize ${styles}`}
+      className={`inline-block text-[13px] font-medium px-2 py-0.5 rounded-full capitalize ${styles}`}
     >
       {status}
     </span>

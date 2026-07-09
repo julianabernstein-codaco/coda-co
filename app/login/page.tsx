@@ -27,9 +27,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <section className="bg-tr-vp px-10 py-16">
         <Container width="narrow">
           <div className="text-center mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">CodaCo</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">CodaCo</p>
             <h1 className="font-serif text-[32px] font-light text-ch mb-1">Sign in</h1>
-            <p className="text-[13px] text-cl">Continue to your account.</p>
+            <p className="text-[15px] text-cl">Continue to your account.</p>
           </div>
           <LoginForm next={next} />
         </Container>

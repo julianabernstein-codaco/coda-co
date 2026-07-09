@@ -63,7 +63,7 @@ export default function WhatIsCodaCoPage() {
     <>
       {/* Hero — the plain-language intro */}
       <section className="bg-white px-10 pt-[4.5rem] pb-12 text-center">
-        <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-3">
+        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-3">
           What is CodaCo?
         </p>
         <h1 className="font-serif italic text-[44px] font-light leading-[1.25] text-ch max-w-[760px] mx-auto mb-6">
@@ -95,12 +95,12 @@ export default function WhatIsCodaCoPage() {
                 <h3 className="font-serif text-[22px] font-light text-ch mb-2.5 leading-snug">
                   {item.title}
                 </h3>
-                <p className="text-[14px] text-cm leading-[1.72] mb-5 flex-1">
+                <p className="text-[16px] text-cm leading-[1.72] mb-5 flex-1">
                   {item.body}
                 </p>
                 <Link
                   href={item.href}
-                  className="inline-block text-[13px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d self-start"
+                  className="inline-block text-[15px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d self-start"
                 >
                   {item.cta} →
                 </Link>

@@ -73,7 +73,7 @@ export function CheckoutForm() {
 
   if (items.length === 0) {
     return (
-      <p className="text-[15px] text-cl">
+      <p className="text-[17px] text-cl">
         Your cart is empty.{" "}
         <Link href="/shop" className="text-tr underline">
           Browse goods
@@ -106,7 +106,7 @@ export function CheckoutForm() {
         <h2 className="font-serif text-[18px] text-ch">Order summary</h2>
         <ul className="space-y-2">
           {lines.map(({ item, product, variant }) => (
-            <li key={`${item.productId}:${item.variantId}`} className="flex justify-between gap-3 text-[13px]">
+            <li key={`${item.productId}:${item.variantId}`} className="flex justify-between gap-3 text-[15px]">
               <span className="text-cm">
                 {product.title}
                 {product.variants.length > 1 ? ` · ${variant.label}` : ""}
@@ -116,18 +116,18 @@ export function CheckoutForm() {
             </li>
           ))}
         </ul>
-        <div className="flex justify-between text-[14px] border-t border-line pt-3">
+        <div className="flex justify-between text-[16px] border-t border-line pt-3">
           <span className="text-cm">Subtotal</span>
           <span className="font-medium text-ch">${subtotal}</span>
         </div>
-        <p className="text-[12px] text-cl">Shipping & taxes calculated at checkout.</p>
+        <p className="text-[14px] text-cl">Shipping & taxes calculated at checkout.</p>
 
-        {error && <p className="text-[13px] text-tr">{error}</p>}
+        {error && <p className="text-[15px] text-tr">{error}</p>}
 
         <button type="submit" disabled={submitting} className="btn-primary btn-md w-full disabled:opacity-50">
           {submitting ? "Placing order…" : "Place order"}
         </button>
-        <Link href="/cart" className="block text-center text-[13px] text-cm hover:text-tr no-underline">
+        <Link href="/cart" className="block text-center text-[15px] text-cm hover:text-tr no-underline">
           Back to cart
         </Link>
       </Card>
@@ -148,13 +148,13 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[12px] font-medium text-ch uppercase tracking-wide">{label}</span>
+      <span className="text-[14px] font-medium text-ch uppercase tracking-wide">{label}</span>
       <input
         type="text"
         value={value}
         required={required}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none"
+        className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none"
       />
     </label>
   );

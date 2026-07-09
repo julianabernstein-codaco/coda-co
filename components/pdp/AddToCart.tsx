@@ -37,7 +37,7 @@ export function AddToCart({ product }: AddToCartProps) {
       {/* Glaze selector */}
       {glazes && glazes.length > 0 && (
         <div>
-          <div className="text-[12px] font-medium text-ch mb-2 uppercase tracking-wide">
+          <div className="text-[14px] font-medium text-ch mb-2 uppercase tracking-wide">
             Glaze color
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -64,7 +64,7 @@ export function AddToCart({ product }: AddToCartProps) {
                     ].join(" ")}
                     style={{ background: colors[glaze] ?? "#ccc" }}
                   />
-                  <span className="text-[11px] text-cl">{glaze}</span>
+                  <span className="text-[13px] text-cl">{glaze}</span>
                 </button>
               );
             })}
@@ -75,14 +75,14 @@ export function AddToCart({ product }: AddToCartProps) {
       {/* Variant / size selector */}
       {product.variants.length > 1 && (
         <div>
-          <div className="text-[12px] font-medium text-ch mb-2 uppercase tracking-wide">Size</div>
+          <div className="text-[14px] font-medium text-ch mb-2 uppercase tracking-wide">Size</div>
           <div className="flex flex-col gap-1.5">
             {product.variants.map((v, i) => (
               <button
                 key={v.id}
                 onClick={() => setSelectedVariant(i)}
                 className={[
-                  "text-left px-4 py-2 rounded-[8px] border text-[13px] cursor-pointer transition-all",
+                  "text-left px-4 py-2 rounded-[8px] border text-[15px] cursor-pointer transition-all",
                   selectedVariant === i
                     ? "border-ch text-ch font-medium bg-pl"
                     : "border-line-bold text-cm hover:border-ch",
@@ -99,7 +99,7 @@ export function AddToCart({ product }: AddToCartProps) {
       {/* Quantity */}
       <div className="flex items-center gap-4">
         <div>
-          <div className="text-[12px] font-medium text-ch mb-2 uppercase tracking-wide">Quantity</div>
+          <div className="text-[14px] font-medium text-ch mb-2 uppercase tracking-wide">Quantity</div>
           <div className="flex items-center border border-line-bold rounded-[8px] overflow-hidden">
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -107,7 +107,7 @@ export function AddToCart({ product }: AddToCartProps) {
             >
               −
             </button>
-            <span className="px-4 py-2 text-[15px] font-medium text-ch min-w-[40px] text-center">
+            <span className="px-4 py-2 text-[17px] font-medium text-ch min-w-[40px] text-center">
               {qty}
             </span>
             <button
@@ -118,13 +118,13 @@ export function AddToCart({ product }: AddToCartProps) {
             </button>
           </div>
         </div>
-        <div className="text-[12px] text-cl leading-relaxed pt-5">
+        <div className="text-[14px] text-cl leading-relaxed pt-5">
           Free shipping · Ships in 3–5 business days
         </div>
       </div>
 
       {/* Personalization note */}
-      <div className="bg-sg-vp border border-sg-p rounded-[8px] px-4 py-3 text-[13px] text-cm">
+      <div className="bg-sg-vp border border-sg-p rounded-[8px] px-4 py-3 text-[15px] text-cm">
         <strong>Personalization available.</strong> Add a name or inscription — contact seller after
         purchase.
       </div>
@@ -135,7 +135,7 @@ export function AddToCart({ product }: AddToCartProps) {
         <button
           onClick={handleAdd}
           className={[
-            "w-full py-3.5 rounded-full text-[15px] font-medium transition-all cursor-pointer",
+            "w-full py-3.5 rounded-full text-[17px] font-medium transition-all cursor-pointer",
             added ? "bg-sg text-white" : "bg-tr text-white hover:bg-tr-d",
           ].join(" ")}
         >
@@ -144,7 +144,7 @@ export function AddToCart({ product }: AddToCartProps) {
       ) : (
         <Link
           href={`/login?next=/shop/${product.id}`}
-          className="block w-full py-3.5 rounded-full text-[15px] font-medium text-center bg-tr text-white hover:bg-tr-d transition-all no-underline"
+          className="block w-full py-3.5 rounded-full text-[17px] font-medium text-center bg-tr text-white hover:bg-tr-d transition-all no-underline"
         >
           Sign in to add to cart
         </Link>
@@ -155,7 +155,7 @@ export function AddToCart({ product }: AddToCartProps) {
         slug={product.id}
         label="Save to wishlist"
         savedLabel="Saved to wishlist"
-        className="w-full py-3 rounded-full text-[14px] border transition-all text-cm border-line-bold hover:border-tr hover:text-tr"
+        className="w-full py-3 rounded-full text-[16px] border transition-all text-cm border-line-bold hover:border-tr hover:text-tr"
         activeClassName="text-tr border-tr bg-tr-p hover:text-tr"
       />
 
@@ -166,7 +166,7 @@ export function AddToCart({ product }: AddToCartProps) {
           "Secure checkout · cards, PayPal, Affirm",
           "Returns within 14 days for non-personalized items",
         ].map((item) => (
-          <div key={item} className="flex items-center gap-2 text-[12px] text-cm">
+          <div key={item} className="flex items-center gap-2 text-[14px] text-cm">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
               <circle cx="8" cy="8" r="5.5" stroke="var(--color-sg)" strokeWidth="1.1" />
               <path d="M5.5 8 L7.5 10 L11 6" stroke="var(--color-sg)" strokeWidth="1.2" strokeLinecap="round" />

@@ -28,17 +28,17 @@ export function ApplicationRow({ application }: { application: Application }) {
   return (
     <tr className="border-b border-pl2">
       <td className="px-4 py-3 align-top">
-        <div className="text-[13px] font-medium text-ch">{application.proposedDisplayName}</div>
-        <div className="text-[11px] text-cl">slug: {application.proposedSlug}</div>
-        <div className="text-[11px] text-cl">{application.location}</div>
+        <div className="text-[15px] font-medium text-ch">{application.proposedDisplayName}</div>
+        <div className="text-[13px] text-cl">slug: {application.proposedSlug}</div>
+        <div className="text-[13px] text-cl">{application.location}</div>
       </td>
       <td className="px-4 py-3 align-top">
-        <div className="text-[13px] text-ch">{application.applicant.name ?? application.applicant.email}</div>
-        <div className="text-[11px] text-cl">{application.applicant.email}</div>
+        <div className="text-[15px] text-ch">{application.applicant.name ?? application.applicant.email}</div>
+        <div className="text-[13px] text-cl">{application.applicant.email}</div>
       </td>
-      <td className="px-4 py-3 align-top text-[12px] text-cm capitalize">{application.kind}</td>
-      <td className="px-4 py-3 align-top text-[12px] text-cm capitalize">{application.planId}</td>
-      <td className="px-4 py-3 align-top max-w-md text-[12px] text-cm whitespace-pre-wrap">
+      <td className="px-4 py-3 align-top text-[14px] text-cm capitalize">{application.kind}</td>
+      <td className="px-4 py-3 align-top text-[14px] text-cm capitalize">{application.planId}</td>
+      <td className="px-4 py-3 align-top max-w-md text-[14px] text-cm whitespace-pre-wrap">
         {application.proposedBio || <span className="text-cl italic">No bio provided</span>}
       </td>
       <td className="px-4 py-3 align-top">
@@ -58,7 +58,7 @@ export function ApplicationRow({ application }: { application: Application }) {
             <input
               name="notes"
               placeholder="Reason (optional)"
-              className="text-[12px] border border-line-bold rounded px-2 py-1 bg-white"
+              className="text-[14px] border border-line-bold rounded px-2 py-1 bg-white"
             />
             <button
               type="submit"

@@ -41,9 +41,9 @@ export default async function ManagePoolPage({
   return (
     <Container width="mid" className="py-12">
       <div className="mb-8">
-        <p className="text-[12px] tracking-[.14em] uppercase text-tr mb-1.5">Group gift</p>
+        <p className="text-[14px] tracking-[.14em] uppercase text-tr mb-1.5">Group gift</p>
         <h1 className="font-serif text-[32px] font-light text-ch mb-2">Manage your group gift</h1>
-        <p className="text-[15px] text-cl leading-relaxed">
+        <p className="text-[17px] text-cl leading-relaxed">
           Share the link to collect contributions, then send the gift to the recipient
           whenever you're ready. Top-ups stay open even after you send it.
         </p>
@@ -51,7 +51,7 @@ export default async function ManagePoolPage({
 
       {status === "success" && pending && (
         <div className="bg-sg-p border border-sg-l rounded-[10px] px-5 py-4 mb-6">
-          <p className="text-[13px] text-sg-d">
+          <p className="text-[15px] text-sg-d">
             Payment received — your gift pool will be ready to share in a few seconds. Refresh
             if it still shows pending.
           </p>
@@ -63,7 +63,7 @@ export default async function ManagePoolPage({
           {/* Share link */}
           <Card className="space-y-3">
             <h2 className="font-serif text-[18px] text-ch">Share to collect contributions</h2>
-            <p className="text-[13px] text-cm">
+            <p className="text-[15px] text-cm">
               Anyone with this link can chip in — no account needed. Safe to share widely.
             </p>
             <ShareLink url={shareUrl} />
@@ -75,13 +75,13 @@ export default async function ManagePoolPage({
               {view.deliveredAt ? "Sent to the recipient" : "Send the gift"}
             </h2>
             {pending ? (
-              <p className="text-[13px] text-cm">
+              <p className="text-[15px] text-cm">
                 Once your first contribution clears you'll be able to send the gift here.
               </p>
             ) : (
               <>
                 {view.deliveredAt && (
-                  <p className="text-[13px] text-sg-d">
+                  <p className="text-[15px] text-sg-d">
                     Delivered to {view.recipientEmail}. You can re-send or keep collecting
                     top-ups.
                   </p>
@@ -101,19 +101,19 @@ export default async function ManagePoolPage({
         {/* Summary */}
         <Card hoverTone="none" className="space-y-3">
           <div>
-            <div className="text-[12px] text-cl uppercase tracking-wide">In the pot</div>
+            <div className="text-[14px] text-cl uppercase tracking-wide">In the pot</div>
             <div className="font-serif text-[30px] font-light text-ch">
               {formatCents(view.balanceCents)}
             </div>
           </div>
           <div className="border-t border-line pt-3">
-            <div className="text-[12px] text-cl uppercase tracking-wide mb-2">Contributions</div>
+            <div className="text-[14px] text-cl uppercase tracking-wide mb-2">Contributions</div>
             {view.contributions.length === 0 ? (
-              <p className="text-[13px] text-cl">No contributions yet.</p>
+              <p className="text-[15px] text-cl">No contributions yet.</p>
             ) : (
               <ul className="space-y-1.5">
                 {view.contributions.map((c, i) => (
-                  <li key={i} className="flex justify-between text-[13px]">
+                  <li key={i} className="flex justify-between text-[15px]">
                     <span className="text-cm">{c.name?.trim() || "Anonymous"}</span>
                     <span className="text-ch font-medium">{formatCents(c.amountCents)}</span>
                   </li>

@@ -68,7 +68,7 @@ export function WaitlistDialog({
             <h2 className="font-serif text-[24px] font-light text-ink mb-1.5">
               Get notified at launch
             </h2>
-            <p className="text-[14px] text-ink/80 leading-relaxed">
+            <p className="text-[16px] text-ink/80 leading-relaxed">
               Drop your email below, and we&apos;ll send you a single note when
               we launch.
             </p>

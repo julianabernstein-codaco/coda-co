@@ -96,12 +96,12 @@ export function FaqBrowser({
           onChange={(e) => setQuery(e.target.value)}
           placeholder={searchPlaceholder}
           aria-label="Search frequently asked questions"
-          className={`w-full pl-12 pr-5 py-3.5 border-[1.5px] ${inputBorder} rounded-[28px] bg-white text-[14px] text-ch outline-none placeholder:text-cl`}
+          className={`w-full pl-12 pr-5 py-3.5 border-[1.5px] ${inputBorder} rounded-[28px] bg-white text-[16px] text-ch outline-none placeholder:text-cl`}
         />
       </div>
 
       {totalMatches === 0 ? (
-        <p className="text-center text-[14px] text-cm leading-[1.7]">
+        <p className="text-center text-[16px] text-cm leading-[1.7]">
           We couldn&apos;t find anything matching{" "}
           <span className="text-ch font-medium">
             &ldquo;{query.trim()}&rdquo;

@@ -29,9 +29,9 @@ export default async function NewProductPage() {
       <section className="bg-pl2 px-10 py-10 min-h-screen">
         <Container width="narrow">
           <div className="mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
             <h1 className="font-serif text-[32px] font-light text-ch">Add a product</h1>
-            <p className="text-[13px] text-cl mt-1.5">
+            <p className="text-[15px] text-cl mt-1.5">
               Saved as a draft — buyers won&apos;t see it until you publish.
             </p>
           </div>
@@ -62,7 +62,7 @@ export default async function NewProductPage() {
                 className={inputCls}
                 placeholder="0.00"
               />
-              <span className="block text-[11px] text-cl mt-1">
+              <span className="block text-[13px] text-cl mt-1">
                 Seeds your first variant. Add more variants and edit prices from the product editor.
               </span>
             </Field>
@@ -86,11 +86,11 @@ export default async function NewProductPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-[12px] font-medium text-ch mb-1.5">{label}</span>
+      <span className="block text-[14px] font-medium text-ch mb-1.5">{label}</span>
       {children}
     </label>
   );
 }
 
 const inputCls =
-  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[14px] text-ch bg-white outline-none focus:border-tr transition-colors";
+  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[16px] text-ch bg-white outline-none focus:border-tr transition-colors";

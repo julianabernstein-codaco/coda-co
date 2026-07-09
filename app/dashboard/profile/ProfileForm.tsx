@@ -30,7 +30,7 @@ interface ProfileFormProps {
 const initial: ProfileFormState = { status: "idle" };
 
 const inputCls =
-  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[14px] text-ch bg-white outline-none focus:border-tr transition-colors";
+  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[16px] text-ch bg-white outline-none focus:border-tr transition-colors";
 
 // Server enforces these in actions.ts. Keep in sync.
 const BIO_MAX = 500;
@@ -122,7 +122,7 @@ export function ProfileForm({
       />
 
       <fieldset className="space-y-2">
-        <legend className="block text-[12px] font-medium text-ch mb-1.5">
+        <legend className="block text-[14px] font-medium text-ch mb-1.5">
           Frame color
         </legend>
         <div className="flex gap-4">
@@ -145,7 +145,7 @@ export function ProfileForm({
             required
             onChange={(e) => setBioLen(e.target.value.length)}
           />
-          <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+          <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
             {bioLen} / {BIO_MAX}
           </div>
         </Field>
@@ -162,7 +162,7 @@ export function ProfileForm({
             required
             onChange={(e) => setDescLen(e.target.value.length)}
           />
-          <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+          <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
             {descLen} / {DESC_MAX}
           </div>
         </Field>
@@ -178,7 +178,7 @@ export function ProfileForm({
             maxLength={NOTES_MAX}
             onChange={(e) => setNotesLen(e.target.value.length)}
           />
-          <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+          <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
             {notesLen} / {NOTES_MAX}
           </div>
         </Field>
@@ -215,7 +215,7 @@ export function ProfileForm({
                 type="button"
                 onClick={() => toggleSpec(s)}
                 className={[
-                  "px-3 py-1.5 rounded-full text-[12px] border transition-all cursor-pointer",
+                  "px-3 py-1.5 rounded-full text-[14px] border transition-all cursor-pointer",
                   active
                     ? "bg-sg text-white border-sg"
                     : "bg-white text-cm border-line-bold hover:border-sg",
@@ -241,7 +241,7 @@ export function ProfileForm({
                 type="button"
                 onClick={() => toggleStage(s.value)}
                 className={[
-                  "px-3 py-1.5 rounded-full text-[12px] border transition-all cursor-pointer",
+                  "px-3 py-1.5 rounded-full text-[14px] border transition-all cursor-pointer",
                   active
                     ? "bg-sg text-white border-sg"
                     : "bg-white text-cm border-line-bold hover:border-sg",
@@ -269,7 +269,7 @@ export function ProfileForm({
             maxLength={10}
             placeholder="11201"
           />
-          <span className="block text-[11px] text-cl mt-1">
+          <span className="block text-[13px] text-cl mt-1">
             Paired with your search radius below to show you to nearby clients.
           </span>
         </Field>
@@ -284,7 +284,7 @@ export function ProfileForm({
             max={500}
             placeholder="e.g. 25"
           />
-          <span className="block text-[11px] text-cl mt-1">
+          <span className="block text-[13px] text-cl mt-1">
             Clients within this many miles of your zip will see you in
             search. Leave blank if you work virtually or nationwide.
           </span>
@@ -306,7 +306,7 @@ export function ProfileForm({
             className={inputCls}
             placeholder="e.g. In-home, hospital/facility, and virtual"
           />
-          <span className="block text-[11px] text-cl mt-1">
+          <span className="block text-[13px] text-cl mt-1">
             Leave blank to auto-derive from your services&apos; location types.
           </span>
         </Field>
@@ -331,12 +331,12 @@ export function ProfileForm({
       </Section>
 
       {state.status === "error" && (
-        <p className="text-[13px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
+        <p className="text-[15px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
           {state.error}
         </p>
       )}
       {state.status === "ok" && (
-        <p className="text-[13px] text-sg-d bg-sg-p border border-sg-l rounded px-3 py-2">
+        <p className="text-[15px] text-sg-d bg-sg-p border border-sg-l rounded px-3 py-2">
           Profile updated.
         </p>
       )}
@@ -362,7 +362,7 @@ function Section({
       <div>
         <h2 className="font-serif text-[18px] text-ch">{title}</h2>
         {subtitle && (
-          <p className="text-[12px] text-cl mt-0.5 leading-relaxed">{subtitle}</p>
+          <p className="text-[14px] text-cl mt-0.5 leading-relaxed">{subtitle}</p>
         )}
       </div>
       {children}
@@ -381,7 +381,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-[12px] font-medium text-ch mb-1.5">
+      <span className="block text-[14px] font-medium text-ch mb-1.5">
         {label}
         {required && <span className="text-tr ml-0.5">*</span>}
       </span>
@@ -400,7 +400,7 @@ function ToneRadio({
   const label = value === "sage" ? "Sage" : "Terracotta";
   const swatchCls = value === "sage" ? "bg-sg" : "bg-tr";
   return (
-    <label className="flex items-center gap-2 cursor-pointer text-[13px] text-ch">
+    <label className="flex items-center gap-2 cursor-pointer text-[15px] text-ch">
       <input
         type="radio"
         name="photoTone"

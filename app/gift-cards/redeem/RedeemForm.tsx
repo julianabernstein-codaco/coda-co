@@ -41,7 +41,7 @@ export function RedeemForm({ signedIn }: { signedIn: boolean }) {
     <div className="space-y-5">
       <form onSubmit={check} className="space-y-3">
         <label className="block">
-          <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
+          <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
             Gift card code
           </span>
           <input
@@ -51,7 +51,7 @@ export function RedeemForm({ signedIn }: { signedIn: boolean }) {
             required
             autoCapitalize="characters"
             placeholder="XXXX-XXXX-XXXX"
-            className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] tracking-[.08em] text-ch focus:border-tr outline-none"
+            className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] tracking-[.08em] text-ch focus:border-tr outline-none"
           />
         </label>
         <button type="submit" disabled={pending} className="btn-primary btn-md w-full disabled:opacity-50">
@@ -60,7 +60,7 @@ export function RedeemForm({ signedIn }: { signedIn: boolean }) {
       </form>
 
       {result && <ResultPanel result={result} signedIn={signedIn} claimed={claimed} onClaim={claim} pending={pending} />}
-      {notice && <p className="text-[13px] text-tr">{notice}</p>}
+      {notice && <p className="text-[15px] text-tr">{notice}</p>}
     </div>
   );
 }
@@ -81,7 +81,7 @@ function ResultPanel({
   if (!result.found) {
     return (
       <div className="bg-white border border-line rounded-[10px] px-5 py-4">
-        <p className="text-[13px] text-cm">
+        <p className="text-[15px] text-cm">
           We couldn't find a gift card with that code. Double-check it and try again.
         </p>
       </div>
@@ -91,7 +91,7 @@ function ResultPanel({
   if (result.status === "pending") {
     return (
       <div className="bg-white border border-line rounded-[10px] px-5 py-4">
-        <p className="text-[13px] text-cm">
+        <p className="text-[15px] text-cm">
           This gift card isn't active yet — its payment is still clearing. Try again in a
           moment.
         </p>
@@ -102,7 +102,7 @@ function ResultPanel({
   if (result.status === "void") {
     return (
       <div className="bg-white border border-line rounded-[10px] px-5 py-4">
-        <p className="text-[13px] text-cm">This gift card is no longer valid.</p>
+        <p className="text-[15px] text-cm">This gift card is no longer valid.</p>
       </div>
     );
   }
@@ -113,16 +113,16 @@ function ResultPanel({
   return (
     <div className="bg-sg-p border border-sg-l rounded-[10px] px-5 py-5 space-y-3">
       <div>
-        <div className="text-[12px] text-sg-d uppercase tracking-wide">Balance</div>
+        <div className="text-[14px] text-sg-d uppercase tracking-wide">Balance</div>
         <div className="font-serif text-[30px] font-light text-ch">
           {formatCents(result.balanceCents)}
         </div>
       </div>
 
       {depleted ? (
-        <p className="text-[13px] text-cm">This gift card's balance has been fully used.</p>
+        <p className="text-[15px] text-cm">This gift card's balance has been fully used.</p>
       ) : claimed || alreadyMine ? (
-        <p className="text-[13px] text-sg-d">
+        <p className="text-[15px] text-sg-d">
           Added to your account — the balance will apply automatically at checkout.
         </p>
       ) : signedIn ? (
@@ -130,7 +130,7 @@ function ResultPanel({
           {pending ? "Adding…" : "Add to my account"}
         </button>
       ) : (
-        <p className="text-[13px] text-cm">
+        <p className="text-[15px] text-cm">
           <Link href="/login?next=/gift-cards/redeem" className="text-tr underline">
             Sign in
           </Link>{" "}

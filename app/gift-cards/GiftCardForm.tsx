@@ -84,7 +84,7 @@ export function GiftCardForm() {
 
       {/* Amount */}
       <fieldset className="space-y-3">
-        <legend className="text-[12px] font-medium text-ch uppercase tracking-wide mb-1">
+        <legend className="text-[14px] font-medium text-ch uppercase tracking-wide mb-1">
           {mode === "group" ? "Your starting contribution" : "Amount"}
         </legend>
         <div className="grid-auto-130">
@@ -100,9 +100,9 @@ export function GiftCardForm() {
         </div>
         {preset === "custom" && (
           <label className="block max-w-[200px]">
-            <span className="text-[12px] text-cl">Custom amount (USD)</span>
+            <span className="text-[14px] text-cl">Custom amount (USD)</span>
             <div className="mt-1 flex items-center rounded-[8px] border border-line-bold focus-within:border-tr px-3">
-              <span className="text-[14px] text-cl">$</span>
+              <span className="text-[16px] text-cl">$</span>
               <input
                 type="number"
                 min={GIFT_CARD_MIN_CENTS / 100}
@@ -110,7 +110,7 @@ export function GiftCardForm() {
                 step="1"
                 value={customDollars}
                 onChange={(e) => setCustomDollars(e.target.value)}
-                className="w-full py-2 pl-1 text-[14px] text-ch outline-none bg-transparent"
+                className="w-full py-2 pl-1 text-[16px] text-ch outline-none bg-transparent"
                 placeholder="75"
               />
             </div>
@@ -129,13 +129,13 @@ export function GiftCardForm() {
 
       {mode === "group" ? (
         <div className="space-y-4 border-l-2 border-tr-l pl-4">
-          <p className="text-[13px] text-cm leading-relaxed">
+          <p className="text-[15px] text-cm leading-relaxed">
             After you pay your starting contribution, you'll get a private link to manage the
             gift and a shareable link so others can chip in — no account needed for anyone.
             You choose the recipient and send the gift whenever you're ready.
           </p>
           <label className="block">
-            <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
+            <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
               Message for the recipient (optional)
             </span>
             <textarea
@@ -143,14 +143,14 @@ export function GiftCardForm() {
               onChange={(e) => setGiftMessage(e.target.value)}
               rows={3}
               maxLength={500}
-              className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none resize-none"
+              className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none resize-none"
               placeholder="You can edit this later before you send the gift…"
             />
           </label>
         </div>
       ) : (
         <>
-          <label className="flex items-center gap-2.5 text-[14px] text-ch">
+          <label className="flex items-center gap-2.5 text-[16px] text-ch">
             <input
               type="checkbox"
               checked={forSomeoneElse}
@@ -176,7 +176,7 @@ export function GiftCardForm() {
                 required={false}
               />
               <label className="block">
-                <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
+                <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
                   Message (optional)
                 </span>
                 <textarea
@@ -184,7 +184,7 @@ export function GiftCardForm() {
                   onChange={(e) => setGiftMessage(e.target.value)}
                   rows={3}
                   maxLength={500}
-                  className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none resize-none"
+                  className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none resize-none"
                   placeholder="A few words to go with the gift…"
                 />
               </label>
@@ -193,12 +193,12 @@ export function GiftCardForm() {
         </>
       )}
 
-      {error && <p className="text-[13px] text-tr">{error}</p>}
+      {error && <p className="text-[15px] text-tr">{error}</p>}
 
       <button type="submit" disabled={pending} className="btn-primary btn-md w-full disabled:opacity-50">
         {pending ? "Starting checkout…" : mode === "group" ? "Start the group gift" : "Continue to payment"}
       </button>
-      <p className="text-[12px] text-cl text-center">
+      <p className="text-[14px] text-cl text-center">
         You'll be sent to Stripe to pay securely. The gift card is issued once payment clears.
       </p>
     </form>
@@ -225,8 +225,8 @@ function ModeButton({
         active ? "border-tr bg-tr-p" : "border-line-bold hover:border-tr-l"
       }`}
     >
-      <span className="block text-[14px] font-medium text-ch">{label}</span>
-      <span className="block text-[12px] text-cl">{sub}</span>
+      <span className="block text-[16px] font-medium text-ch">{label}</span>
+      <span className="block text-[14px] text-cl">{sub}</span>
     </button>
   );
 }
@@ -245,7 +245,7 @@ function AmountButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`py-2.5 rounded-[10px] border text-[15px] font-medium transition-colors ${
+      className={`py-2.5 rounded-[10px] border text-[17px] font-medium transition-colors ${
         active ? "border-tr bg-tr-p text-tr-d" : "border-line-bold text-ch hover:border-tr-l"
       }`}
     >
@@ -271,15 +271,15 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[12px] font-medium text-ch uppercase tracking-wide">{label}</span>
+      <span className="text-[14px] font-medium text-ch uppercase tracking-wide">{label}</span>
       <input
         type={type}
         value={value}
         required={required}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none"
+        className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none"
       />
-      {hint && <span className="mt-1 block text-[12px] text-cl">{hint}</span>}
+      {hint && <span className="mt-1 block text-[14px] text-cl">{hint}</span>}
     </label>
   );
 }

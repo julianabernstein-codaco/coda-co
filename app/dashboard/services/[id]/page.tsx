@@ -45,14 +45,14 @@ export default async function VendorServiceEditorPage({ params }: PageProps) {
         <Container width="mid">
           <div className="flex items-center justify-between mb-7">
             <div>
-              <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
               <h1 className="font-serif text-[32px] font-light text-ch">{service.title}</h1>
-              <p className="text-[13px] text-cl mt-1.5">slug: {service.slug}</p>
+              <p className="text-[15px] text-cl mt-1.5">slug: {service.slug}</p>
             </div>
             {service.status === "published" && (
               <Link
                 href={`/services/${vendor.slug}`}
-                className="text-[13px] text-tr no-underline hover:underline"
+                className="text-[15px] text-tr no-underline hover:underline"
               >
                 View live →
               </Link>

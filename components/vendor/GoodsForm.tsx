@@ -81,7 +81,7 @@ export function GoodsForm() {
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 1 — Set up your shop
                 </h2>
-                <p className="text-[13px] text-cl mb-6">
+                <p className="text-[15px] text-cl mb-6">
                   This is how buyers will know and trust you. You can edit it any
                   time, and you&apos;ll add your individual goods — with photos and
                   prices — right after this.
@@ -147,7 +147,7 @@ export function GoodsForm() {
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 2 — Choose a plan
                 </h2>
-                <p className="text-[13px] text-cl mb-6">
+                <p className="text-[15px] text-cl mb-6">
                   Start free. Upgrade anytime.
                 </p>
 
@@ -182,17 +182,17 @@ export function GoodsForm() {
                         ].join(" ")}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-[15px] font-medium text-ch">{p.name}</span>
-                          <span className="text-[15px] font-medium text-tr">{p.price}</span>
+                          <span className="text-[17px] font-medium text-ch">{p.name}</span>
+                          <span className="text-[17px] font-medium text-tr">{p.price}</span>
                           {p.popular && (
-                            <span className="text-[10px] bg-tr text-white px-2 py-0.5 rounded-full ml-2">
+                            <span className="text-[12px] bg-tr text-white px-2 py-0.5 rounded-full ml-2">
                               Most popular
                             </span>
                           )}
                         </div>
                         <ul className="space-y-1">
                           {p.features.map((f) => (
-                            <li key={f} className="text-[12px] text-cm flex items-center gap-1.5">
+                            <li key={f} className="text-[14px] text-cm flex items-center gap-1.5">
                               <span className="text-sg">✓</span> {f}
                             </li>
                           ))}
@@ -202,7 +202,7 @@ export function GoodsForm() {
                   })}
                 </div>
 
-                <div className="mt-5 bg-sg-vp rounded-[8px] px-4 py-3 text-[13px] text-cm border border-sg-p">
+                <div className="mt-5 bg-sg-vp rounded-[8px] px-4 py-3 text-[15px] text-cm border border-sg-p">
                   After this, you&apos;ll add your goods from your dashboard. Your
                   first listing is reviewed by our team before it goes live; every
                   listing after that publishes instantly.
@@ -218,7 +218,7 @@ export function GoodsForm() {
                   setStep((s) => s - 1);
                 }}
                 disabled={step === 0}
-                className="px-6 py-2.5 rounded-full border border-[rgba(44,40,37,.2)] text-[13px] text-ink cursor-pointer hover:border-ch transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-6 py-2.5 rounded-full border border-[rgba(44,40,37,.2)] text-[15px] text-ink cursor-pointer hover:border-ch transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 ← Back
               </button>
@@ -250,7 +250,7 @@ export function GoodsForm() {
                     setSubmitError(null);
                     setStep((s) => s + 1);
                   }}
-                  className="px-8 py-2.5 rounded-full bg-tr text-white text-[13px] cursor-pointer hover:bg-tr-d transition-colors"
+                  className="px-8 py-2.5 rounded-full bg-tr text-white text-[15px] cursor-pointer hover:bg-tr-d transition-colors"
                 >
                   Continue →
                 </button>
@@ -258,7 +258,7 @@ export function GoodsForm() {
                 <button
                   onClick={handleSubmit}
                   disabled={pending}
-                  className="px-8 py-2.5 rounded-full bg-tr text-white text-[13px] cursor-pointer hover:bg-tr-d transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="px-8 py-2.5 rounded-full bg-tr text-white text-[15px] cursor-pointer hover:bg-tr-d transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {pending ? "Creating…" : "Create my shop →"}
                 </button>
@@ -266,7 +266,7 @@ export function GoodsForm() {
             </div>
 
             {submitError && (
-              <p className="mt-3 text-[13px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
+              <p className="mt-3 text-[15px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
                 {submitError}
               </p>
             )}
@@ -275,7 +275,7 @@ export function GoodsForm() {
           {/* Sidebar preview */}
           <div className="w-[220px] flex-shrink-0 hidden lg:block">
             <div className="bg-white rounded-[12px] border border-line p-4 sticky top-[88px]">
-              <div className="text-[11px] tracking-[.08em] uppercase text-cl mb-3">
+              <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-3">
                 Shop preview
               </div>
               <div className="h-[90px] rounded-[8px] bg-tr-p flex items-center justify-center mb-3">
@@ -283,10 +283,10 @@ export function GoodsForm() {
                   <path d="M30 8 C18 8 10 20 10 38 C10 52 18 62 30 62 C42 62 50 52 50 38 C50 20 42 8 30 8Z" stroke="#C1634F" strokeWidth="1.8" fill="none" />
                 </svg>
               </div>
-              <div className="text-[13px] font-medium text-ch mb-1 truncate">
+              <div className="text-[15px] font-medium text-ch mb-1 truncate">
                 {shopName || "Your shop name"}
               </div>
-              <div className="text-[11px] text-cl truncate">
+              <div className="text-[13px] text-cl truncate">
                 {[data.city.trim(), data.state.trim()].filter(Boolean).join(", ") ||
                   "Your location"}
               </div>
@@ -309,7 +309,7 @@ function FormField({
 }) {
   return (
     <div className="mb-4">
-      <label className="block text-[12px] font-medium text-ch mb-1.5">
+      <label className="block text-[14px] font-medium text-ch mb-1.5">
         {label}
         {required && <span className="text-tr ml-0.5">*</span>}
       </label>
@@ -319,4 +319,4 @@ function FormField({
 }
 
 const inputCls =
-  "w-full border border-[rgba(44,40,37,.18)] rounded-[8px] px-3 py-2.5 text-[14px] text-ch bg-white outline-none focus:border-tr transition-colors";
+  "w-full border border-[rgba(44,40,37,.18)] rounded-[8px] px-3 py-2.5 text-[16px] text-ch bg-white outline-none focus:border-tr transition-colors";

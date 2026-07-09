@@ -124,14 +124,14 @@ export default function ListWithUsPage() {
 
       {/* Hero */}
       <section className="bg-white px-10 pt-16 pb-12 text-center">
-        <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-3">
+        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-3">
           For vendors &amp; service providers
         </p>
         <h1 className="font-serif text-[46px] font-light leading-[1.13] text-ch mb-4">
           Reach people who are{" "}
           <em className="italic text-tr">ready.</em>
         </h1>
-        <p className="text-[15px] text-cm max-w-[520px] mx-auto mb-10 leading-[1.75]">
+        <p className="text-[17px] text-cm max-w-[520px] mx-auto mb-10 leading-[1.75]">
           CodaCo connects you with clients who are actively seeking support around death and dying —
           whether that&apos;s a handmade urn, an estate attorney, or a compassionate death doula. Join
           a curated community built with care.
@@ -162,7 +162,7 @@ export default function ListWithUsPage() {
             <div className="font-serif text-[22px] font-normal text-ch mb-1.5">
               List goods
             </div>
-            <p className="text-[13px] text-cl leading-[1.5]">
+            <p className="text-[15px] text-cl leading-[1.5]">
               Urns, jewelry, shrouds, planning workbooks, memorial art, humor gifts — anything
               shipped or available locally
             </p>
@@ -193,7 +193,7 @@ export default function ListWithUsPage() {
             <div className="font-serif text-[22px] font-normal text-ch mb-1.5">
               List services
             </div>
-            <p className="text-[13px] text-cl leading-[1.5]">
+            <p className="text-[15px] text-cl leading-[1.5]">
               Death doulas, estate attorneys, death cleaning, celebrants, EOL organizers — found by
               geographic location
             </p>
@@ -211,13 +211,13 @@ export default function ListWithUsPage() {
                 key={s.n}
                 className="bg-white rounded-[10px] py-5 px-4 text-center border border-line"
               >
-                <div className="w-[30px] h-[30px] rounded-full bg-tr text-white text-[13px] font-medium flex items-center justify-center mx-auto mb-2.5">
+                <div className="w-[30px] h-[30px] rounded-full bg-tr text-white text-[15px] font-medium flex items-center justify-center mx-auto mb-2.5">
                   {s.n}
                 </div>
-                <div className="text-[13px] font-medium text-ch mb-0.5">
+                <div className="text-[15px] font-medium text-ch mb-0.5">
                   {s.title}
                 </div>
-                <div className="text-[12px] text-cl leading-[1.45]">
+                <div className="text-[14px] text-cl leading-[1.45]">
                   {s.desc}
                 </div>
               </div>
@@ -226,13 +226,13 @@ export default function ListWithUsPage() {
           <div className="flex gap-3.5 justify-center flex-wrap">
             <Link
               href="/list-with-us/goods"
-              className="inline-block bg-tr text-white px-[30px] py-3.5 rounded-[26px] text-[14px] no-underline hover:bg-tr-d transition-colors"
+              className="inline-block bg-tr text-white px-[30px] py-3.5 rounded-[26px] text-[16px] no-underline hover:bg-tr-d transition-colors"
             >
               List goods →
             </Link>
             <Link
               href="/list-with-us/services"
-              className="inline-block bg-transparent text-ch border-[1.5px] border-[rgba(44,40,37,.25)] px-[26px] py-3 rounded-[26px] text-[13px] no-underline hover:border-tr hover:text-tr transition-colors"
+              className="inline-block bg-transparent text-ch border-[1.5px] border-[rgba(44,40,37,.25)] px-[26px] py-3 rounded-[26px] text-[15px] no-underline hover:border-tr hover:text-tr transition-colors"
             >
               List services
             </Link>
@@ -255,8 +255,8 @@ export default function ListWithUsPage() {
                 className="bg-white rounded-[10px] p-5 border border-line"
               >
                 <div className="mb-3">{item.icon}</div>
-                <div className="text-[14px] font-medium text-ch mb-1">{item.title}</div>
-                <p className="text-[13px] text-cl leading-relaxed">{item.body}</p>
+                <div className="text-[16px] font-medium text-ch mb-1">{item.title}</div>
+                <p className="text-[15px] text-cl leading-relaxed">{item.body}</p>
               </div>
             ))}
           </div>
@@ -284,8 +284,8 @@ export default function ListWithUsPage() {
                 <div className="flex items-center gap-2.5">
                   <Avatar initials={t.initials} size="sm" />
                   <div>
-                    <div className="text-[13px] font-medium text-ch">{t.name}</div>
-                    <div className="text-[11px] text-cl">{t.role}</div>
+                    <div className="text-[15px] font-medium text-ch">{t.name}</div>
+                    <div className="text-[13px] text-cl">{t.role}</div>
                   </div>
                 </div>
               </div>

@@ -25,7 +25,7 @@ export function ServiceKeywordSearch() {
         </svg>
       </div>
       <input
-        className="flex-1 border-0 px-3.5 py-2.5 font-sans text-[13px] text-ch outline-none bg-transparent"
+        className="flex-1 border-0 px-3.5 py-2.5 font-sans text-[15px] text-ch outline-none bg-transparent"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={apply}

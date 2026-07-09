@@ -143,7 +143,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 1 — Your profile
                 </h2>
-                <p className="text-[13px] text-cl mb-6">
+                <p className="text-[15px] text-cl mb-6">
                   This is how clients will find and trust you.
                 </p>
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -202,7 +202,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 2 — Your service
                 </h2>
-                <p className="text-[13px] text-cl mb-6">Tell clients what you offer.</p>
+                <p className="text-[15px] text-cl mb-6">Tell clients what you offer.</p>
                 <FormField label="Service type">
                   <select className={inputCls} {...field("serviceType")}>
                     {serviceTypes.map((t) => (
@@ -218,7 +218,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                     required
                     {...field("bio")}
                   />
-                  <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+                  <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
                     {data.bio.length} / {BIO_MAX}
                   </div>
                 </FormField>
@@ -230,7 +230,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                     required
                     {...field("serviceDescription")}
                   />
-                  <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+                  <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
                     {data.serviceDescription.length} / {DESC_MAX}
                   </div>
                 </FormField>
@@ -241,7 +241,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                     maxLength={NOTES_MAX}
                     {...field("pricingNotes")}
                   />
-                  <div className="text-[11px] text-cl mt-1 text-right tabular-nums">
+                  <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
                     {data.pricingNotes.length} / {NOTES_MAX}
                   </div>
                 </FormField>
@@ -253,7 +253,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                         type="button"
                         onClick={() => toggleSpec(s)}
                         className={[
-                          "px-3 py-1.5 rounded-full text-[12px] border transition-all cursor-pointer",
+                          "px-3 py-1.5 rounded-full text-[14px] border transition-all cursor-pointer",
                           data.specializations.includes(s)
                             ? "bg-sg text-white border-sg"
                             : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-sg",
@@ -265,7 +265,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                   </div>
                 </FormField>
                 <FormField label="Who is this for? (select all that apply)">
-                  <p className="text-[12px] text-cl mb-2 -mt-1">
+                  <p className="text-[14px] text-cl mb-2 -mt-1">
                     Helps clients filter providers by where they are in the journey.
                   </p>
                   <div className="flex flex-wrap gap-2 mt-1">
@@ -275,7 +275,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                         type="button"
                         onClick={() => toggleLifeStage(s.value)}
                         className={[
-                          "px-3 py-1.5 rounded-full text-[12px] border transition-all cursor-pointer",
+                          "px-3 py-1.5 rounded-full text-[14px] border transition-all cursor-pointer",
                           data.lifeStages.includes(s.value)
                             ? "bg-sg text-white border-sg"
                             : "bg-white text-cm border-line-bold hover:border-sg",
@@ -294,7 +294,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 3 — Area &amp; availability
                 </h2>
-                <p className="text-[13px] text-cl mb-6">Help clients know if you can reach them.</p>
+                <p className="text-[15px] text-cl mb-6">Help clients know if you can reach them.</p>
 
                 <FormField label="Service radius">
                   <div className="flex flex-wrap gap-2">
@@ -304,7 +304,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                         type="button"
                         onClick={() => setData((d) => ({ ...d, radius: r }))}
                         className={[
-                          "px-4 py-2 rounded-full text-[13px] border cursor-pointer transition-all",
+                          "px-4 py-2 rounded-full text-[15px] border cursor-pointer transition-all",
                           data.radius === r
                             ? "bg-tr text-white border-tr"
                             : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-tr",
@@ -317,7 +317,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 </FormField>
 
                 <FormField label="Centered on">
-                  <div className="text-[14px] text-ch">
+                  <div className="text-[16px] text-ch">
                     {data.zip ? (
                       data.city && data.state
                         ? `${data.city}, ${data.state} ${data.zip}`
@@ -332,7 +332,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
 
                 <FormField label="Session types">
                   <div className="flex gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer text-[13px] text-cm">
+                    <label className="flex items-center gap-2 cursor-pointer text-[15px] text-cm">
                       <input
                         type="checkbox"
                         checked={data.inHome}
@@ -341,7 +341,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                       />
                       In-home / in-person
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer text-[13px] text-cm">
+                    <label className="flex items-center gap-2 cursor-pointer text-[15px] text-cm">
                       <input
                         type="checkbox"
                         checked={data.virtual}
@@ -354,7 +354,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 </FormField>
 
                 <FormField label="Typical availability">
-                  <p className="text-[12px] text-cl mb-2 -mt-1">
+                  <p className="text-[14px] text-cl mb-2 -mt-1">
                     Pick the days and times you typically offer sessions.
                   </p>
                   <div className="flex gap-2 flex-wrap mt-1">
@@ -364,7 +364,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                         type="button"
                         onClick={() => toggleDay(day)}
                         className={[
-                          "w-12 h-10 rounded-[8px] text-[13px] border cursor-pointer transition-all",
+                          "w-12 h-10 rounded-[8px] text-[15px] border cursor-pointer transition-all",
                           data.availableDays.includes(day)
                             ? "bg-tr text-white border-tr"
                             : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-tr",
@@ -381,7 +381,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                         type="button"
                         onClick={() => toggleHour(hour)}
                         className={[
-                          "px-4 py-2 rounded-full text-[13px] border cursor-pointer transition-all",
+                          "px-4 py-2 rounded-full text-[15px] border cursor-pointer transition-all",
                           data.availableHours.includes(hour)
                             ? "bg-tr text-white border-tr"
                             : "bg-white text-cm border-[rgba(44,40,37,.2)] hover:border-tr",
@@ -400,12 +400,12 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
                   Step 4 — Choose a plan
                 </h2>
-                <p className="text-[13px] text-cl mb-6">Start free. Upgrade anytime.</p>
+                <p className="text-[15px] text-cl mb-6">Start free. Upgrade anytime.</p>
                 <div className="border border-line-strong rounded-[10px] bg-pl2 p-4 mb-4">
-                  <div className="text-[12px] font-medium text-ch mb-2">All plans include</div>
+                  <div className="text-[14px] font-medium text-ch mb-2">All plans include</div>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
                     {servicePlanIncludes.map((f) => (
-                      <li key={f} className="text-[12px] text-cm flex items-center gap-1.5">
+                      <li key={f} className="text-[14px] text-cm flex items-center gap-1.5">
                         <span className="text-sg">✓</span> {f}
                       </li>
                     ))}
@@ -425,17 +425,17 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                         ].join(" ")}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-[15px] font-medium text-ch">{p.name}</span>
-                          <span className="text-[15px] font-medium text-sg-d">{planPriceLabel(p)}</span>
+                          <span className="text-[17px] font-medium text-ch">{p.name}</span>
+                          <span className="text-[17px] font-medium text-sg-d">{planPriceLabel(p)}</span>
                           {p.popular && (
-                            <span className="text-[10px] bg-sg text-white px-2 py-0.5 rounded-full">
+                            <span className="text-[12px] bg-sg text-white px-2 py-0.5 rounded-full">
                               Most popular
                             </span>
                           )}
                         </div>
                         <ul className="space-y-1">
                           {p.features.map((f) => (
-                            <li key={f} className="text-[12px] text-cm flex items-center gap-1.5">
+                            <li key={f} className="text-[14px] text-cm flex items-center gap-1.5">
                               <span className="text-sg">✓</span> {f}
                             </li>
                           ))}
@@ -456,7 +456,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 setStep((s) => s - 1);
               }}
               disabled={step === 0}
-              className="px-6 py-2.5 rounded-full border border-[rgba(44,40,37,.2)] text-[13px] text-cm cursor-pointer hover:border-ch transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 rounded-full border border-[rgba(44,40,37,.2)] text-[15px] text-cm cursor-pointer hover:border-ch transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               ← Back
             </button>
@@ -480,7 +480,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                   setSubmitError(null);
                   setStep((s) => s + 1);
                 }}
-                className="px-8 py-2.5 rounded-full bg-sg text-white text-[13px] cursor-pointer hover:bg-sg-d transition-colors"
+                className="px-8 py-2.5 rounded-full bg-sg text-white text-[15px] cursor-pointer hover:bg-sg-d transition-colors"
               >
                 Continue →
               </button>
@@ -514,7 +514,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                   });
                 }}
                 disabled={pending}
-                className="px-8 py-2.5 rounded-full bg-sg text-white text-[13px] cursor-pointer hover:bg-sg-d transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="px-8 py-2.5 rounded-full bg-sg text-white text-[15px] cursor-pointer hover:bg-sg-d transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {pending ? "Submitting…" : "Submit listing →"}
               </button>
@@ -522,7 +522,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
           </div>
 
           {submitError && (
-            <p className="mt-3 text-[13px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
+            <p className="mt-3 text-[15px] text-tr-d bg-tr-p border border-tr-l rounded px-3 py-2">
               {submitError}
             </p>
           )}
@@ -543,7 +543,7 @@ function FormField({
 }) {
   return (
     <div className="mb-4">
-      <label className="block text-[12px] font-medium text-ch mb-1.5">
+      <label className="block text-[14px] font-medium text-ch mb-1.5">
         {label}
         {required && <span className="text-tr ml-0.5">*</span>}
       </label>
@@ -553,4 +553,4 @@ function FormField({
 }
 
 const inputCls =
-  "w-full border border-[rgba(44,40,37,.18)] rounded-[8px] px-3 py-2.5 text-[14px] text-ch bg-white outline-none focus:border-sg transition-colors";
+  "w-full border border-[rgba(44,40,37,.18)] rounded-[8px] px-3 py-2.5 text-[16px] text-ch bg-white outline-none focus:border-sg transition-colors";

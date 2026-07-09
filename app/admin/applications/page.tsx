@@ -36,14 +36,14 @@ export default async function AdminApplicationsPage() {
       <section className="bg-pl2 px-10 py-10 min-h-screen">
         <Container width="wide">
           <div className="mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Admin</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Admin</p>
             <h1 className="font-serif text-[32px] font-light text-ch">Vendor applications</h1>
-            <p className="text-[13px] text-cl mt-1.5">
+            <p className="text-[15px] text-cl mt-1.5">
               Approve to create the vendor profile + subscription. Reject with optional notes.
             </p>
           </div>
 
-          <h2 className="text-[15px] font-medium text-ch mb-3">
+          <h2 className="text-[17px] font-medium text-ch mb-3">
             Pending review <span className="text-cl">({pending.length})</span>
           </h2>
           <div className="bg-white rounded-[10px] border border-line overflow-hidden mb-10">
@@ -88,7 +88,7 @@ export default async function AdminApplicationsPage() {
             </table>
           </div>
 
-          <h2 className="text-[15px] font-medium text-ch mb-3">
+          <h2 className="text-[17px] font-medium text-ch mb-3">
             Recently decided
           </h2>
           <div className="bg-white rounded-[10px] border border-line overflow-hidden">
@@ -112,23 +112,23 @@ export default async function AdminApplicationsPage() {
                 ) : (
                   decided.map((app) => (
                     <tr key={app.id} className="border-b border-pl2">
-                      <td className="px-4 py-3 align-top text-[13px] text-ch">
+                      <td className="px-4 py-3 align-top text-[15px] text-ch">
                         {app.proposedDisplayName}
                       </td>
-                      <td className="px-4 py-3 align-top text-[12px] text-cm">
+                      <td className="px-4 py-3 align-top text-[14px] text-cm">
                         {app.applicant.email}
                       </td>
                       <td className="px-4 py-3 align-top">
                         <span
                           className={[
-                            "inline-block text-[11px] font-medium px-2 py-0.5 rounded-full capitalize",
+                            "inline-block text-[13px] font-medium px-2 py-0.5 rounded-full capitalize",
                             app.status === "approved" ? "bg-sg-p text-sg-d" : "bg-tr-p text-tr-d",
                           ].join(" ")}
                         >
                           {app.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 align-top text-[12px] text-cm">
+                      <td className="px-4 py-3 align-top text-[14px] text-cm">
                         {app.reviewedAt?.toISOString().slice(0, 10) ?? "—"}
                       </td>
                       <td className="px-4 py-3 align-top">

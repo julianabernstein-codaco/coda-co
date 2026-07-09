@@ -61,7 +61,7 @@ export default async function PreviewAccessPage({
           <h1 className="font-serif text-[24px] font-light text-ch mb-3">
             This site is in private development.
           </h1>
-          <p className="text-[14px] text-cm mb-7 leading-relaxed">
+          <p className="text-[16px] text-cm mb-7 leading-relaxed">
             Enter the preview password to continue, or visit our{" "}
             <Link href="/homepage" className="text-tr underline hover:text-tr-d">
               public welcome page
@@ -71,7 +71,7 @@ export default async function PreviewAccessPage({
 
           <form action={tryUnlock} className="flex flex-col gap-3 text-left">
             <input type="hidden" name="next" value={next} />
-            <label className="text-[12px] text-cm" htmlFor="preview-password">
+            <label className="text-[14px] text-cm" htmlFor="preview-password">
               Preview password
             </label>
             <input
@@ -81,10 +81,10 @@ export default async function PreviewAccessPage({
               required
               autoFocus
               autoComplete="off"
-              className="border border-line-strong rounded-[8px] px-4 py-3 text-[14px] text-ch outline-none focus:border-tr"
+              className="border border-line-strong rounded-[8px] px-4 py-3 text-[16px] text-ch outline-none focus:border-tr"
             />
             {error && (
-              <p className="text-[13px] text-tr">
+              <p className="text-[15px] text-tr">
                 That password isn&apos;t right. Try again.
               </p>
             )}
