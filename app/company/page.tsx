@@ -42,6 +42,7 @@ const people: Person[] = [
       "Naomi holds a B.A. in Economics from New York University.",
     ],
     tone: "sage",
+    photo: "/vendors/cofounder.nl.photo.JPG",
   },
   {
     name: "Alison Shmerling, MD, MPH",
