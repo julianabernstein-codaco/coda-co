@@ -37,11 +37,12 @@ const people: Person[] = [
     initials: "NL",
     role: "Co-founder",
     bio: [
-      "Co-founded CodaCo after 17 years in Product and Project Management of economic forecasts. In 2019 she launched a home organizing side business to help others implement practical solutions for managing their lives and beloved belongings. At CodaCo she brings an organized and compassionate approach to the complex world of death & dying.",
+      "Naomi Levy arrived at CodaCo after 17 years in Product and Project Management of economic forecasts. In 2019 she launched a home organizing side business to help others implement practical solutions for managing their lives and beloved belongings. At CodaCo she brings an organized and compassionate approach to the complex world of death & dying.",
       "Naomi believes death shouldn't be a taboo topic in America but rather something we prepare for together as a community.",
       "Naomi holds a B.A. in Economics from New York University.",
     ],
     tone: "sage",
+    photo: "/vendors/cofounder.nl.photo.JPG",
   },
   {
     name: "Alison Shmerling, MD, MPH",
