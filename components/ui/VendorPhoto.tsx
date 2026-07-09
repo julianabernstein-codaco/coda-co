@@ -32,11 +32,6 @@ interface VendorPhotoProps {
    * visible crop toward the top of the photo). Defaults to centered.
    */
   objectPosition?: string;
-  /**
-   * Scale the image inside the circle. Values < 1 shrink it, leaving a thin
-   * cream ring; the image is kept circular so it never shows square corners.
-   */
-  objectScale?: number;
 }
 
 export function VendorPhoto({
@@ -47,17 +42,8 @@ export function VendorPhoto({
   tone = "sage",
   className = "",
   objectPosition,
-  objectScale,
 }: VendorPhotoProps) {
-  const imgStyle =
-    objectPosition || objectScale !== undefined
-      ? {
-          objectPosition,
-          ...(objectScale !== undefined
-            ? { transform: `scale(${objectScale})`, borderRadius: "9999px" }
-            : {}),
-        }
-      : undefined;
+  const imgStyle = objectPosition ? { objectPosition } : undefined;
 
   return (
     <span
