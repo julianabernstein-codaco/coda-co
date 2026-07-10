@@ -68,10 +68,10 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* White space before the footer — invitation to meet the founders */}
+      {/* White space before the footer — invitation to meet the team */}
       <section className="bg-white px-10 py-16 text-center">
         <Link href="/company" className="btn-secondary btn-md no-underline">
-          Meet the founders
+          Meet the team
         </Link>
       </section>
     </>
