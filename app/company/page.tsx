@@ -64,12 +64,9 @@ export default function CompanyPage() {
     <>
       {/* Hero */}
       <section className="bg-white px-10 pt-[4.5rem] pb-12 text-center">
-        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-3">
+        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-6">
           Our company
         </p>
-        <h1 className="font-serif italic text-[44px] font-light leading-[1.25] text-ch max-w-[760px] mx-auto mb-8">
-          Meet the founders
-        </h1>
         <p className="text-[17px] text-cl max-w-[560px] mx-auto leading-[1.78]">
           CodaCo Market was built by people who believe loss deserves to be met
           with care.
