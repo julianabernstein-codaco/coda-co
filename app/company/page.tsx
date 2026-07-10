@@ -55,6 +55,7 @@ const people: Person[] = [
       "She first held an appreciation for death and dying when losing her grandmother, who passed away peacefully at home surrounded by loved ones. In contrast to deaths often witnessed in the hospital setting, this experience demonstrated CodaCo's mission: to make death and dying something that can be planned, supported, and experienced as the beautiful part of life that it is.",
     ],
     tone: "terracotta",
+    photo: "/vendors/advisor.as.photo.jpg",
   },
 ];
 
