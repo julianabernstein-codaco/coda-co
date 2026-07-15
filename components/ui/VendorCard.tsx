@@ -87,15 +87,17 @@ function VendorSearchCard({
       />
 
       <div className="min-w-0">
-        <Link
-          href={`/services/${vendor.id}`}
-          className="text-[16px] font-medium text-ch mb-[2px] no-underline hover:text-tr block"
-        >
-          {vendor.name}
-        </Link>
-        <span className="inline-block text-[12px] tracking-[.07em] uppercase bg-sg-p text-sg-d border border-sg-l px-[9px] py-[2px] rounded-[10px] mb-[6px]">
-          {primaryTypeLabel(services)}
-        </span>
+        <div className="flex items-start justify-between gap-3 mb-[6px]">
+          <Link
+            href={`/services/${vendor.id}`}
+            className="text-[16px] font-medium text-ch no-underline hover:text-tr min-w-0"
+          >
+            {vendor.name}
+          </Link>
+          <span className="shrink-0 text-[12px] tracking-[.07em] uppercase bg-sg-p text-sg-d border border-sg-l px-[9px] py-[2px] rounded-[10px] whitespace-nowrap">
+            {primaryTypeLabel(services)}
+          </span>
+        </div>
         <div className="text-[16px] text-cm leading-[1.6] mb-2">{vendor.bio}</div>
         <div className="flex flex-wrap gap-3 mb-3">
           <span className="text-[14px] text-cl">
