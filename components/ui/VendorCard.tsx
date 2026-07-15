@@ -75,7 +75,7 @@ function VendorSearchCard({
   return (
     <Card
       hoverTone="sage"
-      className="mb-3 grid grid-cols-[64px_1fr_120px] gap-3 items-start"
+      className="mb-3 grid grid-cols-[88px_1fr_120px] gap-3 items-start"
     >
       <VendorPhoto
         src={vendor.photoSrc}
@@ -83,6 +83,7 @@ function VendorSearchCard({
         initials={vendor.initials}
         size="lg"
         tone={vendor.photoTone}
+        className="w-[88px] h-[88px]"
       />
 
       <div className="min-w-0">
