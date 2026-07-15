@@ -75,7 +75,7 @@ function VendorSearchCard({
   return (
     <Card
       hoverTone="sage"
-      className="mb-3 grid grid-cols-[88px_1fr_120px] gap-3 items-start"
+      className="mb-3 grid grid-cols-[88px_1fr] gap-4 items-start"
     >
       <VendorPhoto
         src={vendor.photoSrc}
@@ -96,8 +96,8 @@ function VendorSearchCard({
         <span className="inline-block text-[12px] tracking-[.07em] uppercase bg-sg-p text-sg-d border border-sg-l px-[9px] py-[2px] rounded-[10px] mb-[6px]">
           {primaryTypeLabel(services)}
         </span>
-        <div className="text-[14px] text-cm leading-[1.5] mb-[6px]">{vendor.bio}</div>
-        <div className="flex flex-wrap gap-3">
+        <div className="text-[16px] text-cm leading-[1.6] mb-2">{vendor.bio}</div>
+        <div className="flex flex-wrap gap-3 mb-3">
           <span className="text-[14px] text-cl">
             📍 <strong className="text-cm">{vendor.location}</strong>
             {vendor.distanceMi != null && ` · ${vendor.distanceMi} mi`}
@@ -112,23 +112,29 @@ function VendorSearchCard({
             <span className="text-[14px] text-cl">Virtual only</span>
           )}
         </div>
-      </div>
 
-      <div className="text-right">
-        <Stars rating={vendor.rating} className="text-[15px] whitespace-nowrap block" />
-        <div className="text-[13px] text-cl mb-[10px]">{vendor.reviewCount} reviews</div>
-        <Link
-          href={`/services/${vendor.id}`}
-          className="btn-primary btn-sm w-full no-underline"
-        >
-          View profile →
-        </Link>
-        <SaveButton
-          kind="vendor"
-          slug={vendor.id}
-          className="btn-ghost btn-sm w-full mt-1.5"
-          activeClassName="text-tr border-tr"
-        />
+        <div className="mb-3">
+          <Stars
+            rating={vendor.rating}
+            reviewCount={vendor.reviewCount}
+            className="text-[15px] text-tr"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={`/services/${vendor.id}`}
+            className="btn-primary btn-sm no-underline"
+          >
+            View profile →
+          </Link>
+          <SaveButton
+            kind="vendor"
+            slug={vendor.id}
+            className="btn-ghost btn-sm"
+            activeClassName="text-tr border-tr"
+          />
+        </div>
       </div>
     </Card>
   );
