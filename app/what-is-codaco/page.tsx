@@ -40,7 +40,7 @@ const offerings: {
   },
   {
     title: "Information",
-    body: "Sometimes what we need most is gentle, direct information about what to do next, or what we can expect around the time of death and dying. Our Guidance page answers some of the most common questions about death, dying and the resources to help.",
+    body: "Sometimes what we need most is gentle, direct information about death and dying. Our Guidance page answers some of the most common questions about death, dying and the resources to help.",
     cta: "Read our guidance",
     href: "/guidance",
   },
