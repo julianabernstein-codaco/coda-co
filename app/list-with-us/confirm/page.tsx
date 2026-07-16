@@ -50,7 +50,7 @@ export default function ConfirmPage() {
           </svg>
         </div>
 
-        <p className="text-[13px] tracking-[.14em] uppercase text-sg mb-2">Submitted</p>
+        <p className="text-[13px] tracking-[.14em] uppercase text-ink mb-2">Submitted</p>
         <h1 className="font-serif text-[42px] font-light text-ch mb-4">You&apos;re in the queue.</h1>
         <p className="text-[17px] text-ink max-w-[460px] mx-auto leading-relaxed">
           Your listing has been received. Our team will review it within 1–2 business days and

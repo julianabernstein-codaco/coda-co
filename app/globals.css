@@ -68,14 +68,26 @@
 }
 
 /*
- * Contrast (PROTOTYPE — option B): terracotta accent text on the terracotta
- * banner (bg-tr-vp, #F0AE90) is same-hue and low-contrast (text-tr ~2.2:1).
- * Deepen terracotta accents to tr-deep (#6E2E20, ~5.4:1) wherever they sit on
- * the banner. Unlayered so it wins over Tailwind's utilities layer.
+ * Contrast on the terracotta banner (bg-tr-vp, #F0AE90). Same-family colors
+ * read as low-contrast here (WCAG measures lightness, not hue). Two rules,
+ * kept unlayered so they win over Tailwind's utilities layer:
+ *
+ *  - Terracotta accents (text-tr ~2.2:1) deepen to tr-deep (#6E2E20, ~5.4:1),
+ *    keeping the warm identity. Also covers plain section-header eyebrows.
+ *  - Sage-toned section eyebrows (green on warm ~1.7:1) go to ink — sage never
+ *    reads on a warm ground, so we drop the hue rather than muddy it. Placed
+ *    after the terracotta rule so it wins for eyebrows carrying both classes.
+ *
+ * Inline sage *labels/links* sitting directly on the banner are fixed at the
+ * source instead (text-sg -> text-ink) — a blanket `.bg-tr-vp .text-sg` rule
+ * would wrongly ink sage check-marks and pills inside nested white cards.
  */
 .bg-tr-vp .text-tr,
 .bg-tr-vp .section-eyebrow {
   color: var(--color-tr-deep);
+}
+.bg-tr-vp .section-eyebrow-sg {
+  color: var(--color-ink);
 }
 
 @layer components {
