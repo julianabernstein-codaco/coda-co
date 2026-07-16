@@ -189,7 +189,7 @@ export const vendors: Vendor[] = [
     specializations: [],
     verified: true,
     memberSince: "2022-01-01",
-    photoSrc: "/vendors/mui-1.jpg",
+    photoSrc: "/vendors/mui-8.jpg",
     photoTone: "terracotta",
   },
   {
