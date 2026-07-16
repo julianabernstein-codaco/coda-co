@@ -12,11 +12,14 @@ import {
   findPoolByContributeToken,
   deliverPooledGiftCard,
   reconcilePendingByCode,
+  reconcilePendingGiftCardById,
+  getGiftCardSummaryById,
   formatCents,
   GiftCardError,
   GIFT_CARD_MIN_CENTS,
   GIFT_CARD_MAX_CENTS,
   type GiftCardLookup,
+  type GiftCardSummary,
   type ClaimResult,
 } from "@/lib/api/giftCards";
 import { sendGiftCardDeliveryEmail } from "@/lib/email/templates";
@@ -26,6 +29,15 @@ async function getOrigin(): Promise<string> {
   const host = h.get("x-forwarded-host") ?? h.get("host");
   const proto = h.get("x-forwarded-proto") ?? "https";
   return `${proto}://${host}`;
+}
+
+// Polled by the post-purchase confirmation banner until the card settles.
+// Each poll also self-heals (reconciles against Stripe), so a slow/missed
+// webhook still resolves without the buyer doing anything.
+export async function checkGiftCardSettled(cardId: string): Promise<GiftCardSummary> {
+  if (!cardId) return { found: false };
+  await reconcilePendingGiftCardById(cardId);
+  return getGiftCardSummaryById(cardId);
 }
 
 export interface PurchaseGiftCardInput {

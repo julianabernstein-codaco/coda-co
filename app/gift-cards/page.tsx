@@ -3,8 +3,12 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { isStripeConfigured } from "@/lib/stripe";
-import { reconcilePendingGiftCardById } from "@/lib/api/giftCards";
+import {
+  reconcilePendingGiftCardById,
+  getGiftCardSummaryById,
+} from "@/lib/api/giftCards";
 import { GiftCardForm } from "./GiftCardForm";
+import { PurchaseStatusBanner } from "./PurchaseStatusBanner";
 
 export const metadata: Metadata = {
   title: "Gift cards · CodaCo",
@@ -18,10 +22,12 @@ export default async function GiftCardsPage({
   searchParams: Promise<{ status?: string; card?: string }>;
 }) {
   const { status, card } = await searchParams;
-  // After a single-purchase checkout we land back here with ?card=<id>. If the
-  // funding webhook was missed, recover it from Stripe so the recipient's
-  // delivery email actually goes out.
+  // After a single-purchase checkout we land back here with ?card=<id>. Reconcile
+  // once server-side (recovers a missed webhook), then read the summary so the
+  // banner's initial state is accurate; it keeps polling client-side until the
+  // card settles.
   if (card) await reconcilePendingGiftCardById(card);
+  const summary = card ? await getGiftCardSummaryById(card) : null;
 
   return (
     <Container width="mid" className="py-12">
@@ -34,14 +40,16 @@ export default async function GiftCardsPage({
         </p>
       </div>
 
-      {status === "success" && (
+      {status === "success" && card && summary?.found ? (
+        <PurchaseStatusBanner cardId={card} initial={summary} />
+      ) : status === "success" ? (
         <div className="bg-sg-p border border-sg-l rounded-[10px] px-5 py-4 mb-6">
           <p className="text-[15px] text-sg-d">
             Payment received — thank you. The gift card is on its way by email once the
             charge settles (usually a few seconds).
           </p>
         </div>
-      )}
+      ) : null}
       {status === "cancelled" && (
         <div className="bg-white border border-line rounded-[10px] px-5 py-4 mb-6">
           <p className="text-[15px] text-cm">Checkout cancelled — no charge was made.</p>

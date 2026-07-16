@@ -312,6 +312,35 @@ export type GiftCardLookup =
       claimedByUserId: string | null;
     };
 
+// Safe, public display summary of a card by id — for the post-purchase
+// confirmation. `status` drives the "settling → settled" banner;
+// isSelfPurchase / recipientName say where the card was emailed. Never
+// exposes the spend code.
+export type GiftCardSummary =
+  | { found: false }
+  | {
+      found: true;
+      status: GiftCard["status"];
+      amountCents: number;
+      currency: string;
+      isSelfPurchase: boolean;
+      recipientName: string | null;
+    };
+
+export async function getGiftCardSummaryById(id: string): Promise<GiftCardSummary> {
+  if (!id) return { found: false };
+  const card = await prisma.giftCard.findUnique({ where: { id } });
+  if (!card) return { found: false };
+  return {
+    found: true,
+    status: card.status,
+    amountCents: card.initialAmountCents,
+    currency: card.currency,
+    isSelfPurchase: !card.recipientEmail,
+    recipientName: card.recipientName,
+  };
+}
+
 export async function lookupGiftCard(rawCode: string): Promise<GiftCardLookup> {
   const code = normalizeGiftCardCode(rawCode);
   if (!code) return { found: false };
