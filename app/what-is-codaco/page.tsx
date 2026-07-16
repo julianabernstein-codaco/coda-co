@@ -74,8 +74,9 @@ export default function WhatIsCodaCoPage() {
         <p className="text-[16px] text-cm max-w-[620px] mx-auto leading-[1.78]">
           There are so many resources to make the end of a life easier to
           navigate — but most of us don&rsquo;t know about them until after we
-          need them. This site helps you sift through the people and services
-          that can help near the end of life — our own or a loved one&rsquo;s.
+          need them. CodaCo brings helpful, trusted practitioners and beautiful
+          goods all into one place, so you can find just what helps near the end
+          of life — your own or a loved one&rsquo;s.
         </p>
       </section>
 
