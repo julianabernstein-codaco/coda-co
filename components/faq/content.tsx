@@ -52,6 +52,56 @@ export const guidanceTopics: GuidanceTopic[] = [
         searchText:
           "What are the first things I need to do when someone dies? The very first thing to do when someone dies is to take time to breathe. You have time to sit and to call another loved one. There is no emergency now. There is a lot to take care of, but you are allowed to grieve, to be confused, overwhelmed, and a mess. Grief has no timeline and affects each of us differently. After someone dies, their life must be legally and administratively closed out, and these stressful, bureaucratic tasks can take months to years to complete, often complicated by grief. When someone has died it is not an immediate emergency. Some things need to take place in the first 24 hours after death, but nothing needs to happen in the first few minutes.",
       },
+      {
+        id: "next-steps-when-someone-dies",
+        q: "What are the next steps when someone has died?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              The following is a list of tasks that need to be completed along
+              an approximate timeline. Please note that this list is neither
+              exhaustive nor applicable to everyone, as every life and each
+              death are unique.
+            </p>
+            <p className="font-medium text-ch">
+              First tasks when your loved one has died
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                The first task that needs to happen is to get a legal
+                pronouncement of death, and then a death certificate.
+              </li>
+            </ul>
+            <p>
+              If your loved one died in a hospital, hospice center or nursing
+              home, staff will obtain the death certificate for you.
+            </p>
+            <p>
+              If your loved one died at home, you will need to contact a medical
+              professional to declare them dead. This can be done by the hospice
+              team, if they were on hospice.
+            </p>
+            <p>
+              If your loved one was not on hospice and died at home, or in the
+              community, or the death was unexpected, it is generally
+              appropriate to call 911. This is because state laws vary around
+              which type of medical or nursing provider can legally pronounce
+              death outside hospice settings. You are not accessing medical
+              services because it is a true emergency; you are contacting them
+              because they will connect you with a team of medical professionals
+              who can pronounce death and begin the next steps.
+            </p>
+            <p>
+              It may feel odd to mark something so momentous as a loved
+              one&apos;s death by making a phone call. If this administrative
+              step feels strange, you are not alone. Still, it needs to be done.
+            </p>
+            <p className="text-center font-bold">More information coming soon</p>
+          </div>
+        ),
+        searchText:
+          "What are the next steps when someone has died? The following is a list of tasks that need to be completed along an approximate timeline. This list is neither exhaustive nor applicable to everyone, as every life and each death are unique. First tasks when your loved one has died: the first task that needs to happen is to get a legal pronouncement of death, and then a death certificate. If your loved one died in a hospital, hospice center or nursing home, staff will obtain the death certificate for you. If your loved one died at home, you will need to contact a medical professional to declare them dead; this can be done by the hospice team if they were on hospice. If your loved one was not on hospice and died at home, in the community, or the death was unexpected, it is generally appropriate to call 911, because state laws vary around which type of medical or nursing provider can legally pronounce death outside hospice settings. You are not accessing medical services because it is a true emergency; you are contacting them because they will connect you with a team of medical professionals who can pronounce death and begin the next steps. It may feel odd to mark something so momentous as a loved one's death by making a phone call. If this administrative step feels strange, you are not alone. Still, it needs to be done.",
+      },
     ],
   },
   {
