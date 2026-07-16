@@ -9,21 +9,8 @@ import { FilterDivider } from "@/components/ui/filters/FilterDivider";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
 import { SPECIALIZATIONS } from "@/lib/data/specializations";
 
-const RATINGS = [
-  { value: "", label: "Any" },
-  { value: "3", label: "3+" },
-  { value: "4", label: "4+" },
-  { value: "5", label: "5 only" },
-];
-
-const VERIFIED_OPTIONS = [
-  "Background checked",
-  "Certified provider",
-  "CodaCo verified",
-];
-
 export function ServiceFilters({ serviceTypes }: { serviceTypes: ServiceTypeOption[] }) {
-  const { get, setParam, toggleBool, clearAll } = useFilterParams();
+  const { get, setParam, clearAll } = useFilterParams();
 
   const activeType = get("type");
   const rawSpecs = get("specializations");
@@ -35,7 +22,6 @@ export function ServiceFilters({ serviceTypes }: { serviceTypes: ServiceTypeOpti
       : [...activeSpecs, value];
     setParam("specializations", next.join(","));
   }
-  const activeRating = get("minRating");
   const activeLocation = get("locationType");
 
   return (
@@ -89,21 +75,6 @@ export function ServiceFilters({ serviceTypes }: { serviceTypes: ServiceTypeOpti
 
       <FilterDivider />
 
-      <FilterSection heading="Minimum rating">
-        <FilterPillGroup>
-          {RATINGS.map((r) => (
-            <FilterPill
-              key={r.value}
-              label={r.label}
-              active={activeRating === r.value}
-              onClick={() => setParam("minRating", r.value)}
-            />
-          ))}
-        </FilterPillGroup>
-      </FilterSection>
-
-      <FilterDivider />
-
       <FilterSection heading="Specializations">
         {SPECIALIZATIONS.map((s) => (
           <FilterCheck
@@ -111,19 +82,6 @@ export function ServiceFilters({ serviceTypes }: { serviceTypes: ServiceTypeOpti
             label={s}
             checked={activeSpecs.includes(s)}
             onChange={() => toggleSpec(s)}
-          />
-        ))}
-      </FilterSection>
-
-      <FilterDivider />
-
-      <FilterSection heading="Verified & vetted">
-        {VERIFIED_OPTIONS.map((s, i) => (
-          <FilterCheck
-            key={s}
-            label={s}
-            checked={s === "CodaCo verified" ? get("verified") === "1" : i === 0}
-            onChange={s === "CodaCo verified" ? () => toggleBool("verified") : () => {}}
           />
         ))}
       </FilterSection>

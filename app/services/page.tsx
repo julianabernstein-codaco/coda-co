@@ -34,9 +34,7 @@ export const metadata: Metadata = {
 interface ServicesPageProps {
   searchParams: Promise<{
     type?: string;
-    minRating?: string;
     locationType?: string;
-    verified?: string;
     lifeStage?: string;
     specializations?: string;
     near?: string;
@@ -54,9 +52,7 @@ const VALID_LOCATION_TYPES = new Set<ServiceLocationType>([
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
   const {
     type,
-    minRating,
     locationType: locParam,
-    verified,
     lifeStage,
     specializations: specsParam,
     near,
@@ -77,9 +73,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     getServices({ serviceType, locationType }),
     getServices(),
     getVendors({
-      verified: verified === "1" ? true : undefined,
       lifeStage: parseLifeStageParam(lifeStage),
-      minRating: minRating ? parseFloat(minRating) : undefined,
       specializations,
       near,
       q,
@@ -117,8 +111,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const hasActiveFilter =
     serviceType != null ||
     locationType != null ||
-    minRating != null ||
-    verified === "1" ||
     lifeStage != null ||
     nearActive ||
     (q != null && q !== "") ||
