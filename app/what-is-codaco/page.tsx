@@ -34,7 +34,7 @@ const offerings: {
   },
   {
     title: "Active, thoughtful, caring support through death and dying",
-    body: "Every death is extraordinarily unique. But there are professionals who know how to help, no matter the circumstances. Do you need someone to help thoughtfully clean out the condo that your father lived in? Are you looking for someone who has been with someone dying before, who can support your family member who wants to die at home?",
+    body: "Every death is unique. But there are professionals who know how to help, no matter the circumstances — people who are familiar with death and dying and companies that exist to help in this space. We can help you find support near you.",
     cta: "Find support",
     href: "/services",
   },
