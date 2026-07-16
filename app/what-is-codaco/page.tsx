@@ -27,12 +27,6 @@ const offerings: {
     href: "/shop?category=planning",
   },
   {
-    title: "Help creating wills and trusts",
-    body: "We list only recommended lawyers and firms to help you plan your will, or find help understanding how your money and assets will be safely transferred to the right people when you die.",
-    cta: "Find an estate attorney",
-    href: "/services?type=attorney",
-  },
-  {
     title: "Active, thoughtful, caring support through death and dying",
     body: "Every death is unique. But there are professionals who know how to help, no matter the circumstances — people who are familiar with death and dying and companies that exist to help in this space. We can help you find support near you.",
     cta: "Find support",
@@ -45,16 +39,22 @@ const offerings: {
     href: "/shop",
   },
   {
-    title: "A way to support a friend or colleague",
-    body: "It can be really hard to know what to do when someone you know has lost a loved one. CodaCo gift cards allow you to support in a way that is helpful and meaningful — and way more practical than flowers.",
-    cta: "Give a gift card",
-    href: "/gift-cards",
-  },
-  {
     title: "Information",
     body: "Sometimes what we need most is gentle, direct information about what to do next, or what we can expect around the time of death and dying. Our Guidance page answers some of the most common questions about death, dying and the resources to help.",
     cta: "Read our guidance",
     href: "/guidance",
+  },
+  {
+    title: "Help creating wills and trusts",
+    body: "We list only recommended lawyers and firms to help you plan your will, or find help understanding how your money and assets will be safely transferred to the right people when you die.",
+    cta: "Find an estate attorney",
+    href: "/services?type=attorney",
+  },
+  {
+    title: "A way to support a friend or colleague",
+    body: "It can be really hard to know what to do when someone you know has lost a loved one. CodaCo gift cards allow you to support in a way that is helpful and meaningful — and way more practical than flowers.",
+    cta: "Give a gift card",
+    href: "/gift-cards",
   },
 ];
 
