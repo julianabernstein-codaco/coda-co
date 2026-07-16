@@ -79,8 +79,8 @@ export default function WhatIsCodaCoPage() {
           </p>
           <p className="text-[16px] text-cm leading-[1.78]">
             CodaCo brings helpful, trusted practitioners and beautiful goods all
-            into one place, so you can find just what helps near the end of life
-            — your own or a loved one&rsquo;s.
+            into one place, so that whether you are grieving a loss or planning
+            ahead, you can find support.
           </p>
         </div>
       </section>
