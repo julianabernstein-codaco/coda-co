@@ -96,6 +96,7 @@ export const guidanceTopics: GuidanceTopic[] = [
               one&apos;s death by making a phone call. If this administrative
               step feels strange, you are not alone. Still, it needs to be done.
             </p>
+            <p className="text-center font-bold">More information coming soon</p>
           </div>
         ),
         searchText:
