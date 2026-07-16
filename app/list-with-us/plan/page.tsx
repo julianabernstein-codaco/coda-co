@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { getPlans } from "@/lib/api/plans";
-import { servicePlanIncludes } from "@/lib/data/plans";
+import { servicePlanIncludes, servicePlanRenewalNote } from "@/lib/data/plans";
 
 export const metadata: Metadata = {
   title: "Choose a plan — CodaCo",
@@ -109,6 +109,12 @@ export default async function PlanPage({ searchParams }: PlanPageProps) {
               </div>
             ))}
           </div>
+
+          {type === "services" && (
+            <p className="text-center text-[14px] text-ink mb-2">
+              {servicePlanRenewalNote}
+            </p>
+          )}
 
           <p className="text-center text-[14px] text-ink">
             All plans include CodaCo buyer protection, secure messaging, and vetting support.

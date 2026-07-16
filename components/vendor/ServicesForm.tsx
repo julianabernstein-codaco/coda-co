@@ -4,7 +4,12 @@ import { useState, useTransition } from "react";
 import { submitServicesApplication } from "@/app/list-with-us/actions";
 import { StepsBar } from "@/components/ui/StepsBar";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
-import { planPriceLabel, servicePlanIncludes, servicePlans } from "@/lib/data/plans";
+import {
+  planPriceLabel,
+  servicePlanIncludes,
+  servicePlanRenewalNote,
+  servicePlans,
+} from "@/lib/data/plans";
 import { SPECIALIZATIONS } from "@/lib/data/specializations";
 import { normalizeZip } from "@/lib/geo/zip";
 import { LIFE_STAGES } from "@/lib/format/lifeStage";
@@ -444,6 +449,7 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                     );
                   })}
                 </div>
+                <p className="text-[13px] text-cl mt-3">{servicePlanRenewalNote}</p>
               </>
             )}
           </div>
