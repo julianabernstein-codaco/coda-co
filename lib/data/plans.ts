@@ -45,6 +45,11 @@ export const servicePlanIncludes = [
   "Client reviews",
 ];
 
+// Reassurance shown under the recurring plan choices (signup, /plan page,
+// and dashboard billing). Both Monthly and Annual auto-renew.
+export const servicePlanRenewalNote =
+  "We'll always notify you before renewal.";
+
 export const servicePlans: Plan[] = [
   {
     id: "starter",
@@ -64,31 +69,31 @@ export const servicePlans: Plan[] = [
   {
     id: "standard",
     name: "Monthly",
-    price: 15,
+    price: 29,
     period: "month",
     features: ["Cancel any time"],
     popular: true,
     transactionFee: "",
     targetType: "services",
     billingType: "recurring",
-    amountCents: 1500,
+    amountCents: 2900,
   },
   {
     id: "pro",
     name: "Annual",
-    price: 160,
+    price: 320,
     period: "year",
-    features: ["Save $20 vs. paying monthly", "Priority support"],
+    features: ["Save 8%"],
     popular: false,
     transactionFee: "",
     targetType: "services",
     billingType: "recurring",
-    amountCents: 16000,
+    amountCents: 32000,
   },
 ];
 
-// Compact price label for a plan card ("Free for 3 months", "$15/mo",
-// "$160/yr"). Keeps the signup form and the standalone /plan page in sync.
+// Compact price label for a plan card ("Free for 3 months", "$29/mo",
+// "$320/yr"). Keeps the signup form and the standalone /plan page in sync.
 export function planPriceLabel(plan: Plan): string {
   if (plan.trial) return plan.trial;
   if (plan.price == null) return "Free";

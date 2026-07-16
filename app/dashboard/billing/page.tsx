@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
-import { servicePlans, planPriceLabel } from "@/lib/data/plans";
+import { servicePlans, planPriceLabel, servicePlanRenewalNote } from "@/lib/data/plans";
 import { prisma } from "@/lib/db";
 import { getLiveSubscription, reconcileServicesSubscription } from "@/lib/billing/sync";
 import { isStripeConfigured } from "@/lib/stripe";
@@ -179,6 +179,7 @@ function ServicesBilling({
           />
         ))}
       </div>
+      <p className="text-[13px] text-cl mt-3">{servicePlanRenewalNote}</p>
     </Panel>
   );
 }
