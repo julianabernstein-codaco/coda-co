@@ -22,7 +22,7 @@ const offerings: {
 }[] = [
   {
     title: "Planning tools",
-    body: "There are lots of ways to plan ahead, and we have collected some of the most helpful tools. Workbooks to record your wishes and also the password to get into your laptop — things that make it infinitely easier for your loved ones to find your accounts and know what to do after you have died. Death cafes in your hometown — safe spaces to talk openly about death, dying, grief, and planning ahead.",
+    body: "There are lots of ways to plan ahead, and we have collected some of the most helpful tools. From end of life planning workbooks to death cafes in your hometown — safe spaces to talk openly about death, dying, grief, and planning ahead — you can find useful resources here.",
     cta: "Find planning tools",
     href: "/shop?category=planning",
   },
