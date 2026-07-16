@@ -71,13 +71,18 @@ export default function WhatIsCodaCoPage() {
           <br />
           <span className="text-tr">CodaCo is here to help.</span>
         </h1>
-        <p className="text-[16px] text-cm max-w-[620px] mx-auto leading-[1.78]">
-          There are so many resources to make the end of a life easier to
-          navigate — but most of us don&rsquo;t know about them until after we
-          need them. CodaCo brings helpful, trusted practitioners and beautiful
-          goods all into one place, so you can find just what helps near the end
-          of life — your own or a loved one&rsquo;s.
-        </p>
+        <div className="max-w-[620px] mx-auto space-y-4">
+          <p className="text-[16px] text-cm leading-[1.78]">
+            There are so many resources to make the end of a life easier to
+            navigate — but most of us don&rsquo;t know about them until after we
+            need them.
+          </p>
+          <p className="text-[16px] text-cm leading-[1.78]">
+            CodaCo brings helpful, trusted practitioners and beautiful goods all
+            into one place, so you can find just what helps near the end of life
+            — your own or a loved one&rsquo;s.
+          </p>
+        </div>
       </section>
 
       <WaveDivider topColor="var(--color-white)" bottomColor="var(--color-tr-vp)" />
