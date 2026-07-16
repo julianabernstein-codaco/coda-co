@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import { Logo } from "@/components/ui/Logo";
 import { NavCartLink } from "@/components/layout/NavCartLink";
+import { UserMenu } from "@/components/layout/UserMenu";
 import { prisma } from "@/lib/db";
 
 interface NavProps {
@@ -101,19 +102,7 @@ function SignedInControls({
           </Link>
         </li>
       )}
-      <li className="text-[15px] text-cm">{display}</li>
-      <li>
-        <form
-          action={async () => {
-            "use server";
-            await signOut({ redirectTo: "/" });
-          }}
-        >
-          <button type="submit" className="btn-ghost btn-sm">
-            Sign out
-          </button>
-        </form>
-      </li>
+      <UserMenu display={display} />
     </>
   );
 }
