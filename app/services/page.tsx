@@ -10,14 +10,12 @@ import { ServiceKeywordSearch } from "@/components/services/ServiceKeywordSearch
 import { ServiceSort } from "@/components/services/ServiceSort";
 import { Container } from "@/components/ui/Container";
 import { GiftCardCallout } from "@/components/ui/GiftCardCallout";
-import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getServices } from "@/lib/api/services";
 import { getServiceTypes } from "@/lib/api/serviceTypes";
 import { getVendors } from "@/lib/api/vendors";
 import { isKnownZip } from "@/lib/geo";
 import { parseSpecializationsParam } from "@/lib/data/specializations";
-import { parseLifeStageParam } from "@/lib/format/lifeStage";
 import type {
   Service,
   ServiceLocationType,
@@ -34,10 +32,7 @@ export const metadata: Metadata = {
 interface ServicesPageProps {
   searchParams: Promise<{
     type?: string;
-    minRating?: string;
     locationType?: string;
-    verified?: string;
-    lifeStage?: string;
     specializations?: string;
     near?: string;
     q?: string;
@@ -54,10 +49,7 @@ const VALID_LOCATION_TYPES = new Set<ServiceLocationType>([
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
   const {
     type,
-    minRating,
     locationType: locParam,
-    verified,
-    lifeStage,
     specializations: specsParam,
     near,
     q,
@@ -77,9 +69,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     getServices({ serviceType, locationType }),
     getServices(),
     getVendors({
-      verified: verified === "1" ? true : undefined,
-      lifeStage: parseLifeStageParam(lifeStage),
-      minRating: minRating ? parseFloat(minRating) : undefined,
       specializations,
       near,
       q,
@@ -117,9 +106,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const hasActiveFilter =
     serviceType != null ||
     locationType != null ||
-    minRating != null ||
-    verified === "1" ||
-    lifeStage != null ||
     nearActive ||
     (q != null && q !== "") ||
     (specializations != null && specializations.length > 0);
@@ -150,11 +136,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             </p>
           </Container>
         )}
-        <Container width="mid" className="mt-4">
-          <Suspense>
-            <LifeStageChips />
-          </Suspense>
-        </Container>
       </section>
 
       <WaveDivider topColor="#ffffff" bottomColor="#F0AE90" />
