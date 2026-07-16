@@ -22,19 +22,13 @@ const offerings: {
 }[] = [
   {
     title: "Planning tools",
-    body: "There are lots of ways to plan ahead, and we have collected some of the most helpful tools. Workbooks to record your wishes and also the password to get into your laptop — things that make it infinitely easier for your loved ones to find your accounts and know what to do after you have died. Death cafes in your hometown — safe spaces to talk openly about death, dying, grief, and planning ahead.",
+    body: "There are lots of ways to plan ahead, and we have collected some of the most helpful tools. From end of life planning workbooks to death cafes in your hometown — safe spaces to talk openly about death, dying, grief, and planning ahead — you can find useful resources here.",
     cta: "Find planning tools",
     href: "/shop?category=planning",
   },
   {
-    title: "Help creating wills and trusts",
-    body: "We list only recommended lawyers and firms to help you plan your will, or find help understanding what you can do to be sure your money and assets are safely transferred to the right people when you die.",
-    cta: "Find an estate attorney",
-    href: "/services?type=attorney",
-  },
-  {
     title: "Active, thoughtful, caring support through death and dying",
-    body: "Every death is extraordinarily unique. But there are professionals who know how to help, no matter the circumstances. Do you need someone to help thoughtfully clean out the condo that your father lived in? Are you looking for someone who has been with someone dying before, who can support your family member who wants to die at home?",
+    body: "Every death is unique. But there are professionals who know how to help, no matter the circumstances — practitioners who are familiar with death and dying and exist to help in this space. We can help you find support near you.",
     cta: "Find support",
     href: "/services",
   },
@@ -45,16 +39,22 @@ const offerings: {
     href: "/shop",
   },
   {
+    title: "Information",
+    body: "Sometimes what we need most is gentle, direct information about death and dying. Our Guidance page answers some of the most common questions about death, dying and the resources to help.",
+    cta: "Read our guidance",
+    href: "/guidance",
+  },
+  {
+    title: "Help creating wills and trusts",
+    body: "We list only recommended lawyers and firms to help you plan your will, or find help understanding how your money and assets will be safely transferred to the right people when you die.",
+    cta: "Find an estate attorney",
+    href: "/services?type=attorney",
+  },
+  {
     title: "A way to support a friend or colleague",
     body: "It can be really hard to know what to do when someone you know has lost a loved one. CodaCo gift cards allow you to support in a way that is helpful and meaningful — and way more practical than flowers.",
     cta: "Give a gift card",
     href: "/gift-cards",
-  },
-  {
-    title: "Information",
-    body: "Sometimes what we need most is gentle, direct information about what to do next, or what we can expect around the time of death and dying. Our Guidance page answers some of the most common questions about death, dying and the resources to help.",
-    cta: "Read our guidance",
-    href: "/guidance",
   },
 ];
 
@@ -71,12 +71,18 @@ export default function WhatIsCodaCoPage() {
           <br />
           <span className="text-tr">CodaCo is here to help.</span>
         </h1>
-        <p className="text-[16px] text-cm max-w-[620px] mx-auto leading-[1.78]">
-          There are so many resources to make the end of a life easier to
-          navigate — but most of us don&rsquo;t know about them until after we
-          need them. This site helps you sift through the people and services
-          that can help near the end of life — our own or a loved one&rsquo;s.
-        </p>
+        <div className="max-w-[620px] mx-auto space-y-4">
+          <p className="text-[16px] text-cm leading-[1.78]">
+            There are so many resources to make the end of a life easier to
+            navigate — but most of us don&rsquo;t know about them until after we
+            need them.
+          </p>
+          <p className="text-[16px] text-cm leading-[1.78]">
+            CodaCo brings helpful, trusted practitioners and beautiful goods all
+            into one place, so you can find just what helps near the end of life
+            — your own or a loved one&rsquo;s.
+          </p>
+        </div>
       </section>
 
       <WaveDivider topColor="var(--color-white)" bottomColor="var(--color-tr-vp)" />
