@@ -10,14 +10,12 @@ import { ServiceKeywordSearch } from "@/components/services/ServiceKeywordSearch
 import { ServiceSort } from "@/components/services/ServiceSort";
 import { Container } from "@/components/ui/Container";
 import { GiftCardCallout } from "@/components/ui/GiftCardCallout";
-import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { getServices } from "@/lib/api/services";
 import { getServiceTypes } from "@/lib/api/serviceTypes";
 import { getVendors } from "@/lib/api/vendors";
 import { isKnownZip } from "@/lib/geo";
 import { parseSpecializationsParam } from "@/lib/data/specializations";
-import { parseLifeStageParam } from "@/lib/format/lifeStage";
 import type {
   Service,
   ServiceLocationType,
@@ -35,7 +33,6 @@ interface ServicesPageProps {
   searchParams: Promise<{
     type?: string;
     locationType?: string;
-    lifeStage?: string;
     specializations?: string;
     near?: string;
     q?: string;
@@ -53,7 +50,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const {
     type,
     locationType: locParam,
-    lifeStage,
     specializations: specsParam,
     near,
     q,
@@ -73,7 +69,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     getServices({ serviceType, locationType }),
     getServices(),
     getVendors({
-      lifeStage: parseLifeStageParam(lifeStage),
       specializations,
       near,
       q,
@@ -111,7 +106,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const hasActiveFilter =
     serviceType != null ||
     locationType != null ||
-    lifeStage != null ||
     nearActive ||
     (q != null && q !== "") ||
     (specializations != null && specializations.length > 0);
@@ -142,11 +136,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             </p>
           </Container>
         )}
-        <Container width="mid" className="mt-4">
-          <Suspense>
-            <LifeStageChips />
-          </Suspense>
-        </Container>
       </section>
 
       <WaveDivider topColor="#ffffff" bottomColor="#F0AE90" />
