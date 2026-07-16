@@ -28,7 +28,7 @@ const offerings: {
   },
   {
     title: "Help creating wills and trusts",
-    body: "We list only recommended lawyers and firms to help you plan your will, or find help understanding what you can do to be sure your money and assets are safely transferred to the right people when you die.",
+    body: "We list only recommended lawyers and firms to help you plan your will, or find help understanding how your money and assets will be safely transferred to the right people when you die.",
     cta: "Find an estate attorney",
     href: "/services?type=attorney",
   },
