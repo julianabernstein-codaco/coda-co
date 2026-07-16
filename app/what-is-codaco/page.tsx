@@ -28,7 +28,7 @@ const offerings: {
   },
   {
     title: "Active, thoughtful, caring support through death and dying",
-    body: "Every death is unique. But there are professionals who know how to help, no matter the circumstances — people who are familiar with death and dying and companies that exist to help in this space. We can help you find support near you.",
+    body: "Every death is unique. But there are professionals who know how to help, no matter the circumstances — practitioners who are familiar with death and dying and exist to help in this space. We can help you find support near you.",
     cta: "Find support",
     href: "/services",
   },
