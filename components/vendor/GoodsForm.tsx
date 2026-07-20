@@ -22,7 +22,7 @@ interface FormData {
   bio: string;
 }
 
-export function GoodsForm() {
+export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
   const [step, setStep] = useState(0);
   const [plan, setPlan] = useState<PlanId>("starter");
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -169,24 +169,34 @@ export function GoodsForm() {
                     },
                   ].map((p) => {
                     const selected = plan === p.id;
+                    const locked = !paidOpen && p.id !== "starter";
                     return (
                       <button
                         key={p.id}
                         type="button"
-                        onClick={() => setPlan(p.id)}
+                        disabled={locked}
+                        aria-disabled={locked}
+                        onClick={locked ? undefined : () => setPlan(p.id)}
                         className={[
-                          "block w-full text-left border rounded-[10px] p-4 cursor-pointer transition-all",
-                          selected
-                            ? "border-tr bg-tr-vp"
-                            : "border-line-strong hover:border-tr",
+                          "block w-full text-left border rounded-[10px] p-4 transition-all",
+                          locked
+                            ? "opacity-50 cursor-not-allowed border-line-strong"
+                            : selected
+                              ? "border-tr bg-tr-vp cursor-pointer"
+                              : "border-line-strong hover:border-tr cursor-pointer",
                         ].join(" ")}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-[17px] font-medium text-ch">{p.name}</span>
                           <span className="text-[17px] font-medium text-tr">{p.price}</span>
-                          {p.popular && (
+                          {p.popular && !locked && (
                             <span className="text-[12px] bg-tr text-white px-2 py-0.5 rounded-full ml-2">
                               Most popular
+                            </span>
+                          )}
+                          {locked && (
+                            <span className="text-[12px] text-cm px-2 py-0.5 rounded-full border border-line ml-2">
+                              Available at launch
                             </span>
                           )}
                         </div>

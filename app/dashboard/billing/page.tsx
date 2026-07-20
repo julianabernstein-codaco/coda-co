@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { servicePlans, planPriceLabel, servicePlanRenewalNote } from "@/lib/data/plans";
 import { prisma } from "@/lib/db";
 import { getLiveSubscription, reconcileServicesSubscription } from "@/lib/billing/sync";
+import { getLaunchedAt, launchedFrom, trialWindow } from "@/lib/launch";
 import { isStripeConfigured } from "@/lib/stripe";
 import { requireVendor } from "../lib";
 import {
@@ -25,8 +26,25 @@ export default async function BillingPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
-  const { vendor } = await requireVendor();
+  const { user, vendor } = await requireVendor();
   const { status } = await searchParams;
+
+  // Pre-launch gate: paid options are shown but locked until launch. Admins
+  // bypass so the team can validate live billing. Free trials start at launch.
+  const launchedAt = await getLaunchedAt();
+  const live = launchedFrom(launchedAt);
+  const paidOpen = user.role === "admin" || live;
+  const { endsAt: trialEndsAt } = trialWindow(launchedAt);
+  let trialLabel: string;
+  if (!live) {
+    trialLabel = "Your free trial starts when CodaCo launches.";
+  } else {
+    const daysLeft = Math.ceil((trialEndsAt!.getTime() - Date.now()) / 86_400_000);
+    trialLabel =
+      daysLeft > 0
+        ? `Free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} left.`
+        : "Your free trial has ended — choose a plan to keep your services live.";
+  }
 
   const offersServices = vendor.kind === "services" || vendor.kind === "both";
   const offersGoods = vendor.kind === "goods" || vendor.kind === "both";
@@ -101,12 +119,19 @@ export default async function BillingPage({
           {offersServices && (
             <ServicesBilling
               status={servicesSub?.status}
+              planId={servicesSub?.planId}
               interval={servicesSub?.interval}
               cancelScheduled={cancelScheduled}
+              paidOpen={paidOpen}
+              trialLabel={trialLabel}
             />
           )}
           {offersGoods && (
-            <GoodsBilling status={setupFee?.status} hasFee={Boolean(setupFee)} />
+            <GoodsBilling
+              status={setupFee?.status}
+              hasFee={Boolean(setupFee)}
+              paidOpen={paidOpen}
+            />
           )}
         </Container>
       </section>
@@ -123,15 +148,62 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
+// The paid-plan picker, shown to trial and not-yet-subscribed vendors. When
+// pre-launch (paidOpen false) the buttons render visible-but-locked.
+function PlanChooser({ paidOpen }: { paidOpen: boolean }) {
+  const recurring = servicePlans.filter((p) => p.billingType === "recurring");
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        {recurring.map((plan) => (
+          <SubscribeButton
+            key={plan.id}
+            planId={plan.id}
+            label={`${plan.name} — ${planPriceLabel(plan)}${paidOpen ? "" : " · Available at launch"}`}
+            primary={plan.popular}
+            locked={!paidOpen}
+          />
+        ))}
+      </div>
+      <p className="text-[13px] text-cl mt-3">{servicePlanRenewalNote}</p>
+      {!paidOpen && (
+        <p className="text-[13px] text-cl mt-1">
+          Paid plans open when CodaCo launches — until then you’re on the free trial.
+        </p>
+      )}
+    </>
+  );
+}
+
 function ServicesBilling({
   status,
+  planId,
   interval,
   cancelScheduled,
+  paidOpen,
+  trialLabel,
 }: {
   status?: string;
+  planId?: string;
   interval?: string;
   cancelScheduled?: boolean;
+  paidOpen: boolean;
+  trialLabel: string;
 }) {
+  // Free-trial (Starter) vendor — not a paid subscriber. Show trial state and
+  // let them move to a paid plan (locked pre-launch).
+  if (planId === "starter") {
+    return (
+      <Panel title="Your services plan">
+        <p className="text-[15px] text-cm mb-4 leading-relaxed">
+          You’re on the <span className="text-ch">free trial</span> — full access, no
+          charge. {trialLabel}
+        </p>
+        <p className="text-[14px] text-cm mb-3">When you’re ready, choose a plan:</p>
+        <PlanChooser paidOpen={paidOpen} />
+      </Panel>
+    );
+  }
   if (status && ACTIVE.has(status)) {
     const intervalWord = interval === "year" ? "annual" : "monthly";
     return (
@@ -162,29 +234,26 @@ function ServicesBilling({
     );
   }
 
-  const recurring = servicePlans.filter((p) => p.billingType === "recurring");
   return (
     <Panel title="Choose a services plan">
       <p className="text-[15px] text-cm mb-5 leading-relaxed">
         Subscribe to publish your services on CodaCo. Pick monthly or save with annual
         billing.
       </p>
-      <div className="flex flex-col gap-2">
-        {recurring.map((plan) => (
-          <SubscribeButton
-            key={plan.id}
-            planId={plan.id}
-            label={`${plan.name} — ${planPriceLabel(plan)}`}
-            primary={plan.popular}
-          />
-        ))}
-      </div>
-      <p className="text-[13px] text-cl mt-3">{servicePlanRenewalNote}</p>
+      <PlanChooser paidOpen={paidOpen} />
     </Panel>
   );
 }
 
-function GoodsBilling({ status, hasFee }: { status?: string; hasFee: boolean }) {
+function GoodsBilling({
+  status,
+  hasFee,
+  paidOpen,
+}: {
+  status?: string;
+  hasFee: boolean;
+  paidOpen: boolean;
+}) {
   // No setup-fee row means the vendor is on the free Starter goods plan.
   if (!hasFee) {
     return (
@@ -211,7 +280,15 @@ function GoodsBilling({ status, hasFee }: { status?: string; hasFee: boolean }) 
         Pay your one-time Storefront set-up fee to unlock unlimited listings. Pay once,
         never again.
       </p>
-      <SetupFeeButton label="Pay set-up fee" />
+      <SetupFeeButton
+        label={paidOpen ? "Pay set-up fee" : "Pay set-up fee · Available at launch"}
+        locked={!paidOpen}
+      />
+      {!paidOpen && (
+        <p className="text-[13px] text-cl mt-3">
+          The Storefront set-up fee opens when CodaCo launches.
+        </p>
+      )}
     </Panel>
   );
 }

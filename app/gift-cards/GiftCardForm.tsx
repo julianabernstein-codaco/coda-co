@@ -11,7 +11,7 @@ import {
 
 type Mode = "solo" | "group";
 
-export function GiftCardForm() {
+export function GiftCardForm({ paidOpen = true }: { paidOpen?: boolean }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -195,11 +195,24 @@ export function GiftCardForm() {
 
       {error && <p className="text-[15px] text-tr">{error}</p>}
 
-      <button type="submit" disabled={pending} className="btn-primary btn-md w-full disabled:opacity-50">
-        {pending ? "Starting checkout…" : mode === "group" ? "Start the group gift" : "Continue to payment"}
+      <button
+        type="submit"
+        disabled={pending || !paidOpen}
+        aria-disabled={!paidOpen}
+        className="btn-primary btn-md w-full disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {!paidOpen
+          ? "Available at launch"
+          : pending
+            ? "Starting checkout…"
+            : mode === "group"
+              ? "Start the group gift"
+              : "Continue to payment"}
       </button>
       <p className="text-[14px] text-cl text-center">
-        You'll be sent to Stripe to pay securely. The gift card is issued once payment clears.
+        {paidOpen
+          ? "You'll be sent to Stripe to pay securely. The gift card is issued once payment clears."
+          : "Gift cards go on sale when CodaCo launches."}
       </p>
     </form>
   );

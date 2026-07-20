@@ -33,19 +33,23 @@ export function SubscribeButton({
   planId,
   label,
   primary,
+  locked,
 }: {
   planId: SubscriptionPlanId;
   label: string;
   primary?: boolean;
+  // Pre-launch: render the paid option visible but non-functional.
+  locked?: boolean;
 }) {
   const { go, pending, error } = useCheckout();
   return (
     <div>
       <button
         type="button"
-        disabled={pending}
-        onClick={() => go(() => startServiceSubscriptionCheckout(planId))}
-        className={`${primary ? "btn-primary" : "btn-secondary"} btn-md disabled:opacity-60`}
+        disabled={pending || locked}
+        aria-disabled={locked}
+        onClick={locked ? undefined : () => go(() => startServiceSubscriptionCheckout(planId))}
+        className={`${primary ? "btn-primary" : "btn-secondary"} btn-md disabled:opacity-50 disabled:cursor-not-allowed`}
       >
         {pending ? "Starting…" : label}
       </button>
@@ -54,15 +58,16 @@ export function SubscribeButton({
   );
 }
 
-export function SetupFeeButton({ label }: { label: string }) {
+export function SetupFeeButton({ label, locked }: { label: string; locked?: boolean }) {
   const { go, pending, error } = useCheckout();
   return (
     <div>
       <button
         type="button"
-        disabled={pending}
-        onClick={() => go(() => startGoodsSetupCheckout())}
-        className="btn-primary btn-md disabled:opacity-60"
+        disabled={pending || locked}
+        aria-disabled={locked}
+        onClick={locked ? undefined : () => go(() => startGoodsSetupCheckout())}
+        className="btn-primary btn-md disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {pending ? "Starting…" : label}
       </button>

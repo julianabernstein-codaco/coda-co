@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { CURRENCY } from "@/lib/billing/catalog";
+import { paidFlowsOpenFor } from "@/lib/launch";
 import { log } from "@/lib/log";
 import {
   createPendingGiftCard,
@@ -57,6 +58,10 @@ export async function purchaseGiftCard(
   if (!purchaserEmail) return { error: "Enter your email so we can send a receipt." };
 
   const session = await auth();
+  // Pre-launch: gift cards aren't sold yet (admins can buy to test live).
+  if (!(await paidFlowsOpenFor(session?.user?.role))) {
+    return { error: "Gift cards go on sale at launch." };
+  }
 
   let card;
   try {
@@ -130,6 +135,11 @@ export async function contributeToPool(
   input: ContributeInput,
 ): Promise<PurchaseResult> {
   if (!isStripeConfigured()) return { error: "Gift cards aren't available yet." };
+
+  const session = await auth();
+  if (!(await paidFlowsOpenFor(session?.user?.role))) {
+    return { error: "Gift cards go on sale at launch." };
+  }
 
   const card = await findPoolByContributeToken(token);
   if (!card) return { error: "This contribution link is no longer valid." };

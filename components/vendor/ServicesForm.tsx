@@ -63,7 +63,15 @@ interface FormData {
   availableHours: string[];
 }
 
-export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption[] }) {
+export function ServicesForm({
+  serviceTypes,
+  paidOpen = true,
+}: {
+  serviceTypes: ServiceTypeOption[];
+  // Pre-launch: paid plans render visible-but-locked; only the free trial
+  // is selectable. Enforced server-side too.
+  paidOpen?: boolean;
+}) {
   const [step, setStep] = useState(0);
   const [plan, setPlan] = useState<PlanId>("starter");
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -419,22 +427,34 @@ export function ServicesForm({ serviceTypes }: { serviceTypes: ServiceTypeOption
                 <div className="space-y-3">
                   {servicePlans.map((p) => {
                     const selected = plan === p.id;
+                    const locked = !paidOpen && p.billingType !== "free";
                     return (
                       <button
                         key={p.id}
                         type="button"
-                        onClick={() => setPlan(p.id)}
+                        disabled={locked}
+                        aria-disabled={locked}
+                        onClick={locked ? undefined : () => setPlan(p.id)}
                         className={[
-                          "block w-full text-left border rounded-[10px] p-4 cursor-pointer transition-all",
-                          selected ? "border-sg bg-sg-vp" : "border-line-strong hover:border-sg",
+                          "block w-full text-left border rounded-[10px] p-4 transition-all",
+                          locked
+                            ? "opacity-50 cursor-not-allowed border-line-strong"
+                            : selected
+                              ? "border-sg bg-sg-vp cursor-pointer"
+                              : "border-line-strong hover:border-sg cursor-pointer",
                         ].join(" ")}
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-[17px] font-medium text-ch">{p.name}</span>
                           <span className="text-[17px] font-medium text-sg-d">{planPriceLabel(p)}</span>
-                          {p.popular && (
+                          {p.popular && !locked && (
                             <span className="text-[12px] bg-sg text-white px-2 py-0.5 rounded-full">
                               Most popular
+                            </span>
+                          )}
+                          {locked && (
+                            <span className="text-[12px] text-cm px-2 py-0.5 rounded-full border border-line">
+                              Available at launch
                             </span>
                           )}
                         </div>
