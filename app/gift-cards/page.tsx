@@ -35,11 +35,14 @@ export default async function GiftCardsPage({
       </div>
 
       {status === "success" && (
-        <div className="bg-sg-p border border-sg-l rounded-[10px] px-5 py-4 mb-6">
-          <p className="text-[15px] text-sg-d">
-            Payment received — thank you. The gift card is on its way by email once the
-            charge settles (usually a few seconds).
+        <div className="bg-sg-p border border-sg-l rounded-[10px] px-5 py-5 mb-6">
+          <p className="text-[15px] text-sg-d leading-relaxed">
+            Thank you for your purchase, and for thinking of someone in need of support.
+            You will receive an emailed receipt as soon as your payment is confirmed.
           </p>
+          <Link href="/" className="btn-secondary btn-sm no-underline mt-4 inline-block">
+            Return home
+          </Link>
         </div>
       )}
       {status === "cancelled" && (
