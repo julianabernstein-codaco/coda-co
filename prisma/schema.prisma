@@ -699,6 +699,9 @@ model GiftCard {
 
   purchaserUserId String?   @map("purchaser_user_id")
   purchaserEmail  String    @map("purchaser_email")
+  // The buyer's display name — shown to the recipient as who the gift is from
+  // ("Sam Rivera sent you a gift card"). Falls back to purchaserEmail if unset.
+  purchaserName   String?   @map("purchaser_name")
   recipientEmail  String?   @map("recipient_email")
   recipientName   String?   @map("recipient_name")
   giftMessage     String?   @map("gift_message")

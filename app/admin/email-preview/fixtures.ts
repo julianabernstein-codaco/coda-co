@@ -75,6 +75,7 @@ export function buildSample(key: TemplateKey): EmailPayload {
       return buildGiftCardDeliveryEmail({
         toEmail: FIXTURE.toEmail,
         recipientName: "Jordan Lee",
+        purchaserName: "Sam Rivera",
         purchaserEmail: "sam.rivera@example.com",
         isSelfPurchase: false,
         code: "Q7KP-3MWX-RBND",

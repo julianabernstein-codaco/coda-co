@@ -432,8 +432,10 @@ export interface GiftCardDeliveryArgs {
   // Sender context (mutually exclusive):
   //  • contributorNames present → group gift ("Sam, Jo and 2 others chipped in")
   //  • isSelfPurchase           → the buyer bought it for themselves
-  //  • otherwise                → a single gift from purchaserEmail
+  //  • otherwise                → a single gift from purchaserName (or email)
   isSelfPurchase?: boolean;
+  // Preferred "from" label for a single gift; falls back to purchaserEmail.
+  purchaserName?: string | null;
   purchaserEmail?: string;
   contributorNames?: string[];
 }
@@ -449,11 +451,12 @@ export function buildGiftCardDeliveryEmail(
     ? `Your ${args.amountLabel} CodaCo gift card`
     : `You've received a ${args.amountLabel} CodaCo gift card`;
 
+  const from = args.purchaserName?.trim() || args.purchaserEmail;
   const intro = isGroup
     ? `${joinNames(args.contributorNames!)} chipped in to send you a ${args.amountLabel} CodaCo gift card — to use toward goods and services in the marketplace.`
     : args.isSelfPurchase
       ? `Thanks for your purchase. Here's your ${args.amountLabel} CodaCo gift card — use it toward goods and services in the marketplace.`
-      : `${args.purchaserEmail} has sent you a ${args.amountLabel} CodaCo gift card — to use toward goods and services in the marketplace.`;
+      : `${from} has sent you a ${args.amountLabel} CodaCo gift card — to use toward goods and services in the marketplace.`;
 
   const messageBlock = args.message?.trim()
     ? `\nTheir message:\n${args.message.trim()}\n`

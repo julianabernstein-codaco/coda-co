@@ -18,8 +18,8 @@ export function GiftCardForm() {
   const [mode, setMode] = useState<Mode>("solo");
   const [preset, setPreset] = useState<number | "custom">(GIFT_CARD_PRESETS_CENTS[1]);
   const [customDollars, setCustomDollars] = useState("");
-  const [forSomeoneElse, setForSomeoneElse] = useState(false);
 
+  const [purchaserName, setPurchaserName] = useState("");
   const [purchaserEmail, setPurchaserEmail] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [recipientName, setRecipientName] = useState("");
@@ -48,13 +48,14 @@ export function GiftCardForm() {
     startTransition(async () => {
       const res = await purchaseGiftCard({
         amountCents,
+        purchaserName,
         purchaserEmail,
         pooled: group,
         // A group gift defers the recipient to the manage page; a solo gift
-        // optionally names a recipient now.
-        recipientEmail: !group && forSomeoneElse ? recipientEmail : undefined,
-        recipientName: !group && forSomeoneElse ? recipientName : undefined,
-        giftMessage: group || forSomeoneElse ? giftMessage : undefined,
+        // names the recipient now (blank recipient email → sent to the buyer).
+        recipientEmail: !group ? recipientEmail || undefined : undefined,
+        recipientName: !group ? recipientName || undefined : undefined,
+        giftMessage: giftMessage || undefined,
       });
       if (res.url) {
         window.location.href = res.url;
@@ -120,6 +121,12 @@ export function GiftCardForm() {
 
       {/* Buyer */}
       <Field
+        label="Your name"
+        value={purchaserName}
+        onChange={setPurchaserName}
+        hint="Shown to the recipient as who the gift is from."
+      />
+      <Field
         label="Your email"
         type="email"
         value={purchaserEmail}
@@ -149,48 +156,41 @@ export function GiftCardForm() {
           </label>
         </div>
       ) : (
-        <>
-          <label className="flex items-center gap-2.5 text-[16px] text-ch">
-            <input
-              type="checkbox"
-              checked={forSomeoneElse}
-              onChange={(e) => setForSomeoneElse(e.target.checked)}
-              className="accent-tr w-4 h-4"
+        <div className="space-y-4 border-l-2 border-tr-l pl-4">
+          <p className="text-[14px] font-medium text-ch uppercase tracking-wide">Who's it for?</p>
+          <Field
+            label="Recipient name"
+            value={recipientName}
+            onChange={setRecipientName}
+            required={false}
+            hint="Greeted by name at the top of the gift email."
+          />
+          <Field
+            label="Recipient email"
+            type="email"
+            value={recipientEmail}
+            onChange={setRecipientEmail}
+            required={false}
+            hint="Where we send the gift card. Leave blank to email it to yourself."
+          />
+          <label className="block">
+            <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
+              Message (optional)
+            </span>
+            <textarea
+              value={giftMessage}
+              onChange={(e) => setGiftMessage(e.target.value)}
+              rows={3}
+              maxLength={500}
+              className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none resize-none"
+              placeholder="A few words to go with the gift…"
             />
-            This is a gift for someone else
           </label>
-
-          {forSomeoneElse && (
-            <div className="space-y-4 border-l-2 border-tr-l pl-4">
-              <Field
-                label="Recipient email"
-                type="email"
-                value={recipientEmail}
-                onChange={setRecipientEmail}
-                hint="We'll email the gift card here once payment clears."
-              />
-              <Field
-                label="Recipient name (optional)"
-                value={recipientName}
-                onChange={setRecipientName}
-                required={false}
-              />
-              <label className="block">
-                <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
-                  Message (optional)
-                </span>
-                <textarea
-                  value={giftMessage}
-                  onChange={(e) => setGiftMessage(e.target.value)}
-                  rows={3}
-                  maxLength={500}
-                  className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none resize-none"
-                  placeholder="A few words to go with the gift…"
-                />
-              </label>
-            </div>
-          )}
-        </>
+          <p className="text-[13px] text-cl leading-relaxed">
+            Their email will show: <span className="text-cm">your name, this message, the
+            amount, and the code to redeem.</span>
+          </p>
+        </div>
       )}
 
       {error && <p className="text-[15px] text-tr">{error}</p>}

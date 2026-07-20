@@ -56,6 +56,7 @@ export function isPooled(card: Pick<GiftCard, "contributeToken">): boolean {
 export interface CreateGiftCardInput {
   amountCents: number;
   purchaserEmail: string;
+  purchaserName?: string | null;
   purchaserUserId?: string | null;
   recipientEmail?: string | null;
   recipientName?: string | null;
@@ -100,6 +101,7 @@ export async function createPendingGiftCard(
           currency: "USD",
           status: "pending",
           purchaserEmail: input.purchaserEmail,
+          purchaserName: input.purchaserName ?? null,
           purchaserUserId: input.purchaserUserId ?? null,
           recipientEmail: input.recipientEmail ?? null,
           recipientName: input.recipientName ?? null,
