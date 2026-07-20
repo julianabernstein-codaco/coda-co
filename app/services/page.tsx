@@ -174,7 +174,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             <div className="text-center mt-3">
               <Link
                 href="/where-to-start"
-                className="inline-block text-[15px] text-sg border-b border-dotted border-sg-l no-underline hover:text-sg-d"
+                className="inline-block text-[15px] text-ink border-b border-dotted border-current no-underline hover:opacity-80"
               >
                 Not sure what you need? See our guide →
               </Link>

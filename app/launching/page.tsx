@@ -124,7 +124,7 @@ export default function LaunchingPage() {
       {/* What you'll find — in the terracotta banner */}
       <section className="bg-tr-vp px-6 pt-5 pb-14 text-center">
         <Container width="narrow">
-          <p className="text-overline text-sg-d mb-3">What you&apos;ll find</p>
+          <p className="text-overline text-ink mb-3">What you&apos;ll find</p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
             {previewCategories.map((label) => (
               <span
