@@ -822,3 +822,19 @@ model WaitlistSignup {
 
   @@map("waitlist_signups")
 }
+
+// Single-row platform configuration. `launchedAt` gates all paid billing
+// flows and sets the free-trial clock:
+//   • null, or a future date  → pre-launch: paid vendor checkout (service
+//     subscriptions, goods set-up fee) is blocked for everyone but admins;
+//     vendors sign up on the free trial only. (Gift cards stay on sale.)
+//   • a date in the past      → launched: paid flows open; every vendor's
+//     free trial runs from launchedAt for TRIAL_DAYS (see lib/launch.ts).
+// Edited from /admin/launch. Fixed id so there's exactly one row.
+model PlatformConfig {
+  id         String    @id @default("singleton")
+  launchedAt DateTime? @map("launched_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@map("platform_config")
+}

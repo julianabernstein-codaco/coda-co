@@ -8,6 +8,7 @@ import { getPlan } from "@/lib/api/plans";
 import { CURRENCY, checkoutLineItem } from "@/lib/billing/catalog";
 import { ensureStripeCustomer } from "@/lib/billing/customer";
 import { syncStripeSubscription } from "@/lib/billing/sync";
+import { paidFlowsOpenFor } from "@/lib/launch";
 import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { log } from "@/lib/log";
 
@@ -36,8 +37,13 @@ export async function startServiceSubscriptionCheckout(
   planId: SubscriptionPlanId,
 ): Promise<CheckoutResult> {
   if (!isStripeConfigured()) return { error: "Billing is not configured yet." };
-  const { vendor } = await requireVendor();
+  const { user, vendor } = await requireVendor();
   if (vendor.kind === "goods") return { error: "Goods vendors don't use a subscription." };
+  // Pre-launch: paid plans are locked; vendors run on the free trial. Admins
+  // bypass so the team can validate live billing before launch.
+  if (!(await paidFlowsOpenFor(user.role))) {
+    return { error: "Paid plans open at launch — you're on the free trial until then." };
+  }
 
   const plan = getPlan("services", planId);
   if (!plan || plan.billingType !== "recurring") {
@@ -68,8 +74,11 @@ export async function startServiceSubscriptionCheckout(
 // vendor's pending VendorPayment is settled by the webhook on completion.
 export async function startGoodsSetupCheckout(): Promise<CheckoutResult> {
   if (!isStripeConfigured()) return { error: "Billing is not configured yet." };
-  const { vendor } = await requireVendor();
+  const { user, vendor } = await requireVendor();
   if (vendor.kind === "services") return { error: "Services vendors don't pay a set-up fee." };
+  if (!(await paidFlowsOpenFor(user.role))) {
+    return { error: "The Storefront set-up fee opens at launch." };
+  }
 
   const pending = vendor.payments.find(
     (p) => p.type === "setup_fee" && p.status === "pending",
