@@ -83,6 +83,45 @@ export function GiftCardForm() {
         />
       </div>
 
+      {/* Recipient (solo only) — first, so it's clear upfront who it's for */}
+      {mode === "solo" && (
+        <div className="space-y-4">
+          <p className="text-[14px] font-medium text-ch uppercase tracking-wide">Who is this for?</p>
+          <Field
+            label="Recipient name"
+            value={recipientName}
+            onChange={setRecipientName}
+            required={false}
+            hint="Greeted by name at the top of the gift email."
+          />
+          <Field
+            label="Recipient email"
+            type="email"
+            value={recipientEmail}
+            onChange={setRecipientEmail}
+            required={false}
+            hint="Where we send the gift card. Leave blank to email it to yourself."
+          />
+          <label className="block">
+            <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
+              Message (optional)
+            </span>
+            <textarea
+              value={giftMessage}
+              onChange={(e) => setGiftMessage(e.target.value)}
+              rows={3}
+              maxLength={500}
+              className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none resize-none"
+              placeholder="A few words to go with the gift…"
+            />
+          </label>
+          <p className="text-[13px] text-cl leading-relaxed">
+            Their email will show: <span className="text-cm">your name, this message, the
+            amount, and the code to redeem.</span>
+          </p>
+        </div>
+      )}
+
       {/* Amount */}
       <fieldset className="space-y-3">
         <legend className="text-[14px] font-medium text-ch uppercase tracking-wide mb-1">
@@ -134,7 +173,7 @@ export function GiftCardForm() {
         hint={mode === "group" ? "We'll send your share link and manage link here." : "We'll send a receipt here."}
       />
 
-      {mode === "group" ? (
+      {mode === "group" && (
         <div className="space-y-4 border-l-2 border-tr-l pl-4">
           <p className="text-[15px] text-cm leading-relaxed">
             After you pay your starting contribution, you'll get a private link to manage the
@@ -154,42 +193,6 @@ export function GiftCardForm() {
               placeholder="You can edit this later before you send the gift…"
             />
           </label>
-        </div>
-      ) : (
-        <div className="space-y-4 border-l-2 border-tr-l pl-4">
-          <p className="text-[14px] font-medium text-ch uppercase tracking-wide">Who's it for?</p>
-          <Field
-            label="Recipient name"
-            value={recipientName}
-            onChange={setRecipientName}
-            required={false}
-            hint="Greeted by name at the top of the gift email."
-          />
-          <Field
-            label="Recipient email"
-            type="email"
-            value={recipientEmail}
-            onChange={setRecipientEmail}
-            required={false}
-            hint="Where we send the gift card. Leave blank to email it to yourself."
-          />
-          <label className="block">
-            <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
-              Message (optional)
-            </span>
-            <textarea
-              value={giftMessage}
-              onChange={(e) => setGiftMessage(e.target.value)}
-              rows={3}
-              maxLength={500}
-              className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none resize-none"
-              placeholder="A few words to go with the gift…"
-            />
-          </label>
-          <p className="text-[13px] text-cl leading-relaxed">
-            Their email will show: <span className="text-cm">your name, this message, the
-            amount, and the code to redeem.</span>
-          </p>
         </div>
       )}
 
