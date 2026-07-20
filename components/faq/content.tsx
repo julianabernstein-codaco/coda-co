@@ -167,9 +167,10 @@ export const guidanceTopics: GuidanceTopic[] = [
             </p>
             <p>
               <span className="font-medium text-ch">
-                Natural Organic Reduction (also called Terramation):
+                Natural Organic Reduction (or Human Composting):
               </span>{" "}
-              Terramation is a process that allows for natural decomposition in
+              Natural Organic Reduction is a process that allows for natural
+              decomposition in
               urban areas, where green cemeteries and natural burial may not be
               readily available. In this process, bodies are laid to rest within
               a closed vessel along with organic material (such as straw,
@@ -197,7 +198,7 @@ export const guidanceTopics: GuidanceTopic[] = [
           </div>
         ),
         searchText:
-          "There are many ways to lay a body to rest. Green Burial Natural Burial is a popular alternative to traditional burial. In a green burial, a body is placed in its natural state (no embalming) into a biodegradable casket or natural fiber shroud. The body is then placed directly into the earth, allowing it to decompose naturally. Green burials are legal in all 50 US states. Many states have green burial cemeteries or hybrid cemeteries. Traditional Burial may include embalming, a casket, and a concrete-lined grave forming the burial vault. Burial at Sea: a body or cremated remains can be buried at sea, regulated by the Environmental Protection Agency at least three nautical miles from shore, EPA notified within 30 days. Traditional Cremation: a body is incinerated and bone fragments crushed into ashes, buried, kept in an urn, or scattered. Natural Organic Reduction Terramation allows natural decomposition in urban areas, bodies laid in a closed vessel with straw alfalfa wood chips to transform into nutrient-rich soil. Aquamation Water Cremation uses water and an alkaline solution to break down a body, leaving bone fragments crushed into ashes. Anatomical donation: donate your body to science, universities, medical schools, or research organizations.",
+          "There are many ways to lay a body to rest. Green Burial Natural Burial is a popular alternative to traditional burial. In a green burial, a body is placed in its natural state (no embalming) into a biodegradable casket or natural fiber shroud. The body is then placed directly into the earth, allowing it to decompose naturally. Green burials are legal in all 50 US states. Many states have green burial cemeteries or hybrid cemeteries. Traditional Burial may include embalming, a casket, and a concrete-lined grave forming the burial vault. Burial at Sea: a body or cremated remains can be buried at sea, regulated by the Environmental Protection Agency at least three nautical miles from shore, EPA notified within 30 days. Traditional Cremation: a body is incinerated and bone fragments crushed into ashes, buried, kept in an urn, or scattered. Natural Organic Reduction Human Composting allows natural decomposition in urban areas, bodies laid in a closed vessel with straw alfalfa wood chips to transform into nutrient-rich soil. Aquamation Water Cremation uses water and an alkaline solution to break down a body, leaving bone fragments crushed into ashes. Anatomical donation: donate your body to science, universities, medical schools, or research organizations.",
       },
       {
         q: "What are the rules around funerals where I live?",
