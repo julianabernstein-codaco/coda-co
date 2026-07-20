@@ -7,7 +7,7 @@ import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
 import {
   planPriceLabel,
   servicePlanIncludes,
-  servicePlanRenewalNote,
+  planRenewalNote,
   servicePlans,
 } from "@/lib/data/plans";
 import { SPECIALIZATIONS } from "@/lib/data/specializations";
@@ -469,7 +469,7 @@ export function ServicesForm({
                     );
                   })}
                 </div>
-                <p className="text-[13px] text-cl mt-3">{servicePlanRenewalNote}</p>
+                <p className="text-[13px] text-cl mt-3">{planRenewalNote}</p>
               </>
             )}
           </div>

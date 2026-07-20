@@ -226,7 +226,7 @@ export async function recordGiftCardContribution(
 // These helpers recover it: pull the card's succeeded PaymentIntents straight
 // from Stripe (matched by the giftCardId we stamp into each PI's metadata) and
 // replay them through recordGiftCardContribution, which is idempotent. Mirrors
-// reconcileServicesSubscription in lib/billing/sync.ts.
+// reconcileSubscription in lib/billing/sync.ts.
 //
 // Guarded to `pending` so a healthy (active) card makes no Stripe call — these
 // run on page load, and we don't want a search per view for working cards.

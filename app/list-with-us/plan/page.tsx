@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { getPlans } from "@/lib/api/plans";
-import { servicePlanIncludes, servicePlanRenewalNote } from "@/lib/data/plans";
+import {
+  goodsPlanIncludes,
+  planRenewalNote,
+  servicePlanIncludes,
+} from "@/lib/data/plans";
 
 export const metadata: Metadata = {
   title: "Choose a plan — CodaCo",
@@ -15,6 +19,7 @@ interface PlanPageProps {
 export default async function PlanPage({ searchParams }: PlanPageProps) {
   const { type = "goods" } = await searchParams;
   const plans = await getPlans(type);
+  const includes = type === "goods" ? goodsPlanIncludes : servicePlanIncludes;
 
   return (
     <>
@@ -34,19 +39,17 @@ export default async function PlanPage({ searchParams }: PlanPageProps) {
             <p className="text-[16px] text-ink mt-2">Start free. Upgrade when you are ready.</p>
           </div>
 
-          {type === "services" && (
-            <div className="bg-white rounded-[14px] border border-line p-6 mb-6">
-              <div className="text-[15px] font-medium text-ch mb-3">All plans include</div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-                {servicePlanIncludes.map((f) => (
-                  <li key={f} className="text-[15px] text-cm flex items-start gap-2">
-                    <span className="text-sg mt-px flex-shrink-0">✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div className="bg-white rounded-[14px] border border-line p-6 mb-6">
+            <div className="text-[15px] font-medium text-ch mb-3">All plans include</div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+              {includes.map((f) => (
+                <li key={f} className="text-[15px] text-cm flex items-start gap-2">
+                  <span className="text-sg mt-px flex-shrink-0">✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <div className="grid-auto-200 mb-8">
             {plans.map((plan) => (
@@ -110,11 +113,9 @@ export default async function PlanPage({ searchParams }: PlanPageProps) {
             ))}
           </div>
 
-          {type === "services" && (
-            <p className="text-center text-[14px] text-ink mb-2">
-              {servicePlanRenewalNote}
-            </p>
-          )}
+          <p className="text-center text-[14px] text-ink mb-2">
+            {planRenewalNote}
+          </p>
 
           <p className="text-center text-[14px] text-ink">
             All plans include CodaCo buyer protection, secure messaging, and vetting support.

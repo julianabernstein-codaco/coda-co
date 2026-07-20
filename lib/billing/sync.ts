@@ -21,20 +21,23 @@ function periodEnd(sub: Stripe.Subscription): Date | null {
   return unix ? new Date(unix * 1000) : null;
 }
 
-// Reconcile a Stripe Subscription (services, recurring) into our
+// Reconcile a Stripe Subscription (goods or services, recurring) into our
 // subscriptions table. Stripe is the source of truth; we project its state
-// onto the vendor's services row. Idempotent — safe on any webhook event.
+// onto the vendor's row for that kind. Idempotent — safe on any webhook
+// event. The kind is carried in the subscription metadata (set at Checkout).
 export async function syncStripeSubscription(sub: Stripe.Subscription): Promise<void> {
   const vendorId = sub.metadata?.vendorId;
   if (!vendorId) {
     log.warn("billing.sync_missing_vendor", { stripeSubscriptionId: sub.id });
     return;
   }
+  const kind: "goods" | "services" =
+    sub.metadata?.kind === "goods" ? "goods" : "services";
 
   const item = sub.items.data[0];
   const data = {
     vendorId,
-    kind: "services" as const,
+    kind,
     status: mapStripeStatus(sub.status),
     interval: mapStripeInterval(item?.price.recurring?.interval ?? undefined),
     stripeSubscriptionId: sub.id,
@@ -43,16 +46,16 @@ export async function syncStripeSubscription(sub: Stripe.Subscription): Promise<
     ...(planIdFromMetadata(sub.metadata) ? { planId: planIdFromMetadata(sub.metadata)! } : {}),
   };
 
-  // A services vendor has one subscription row, created at approval as
+  // A vendor has one subscription row per kind, created at approval as
   // "incomplete". Match by stripeSubscriptionId once linked, else the
-  // vendor's existing services row, else create.
+  // vendor's existing row for this kind, else create.
   const existing =
     (await prisma.subscription.findUnique({
       where: { stripeSubscriptionId: sub.id },
       select: { id: true },
     })) ??
     (await prisma.subscription.findFirst({
-      where: { vendorId, kind: "services" },
+      where: { vendorId, kind },
       select: { id: true },
     }));
 
@@ -73,9 +76,10 @@ export async function syncStripeSubscription(sub: Stripe.Subscription): Promise<
 // Self-heal: pull the vendor's current subscription straight from Stripe
 // and sync it. Used on the billing page when a webhook may have been
 // missed (e.g. the endpoint isn't configured yet), so a refresh reflects
-// reality instead of sitting at "incomplete" forever. Best-effort — never
-// throws into the page render.
-export async function reconcileServicesSubscription(
+// reality instead of sitting at "incomplete" forever. Kind-agnostic — the
+// synced subscription carries its own kind in metadata. Best-effort —
+// never throws into the page render.
+export async function reconcileSubscription(
   vendorId: string,
   stripeCustomerId: string | null,
 ): Promise<void> {
@@ -106,23 +110,4 @@ export async function getLiveSubscription(
     log.warn("billing.retrieve_failed", { stripeSubscriptionId, err });
     return null;
   }
-}
-
-// Settle a goods set-up fee after its one-time payment completes: flip the vendor's pending VendorPayment to paid and record the Stripe references.
-// Idempotent — re-running only touches still-pending rows.
-export async function markSetupFeePaid(
-  vendorId: string,
-  paymentIntentId: string | null,
-  customerId: string | null,
-): Promise<void> {
-  const result = await prisma.vendorPayment.updateMany({
-    where: { vendorId, type: "setup_fee", status: "pending" },
-    data: {
-      status: "paid",
-      paidAt: new Date(),
-      stripePaymentIntentId: paymentIntentId,
-      stripeCustomerId: customerId,
-    },
-  });
-  log.info("billing.setup_fee_paid", { vendorId, paymentIntentId, updated: result.count });
 }

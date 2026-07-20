@@ -30,23 +30,18 @@ export default async function DashboardPage() {
     prisma.vendorInquiry.count({ where: { vendorId: vendor.id, readAt: null } }),
   ]);
 
-  // Billing summary differs by kind: services run on a subscription, goods
-  // on the free plan or a one-time Storefront set-up fee.
-  const offersServices = vendor.kind === "services" || vendor.kind === "both";
-  const servicesSub = vendor.subscriptions.find((s) => s.kind === "services");
-  const setupFee = vendor.payments.find((p) => p.type === "setup_fee");
-  const subActive =
-    servicesSub && ["active", "trialing"].includes(servicesSub.status);
-  const intervalWord = servicesSub?.interval === "year" ? "annual" : "monthly";
-  const billingLabel = offersServices
-    ? subActive
-      ? `${intervalWord} subscription`
-      : "Subscription needs setup"
-    : setupFee
-      ? setupFee.status === "paid"
-        ? "Storefront"
-        : "Set-up fee due"
-      : "Free plan";
+  // Billing summary: goods and services both run on a recurring subscription
+  // (Starter = free trial, then Monthly/Annual).
+  const subKind = vendor.kind === "services" ? "services" : "goods";
+  const sub = vendor.subscriptions.find((s) => s.kind === subKind);
+  const subActive = sub && ["active", "trialing"].includes(sub.status);
+  const intervalWord = sub?.interval === "year" ? "annual" : "monthly";
+  const billingLabel =
+    sub?.planId === "starter"
+      ? "Free trial"
+      : subActive
+        ? `${intervalWord} subscription`
+        : "Subscription needs setup";
 
   return (
     <>
@@ -122,15 +117,11 @@ export default async function DashboardPage() {
             <DashCard
               title="Billing"
               body={
-                offersServices
-                  ? subActive
+                sub?.planId === "starter"
+                  ? "You're on the free trial. Choose a plan when you're ready."
+                  : subActive
                     ? `Your ${intervalWord} subscription is active. Update your card or plan.`
                     : "Finish setting up your subscription to publish."
-                  : setupFee
-                    ? setupFee.status === "paid"
-                      ? "Storefront set-up fee paid."
-                      : "Pay your one-time Storefront set-up fee."
-                    : "You're on the free goods plan."
               }
               href="/dashboard/billing"
               cta="Manage billing →"
