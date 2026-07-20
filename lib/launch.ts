@@ -29,9 +29,10 @@ export async function isLaunched(): Promise<boolean> {
   return launchedFrom(await getLaunchedAt());
 }
 
-// Paid billing (subscriptions, goods set-up fee, gift cards) is open once
-// launched. Admins can always transact so the team can validate live
-// payments before launch. Pass the signed-in user's role.
+// Paid vendor billing (service subscriptions, goods set-up fee) is open once
+// launched. Admins can always transact so the team can validate live payments
+// before launch. Gift cards are NOT gated on this — they're always on sale.
+// Pass the signed-in user's role.
 export async function paidFlowsOpenFor(role?: string | null): Promise<boolean> {
   if (role === "admin") return true;
   return isLaunched();

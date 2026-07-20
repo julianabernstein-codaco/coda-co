@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
-import { auth } from "@/auth";
 import { isStripeConfigured } from "@/lib/stripe";
-import { paidFlowsOpenFor } from "@/lib/launch";
 import { reconcilePendingGiftCardById } from "@/lib/api/giftCards";
 import { GiftCardForm } from "./GiftCardForm";
 
@@ -24,9 +22,6 @@ export default async function GiftCardsPage({
   // funding webhook was missed, recover it from Stripe so the recipient's
   // delivery email actually goes out.
   if (card) await reconcilePendingGiftCardById(card);
-
-  const session = await auth();
-  const paidOpen = await paidFlowsOpenFor(session?.user?.role);
 
   return (
     <Container width="mid" className="py-12">
@@ -56,7 +51,7 @@ export default async function GiftCardsPage({
       <div className="grid gap-8 md:grid-cols-[1fr_300px] items-start">
         <Card className="space-y-6">
           {isStripeConfigured() ? (
-            <GiftCardForm paidOpen={paidOpen} />
+            <GiftCardForm />
           ) : (
             <p className="text-[16px] text-cm">
               Gift cards aren't available just yet. Please check back soon.

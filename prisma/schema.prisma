@@ -825,9 +825,9 @@ model WaitlistSignup {
 
 // Single-row platform configuration. `launchedAt` gates all paid billing
 // flows and sets the free-trial clock:
-//   • null, or a future date  → pre-launch: paid checkout (subscriptions,
-//     goods set-up fee, gift cards) is blocked for everyone but admins;
-//     vendors sign up on the free trial only.
+//   • null, or a future date  → pre-launch: paid vendor checkout (service
+//     subscriptions, goods set-up fee) is blocked for everyone but admins;
+//     vendors sign up on the free trial only. (Gift cards stay on sale.)
 //   • a date in the past      → launched: paid flows open; every vendor's
 //     free trial runs from launchedAt for TRIAL_DAYS (see lib/launch.ts).
 // Edited from /admin/launch. Fixed id so there's exactly one row.
