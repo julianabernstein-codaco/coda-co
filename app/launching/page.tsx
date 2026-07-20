@@ -45,7 +45,7 @@ const launchCities = [
 const previewCategories = [
   "Urns & vessels",
   "Death doulas",
-  "Green burial",
+  "Funeral home",
   "Celebrants",
   "Ash jewelry",
   "Planning docs",

@@ -36,7 +36,7 @@ const sections: StartSection[] = [
       { label: "Find a death doula near me →", href: "/services?type=doula" },
       { label: "Find a home funeral guide →", href: "/services?type=home-funeral" },
       { label: "Find a grief counselor near me →", href: "/services?type=grief" },
-      { label: "Find green burials near me →", href: "/services?type=green-burial" },
+      { label: "Find a funeral home near me →", href: "/services?type=funeral-home" },
       { label: "Find post-death cleaning services near me →", href: "/services?type=cleaner" },
       { label: "Let me browse through memorial items →", href: "/shop?category=memorial" },
     ],

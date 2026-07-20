@@ -127,7 +127,7 @@ export type ServiceType =
   | "organizer"
   | "grief"
   | "home-funeral"
-  | "green-burial"
+  | "funeral-home"
   | "cafe"
   | "life-celebration"
   | "somatic-practitioner"
