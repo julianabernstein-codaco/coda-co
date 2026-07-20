@@ -327,6 +327,14 @@ model Subscription {
   interval         SubscriptionInterval @default(unknown)
   currentPeriodEnd DateTime?            @map("current_period_end")
 
+  // Soft trial window for a services vendor. Both null until the go-live
+  // switch starts the trial (stamps trialStartedAt, trialEndsAt = +3 months,
+  // status = `trialing`). No Stripe object backs the trial — the vendor
+  // converts to a paid plan via Checkout before trialEndsAt. See
+  // docs/go-live-plan.md.
+  trialStartedAt DateTime? @map("trial_started_at")
+  trialEndsAt    DateTime? @map("trial_ends_at")
+
   // Stripe Billing linkage for recurring (services) plans. Both null until
   // the vendor completes Checkout from the dashboard; the webhook fills
   // them in. Goods one-time charges live in VendorPayment, not here.

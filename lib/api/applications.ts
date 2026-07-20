@@ -165,12 +165,15 @@ export async function approveApplication(
           vendorId: vendor.id,
           planId: app.planId,
           kind: subscriptionKind,
-          // Recurring (services) plans start unpaid: the vendor completes
-          // Stripe Checkout from the dashboard and the webhook flips this
-          // to active. Free + one-time (goods) plans are active right
-          // away — goods access is gated by the set-up-fee payment and
-          // the first-listing review, not the subscription row.
-          status: plan?.billingType === "recurring" ? "incomplete" : "active",
+          // Services subscriptions start pending (`incomplete`): the free
+          // trial doesn't run until the vendor's listing goes live — the
+          // go-live switch stamps the trial dates and flips this to
+          // `trialing` (see startServicesTrial / docs/go-live-plan.md) —
+          // and paid plans stay `incomplete` until the vendor completes
+          // Stripe Checkout and the webhook flips them to `active`. Goods
+          // (free / one-time) are `active` right away: access is gated by
+          // the set-up-fee payment and first-listing review, not this row.
+          status: subscriptionKind === "services" ? "incomplete" : "active",
         },
       });
 
