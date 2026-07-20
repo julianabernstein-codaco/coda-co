@@ -23,10 +23,12 @@ export default async function AdminPage() {
   if (session.user.role !== 'admin') redirect('/');
 
   const plans = [...goodsPlans, ...servicePlans];
+  // The DB viewer shows the full picture, including pre_launch / suspended
+  // vendors and their listings, so it opts out of the public visibility gate.
   const [products, vendors, services, reviewRows, vendorReviewRows] = await Promise.all([
-    getProducts(),
-    getVendors(),
-    getServices(),
+    getProducts({ includeHidden: true }),
+    getVendors({ includeHidden: true }),
+    getServices({ includeHidden: true }),
     prisma.productReview.findMany({
       include: { product: { select: { slug: true } } },
       orderBy: { reviewedAt: "desc" },

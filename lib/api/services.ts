@@ -16,6 +16,10 @@ export interface ServiceFilters {
   // archived). Used on the vendor's own profile so they can see their
   // unpublished work. Defaults to published-only for the public.
   includeUnpublished?: boolean;
+  // Include services belonging to vendors that aren't publicly `live`
+  // (pre_launch / suspended). Off by default; admin and owner-preview pass
+  // `true`. See docs/go-live-plan.md.
+  includeHidden?: boolean;
 }
 
 type DbService = Prisma.ServiceGetPayload<{
@@ -41,7 +45,11 @@ export async function getServices(filters: ServiceFilters = {}): Promise<Service
   const where: Prisma.ServiceWhereInput = filters.includeUnpublished
     ? { status: { in: ["draft", "published"] } }
     : { status: "published" };
-  if (filters.vendorId) where.vendor = { slug: filters.vendorId };
+  // Vendor relation filter: scope by slug and/or the public visibility gate.
+  const vendorWhere: Prisma.VendorProfileWhereInput = {};
+  if (filters.vendorId) vendorWhere.slug = filters.vendorId;
+  if (!filters.includeHidden) vendorWhere.publishState = "live";
+  if (Object.keys(vendorWhere).length > 0) where.vendor = vendorWhere;
   if (filters.serviceType) where.serviceType = { slug: filters.serviceType };
   if (filters.locationType && filters.locationType !== "unknown") {
     // 'both' covers either intent; an exact 'virtual' or 'in_person'
@@ -58,9 +66,15 @@ export async function getServices(filters: ServiceFilters = {}): Promise<Service
   return rows.map(toService);
 }
 
-export async function getService(id: string): Promise<Service | null> {
-  const s = await prisma.service.findUnique({
-    where: { slug: id },
+export async function getService(
+  id: string,
+  opts: { includeHidden?: boolean } = {},
+): Promise<Service | null> {
+  const s = await prisma.service.findFirst({
+    where: {
+      slug: id,
+      ...(opts.includeHidden ? {} : { vendor: { publishState: "live" } }),
+    },
     include: { vendor: true, serviceType: true },
   });
   return s ? toService(s) : null;

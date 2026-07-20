@@ -27,6 +27,10 @@ export interface VendorFilters {
   // Free-text keyword. Case-insensitive substring match over the vendor's
   // name, bio, service description, and credentials.
   q?: string;
+  // Include vendors that aren't publicly `live` (pre_launch / suspended).
+  // Off by default so public listings only surface live vendors; the admin
+  // DB viewer and owner-preview paths pass `true`. See docs/go-live-plan.md.
+  includeHidden?: boolean;
 }
 
 type DbVendor = Prisma.VendorProfileGetPayload<{}>;
@@ -99,6 +103,9 @@ async function attachRatings(
 
 export async function getVendors(filters: VendorFilters = {}): Promise<VendorWithRating[]> {
   const where: Prisma.VendorProfileWhereInput = {};
+  // Public visibility gate: only `live` vendors surface unless the caller
+  // explicitly opts in to hidden ones (admin / owner preview).
+  if (!filters.includeHidden) where.publishState = "live";
   if (filters.kind) {
     // 'both' covers either listing surface; an exact 'goods' or 'services'
     // filter should still surface vendors flagged as 'both'.
@@ -152,8 +159,15 @@ export async function getVendors(filters: VendorFilters = {}): Promise<VendorWit
   return results;
 }
 
-export async function getVendor(id: string): Promise<VendorWithRating | null> {
-  const v = await prisma.vendorProfile.findUnique({ where: { slug: id } });
+export async function getVendor(
+  id: string,
+  opts: { includeHidden?: boolean } = {},
+): Promise<VendorWithRating | null> {
+  // Gate to `live` unless the caller opts in (owner previewing their own
+  // pre_launch profile). See docs/go-live-plan.md.
+  const v = await prisma.vendorProfile.findFirst({
+    where: { slug: id, ...(opts.includeHidden ? {} : { publishState: "live" }) },
+  });
   if (!v) return null;
   const summary = await prisma.vendorReview.aggregate({
     where: { vendorId: v.id },
@@ -169,7 +183,7 @@ export async function getVendor(id: string): Promise<VendorWithRating | null> {
 
 export async function getFeaturedVendors(limit = 4): Promise<VendorWithRating[]> {
   const rows = await prisma.vendorProfile.findMany({
-    where: { verified: true, kind: { in: ["services", "both"] } },
+    where: { publishState: "live", verified: true, kind: { in: ["services", "both"] } },
     orderBy: { createdAt: "asc" },
     take: limit,
   });
@@ -187,7 +201,7 @@ const HOME_VENDOR_IDS = [
 
 export async function getHomeFeaturedVendors(): Promise<VendorWithRating[]> {
   const rows = await prisma.vendorProfile.findMany({
-    where: { slug: { in: [...HOME_VENDOR_IDS] } },
+    where: { publishState: "live", slug: { in: [...HOME_VENDOR_IDS] } },
   });
   const bySlug = new Map(rows.map((v) => [v.slug, v]));
   const ordered = HOME_VENDOR_IDS.map((id) => bySlug.get(id)).filter(

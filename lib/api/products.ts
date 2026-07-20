@@ -25,6 +25,10 @@ export interface ProductFilters {
   // Free-text keyword. Case-insensitive substring match over the product
   // title and description.
   q?: string;
+  // Include products whose vendor isn't publicly `live` (pre_launch /
+  // suspended). Off by default; the admin DB viewer passes `true`. See
+  // docs/go-live-plan.md.
+  includeHidden?: boolean;
 }
 
 type DbProduct = Prisma.ProductGetPayload<{
@@ -118,7 +122,12 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   // archived products live in the vendor dashboard via getVendorProducts.
   const where: Prisma.ProductWhereInput = { status: "published" };
   if (filters.productType) where.productType = { slug: filters.productType };
-  if (filters.sellerId) where.vendor = { slug: filters.sellerId };
+  // Vendor relation filter: scope by slug and/or the public visibility gate
+  // so a pre_launch vendor's published products stay off /shop.
+  const vendorWhere: Prisma.VendorProfileWhereInput = {};
+  if (filters.sellerId) vendorWhere.slug = filters.sellerId;
+  if (!filters.includeHidden) vendorWhere.publishState = "live";
+  if (Object.keys(vendorWhere).length > 0) where.vendor = vendorWhere;
   if (filters.verified != null) where.verified = filters.verified;
   if (filters.ids) where.slug = { in: filters.ids };
   if (filters.lifeStage) {
@@ -156,11 +165,18 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   return attachRatings(mapped);
 }
 
-export async function getProduct(id: string): Promise<ProductWithRating | null> {
-  // The PDP is public, so we only return published rows here. The
-  // dashboard editor uses getDashboardProduct (below) to fetch drafts.
+export async function getProduct(
+  id: string,
+  opts: { includeHidden?: boolean } = {},
+): Promise<ProductWithRating | null> {
+  // The PDP is public, so we only return published rows from `live` vendors
+  // here. The dashboard editor uses getDashboardProduct (below) for drafts.
   const p = await prisma.product.findFirst({
-    where: { slug: id, status: "published" },
+    where: {
+      slug: id,
+      status: "published",
+      ...(opts.includeHidden ? {} : { vendor: { publishState: "live" } }),
+    },
     include: { vendor: true, productType: true, variants: true },
   });
   if (!p) return null;
@@ -192,7 +208,7 @@ export async function getRelatedProducts(product: Product): Promise<ProductWithR
       slug: { not: product.id },
       status: "published",
       productType: { slug: product.productType },
-      vendor: { slug: product.sellerId },
+      vendor: { slug: product.sellerId, publishState: "live" },
     },
     include: { vendor: true, productType: true, variants: true },
     take: 4,
@@ -205,6 +221,7 @@ export async function getRelatedProducts(product: Product): Promise<ProductWithR
           slug: { not: product.id },
           status: "published",
           productType: { slug: product.productType },
+          vendor: { publishState: "live" },
           NOT: { id: { in: sameTypeAndVendor.map((p) => p.id) } },
         },
         include: { vendor: true, productType: true, variants: true },
@@ -230,7 +247,11 @@ const FEATURED_PRODUCT_SLUGS = [
 
 export async function getFeaturedProducts(limit = 6): Promise<ProductWithRating[]> {
   const rows = await prisma.product.findMany({
-    where: { slug: { in: FEATURED_PRODUCT_SLUGS }, status: "published" },
+    where: {
+      slug: { in: FEATURED_PRODUCT_SLUGS },
+      status: "published",
+      vendor: { publishState: "live" },
+    },
     include: { vendor: true, productType: true, variants: true },
   });
   // Prisma's `in` doesn't preserve order, so re-order by the curated list

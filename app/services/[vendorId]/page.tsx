@@ -45,19 +45,26 @@ function bioParagraphs(bio: string): string[] {
 export default async function VendorProfilePage({ params }: PageProps) {
   const { vendorId } = await params;
   const session = await auth();
-  const [vendor, vendorReviewList, ownerUserId] = await Promise.all([
-    getVendor(vendorId),
+  // Resolve ownership from an ungated lookup first: a pre_launch vendor is
+  // hidden from the public but its owner can still preview their own page.
+  const ownerUserId = await prisma.vendorProfile
+    .findUnique({ where: { slug: vendorId }, select: { userId: true } })
+    .then((v) => v?.userId ?? null);
+  const isOwner = Boolean(session?.user) && session!.user.id === ownerUserId;
+
+  const [vendor, vendorReviewList] = await Promise.all([
+    getVendor(vendorId, { includeHidden: isOwner }),
     getVendorReviews(vendorId),
-    prisma.vendorProfile
-      .findUnique({ where: { slug: vendorId }, select: { userId: true } })
-      .then((v) => v?.userId ?? null),
   ]);
   if (!vendor) notFound();
 
   // The signed-in owner viewing their own profile sees draft services
   // (tagged, with a nudge to publish); the public sees published only.
-  const isOwner = Boolean(session?.user) && session!.user.id === ownerUserId;
-  const vendorServices = await getServices({ vendorId, includeUnpublished: isOwner });
+  const vendorServices = await getServices({
+    vendorId,
+    includeUnpublished: isOwner,
+    includeHidden: isOwner,
+  });
   const draftCount = vendorServices.filter((s) => s.status !== "published").length;
 
   const primaryType = vendorServices[0]?.serviceType;

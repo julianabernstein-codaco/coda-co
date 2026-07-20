@@ -53,8 +53,11 @@ export async function sendVendorInquiry(input: ContactInput): Promise<ContactRes
     return { ok: false, error: "You've sent several messages recently. Please try again later." };
   }
 
-  const vendor = await prisma.vendorProfile.findUnique({
-    where: { slug: input.vendorSlug },
+  // Only `live` vendors accept inquiries — a pre_launch / suspended vendor
+  // isn't publicly reachable (their profile page 404s), so treat them as
+  // not found here too. See docs/go-live-plan.md.
+  const vendor = await prisma.vendorProfile.findFirst({
+    where: { slug: input.vendorSlug, publishState: "live" },
     include: { user: { select: { email: true } } },
   });
   if (!vendor) return { ok: false, error: "We couldn't find that provider." };
