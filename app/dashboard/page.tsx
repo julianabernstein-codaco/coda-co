@@ -35,13 +35,19 @@ export default async function DashboardPage() {
   const offersServices = vendor.kind === "services" || vendor.kind === "both";
   const servicesSub = vendor.subscriptions.find((s) => s.kind === "services");
   const setupFee = vendor.payments.find((p) => p.type === "setup_fee");
-  const subActive =
-    servicesSub && ["active", "trialing"].includes(servicesSub.status);
+  const subStatus = servicesSub?.status;
+  const onTrial = subStatus === "trialing";
+  const paidActive = subStatus === "active";
+  // A pending Starter subscription is on the free-trial track — the trial
+  // just hasn't started yet (it begins when the listing goes live).
+  const trialPending = !onTrial && !paidActive && servicesSub?.planId === "starter";
   const intervalWord = servicesSub?.interval === "year" ? "annual" : "monthly";
   const billingLabel = offersServices
-    ? subActive
-      ? `${intervalWord} subscription`
-      : "Subscription needs setup"
+    ? onTrial || trialPending
+      ? "Free trial"
+      : paidActive
+        ? `${intervalWord} subscription`
+        : "Subscription needs setup"
     : setupFee
       ? setupFee.status === "paid"
         ? "Storefront"
@@ -123,9 +129,13 @@ export default async function DashboardPage() {
               title="Billing"
               body={
                 offersServices
-                  ? subActive
-                    ? `Your ${intervalWord} subscription is active. Update your card or plan.`
-                    : "Finish setting up your subscription to publish."
+                  ? onTrial
+                    ? "You’re on your free trial. Choose a plan before it ends."
+                    : trialPending
+                      ? "Your free trial begins when your listing goes live."
+                      : paidActive
+                        ? `Your ${intervalWord} subscription is active. Update your card or plan.`
+                        : "Finish setting up your subscription to publish."
                   : setupFee
                     ? setupFee.status === "paid"
                       ? "Storefront set-up fee paid."

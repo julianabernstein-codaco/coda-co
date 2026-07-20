@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { servicePlans, planPriceLabel, servicePlanRenewalNote } from "@/lib/data/plans";
+import { formatFullDate } from "@/lib/format/date";
 import { prisma } from "@/lib/db";
 import { getLiveSubscription, reconcileServicesSubscription } from "@/lib/billing/sync";
 import { isStripeConfigured } from "@/lib/stripe";
@@ -102,6 +103,8 @@ export default async function BillingPage({
             <ServicesBilling
               status={servicesSub?.status}
               interval={servicesSub?.interval}
+              planId={servicesSub?.planId}
+              trialEndsAt={servicesSub?.trialEndsAt ?? null}
               cancelScheduled={cancelScheduled}
             />
           )}
@@ -123,16 +126,62 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
+function SubscribePlanButtons() {
+  const recurring = servicePlans.filter((p) => p.billingType === "recurring");
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        {recurring.map((plan) => (
+          <SubscribeButton
+            key={plan.id}
+            planId={plan.id}
+            label={`${plan.name} — ${planPriceLabel(plan)}`}
+            primary={plan.popular}
+          />
+        ))}
+      </div>
+      <p className="text-[13px] text-cl mt-3">{servicePlanRenewalNote}</p>
+    </>
+  );
+}
+
 function ServicesBilling({
   status,
   interval,
+  planId,
+  trialEndsAt,
   cancelScheduled,
 }: {
   status?: string;
   interval?: string;
+  planId?: string;
+  trialEndsAt?: Date | null;
   cancelScheduled?: boolean;
 }) {
-  if (status && ACTIVE.has(status)) {
+  // Free trial in progress: the vendor's services are live at no charge until
+  // trialEndsAt. They convert to a paid monthly/annual plan before then.
+  if (status === "trialing" && trialEndsAt) {
+    const daysLeft = Math.max(
+      0,
+      Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000),
+    );
+    return (
+      <Panel title="Your free trial">
+        <p className="text-[15px] text-cm mb-4 leading-relaxed">
+          You’re on your <span className="text-ch">free 3-month trial</span> —{" "}
+          <span className="text-ch">
+            {daysLeft} {daysLeft === 1 ? "day" : "days"} left
+          </span>
+          , through {formatFullDate(trialEndsAt)}. Your services are live at no
+          charge. Choose a plan before then to keep your listing up.
+        </p>
+        <SubscribePlanButtons />
+      </Panel>
+    );
+  }
+
+  // Paid subscription active.
+  if (status === "active") {
     const intervalWord = interval === "year" ? "annual" : "monthly";
     return (
       <Panel title="Your services subscription">
@@ -162,24 +211,28 @@ function ServicesBilling({
     );
   }
 
-  const recurring = servicePlans.filter((p) => p.billingType === "recurring");
+  // Pending free-trial (Starter) vendor whose trial hasn't started — their
+  // listing isn't live yet. The trial begins at go-live; nothing to pay now.
+  if (planId === "starter") {
+    return (
+      <Panel title="Your free trial">
+        <p className="text-[15px] text-cm leading-relaxed">
+          Your 3-month free trial begins the day your listing goes live on CodaCo.
+          You’ll choose a monthly or annual plan before it ends — no charge until
+          then.
+        </p>
+      </Panel>
+    );
+  }
+
+  // Recurring plan chosen but not yet active: prompt to subscribe.
   return (
     <Panel title="Choose a services plan">
       <p className="text-[15px] text-cm mb-5 leading-relaxed">
         Subscribe to publish your services on CodaCo. Pick monthly or save with annual
         billing.
       </p>
-      <div className="flex flex-col gap-2">
-        {recurring.map((plan) => (
-          <SubscribeButton
-            key={plan.id}
-            planId={plan.id}
-            label={`${plan.name} — ${planPriceLabel(plan)}`}
-            primary={plan.popular}
-          />
-        ))}
-      </div>
-      <p className="text-[13px] text-cl mt-3">{servicePlanRenewalNote}</p>
+      <SubscribePlanButtons />
     </Panel>
   );
 }
