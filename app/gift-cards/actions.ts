@@ -31,6 +31,7 @@ async function getOrigin(): Promise<string> {
 export interface PurchaseGiftCardInput {
   amountCents: number;
   purchaserEmail: string;
+  purchaserName?: string;
   recipientEmail?: string;
   recipientName?: string;
   giftMessage?: string;
@@ -56,6 +57,8 @@ export async function purchaseGiftCard(
   const purchaserEmail = input.purchaserEmail?.trim();
   if (!purchaserEmail) return { error: "Enter your email so we can send a receipt." };
 
+  const purchaserName = input.purchaserName?.trim() || null;
+
   const session = await auth();
 
   let card;
@@ -63,6 +66,7 @@ export async function purchaseGiftCard(
     card = await createPendingGiftCard({
       amountCents: input.amountCents,
       purchaserEmail,
+      purchaserName,
       purchaserUserId: session?.user?.id ?? null,
       recipientEmail: input.recipientEmail?.trim() || null,
       recipientName: input.recipientName?.trim() || null,
@@ -90,8 +94,13 @@ export async function purchaseGiftCard(
       line_items: [giftCardLineItem(card.initialAmountCents)],
       success_url: successUrl,
       cancel_url: `${origin}/gift-cards?status=cancelled`,
-      metadata: { kind: "gift_card", giftCardId: card.id },
-      payment_intent_data: { metadata: { kind: "gift_card", giftCardId: card.id } },
+      // contributorName attributes the buyer's own contribution — it shows the
+      // organizer in a pool's "In the pot" list, and survives a webhook miss
+      // recovered via reconcile (which reads PI metadata).
+      metadata: { kind: "gift_card", giftCardId: card.id, contributorName: purchaserName ?? "" },
+      payment_intent_data: {
+        metadata: { kind: "gift_card", giftCardId: card.id, contributorName: purchaserName ?? "" },
+      },
     });
     log.info("giftcard.checkout_created", {
       giftCardId: card.id,

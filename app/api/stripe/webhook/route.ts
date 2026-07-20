@@ -120,6 +120,7 @@ export async function POST(req: Request) {
               await sendGiftCardDeliveryEmail({
                 toEmail: card.recipientEmail ?? card.purchaserEmail,
                 recipientName: card.recipientName,
+                purchaserName: card.purchaserName,
                 purchaserEmail: card.purchaserEmail,
                 isSelfPurchase: !card.recipientEmail,
                 code: card.code,
