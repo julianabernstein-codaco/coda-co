@@ -79,6 +79,14 @@ const SECTIONS: PreviewSection[] = [
     payload: buildSample("gift-card"),
   },
   {
+    key: "gift-receipt",
+    title: "Gift card receipt (buyer)",
+    sentWhen:
+      "To the buyer when a single gift-card purchase confirms — their payment receipt. Separate from the delivery email (which carries the code and goes to the recipient). Never includes the code.",
+    editFn: "buildGiftCardReceiptEmail",
+    payload: buildSample("gift-receipt"),
+  },
+  {
     key: "gift-pool-created",
     title: "Group gift — pool ready",
     sentWhen:

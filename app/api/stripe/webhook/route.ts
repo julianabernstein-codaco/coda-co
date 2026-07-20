@@ -10,6 +10,7 @@ import {
 } from "@/lib/api/giftCards";
 import {
   sendGiftCardDeliveryEmail,
+  sendGiftCardReceiptEmail,
   sendGiftCardPoolCreatedEmail,
   sendGiftCardContributionEmail,
 } from "@/lib/email/templates";
@@ -116,7 +117,8 @@ export async function POST(req: Request) {
                 });
               }
             } else if (res.wasFirst) {
-              // Single-purchase card: deliver on payment, as before.
+              // Single-purchase card: deliver the card (with code) to the
+              // recipient, and email the buyer their payment receipt.
               await sendGiftCardDeliveryEmail({
                 toEmail: card.recipientEmail ?? card.purchaserEmail,
                 recipientName: card.recipientName,
@@ -126,6 +128,13 @@ export async function POST(req: Request) {
                 code: card.code,
                 amountLabel: formatCents(res.balanceCents),
                 message: card.giftMessage,
+              });
+              await sendGiftCardReceiptEmail({
+                toEmail: card.purchaserEmail,
+                amountLabel: formatCents(res.balanceCents),
+                isSelfPurchase: !card.recipientEmail,
+                recipientName: card.recipientName,
+                recipientEmail: card.recipientEmail,
               });
             }
           }

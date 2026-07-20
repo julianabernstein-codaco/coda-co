@@ -508,6 +508,66 @@ export async function sendGiftCardDeliveryEmail(
   return sendEmail({ to: args.toEmail, ...buildGiftCardDeliveryEmail(args) });
 }
 
+// Sent to the BUYER when a single gift-card purchase is confirmed — their
+// payment receipt. Distinct from the delivery email (which carries the code
+// and goes to the recipient). Never includes the code.
+export interface GiftCardReceiptArgs {
+  toEmail: string;
+  amountLabel: string;
+  // Where the card was delivered, for the receipt line.
+  isSelfPurchase: boolean;
+  recipientName?: string | null;
+  recipientEmail?: string | null;
+}
+
+export function buildGiftCardReceiptEmail(args: GiftCardReceiptArgs): EmailPayload {
+  const subject = `Your ${args.amountLabel} CodaCo gift card — receipt`;
+  const sentTo = args.isSelfPurchase
+    ? "you"
+    : args.recipientName?.trim() || args.recipientEmail || "the recipient";
+
+  const text = [
+    "Hi,",
+    "",
+    "Thank you for your purchase, and for thinking of someone in need of support.",
+    "",
+    "Receipt",
+    "-------",
+    `Item:    CodaCo gift card`,
+    `Amount:  ${args.amountLabel}`,
+    `Sent to: ${sentTo}`,
+    "",
+    "The balance can be spent toward goods and services across the marketplace, and any unused balance stays on the card.",
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">Hi,</p>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.55;">
+      Thank you for your purchase, and for thinking of someone in need of support.
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.7;">
+      <tr><td style="color:#7a7570;padding-right:16px;">Item</td><td style="color:#2c2825;">CodaCo gift card</td></tr>
+      <tr><td style="color:#7a7570;padding-right:16px;">Amount</td><td style="color:#2c2825;font-weight:600;">${escapeHtml(args.amountLabel)}</td></tr>
+      <tr><td style="color:#7a7570;padding-right:16px;">Sent to</td><td style="color:#2c2825;">${escapeHtml(sentTo)}</td></tr>
+    </table>
+    <p style="margin:0 0 16px;font-size:14px;color:#7a7570;line-height:1.55;">
+      The balance can be spent toward goods and services across the marketplace, and any
+      unused balance stays on the card.
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendGiftCardReceiptEmail(
+  args: GiftCardReceiptArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildGiftCardReceiptEmail(args) });
+}
+
 // Sent to the organizer once their group-gift pool is funded (first
 // contribution clears). Carries the public link to share for contributions
 // and the secret link to manage + send the gift — no account needed for either.
