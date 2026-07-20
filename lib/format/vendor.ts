@@ -8,7 +8,7 @@ const SERVICE_TYPE_LABELS: Record<ServiceType, string> = {
   organizer: "End of life organizer",
   grief: "Grief counselor",
   "home-funeral": "Home funeral guide",
-  "green-burial": "Green burial",
+  "funeral-home": "Funeral home",
   cafe: "Death cafe",
   "life-celebration": "Event planner",
   "somatic-practitioner": "Somatic practitioner (yoga, massage)",
