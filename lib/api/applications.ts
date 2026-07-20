@@ -165,31 +165,15 @@ export async function approveApplication(
           vendorId: vendor.id,
           planId: app.planId,
           kind: subscriptionKind,
-          // Recurring (services) plans start unpaid: the vendor completes
-          // Stripe Checkout from the dashboard and the webhook flips this
-          // to active. Free + one-time (goods) plans are active right
-          // away — goods access is gated by the set-up-fee payment and
-          // the first-listing review, not the subscription row.
+          // Recurring plans (goods + services) start unpaid: the vendor
+          // completes Stripe Checkout from the dashboard and the webhook
+          // flips this to active. Free plans (the trial Starter) are active
+          // right away. Goods access is gated by the first-listing review,
+          // not the subscription row, so a maker can set up their shop
+          // before the subscription is paid.
           status: plan?.billingType === "recurring" ? "incomplete" : "active",
         },
       });
-
-      // If the chosen plan carries a one-time charge (today: the goods
-      // "Storefront" set-up fee), record it as a `pending` payment in the
-      // same transaction. The Stripe webhook settles it — sets the
-      // payment-intent id + paid_at and flips status to `paid`.
-      if (plan?.billingType === "one_time" && (plan.amountCents ?? 0) > 0) {
-        await tx.vendorPayment.create({
-          data: {
-            vendorId: vendor.id,
-            planId: app.planId,
-            type: "setup_fee",
-            status: "pending",
-            amountCents: plan.amountCents!,
-            currency: "USD",
-          },
-        });
-      }
 
       // Auto-create the vendor's first draft Service from the data
       // already captured in the application. Skipped for goods-only

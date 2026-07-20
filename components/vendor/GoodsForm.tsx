@@ -3,6 +3,12 @@
 import { useState, useTransition } from "react";
 import { submitGoodsApplication } from "@/app/list-with-us/actions";
 import { StepsBar } from "@/components/ui/StepsBar";
+import {
+  goodsPlanIncludes,
+  goodsPlans,
+  planPriceLabel,
+  planRenewalNote,
+} from "@/lib/data/plans";
 import { normalizeZip } from "@/lib/geo/zip";
 
 type PlanId = "starter" | "standard" | "pro";
@@ -151,25 +157,20 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                   Start free. Upgrade anytime.
                 </p>
 
+                <div className="border border-line-strong rounded-[10px] bg-pl2 p-4 mb-4">
+                  <div className="text-[14px] font-medium text-ch mb-2">All plans include</div>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+                    {goodsPlanIncludes.map((f) => (
+                      <li key={f} className="text-[14px] text-cm flex items-center gap-1.5">
+                        <span className="text-sg">✓</span> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
                 <div className="space-y-3">
-                  {[
-                    {
-                      id: "starter" as const,
-                      name: "Starter",
-                      price: "Free",
-                      features: ["Up to 3 listings", "Marketplace visibility", "5% transaction fee"],
-                      popular: false,
-                    },
-                    {
-                      id: "standard" as const,
-                      name: "Storefront",
-                      price: "$29 one-time set-up",
-                      features: ["Unlimited listings", "Customer reviews", "5% transaction fee"],
-                      popular: false,
-                    },
-                  ].map((p) => {
+                  {goodsPlans.map((p) => {
                     const selected = plan === p.id;
-                    const locked = !paidOpen && p.id !== "starter";
+                    const locked = !paidOpen && p.billingType !== "free";
                     return (
                       <button
                         key={p.id}
@@ -186,16 +187,16 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                               : "border-line-strong hover:border-tr cursor-pointer",
                         ].join(" ")}
                       >
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2 mb-2">
                           <span className="text-[17px] font-medium text-ch">{p.name}</span>
-                          <span className="text-[17px] font-medium text-tr">{p.price}</span>
+                          <span className="text-[17px] font-medium text-tr">{planPriceLabel(p)}</span>
                           {p.popular && !locked && (
-                            <span className="text-[12px] bg-tr text-white px-2 py-0.5 rounded-full ml-2">
+                            <span className="text-[12px] bg-tr text-white px-2 py-0.5 rounded-full">
                               Most popular
                             </span>
                           )}
                           {locked && (
-                            <span className="text-[12px] text-cm px-2 py-0.5 rounded-full border border-line ml-2">
+                            <span className="text-[12px] text-cm px-2 py-0.5 rounded-full border border-line">
                               Available at launch
                             </span>
                           )}
@@ -211,6 +212,7 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                     );
                   })}
                 </div>
+                <p className="text-[13px] text-cl mt-3">{planRenewalNote}</p>
 
                 <div className="mt-5 bg-sg-vp rounded-[8px] px-4 py-3 text-[15px] text-cm border border-sg-p">
                   After this, you&apos;ll add your goods from your dashboard. Your

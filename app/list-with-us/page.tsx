@@ -101,7 +101,7 @@ const testimonials = [
 const faqs = [
   {
     q: "Is there a fee to list on CodaCo?",
-    a: "Listing goods is free for up to 3 products; unlock unlimited listings with a one-time $29 Storefront set-up fee. A 5% transaction fee applies on goods sales. Service providers choose a free trial, then a $29/month or $320/year subscription.",
+    a: "Both goods sellers and service providers start with a free 3-month trial, then choose a $29/month or $320/year subscription. No per-sale transaction fee.",
   },
   {
     q: "How long does approval take?",

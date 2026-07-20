@@ -4,10 +4,9 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { SubscriptionPlanId } from "@prisma/client";
 import {
-  cancelServiceSubscription,
+  cancelSubscription,
   openBillingPortal,
-  startGoodsSetupCheckout,
-  startServiceSubscriptionCheckout,
+  startSubscriptionCheckout,
   upgradeToAnnual,
   type ActionResult,
   type CheckoutResult,
@@ -48,26 +47,8 @@ export function SubscribeButton({
         type="button"
         disabled={pending || locked}
         aria-disabled={locked}
-        onClick={locked ? undefined : () => go(() => startServiceSubscriptionCheckout(planId))}
+        onClick={locked ? undefined : () => go(() => startSubscriptionCheckout(planId))}
         className={`${primary ? "btn-primary" : "btn-secondary"} btn-md disabled:opacity-50 disabled:cursor-not-allowed`}
-      >
-        {pending ? "Starting…" : label}
-      </button>
-      {error && <p className="text-[14px] text-tr mt-1.5">{error}</p>}
-    </div>
-  );
-}
-
-export function SetupFeeButton({ label, locked }: { label: string; locked?: boolean }) {
-  const { go, pending, error } = useCheckout();
-  return (
-    <div>
-      <button
-        type="button"
-        disabled={pending || locked}
-        aria-disabled={locked}
-        onClick={locked ? undefined : () => go(() => startGoodsSetupCheckout())}
-        className="btn-primary btn-md disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {pending ? "Starting…" : label}
       </button>
@@ -123,7 +104,7 @@ export function CancelSubButton() {
               "Cancel your subscription? It stays active until the end of the current billing period.",
             )
           ) {
-            run(() => cancelServiceSubscription());
+            run(() => cancelSubscription());
           }
         }}
         className="btn-ghost btn-md disabled:opacity-60"

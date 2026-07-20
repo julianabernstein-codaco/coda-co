@@ -30,22 +30,22 @@ async function getOrigin(): Promise<string> {
   return `${proto}://${host}`;
 }
 
-// Start a recurring subscription Checkout for a services vendor. planId
-// picks the cadence: "standard" = Monthly, "pro" = Annual. The subscription
-// row is reconciled by the webhook on completion — never here.
-export async function startServiceSubscriptionCheckout(
+// Start a recurring subscription Checkout for a vendor (goods or services).
+// planId picks the cadence: "standard" = Monthly, "pro" = Annual. The
+// subscription row is reconciled by the webhook on completion — never here.
+export async function startSubscriptionCheckout(
   planId: SubscriptionPlanId,
 ): Promise<CheckoutResult> {
   if (!isStripeConfigured()) return { error: "Billing is not configured yet." };
   const { user, vendor } = await requireVendor();
-  if (vendor.kind === "goods") return { error: "Goods vendors don't use a subscription." };
   // Pre-launch: paid plans are locked; vendors run on the free trial. Admins
   // bypass so the team can validate live billing before launch.
   if (!(await paidFlowsOpenFor(user.role))) {
     return { error: "Paid plans open at launch — you're on the free trial until then." };
   }
 
-  const plan = getPlan("services", planId);
+  const kind = vendor.kind === "services" ? "services" : "goods";
+  const plan = getPlan(kind, planId);
   if (!plan || plan.billingType !== "recurring") {
     return { error: "Pick a billing cycle." };
   }
@@ -59,72 +59,33 @@ export async function startServiceSubscriptionCheckout(
       line_items: [checkoutLineItem(plan)],
       success_url: `${origin}/dashboard/billing?status=success`,
       cancel_url: `${origin}/dashboard/billing?status=cancelled`,
-      metadata: { vendorId: vendor.id, planId, kind: "services" },
-      subscription_data: { metadata: { vendorId: vendor.id, planId, kind: "services" } },
+      metadata: { vendorId: vendor.id, planId, kind },
+      subscription_data: { metadata: { vendorId: vendor.id, planId, kind } },
     });
-    log.info("billing.service_checkout_created", { vendorId: vendor.id, planId, sessionId: session.id });
+    log.info("billing.subscription_checkout_created", { vendorId: vendor.id, planId, kind, sessionId: session.id });
     return { url: session.url ?? undefined };
   } catch (err) {
-    log.error("billing.service_checkout_failed", { vendorId: vendor.id, err });
+    log.error("billing.subscription_checkout_failed", { vendorId: vendor.id, err });
     return { error: "Could not start checkout. Try again." };
   }
 }
 
-// Start a one-time Checkout for the goods "Storefront" set-up fee. The
-// vendor's pending VendorPayment is settled by the webhook on completion.
-export async function startGoodsSetupCheckout(): Promise<CheckoutResult> {
-  if (!isStripeConfigured()) return { error: "Billing is not configured yet." };
-  const { user, vendor } = await requireVendor();
-  if (vendor.kind === "services") return { error: "Services vendors don't pay a set-up fee." };
-  if (!(await paidFlowsOpenFor(user.role))) {
-    return { error: "The Storefront set-up fee opens at launch." };
-  }
-
-  const pending = vendor.payments.find(
-    (p) => p.type === "setup_fee" && p.status === "pending",
-  );
-  if (!pending) return { error: "No set-up fee is due." };
-
-  const plan = getPlan("goods", "standard");
-  if (!plan || plan.billingType !== "one_time") {
-    return { error: "Set-up fee is unavailable." };
-  }
-
-  try {
-    const customerId = await ensureStripeCustomer(vendor.id);
-    const origin = await getOrigin();
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer: customerId,
-      line_items: [checkoutLineItem(plan)],
-      success_url: `${origin}/dashboard/billing?status=success`,
-      cancel_url: `${origin}/dashboard/billing?status=cancelled`,
-      metadata: { vendorId: vendor.id, kind: "goods_setup" },
-      payment_intent_data: { metadata: { vendorId: vendor.id, kind: "goods_setup" } },
-    });
-    log.info("billing.goods_setup_checkout_created", { vendorId: vendor.id, sessionId: session.id });
-    return { url: session.url ?? undefined };
-  } catch (err) {
-    log.error("billing.goods_setup_checkout_failed", { vendorId: vendor.id, err });
-    return { error: "Could not start checkout. Try again." };
-  }
-}
-
-// Upgrade a monthly services subscription to the annual plan in place —
+// Upgrade a monthly subscription to the annual plan in place —
 // no new Checkout, no re-entering card details. Switches the subscription
 // item to an annual price (created inline, since plans live in code) and
 // prorates the difference. Synced back immediately so the page reflects it.
 export async function upgradeToAnnual(): Promise<ActionResult> {
   if (!isStripeConfigured()) return { error: "Billing is not configured yet." };
   const { vendor } = await requireVendor();
+  const kind = vendor.kind === "services" ? "services" : "goods";
 
   const sub = vendor.subscriptions.find(
-    (s) => s.kind === "services" && s.stripeSubscriptionId,
+    (s) => s.kind === kind && s.stripeSubscriptionId,
   );
   if (!sub?.stripeSubscriptionId) return { error: "No active subscription to upgrade." };
   if (sub.interval === "year") return { error: "You're already on the annual plan." };
 
-  const annual = getPlan("services", "pro");
+  const annual = getPlan(kind, "pro");
   if (!annual?.amountCents) return { error: "The annual plan is unavailable." };
 
   try {
@@ -133,18 +94,18 @@ export async function upgradeToAnnual(): Promise<ActionResult> {
       currency: CURRENCY,
       unit_amount: annual.amountCents,
       recurring: { interval: "year" },
-      product_data: { name: "CodaCo Services — Annual" },
+      product_data: { name: `CodaCo ${kind === "services" ? "Services" : "Goods"} — Annual` },
     });
     const updated = await stripe.subscriptions.update(sub.stripeSubscriptionId, {
       items: [{ id: stripeSub.items.data[0].id, price: price.id }],
       proration_behavior: "create_prorations",
       // Keep metadata in sync so the webhook/reconcile records the new plan.
-      metadata: { vendorId: vendor.id, planId: "pro", kind: "services" },
+      metadata: { vendorId: vendor.id, planId: "pro", kind },
     });
     await syncStripeSubscription(updated);
     revalidatePath("/dashboard/billing");
     revalidatePath("/dashboard");
-    log.info("billing.upgraded_to_annual", { vendorId: vendor.id });
+    log.info("billing.upgraded_to_annual", { vendorId: vendor.id, kind });
     return { ok: true };
   } catch (err) {
     log.error("billing.upgrade_failed", { vendorId: vendor.id, err });
@@ -152,16 +113,17 @@ export async function upgradeToAnnual(): Promise<ActionResult> {
   }
 }
 
-// Cancel the services subscription at the end of the current billing period
+// Cancel the subscription at the end of the current billing period
 // (keeps access until then). Stripe leaves status "active" with
 // cancel_at_period_end until the period ends; the billing page reads that
 // flag live to show the scheduled cancellation.
-export async function cancelServiceSubscription(): Promise<ActionResult> {
+export async function cancelSubscription(): Promise<ActionResult> {
   if (!isStripeConfigured()) return { error: "Billing is not configured yet." };
   const { vendor } = await requireVendor();
+  const kind = vendor.kind === "services" ? "services" : "goods";
 
   const sub = vendor.subscriptions.find(
-    (s) => s.kind === "services" && s.stripeSubscriptionId,
+    (s) => s.kind === kind && s.stripeSubscriptionId,
   );
   if (!sub?.stripeSubscriptionId) return { error: "No active subscription to cancel." };
 

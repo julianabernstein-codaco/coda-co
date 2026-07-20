@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
-import { servicePlans, planPriceLabel, servicePlanRenewalNote } from "@/lib/data/plans";
+import { goodsPlans, servicePlans, planPriceLabel, planRenewalNote } from "@/lib/data/plans";
 import { prisma } from "@/lib/db";
-import { getLiveSubscription, reconcileServicesSubscription } from "@/lib/billing/sync";
+import { getLiveSubscription, reconcileSubscription } from "@/lib/billing/sync";
 import { getLaunchedAt, launchedFrom, trialWindow } from "@/lib/launch";
 import { isStripeConfigured } from "@/lib/stripe";
 import { requireVendor } from "../lib";
 import {
   CancelSubButton,
   PortalButton,
-  SetupFeeButton,
   SubscribeButton,
   UpgradeAnnualButton,
 } from "./BillingButtons";
@@ -46,33 +45,33 @@ export default async function BillingPage({
         : "Your free trial has ended — choose a plan to keep your services live.";
   }
 
-  const offersServices = vendor.kind === "services" || vendor.kind === "both";
-  const offersGoods = vendor.kind === "goods" || vendor.kind === "both";
-  let servicesSub = vendor.subscriptions.find((s) => s.kind === "services");
-  const setupFee = vendor.payments.find((p) => p.type === "setup_fee");
+  // A vendor subscribes on one kind. Goods and services now run on the same
+  // recurring model; "both" (not produced by the signup forms today) is
+  // treated as services for its billing row.
+  const subKind = vendor.kind === "services" ? "services" : "goods";
+  let sub = vendor.subscriptions.find((s) => s.kind === subKind);
 
   // Self-heal a missed webhook: if the vendor has paid (has a Stripe
-  // customer) but the services subscription isn't active yet, pull the
-  // live status from Stripe so a refresh reflects reality instead of
-  // sitting on "Choose a plan" forever.
+  // customer) but the subscription isn't active yet, pull the live status
+  // from Stripe so a refresh reflects reality instead of sitting on
+  // "Choose a plan" forever.
   if (
-    offersServices &&
     vendor.stripeCustomerId &&
     isStripeConfigured() &&
-    !(servicesSub && ACTIVE.has(servicesSub.status))
+    !(sub && ACTIVE.has(sub.status))
   ) {
-    await reconcileServicesSubscription(vendor.id, vendor.stripeCustomerId);
-    servicesSub =
+    await reconcileSubscription(vendor.id, vendor.stripeCustomerId);
+    sub =
       (await prisma.subscription.findFirst({
-        where: { vendorId: vendor.id, kind: "services" },
-      })) ?? servicesSub;
+        where: { vendorId: vendor.id, kind: subKind },
+      })) ?? sub;
   }
 
   // cancel_at_period_end isn't persisted locally, so read it live to show a
   // scheduled cancellation on the page (not just in the Stripe portal).
   let cancelScheduled = false;
-  if (servicesSub?.stripeSubscriptionId && ACTIVE.has(servicesSub.status)) {
-    const live = await getLiveSubscription(servicesSub.stripeSubscriptionId);
+  if (sub?.stripeSubscriptionId && ACTIVE.has(sub.status)) {
+    const live = await getLiveSubscription(sub.stripeSubscriptionId);
     cancelScheduled = live?.cancel_at_period_end ?? false;
   }
 
@@ -116,23 +115,15 @@ export default async function BillingPage({
             </div>
           )}
 
-          {offersServices && (
-            <ServicesBilling
-              status={servicesSub?.status}
-              planId={servicesSub?.planId}
-              interval={servicesSub?.interval}
-              cancelScheduled={cancelScheduled}
-              paidOpen={paidOpen}
-              trialLabel={trialLabel}
-            />
-          )}
-          {offersGoods && (
-            <GoodsBilling
-              status={setupFee?.status}
-              hasFee={Boolean(setupFee)}
-              paidOpen={paidOpen}
-            />
-          )}
+          <SubscriptionBilling
+            kind={subKind}
+            status={sub?.status}
+            planId={sub?.planId}
+            interval={sub?.interval}
+            cancelScheduled={cancelScheduled}
+            paidOpen={paidOpen}
+            trialLabel={trialLabel}
+          />
         </Container>
       </section>
     </>
@@ -150,8 +141,9 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
 
 // The paid-plan picker, shown to trial and not-yet-subscribed vendors. When
 // pre-launch (paidOpen false) the buttons render visible-but-locked.
-function PlanChooser({ paidOpen }: { paidOpen: boolean }) {
-  const recurring = servicePlans.filter((p) => p.billingType === "recurring");
+function PlanChooser({ kind, paidOpen }: { kind: "goods" | "services"; paidOpen: boolean }) {
+  const plans = kind === "goods" ? goodsPlans : servicePlans;
+  const recurring = plans.filter((p) => p.billingType === "recurring");
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -165,7 +157,7 @@ function PlanChooser({ paidOpen }: { paidOpen: boolean }) {
           />
         ))}
       </div>
-      <p className="text-[13px] text-cl mt-3">{servicePlanRenewalNote}</p>
+      <p className="text-[13px] text-cl mt-3">{planRenewalNote}</p>
       {!paidOpen && (
         <p className="text-[13px] text-cl mt-1">
           Paid plans open when CodaCo launches — until then you’re on the free trial.
@@ -175,7 +167,10 @@ function PlanChooser({ paidOpen }: { paidOpen: boolean }) {
   );
 }
 
-function ServicesBilling({
+// One subscription panel for either vendor kind — goods and services share
+// the same recurring model, only the noun differs.
+function SubscriptionBilling({
+  kind,
   status,
   planId,
   interval,
@@ -183,6 +178,7 @@ function ServicesBilling({
   paidOpen,
   trialLabel,
 }: {
+  kind: "goods" | "services";
   status?: string;
   planId?: string;
   interval?: string;
@@ -190,24 +186,25 @@ function ServicesBilling({
   paidOpen: boolean;
   trialLabel: string;
 }) {
+  const noun = kind === "services" ? "services" : "goods";
   // Free-trial (Starter) vendor — not a paid subscriber. Show trial state and
   // let them move to a paid plan (locked pre-launch).
   if (planId === "starter") {
     return (
-      <Panel title="Your services plan">
+      <Panel title={`Your ${noun} plan`}>
         <p className="text-[15px] text-cm mb-4 leading-relaxed">
           You’re on the <span className="text-ch">free trial</span> — full access, no
           charge. {trialLabel}
         </p>
         <p className="text-[14px] text-cm mb-3">When you’re ready, choose a plan:</p>
-        <PlanChooser paidOpen={paidOpen} />
+        <PlanChooser kind={kind} paidOpen={paidOpen} />
       </Panel>
     );
   }
   if (status && ACTIVE.has(status)) {
     const intervalWord = interval === "year" ? "annual" : "monthly";
     return (
-      <Panel title="Your services subscription">
+      <Panel title={`Your ${noun} subscription`}>
         <p className="text-[15px] text-cm mb-4 leading-relaxed">
           Your <span className="text-ch">{intervalWord}</span> subscription is active.
           {cancelScheduled
@@ -224,10 +221,10 @@ function ServicesBilling({
   }
   if (status && NEEDS_ATTENTION.has(status)) {
     return (
-      <Panel title="Your services subscription">
+      <Panel title={`Your ${noun} subscription`}>
         <p className="text-[15px] text-tr mb-4 leading-relaxed">
           There’s a problem with your latest payment. Update your card to keep your
-          listing live.
+          {kind === "services" ? " listing" : " shop"} live.
         </p>
         <PortalButton />
       </Panel>
@@ -235,60 +232,12 @@ function ServicesBilling({
   }
 
   return (
-    <Panel title="Choose a services plan">
+    <Panel title={`Choose a ${noun} plan`}>
       <p className="text-[15px] text-cm mb-5 leading-relaxed">
-        Subscribe to publish your services on CodaCo. Pick monthly or save with annual
-        billing.
+        Subscribe to keep your {noun} on CodaCo after your free trial. Pick monthly or
+        save with annual billing.
       </p>
-      <PlanChooser paidOpen={paidOpen} />
-    </Panel>
-  );
-}
-
-function GoodsBilling({
-  status,
-  hasFee,
-  paidOpen,
-}: {
-  status?: string;
-  hasFee: boolean;
-  paidOpen: boolean;
-}) {
-  // No setup-fee row means the vendor is on the free Starter goods plan.
-  if (!hasFee) {
-    return (
-      <Panel title="Your goods plan">
-        <p className="text-[15px] text-cm leading-relaxed">
-          You’re on the free Starter plan — up to 3 listings, no charge.
-        </p>
-      </Panel>
-    );
-  }
-  if (status === "paid") {
-    return (
-      <Panel title="Your goods storefront">
-        <p className="text-[15px] text-cm leading-relaxed">
-          Set-up fee paid — your Storefront is active with unlimited listings. This was a
-          one-time payment; there’s nothing more to pay.
-        </p>
-      </Panel>
-    );
-  }
-  return (
-    <Panel title="Your goods storefront">
-      <p className="text-[15px] text-cm mb-5 leading-relaxed">
-        Pay your one-time Storefront set-up fee to unlock unlimited listings. Pay once,
-        never again.
-      </p>
-      <SetupFeeButton
-        label={paidOpen ? "Pay set-up fee" : "Pay set-up fee · Available at launch"}
-        locked={!paidOpen}
-      />
-      {!paidOpen && (
-        <p className="text-[13px] text-cl mt-3">
-          The Storefront set-up fee opens when CodaCo launches.
-        </p>
-      )}
+      <PlanChooser kind={kind} paidOpen={paidOpen} />
     </Panel>
   );
 }

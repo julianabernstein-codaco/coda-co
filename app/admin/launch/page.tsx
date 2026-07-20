@@ -34,8 +34,8 @@ export default async function AdminLaunchPage() {
         <p className="text-xs font-medium uppercase tracking-widest text-tr mb-1.5">Admin</p>
         <h1 className="font-serif text-4xl text-ch mb-1.5">Launch</h1>
         <p className="text-cm text-sm mb-6">
-          Controls whether paid vendor billing is open. Pre-launch, subscriptions
-          and the goods set-up fee are locked for everyone but admins — vendors
+          Controls whether paid vendor billing is open. Pre-launch, goods and
+          services subscriptions are locked for everyone but admins — vendors
           run on the free trial. (Gift cards are always on sale.) Going live opens
           paid flows and starts every vendor’s {TRIAL_DAYS}-day free trial from the
           launch time.

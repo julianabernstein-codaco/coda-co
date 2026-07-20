@@ -4,7 +4,7 @@ import { log } from "@/lib/log";
 
 // Ensure the vendor has a Stripe Customer, creating one on first use and
 // persisting the id on vendor_profile. One Customer per vendor, reused for
-// both the services subscription and the goods set-up fee.
+// both the goods and services subscriptions.
 export async function ensureStripeCustomer(vendorId: string): Promise<string> {
   const vendor = await prisma.vendorProfile.findUnique({
     where: { id: vendorId },

@@ -1,39 +1,58 @@
 import type { Plan } from "@/lib/types";
 
+// Shown once above the goods plan cards (signup + /plan page) — the
+// features every goods plan shares, so each card only lists what differs.
+export const goodsPlanIncludes = [
+  "Shop profile",
+  "Unlimited listings",
+  "Buyer messaging",
+  "Direct payments through CodaCo",
+  "Customer reviews",
+];
+
+// Goods Makers subscribe on the same three recurring tiers as Service
+// Vendors: a 3-month free trial (Starter), then Monthly or Annual. No
+// per-sale percentage fee. Billing is plan-driven — `amountCents` +
+// `billingType` + `period` drive Stripe Checkout (see lib/billing/catalog).
 export const goodsPlans: Plan[] = [
   {
     id: "starter",
     name: "Starter",
     price: null,
     period: null,
+    trial: "Free for 3 months",
     features: [
-      "Up to 3 product listings",
-      "CodaCo marketplace visibility",
-      "Buyer messaging",
-      "Basic analytics",
+      "Risk free trial with all of the features",
+      "Then sign up for a monthly or annual plan",
     ],
     popular: false,
-    transactionFee: "5% per sale",
+    transactionFee: "",
     targetType: "goods",
     billingType: "free",
   },
   {
     id: "standard",
-    name: "Storefront",
-    // One-time set-up fee, not a recurring subscription — `period: null`
-    // renders the price as a bare "$29" with no "/month" suffix.
+    name: "Monthly",
     price: 29,
-    period: null,
-    features: [
-      "One-time set-up fee — no monthly cost",
-      "Unlimited listings",
-      "Customer reviews",
-    ],
-    popular: false,
-    transactionFee: "5% per sale",
+    period: "month",
+    features: ["Cancel any time"],
+    popular: true,
+    transactionFee: "",
     targetType: "goods",
-    billingType: "one_time",
+    billingType: "recurring",
     amountCents: 2900,
+  },
+  {
+    id: "pro",
+    name: "Annual",
+    price: 320,
+    period: "year",
+    features: ["Save 8%"],
+    popular: false,
+    transactionFee: "",
+    targetType: "goods",
+    billingType: "recurring",
+    amountCents: 32000,
   },
 ];
 
@@ -46,8 +65,9 @@ export const servicePlanIncludes = [
 ];
 
 // Reassurance shown under the recurring plan choices (signup, /plan page,
-// and dashboard billing). Both Monthly and Annual auto-renew.
-export const servicePlanRenewalNote =
+// and dashboard billing) for both goods and services. Monthly and Annual
+// auto-renew.
+export const planRenewalNote =
   "We'll always notify you before renewal.";
 
 export const servicePlans: Plan[] = [

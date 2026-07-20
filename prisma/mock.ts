@@ -152,8 +152,8 @@ async function main() {
 
     // Give every mock vendor an active subscription so first sign-in lands
     // on a healthy billing state, not the "needs setup" path. Demo service
-    // vendors sit on the paid Monthly plan; goods on the free Starter plan
-    // (their one-time Storefront fee, if any, is a real-signup concern).
+    // vendors sit on the paid Monthly plan; goods vendors on the free Starter
+    // trial (both kinds now use the same recurring subscription model).
     const subKind = v.kind === "services" ? "services" : "goods";
     await prisma.subscription.create({
       data: {
