@@ -1,9 +1,9 @@
 export const SPECIALIZATIONS = [
-  "Advance directives",
   "Dementia",
   "Green burials",
   "Home-centered dying",
   "Legacy projects",
+  "LGBTQ-affirming",
   "Perinatal loss",
   "Sliding scale available",
   "Virtual services",
