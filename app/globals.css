@@ -109,6 +109,24 @@ body.airy-full .wave-divider > * {
 }
 
 /*
+ * PROTOTYPE variant switch — class "soft-div" on <body>: like full-airy
+ * (tinted banners dissolved into the ombre), but the wave dividers come back
+ * as a whisper-tinted arc so sections still read as distinct without a heavy
+ * block of color. A faint hairline sharpens the fold.
+ */
+body.soft-div section.bg-tr-vp,
+body.soft-div section.bg-sg-vp {
+  background-color: transparent !important;
+}
+body.soft-div .wave-divider {
+  background: transparent !important;
+}
+body.soft-div .wave-divider > .arc-top {
+  background: rgba(122, 158, 130, 0.22) !important; /* whisper of sage */
+  border-top: 1px solid rgba(44, 40, 37, 0.06);
+}
+
+/*
  * Contrast on the terracotta banner (bg-tr-vp, #F0AE90). Same-family colors
  * read as low-contrast here (WCAG measures lightness, not hue). Two rules,
  * kept unlayered so they win over Tailwind's utilities layer:
