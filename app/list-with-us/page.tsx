@@ -70,8 +70,15 @@ const whyItems = [
       </svg>
     ),
     title: "Fair, transparent fees",
-    body: "Plans start free. Transaction fees only apply when you make a sale.",
+    body: "Start with a free 3-month trial, then one simple flat rate — no hidden costs or per-sale commission.",
   },
+];
+
+const pricingFeatures = [
+  "Get found by local customers",
+  "Accept direct payments from clients",
+  "Message with customers directly",
+  "Collect verified reviews",
 ];
 
 const testimonials = [
@@ -236,6 +243,65 @@ export default function ListWithUsPage() {
             >
               List services
             </Link>
+          </div>
+        </Container>
+      </section>
+
+      {/* Pricing */}
+      <section className="bg-white px-10 pt-2 pb-14">
+        <Container width="narrow">
+          <SectionHeader
+            eyebrow="Simple pricing"
+            title="Start free. Grow with us."
+            subtitle="Know exactly what you get and what it costs — before you sign up."
+          />
+          <div className="max-w-[540px] mx-auto bg-white border-2 border-tr-l rounded-[14px] overflow-hidden">
+            {/* Free trial banner */}
+            <div className="bg-tr-vp px-8 py-7 text-center border-b border-line">
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-2">
+                3 months free
+              </p>
+              <h3 className="font-serif text-[26px] font-light text-ch mb-2">
+                Try everything, free for 3 months
+              </h3>
+              <p className="text-[15px] text-cm leading-[1.6]">
+                Explore every CodaCo feature and reach your target market. Cancel anytime.
+              </p>
+            </div>
+
+            {/* Price + what's included */}
+            <div className="px-8 py-7">
+              <div className="text-center mb-6">
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="font-serif text-[40px] font-light text-ch leading-none">$29</span>
+                  <span className="text-[16px] text-cl">/ month</span>
+                </div>
+                <p className="text-[14px] text-cl mt-1.5">
+                  or $320 a year — save $28
+                </p>
+              </div>
+
+              <p className="text-[13px] tracking-[.1em] uppercase text-cl text-center mb-4">
+                Everything included
+              </p>
+              <ul className="max-w-[320px] mx-auto flex flex-col gap-3">
+                {pricingFeatures.map((feature) => (
+                  <li key={feature} className="flex items-center gap-3">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" className="shrink-0">
+                      <circle cx="11" cy="11" r="10" stroke="#C1634F" strokeWidth="1.3" fill="none" />
+                      <path
+                        d="M7 11 L10 14 L15 8"
+                        stroke="#C1634F"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span className="text-[15px] text-ch">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </Container>
       </section>
