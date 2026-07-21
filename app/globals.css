@@ -126,10 +126,10 @@ body.soft-div .wave-divider {
    spanning the page width. */
 body.soft-div .wave-divider > .arc-top {
   background-color: transparent !important;
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='240'%20height='8'%20viewBox='0%200%20240%208'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0%204%20Q120%200.4%20240%204%20Q120%207.6%200%204%20Z'%20fill='%232B2620'%20fill-opacity='0.22'/%3E%3C/svg%3E") !important;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='240'%20height='10'%20viewBox='0%200%20240%2010'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0%205%20C%2055%201.2%2095%201.2%20120%201.2%20C%20145%201.2%20185%201.2%20240%205%20C%20185%208.8%20145%208.8%20120%208.8%20C%2095%208.8%2055%208.8%200%205%20Z'%20fill='%232B2620'%20fill-opacity='0.4'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  background-size: 92% 8px !important;
+  background-size: 72% 10px !important;
   border-radius: 0 !important;
   border-top: 0 !important;
 }
