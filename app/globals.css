@@ -59,7 +59,20 @@
 
   body {
     font-family: var(--font-sans);
-    background: var(--color-white);
+    /* Airy page background — a soft vertical ombre in the brand palette: a pale
+       terracotta wash at the top eases through warm white to a pale sage wash
+       at the bottom. Page bands are made transparent below so this shows
+       through; see the "Airy page treatment" block. */
+    background: linear-gradient(
+      180deg,
+      #F6E7DF 0%,
+      #FBF3EE 16%,
+      #FAF9F7 44%,
+      #F1F5EF 72%,
+      #E4EEE4 100%
+    );
+    background-repeat: no-repeat;
+    min-height: 100vh;
     color: var(--color-ch);
     font-size: 17px;
     line-height: 1.6;
@@ -88,6 +101,37 @@
 }
 .bg-tr-vp .section-eyebrow-sg {
   color: var(--color-ink);
+}
+
+/*
+ * Airy page treatment — the section-dividing color banners are replaced by the
+ * ombre body background (see `body`) plus slim tapered-rule dividers.
+ *
+ * 1) Full-width page bands are transparent so the ombre shows through. Bands are
+ *    <section> elements, while cards, callouts and small tinted panels are
+ *    <div>/<a>, so `section.<bg>` clears only the bands and leaves surfaces
+ *    (white cards, small tinted accents) intact. The eyebrow/accent contrast
+ *    rules above still apply since the section keeps its `bg-*` class.
+ */
+section.bg-white,
+section.bg-pl,
+section.bg-tr-vp,
+section.bg-sg-vp {
+  background-color: transparent;
+}
+
+/*
+ * 2) Section divider (rendered by <WaveDivider>): a slim tapered rule that
+ *    swells at the centre and tapers to nothing at both ends — no fill block,
+ *    no flat cutoff. The wrapper keeps the divider's previous vertical rhythm.
+ */
+.section-divider-rule {
+  display: block;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='240'%20height='10'%20viewBox='0%200%20240%2010'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0%205%20C%2055%201.2%2095%201.2%20120%201.2%20C%20145%201.2%20185%201.2%20240%205%20C%20185%208.8%20145%208.8%20120%208.8%20C%2095%208.8%2055%208.8%200%205%20Z'%20fill='%232B2620'%20fill-opacity='0.4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 72% 10px;
 }
 
 @layer components {
@@ -223,7 +267,8 @@
     color: var(--color-tr);
     margin-bottom: 0.375rem;
   }
-  .section-eyebrow-sg { color: var(--color-sg); }
+  /* sg-d (not sg) so sage eyebrows clear AA on the pale ombre / white grounds. */
+  .section-eyebrow-sg { color: var(--color-sg-d); }
   .section-title      {
     font-family: var(--font-serif);
     font-size: 32px;
@@ -232,7 +277,8 @@
     margin-bottom: 0.25rem;
     line-height: 1.2;
   }
-  .section-subtitle   { font-size: 15px; color: var(--color-cl); }
+  /* cm (not cl) so section subtitles clear AA on the pale ombre / white grounds. */
+  .section-subtitle   { font-size: 15px; color: var(--color-cm); }
   .section-subtitle-ink { color: var(--color-ink); }
 
   /*
