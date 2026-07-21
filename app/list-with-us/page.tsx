@@ -75,7 +75,7 @@ const whyItems = [
 ];
 
 const pricingFeatures = [
-  "Get found by local customers",
+  "Be discovered by local customers",
   "Accept direct payments from clients",
   "Message with customers directly",
   "Collect verified reviews",
