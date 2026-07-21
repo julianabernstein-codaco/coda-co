@@ -59,12 +59,38 @@
 
   body {
     font-family: var(--font-sans);
-    background: var(--color-white);
+    /* PROTOTYPE — airy ombre: a soft vertical wash in the current scheme
+       (pale terracotta at top → warm white → pale sage at the bottom),
+       fixed so it stays a calm ambient background as the page scrolls.
+       Page sections that were solid white/cream are made transparent below
+       so this shows through; the tinted tr-vp/sg-vp banners stay solid. */
+    background: linear-gradient(
+      180deg,
+      #F6E7DF 0%,
+      #FBF3EE 16%,
+      #FAF9F7 44%,
+      #F1F5EF 72%,
+      #E4EEE4 100%
+    );
+    background-repeat: no-repeat;
+    min-height: 100vh;
     color: var(--color-ch);
     font-size: 17px;
     line-height: 1.6;
     overflow-x: hidden;
   }
+}
+
+/*
+ * PROTOTYPE — reveal the ombre through the page's neutral bands. Page-level
+ * sections use <section class="bg-white|bg-pl">, while cards use <div>/<a>, so
+ * this only clears the full-width bands, not the white cards sitting on them.
+ * The tinted banners (bg-tr-vp / bg-sg-vp) are intentionally left solid so we
+ * can see how the ombre plays against them.
+ */
+section.bg-white,
+section.bg-pl {
+  background-color: transparent;
 }
 
 /*
