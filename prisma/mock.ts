@@ -145,6 +145,11 @@ async function main() {
         // Demo shops are established — their listings publish without the
         // first-listing review so the marketplace looks populated.
         listingsAutoApprove: true,
+        // Mock vendors populate the public pages before launch, so they're
+        // `live` from the start (real applicants land in `pre_launch` and
+        // only go live via the go-live switch). See docs/go-live-plan.md.
+        publishState: "live",
+        listedAt: v.memberSince ? new Date(v.memberSince) : new Date(),
         user: { connect: { id: user.id } },
       },
     });

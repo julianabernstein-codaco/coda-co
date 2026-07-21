@@ -129,6 +129,19 @@ enum VendorKind {
   both
 }
 
+// Public listing lifecycle for a vendor. `pre_launch` vendors have a full
+// working dashboard (build profile, connect Stripe, add draft listings) but
+// never surface on public pages; the go-live switch flips them to `live`.
+// `suspended` hides an already-live vendor without deleting them. The public
+// query layer (lib/api/*) filters to `live`; dashboard/admin queries opt out
+// via an `includeHidden` flag. See docs/go-live-plan.md.
+enum VendorPublishState {
+  unknown
+  pre_launch
+  live
+  suspended
+}
+
 // Phase C wires `user_id` to the `users` table. Backfill creates one user
 // per existing vendor so the FK is enforced going forward.
 model VendorProfile {
@@ -140,6 +153,12 @@ model VendorProfile {
   location    String
   kind        VendorKind @default(unknown)
   verified    Boolean    @default(false)
+
+  // Public visibility gate. New vendors are `pre_launch` (invisible to the
+  // public); the go-live switch flips them to `live` and stamps listedAt.
+  // See docs/go-live-plan.md and the VendorPublishState enum.
+  publishState VendorPublishState @default(pre_launch) @map("publish_state")
+  listedAt     DateTime?          @map("listed_at")
 
   // Currently consumed by the UI but not yet covered by the docs' minimum
   // shape. Treat them as deferred-but-rendered and revisit once their
