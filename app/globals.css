@@ -121,9 +121,16 @@ body.soft-div section.bg-sg-vp {
 body.soft-div .wave-divider {
   background: transparent !important;
 }
+/* Replace the filled arc with a stroked wavy line spanning the page — no fill,
+   no flat cutoff. A repeating sine tile, centered in the divider band. */
 body.soft-div .wave-divider > .arc-top {
-  background: rgba(122, 158, 130, 0.22) !important; /* whisper of sage */
-  border-top: 1px solid rgba(44, 40, 37, 0.06);
+  background-color: transparent !important;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='20'%20viewBox='0%200%2080%2020'%20fill='none'%3E%3Cpath%20d='M0%2010%20q%2020%20-7%2040%200%20t%2040%200'%20stroke='%237A9E82'%20stroke-width='2.5'%20stroke-opacity='0.55'%20stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-repeat: repeat-x !important;
+  background-position: center !important;
+  background-size: 80px 20px !important;
+  border-radius: 0 !important;
+  border-top: 0 !important;
 }
 
 /*
