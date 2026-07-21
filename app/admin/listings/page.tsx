@@ -58,16 +58,16 @@ export default async function AdminListingsPage() {
       <section className="bg-pl2 px-10 py-10 min-h-screen">
         <Container width="wide">
           <div className="mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Admin</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Admin</p>
             <h1 className="font-serif text-[32px] font-light text-ch">Listing review</h1>
-            <p className="text-[13px] text-cl mt-1.5">
+            <p className="text-[15px] text-cl mt-1.5">
               A goods seller&apos;s first listing waits here until it&apos;s
               approved. Approving publishes it and clears the seller to publish
               future listings without review.
             </p>
           </div>
 
-          <h2 className="text-[15px] font-medium text-ch mb-3">
+          <h2 className="text-[17px] font-medium text-ch mb-3">
             Awaiting review <span className="text-cl">({listings.length})</span>
           </h2>
           <div className="bg-white rounded-[10px] border border-line overflow-hidden">

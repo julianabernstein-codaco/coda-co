@@ -14,12 +14,12 @@ export function SavedLink({ className = "" }: { className?: string }) {
     <Link
       href="/saved"
       aria-label={count > 0 ? `Saved items (${count})` : "Saved items"}
-      className={`inline-flex items-center gap-1.5 text-[13px] text-cm hover:text-tr no-underline transition-colors duration-150 ${className}`}
+      className={`inline-flex items-center gap-1.5 text-[15px] text-cm hover:text-tr no-underline transition-colors duration-150 ${className}`}
     >
       <HeartIcon />
       Saved
       {count > 0 && (
-        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-tr text-white text-[10px] font-medium leading-none">
+        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-tr text-white text-[12px] font-medium leading-none">
           {count}
         </span>
       )}

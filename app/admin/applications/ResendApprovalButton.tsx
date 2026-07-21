@@ -21,7 +21,7 @@ export function ResendApprovalButton({ applicationId }: { applicationId: string 
   }
 
   if (sent) {
-    return <span className="text-[12px] text-sg-d">Sent ✓</span>;
+    return <span className="text-[14px] text-sg-d">Sent ✓</span>;
   }
 
   return (
@@ -34,7 +34,7 @@ export function ResendApprovalButton({ applicationId }: { applicationId: string 
       >
         {pending ? "Sending…" : "Resend approval email"}
       </button>
-      {error && <span className="text-[11px] text-tr-d">{error}</span>}
+      {error && <span className="text-[13px] text-tr-d">{error}</span>}
     </div>
   );
 }

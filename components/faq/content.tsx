@@ -2,8 +2,17 @@ import Link from "next/link";
 import type { FaqCategory } from "@/components/faq/FaqBrowser";
 
 // Sensitive, editorial guidance content — surfaced on /guidance.
-export const guidanceCategories: FaqCategory[] = [
+export interface GuidanceTopic {
+  slug: string;
+  heading: string;
+  blurb: string;
+  faqs: FaqCategory["faqs"];
+}
+
+export const guidanceTopics: GuidanceTopic[] = [
   {
+    slug: "when-someone-dies",
+    blurb: "The first steps — and what isn't an emergency.",
     heading: "When someone dies",
     faqs: [
       {
@@ -43,9 +52,61 @@ export const guidanceCategories: FaqCategory[] = [
         searchText:
           "What are the first things I need to do when someone dies? The very first thing to do when someone dies is to take time to breathe. You have time to sit and to call another loved one. There is no emergency now. There is a lot to take care of, but you are allowed to grieve, to be confused, overwhelmed, and a mess. Grief has no timeline and affects each of us differently. After someone dies, their life must be legally and administratively closed out, and these stressful, bureaucratic tasks can take months to years to complete, often complicated by grief. When someone has died it is not an immediate emergency. Some things need to take place in the first 24 hours after death, but nothing needs to happen in the first few minutes.",
       },
+      {
+        id: "next-steps-when-someone-dies",
+        q: "What are the next steps when someone has died?",
+        a: (
+          <div className="space-y-3">
+            <p>
+              The following is a list of tasks that need to be completed along
+              an approximate timeline. Please note that this list is neither
+              exhaustive nor applicable to everyone, as every life and each
+              death are unique.
+            </p>
+            <p className="font-medium text-ch">
+              First tasks when your loved one has died
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                The first task that needs to happen is to get a legal
+                pronouncement of death, and then a death certificate.
+              </li>
+            </ul>
+            <p>
+              If your loved one died in a hospital, hospice center or nursing
+              home, staff will obtain the death certificate for you.
+            </p>
+            <p>
+              If your loved one died at home, you will need to contact a medical
+              professional to declare them dead. This can be done by the hospice
+              team, if they were on hospice.
+            </p>
+            <p>
+              If your loved one was not on hospice and died at home, or in the
+              community, or the death was unexpected, it is generally
+              appropriate to call 911. This is because state laws vary around
+              which type of medical or nursing provider can legally pronounce
+              death outside hospice settings. You are not accessing medical
+              services because it is a true emergency; you are contacting them
+              because they will connect you with a team of medical professionals
+              who can pronounce death and begin the next steps.
+            </p>
+            <p>
+              It may feel odd to mark something so momentous as a loved
+              one&apos;s death by making a phone call. If this administrative
+              step feels strange, you are not alone. Still, it needs to be done.
+            </p>
+            <p className="text-center font-bold">More information coming soon</p>
+          </div>
+        ),
+        searchText:
+          "What are the next steps when someone has died? The following is a list of tasks that need to be completed along an approximate timeline. This list is neither exhaustive nor applicable to everyone, as every life and each death are unique. First tasks when your loved one has died: the first task that needs to happen is to get a legal pronouncement of death, and then a death certificate. If your loved one died in a hospital, hospice center or nursing home, staff will obtain the death certificate for you. If your loved one died at home, you will need to contact a medical professional to declare them dead; this can be done by the hospice team if they were on hospice. If your loved one was not on hospice and died at home, in the community, or the death was unexpected, it is generally appropriate to call 911, because state laws vary around which type of medical or nursing provider can legally pronounce death outside hospice settings. You are not accessing medical services because it is a true emergency; you are contacting them because they will connect you with a team of medical professionals who can pronounce death and begin the next steps. It may feel odd to mark something so momentous as a loved one's death by making a phone call. If this administrative step feels strange, you are not alone. Still, it needs to be done.",
+      },
     ],
   },
   {
+    slug: "funerals-and-body-disposition",
+    blurb: "Burial, cremation, green burial, and your rights.",
     heading: "Funerals & body disposition",
     faqs: [
       {
@@ -106,9 +167,10 @@ export const guidanceCategories: FaqCategory[] = [
             </p>
             <p>
               <span className="font-medium text-ch">
-                Natural Organic Reduction (also called Terramation):
+                Natural Organic Reduction (or Human Composting):
               </span>{" "}
-              Terramation is a process that allows for natural decomposition in
+              Natural Organic Reduction is a process that allows for natural
+              decomposition in
               urban areas, where green cemeteries and natural burial may not be
               readily available. In this process, bodies are laid to rest within
               a closed vessel along with organic material (such as straw,
@@ -136,7 +198,7 @@ export const guidanceCategories: FaqCategory[] = [
           </div>
         ),
         searchText:
-          "There are many ways to lay a body to rest. Green Burial Natural Burial is a popular alternative to traditional burial. In a green burial, a body is placed in its natural state (no embalming) into a biodegradable casket or natural fiber shroud. The body is then placed directly into the earth, allowing it to decompose naturally. Green burials are legal in all 50 US states. Many states have green burial cemeteries or hybrid cemeteries. Traditional Burial may include embalming, a casket, and a concrete-lined grave forming the burial vault. Burial at Sea: a body or cremated remains can be buried at sea, regulated by the Environmental Protection Agency at least three nautical miles from shore, EPA notified within 30 days. Traditional Cremation: a body is incinerated and bone fragments crushed into ashes, buried, kept in an urn, or scattered. Natural Organic Reduction Terramation allows natural decomposition in urban areas, bodies laid in a closed vessel with straw alfalfa wood chips to transform into nutrient-rich soil. Aquamation Water Cremation uses water and an alkaline solution to break down a body, leaving bone fragments crushed into ashes. Anatomical donation: donate your body to science, universities, medical schools, or research organizations.",
+          "There are many ways to lay a body to rest. Green Burial Natural Burial is a popular alternative to traditional burial. In a green burial, a body is placed in its natural state (no embalming) into a biodegradable casket or natural fiber shroud. The body is then placed directly into the earth, allowing it to decompose naturally. Green burials are legal in all 50 US states. Many states have green burial cemeteries or hybrid cemeteries. Traditional Burial may include embalming, a casket, and a concrete-lined grave forming the burial vault. Burial at Sea: a body or cremated remains can be buried at sea, regulated by the Environmental Protection Agency at least three nautical miles from shore, EPA notified within 30 days. Traditional Cremation: a body is incinerated and bone fragments crushed into ashes, buried, kept in an urn, or scattered. Natural Organic Reduction Human Composting allows natural decomposition in urban areas, bodies laid in a closed vessel with straw alfalfa wood chips to transform into nutrient-rich soil. Aquamation Water Cremation uses water and an alkaline solution to break down a body, leaving bone fragments crushed into ashes. Anatomical donation: donate your body to science, universities, medical schools, or research organizations.",
       },
       {
         q: "What are the rules around funerals where I live?",
@@ -145,16 +207,17 @@ export const guidanceCategories: FaqCategory[] = [
             <p>
               While laws around the transport and disposition of human bodies
               varies by state, there is a federal Funeral Rule in place to
-              protect the consumer who is planning and paying for a funeral.
-              These rules exist to protect people from unfair upselling and
-              unclear pricing structures at a funeral home and are enforced by
-              the Federal Trade Commission. The Funeral Rule makes it possible
-              for you to choose only the goods and services from a funeral home
-              that you want or need. The rule allows you to compare prices
-              between funeral homes and makes it possible to select arrangements
-              you want to use for a home funeral. In short, you do not have to
-              buy a package, and you do not have to use a funeral home if you
-              prefer a home funeral.
+              protect the person who is planning and paying for a funeral. These
+              rules exist to protect us from unfair upselling and unclear
+              pricing structures at a funeral home. The Funeral Rule makes it
+              possible for you to choose only the goods and services that you
+              want or need &ndash; you do not have to buy packages and you do not
+              have to buy the most expensive coffins. You can compare prices
+              between funeral homes and choose arrangements you want to use for a
+              home funeral &ndash; you do not have to use any particular funeral
+              home, even if you buy a product from them. In short, you do not
+              have to buy a package, and you do not have to use a funeral home if
+              you prefer a home funeral.
             </p>
             <p>The US Funeral Rule gives you the right to:</p>
             <ul className="list-disc pl-5 space-y-2">
@@ -162,10 +225,9 @@ export const guidanceCategories: FaqCategory[] = [
                 <span className="font-medium text-ch">
                   Buy only the funeral arrangements you want.
                 </span>{" "}
-                You have a protected right to buy separate goods (such as
-                caskets) and services (such as embalming or a memorial service).
-                You do not have to accept a package that includes any items you
-                do not want.
+                You can buy separate goods (such as caskets) and services (such
+                as embalming or a memorial service). You do not have to accept a
+                package that includes any items you do not want.
               </li>
               <li>
                 <span className="font-medium text-ch">
@@ -179,17 +241,16 @@ export const guidanceCategories: FaqCategory[] = [
               </li>
               <li>
                 <span className="font-medium text-ch">
-                  Receive a written, itemized price list when you visit a
-                  funeral home.
+                  Get a written, itemized price list when you visit a funeral
+                  home.
                 </span>{" "}
                 The funeral home must give you a General Price List that is yours
-                to keep. It lists all the items and services the home offers, and
-                the cost of each one.
+                to keep. It lists all the items and services the home offers,
+                even the things not on open display, and the cost of each one.
               </li>
               <li>
                 <span className="font-medium text-ch">
-                  See a written casket price list before you see the actual
-                  caskets.
+                  See a casket price list before you see the actual caskets.
                 </span>{" "}
                 It can be overwhelming to shop for a casket. Funerals must
                 provide you a written casket price list if you ask, and this is a
@@ -217,9 +278,7 @@ export const guidanceCategories: FaqCategory[] = [
                   before you pay.
                 </span>{" "}
                 This statement should show exactly what you are buying and the
-                cost of each individual item. The funeral home is required to
-                give you this once you have made your selection and before paying
-                for items.
+                cost of each individual item.
               </li>
               <li>
                 <span className="font-medium text-ch">
@@ -227,10 +286,7 @@ export const guidanceCategories: FaqCategory[] = [
                   buy a casket.
                 </span>{" "}
                 You may use an alternative container. No state or local law
-                requires the use of a casket for cremation. If a funeral home
-                offers cremation, it must also tell you that alternative
-                containers are available. They may be out of unfinished wood,
-                fiberboard or cardboard.
+                requires the use of a casket for cremation.
               </li>
               <li>
                 <span className="font-medium text-ch">
@@ -239,9 +295,7 @@ export const guidanceCategories: FaqCategory[] = [
                 </span>{" "}
                 The funeral provider cannot refuse to handle a casket or urn you
                 bought somewhere else, or charge you a fee to use it. You may
-                order a casket or urn to be delivered to the funeral home and the
-                home cannot require you to be there when the casket or urn is
-                delivered to them.
+                order a casket or urn to be delivered to the funeral home.
               </li>
               <li>
                 <span className="font-medium text-ch">
@@ -251,14 +305,7 @@ export const guidanceCategories: FaqCategory[] = [
                 require embalming or refrigeration if the body is not buried or
                 cremated within a certain time; some states don&apos;t require it
                 at all. In most cases, refrigeration or other cooling is an
-                acceptable alternative. In addition, you may choose services like
-                direct cremation and immediate burial, which don&apos;t require
-                any form of preservation. Many funeral homes have a policy
-                requiring embalming if the body is to be publicly viewed, but
-                this is not required by law in most states. Ask if the funeral
-                home offers private family viewing without embalming. If some
-                form of preservation is a practical necessity, ask the funeral
-                home if refrigeration is available.
+                acceptable alternative.
               </li>
             </ul>
             <p className="text-cl">
@@ -275,11 +322,13 @@ export const guidanceCategories: FaqCategory[] = [
           </div>
         ),
         searchText:
-          "What are the rules around funerals where I live? Laws around transport and disposition of human bodies vary by state, but there is a federal Funeral Rule enforced by the Federal Trade Commission to protect consumers from unfair upselling and unclear pricing at a funeral home. You do not have to buy a package or use a funeral home if you prefer a home funeral. The US Funeral Rule gives you the right to: buy only the funeral arrangements you want; hear price information over the telephone; receive a written itemized General Price List when you visit a funeral home; see a written casket price list before you see the actual caskets; get a price list for outer burial containers and concrete vaults; receive a written statement before you pay; choose cremation without buying a casket and use an alternative container of unfinished wood, fiberboard or cardboard; provide the funeral home with a casket or urn you buy elsewhere without a fee. Embalming is never required; refrigeration is often an acceptable alternative; direct cremation and immediate burial require no preservation. Source: Federal Trade Commission Advice The Funeral Rule.",
+          "What are the rules around funerals where I live? While laws around the transport and disposition of human bodies vary by state, there is a federal Funeral Rule in place to protect the person who is planning and paying for a funeral. These rules protect us from unfair upselling and unclear pricing structures at a funeral home. The Funeral Rule makes it possible to choose only the goods and services you want or need; you do not have to buy packages or the most expensive coffins, you can compare prices between funeral homes, and you do not have to use any particular funeral home even if you buy a product from them. The US Funeral Rule gives you the right to: buy only the funeral arrangements you want; hear price information over the telephone; get a written, itemized General Price List when you visit a funeral home, including items not on open display; see a casket price list before you see the actual caskets; get a price list for outer burial containers and concrete vaults; receive a written statement before you pay; choose cremation without buying a casket and use an alternative container; provide the funeral home with a casket or urn you buy elsewhere without a fee. Embalming is never required; refrigeration or other cooling is often an acceptable alternative. Source: Federal Trade Commission Advice The Funeral Rule.",
       },
     ],
   },
   {
+    slug: "death-doulas",
+    blurb: "Non-medical support through the end of life.",
     heading: "Death doulas (end-of-life doulas)",
     faqs: [
       {
@@ -411,6 +460,8 @@ export const guidanceCategories: FaqCategory[] = [
     ],
   },
   {
+    slug: "hospice-care",
+    blurb: "Comfort-focused care, and how to choose a provider.",
     heading: "Hospice Care",
     faqs: [
       {
@@ -628,6 +679,8 @@ export const guidanceCategories: FaqCategory[] = [
     ],
   },
   {
+    slug: "death-cleaning",
+    blurb: "Going through belongings with love, at your pace.",
     heading: "Death cleaning",
     faqs: [
       {
@@ -678,6 +731,10 @@ export const guidanceCategories: FaqCategory[] = [
     ],
   },
 ];
+
+export function getGuidanceTopic(slug: string): GuidanceTopic | undefined {
+  return guidanceTopics.find((topic) => topic.slug === slug);
+}
 
 // Functional, transactional help — surfaced on /faq (the Help Center).
 export const helpCenterCategories: FaqCategory[] = [

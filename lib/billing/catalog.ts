@@ -6,11 +6,11 @@ import type {
 import type { Plan } from "@/lib/types";
 
 // Billing reads everything off the code-defined plans (lib/data/plans.ts):
-// `amountCents` is the charge and `billingType` decides the Stripe object —
-// a one-time PaymentIntent for goods (`one_time`) or a recurring
-// Subscription for services (`recurring`). Because amounts live in code we
-// drive Checkout with inline `price_data` (no pre-created Stripe
-// Products/Prices, no price-id env vars to sync).
+// `amountCents` is the charge and `billingType` decides the Stripe object.
+// Goods and services both use a recurring Subscription (`recurring`); the
+// `one_time` PaymentIntent branch is still supported but unused by current
+// plans. Because amounts live in code we drive Checkout with inline
+// `price_data` (no pre-created Stripe Products/Prices, no price-id env vars).
 
 export const CURRENCY = "usd";
 
@@ -21,8 +21,8 @@ export function planInterval(plan: Plan): SubscriptionInterval {
   return "unknown";
 }
 
-// One Checkout line item built from a plan. Pass recurring for services so
-// Stripe creates a subscription price; omit it for the one-time goods fee.
+// One Checkout line item built from a plan. `recurring` plans get a
+// subscription price; a `one_time` plan (unused today) gets a flat charge.
 export function checkoutLineItem(plan: Plan): Stripe.Checkout.SessionCreateParams.LineItem {
   if (!plan.amountCents || plan.amountCents <= 0) {
     throw new Error(`Plan ${plan.id} has no chargeable amount`);

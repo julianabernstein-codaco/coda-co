@@ -70,8 +70,15 @@ const whyItems = [
       </svg>
     ),
     title: "Fair, transparent fees",
-    body: "Plans start free. Transaction fees only apply when you make a sale.",
+    body: "Start with a free 3-month trial, then one simple flat rate — no hidden fees.",
   },
+];
+
+const pricingFeatures = [
+  "Be discovered by local customers",
+  "Accept direct payments from clients",
+  "Message with customers directly",
+  "Collect verified reviews",
 ];
 
 const testimonials = [
@@ -101,7 +108,7 @@ const testimonials = [
 const faqs = [
   {
     q: "Is there a fee to list on CodaCo?",
-    a: "Listing goods is free for up to 3 products; unlock unlimited listings with a one-time $29 Storefront set-up fee. A 5% transaction fee applies on goods sales. Service providers choose a free trial, then a $15/month or $160/year subscription.",
+    a: "Both goods sellers and service providers start with a free 3-month trial, then choose a $29/month or $320/year subscription. No per-sale transaction fee.",
   },
   {
     q: "How long does approval take?",
@@ -124,14 +131,14 @@ export default function ListWithUsPage() {
 
       {/* Hero */}
       <section className="bg-white px-10 pt-16 pb-12 text-center">
-        <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-3">
+        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-3">
           For vendors &amp; service providers
         </p>
         <h1 className="font-serif text-[46px] font-light leading-[1.13] text-ch mb-4">
           Reach people who are{" "}
           <em className="italic text-tr">ready.</em>
         </h1>
-        <p className="text-[15px] text-cm max-w-[520px] mx-auto mb-10 leading-[1.75]">
+        <p className="text-[17px] text-cm max-w-[520px] mx-auto mb-10 leading-[1.75]">
           CodaCo connects you with clients who are actively seeking support around death and dying —
           whether that&apos;s a handmade urn, an estate attorney, or a compassionate death doula. Join
           a curated community built with care.
@@ -162,7 +169,7 @@ export default function ListWithUsPage() {
             <div className="font-serif text-[22px] font-normal text-ch mb-1.5">
               List goods
             </div>
-            <p className="text-[13px] text-cl leading-[1.5]">
+            <p className="text-[15px] text-cl leading-[1.5]">
               Urns, jewelry, shrouds, planning workbooks, memorial art, humor gifts — anything
               shipped or available locally
             </p>
@@ -193,7 +200,7 @@ export default function ListWithUsPage() {
             <div className="font-serif text-[22px] font-normal text-ch mb-1.5">
               List services
             </div>
-            <p className="text-[13px] text-cl leading-[1.5]">
+            <p className="text-[15px] text-cl leading-[1.5]">
               Death doulas, estate attorneys, death cleaning, celebrants, EOL organizers — found by
               geographic location
             </p>
@@ -211,13 +218,13 @@ export default function ListWithUsPage() {
                 key={s.n}
                 className="bg-white rounded-[10px] py-5 px-4 text-center border border-line"
               >
-                <div className="w-[30px] h-[30px] rounded-full bg-tr text-white text-[13px] font-medium flex items-center justify-center mx-auto mb-2.5">
+                <div className="w-[30px] h-[30px] rounded-full bg-tr text-white text-[15px] font-medium flex items-center justify-center mx-auto mb-2.5">
                   {s.n}
                 </div>
-                <div className="text-[13px] font-medium text-ch mb-0.5">
+                <div className="text-[15px] font-medium text-ch mb-0.5">
                   {s.title}
                 </div>
-                <div className="text-[12px] text-cl leading-[1.45]">
+                <div className="text-[14px] text-cl leading-[1.45]">
                   {s.desc}
                 </div>
               </div>
@@ -226,16 +233,75 @@ export default function ListWithUsPage() {
           <div className="flex gap-3.5 justify-center flex-wrap">
             <Link
               href="/list-with-us/goods"
-              className="inline-block bg-tr text-white px-[30px] py-3.5 rounded-[26px] text-[14px] no-underline hover:bg-tr-d transition-colors"
+              className="inline-block bg-tr text-white px-[30px] py-3.5 rounded-[26px] text-[16px] no-underline hover:bg-tr-d transition-colors"
             >
               List goods →
             </Link>
             <Link
               href="/list-with-us/services"
-              className="inline-block bg-transparent text-ch border-[1.5px] border-[rgba(44,40,37,.25)] px-[26px] py-3 rounded-[26px] text-[13px] no-underline hover:border-tr hover:text-tr transition-colors"
+              className="inline-block bg-transparent text-ch border-[1.5px] border-[rgba(44,40,37,.25)] px-[26px] py-3 rounded-[26px] text-[15px] no-underline hover:border-tr hover:text-tr transition-colors"
             >
               List services
             </Link>
+          </div>
+        </Container>
+      </section>
+
+      {/* Pricing */}
+      <section className="bg-white px-10 pt-2 pb-14">
+        <Container width="narrow">
+          <SectionHeader
+            eyebrow="Simple pricing"
+            title="Start free. Grow with us."
+            subtitle="Know exactly what you get and what it costs — before you sign up."
+          />
+          <div className="max-w-[540px] mx-auto bg-white border-2 border-tr-l rounded-[14px] overflow-hidden">
+            {/* Free trial banner */}
+            <div className="bg-tr-vp px-8 py-7 text-center border-b border-line">
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-2">
+                3 months free
+              </p>
+              <h3 className="font-serif text-[26px] font-light text-ch mb-2">
+                Try everything, free for 3 months
+              </h3>
+              <p className="text-[15px] text-cm leading-[1.6]">
+                Explore every CodaCo feature and reach your target market. Cancel anytime.
+              </p>
+            </div>
+
+            {/* Price + what's included */}
+            <div className="px-8 py-7">
+              <div className="text-center mb-6">
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="font-serif text-[40px] font-light text-ch leading-none">$29</span>
+                  <span className="text-[16px] text-cl">/ month</span>
+                </div>
+                <p className="text-[14px] text-cl mt-1.5">
+                  or $320 a year — save $28
+                </p>
+              </div>
+
+              <p className="text-[13px] tracking-[.1em] uppercase text-cl text-center mb-4">
+                Everything included
+              </p>
+              <ul className="max-w-[320px] mx-auto flex flex-col gap-3">
+                {pricingFeatures.map((feature) => (
+                  <li key={feature} className="flex items-center gap-3">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" className="shrink-0">
+                      <circle cx="11" cy="11" r="10" stroke="#C1634F" strokeWidth="1.3" fill="none" />
+                      <path
+                        d="M7 11 L10 14 L15 8"
+                        stroke="#C1634F"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span className="text-[15px] text-ch">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </Container>
       </section>
@@ -255,8 +321,8 @@ export default function ListWithUsPage() {
                 className="bg-white rounded-[10px] p-5 border border-line"
               >
                 <div className="mb-3">{item.icon}</div>
-                <div className="text-[14px] font-medium text-ch mb-1">{item.title}</div>
-                <p className="text-[13px] text-cl leading-relaxed">{item.body}</p>
+                <div className="text-[16px] font-medium text-ch mb-1">{item.title}</div>
+                <p className="text-[15px] text-cl leading-relaxed">{item.body}</p>
               </div>
             ))}
           </div>
@@ -284,8 +350,8 @@ export default function ListWithUsPage() {
                 <div className="flex items-center gap-2.5">
                   <Avatar initials={t.initials} size="sm" />
                   <div>
-                    <div className="text-[13px] font-medium text-ch">{t.name}</div>
-                    <div className="text-[11px] text-cl">{t.role}</div>
+                    <div className="text-[15px] font-medium text-ch">{t.name}</div>
+                    <div className="text-[13px] text-cl">{t.role}</div>
                   </div>
                 </div>
               </div>

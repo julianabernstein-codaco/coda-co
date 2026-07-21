@@ -79,6 +79,14 @@ const SECTIONS: PreviewSection[] = [
     payload: buildSample("gift-card"),
   },
   {
+    key: "gift-receipt",
+    title: "Gift card receipt (buyer)",
+    sentWhen:
+      "To the buyer when a single gift-card purchase confirms — their payment receipt. Separate from the delivery email (which carries the code and goes to the recipient). Never includes the code.",
+    editFn: "buildGiftCardReceiptEmail",
+    payload: buildSample("gift-receipt"),
+  },
+  {
     key: "gift-pool-created",
     title: "Group gift — pool ready",
     sentWhen:
@@ -123,9 +131,9 @@ export default async function AdminEmailPreviewPage() {
       <section className="bg-pl2 px-10 py-10 min-h-screen">
         <Container width="wide">
           <div className="mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Admin</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Admin</p>
             <h1 className="font-serif text-[32px] font-light text-ch">Email preview</h1>
-            <p className="text-[13px] text-cl mt-1.5">
+            <p className="text-[15px] text-cl mt-1.5">
               Read-only renderings of every transactional email, using sample data.
               Edit copy in <code className="text-ch bg-pl px-1 py-0.5 rounded">lib/email/templates.ts</code>,
               then refresh this page. Each block also has a &quot;Send a test&quot; form so you can
@@ -155,8 +163,8 @@ function PreviewBlock({
     <div className="bg-white rounded-[10px] border border-line p-6">
       <div className="mb-4">
         <h2 className="font-serif text-[22px] text-ch mb-1">{section.title}</h2>
-        <p className="text-[12px] text-cl leading-relaxed">{section.sentWhen}</p>
-        <p className="text-[11px] text-cl mt-1">
+        <p className="text-[14px] text-cl leading-relaxed">{section.sentWhen}</p>
+        <p className="text-[13px] text-cl mt-1">
           Edit in{" "}
           <code className="text-ch bg-pl px-1 py-0.5 rounded">
             lib/email/templates.ts → {section.editFn}
@@ -166,7 +174,7 @@ function PreviewBlock({
 
       <div className="mb-4">
         <Label>Subject</Label>
-        <div className="text-[14px] text-ch font-medium">{section.payload.subject}</div>
+        <div className="text-[16px] text-ch font-medium">{section.payload.subject}</div>
       </div>
 
       <div className="mb-4">
@@ -180,10 +188,10 @@ function PreviewBlock({
       </div>
 
       <details>
-        <summary className="text-[11px] tracking-[.1em] uppercase text-cl cursor-pointer select-none">
+        <summary className="text-[13px] tracking-[.1em] uppercase text-cl cursor-pointer select-none">
           Plain text
         </summary>
-        <pre className="mt-2 text-[12px] text-ch bg-pl2 rounded-[6px] p-3 overflow-x-auto whitespace-pre-wrap font-mono">
+        <pre className="mt-2 text-[14px] text-ch bg-pl2 rounded-[6px] p-3 overflow-x-auto whitespace-pre-wrap font-mono">
           {section.payload.text}
         </pre>
       </details>
@@ -195,6 +203,6 @@ function PreviewBlock({
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[11px] tracking-[.1em] uppercase text-cl mb-1">{children}</div>
+    <div className="text-[13px] tracking-[.1em] uppercase text-cl mb-1">{children}</div>
   );
 }

@@ -32,7 +32,7 @@ const SERVICE_TYPES = [
   { slug: "organizer", name: "End of life organizer" },
   { slug: "grief", name: "Grief counselor" },
   { slug: "home-funeral", name: "Home funeral guide" },
-  { slug: "green-burial", name: "Green burial" },
+  { slug: "funeral-home", name: "Funeral home" },
   { slug: "cafe", name: "Death cafe" },
   { slug: "life-celebration", name: "Event planner" },
   { slug: "somatic-practitioner", name: "Somatic practitioner (yoga, massage)" },

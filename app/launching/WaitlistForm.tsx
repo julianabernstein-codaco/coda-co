@@ -44,7 +44,7 @@ export function WaitlistForm() {
         <p className="font-serif text-[20px] font-light text-ch mb-1.5">
           Thank you.
         </p>
-        <p className="text-[14px] text-cm leading-relaxed">{state.message}</p>
+        <p className="text-[16px] text-cm leading-relaxed">{state.message}</p>
       </div>
     );
   }
@@ -55,7 +55,7 @@ export function WaitlistForm() {
       <input type="hidden" name="interest" value={interest} />
 
       <fieldset className="mb-5">
-        <legend className="block text-[12px] font-medium text-ch mb-2.5">
+        <legend className="block text-[14px] font-medium text-ch mb-2.5">
           I&apos;m interested as a…{" "}
           <span className="font-normal text-cl">(optional)</span>
         </legend>
@@ -76,10 +76,10 @@ export function WaitlistForm() {
                     : "border-line-bold bg-white hover:border-tr-l"
                 }`}
               >
-                <span className="block text-[13px] font-medium text-ch mb-0.5">
+                <span className="block text-[15px] font-medium text-ch mb-0.5">
                   {role.label}
                 </span>
-                <span className="block text-[11px] text-cl leading-snug">
+                <span className="block text-[13px] text-cl leading-snug">
                   {role.hint}
                 </span>
               </button>
@@ -89,19 +89,19 @@ export function WaitlistForm() {
       </fieldset>
 
       <label className="block mb-4">
-        <span className="block text-[12px] font-medium text-ch mb-1.5">Email</span>
+        <span className="block text-[14px] font-medium text-ch mb-1.5">Email</span>
         <input
           name="email"
           type="email"
           required
           autoComplete="email"
           placeholder="you@example.com"
-          className="w-full h-11 px-3.5 text-[14px] rounded-[10px] border border-line-bold bg-white text-ch placeholder:text-cl focus:outline-none focus:border-tr transition-colors"
+          className="w-full h-11 px-3.5 text-[16px] rounded-[10px] border border-line-bold bg-white text-ch placeholder:text-cl focus:outline-none focus:border-tr transition-colors"
         />
       </label>
 
       {state?.error && (
-        <p className="text-[13px] text-tr-d bg-tr-p border border-tr-l rounded-[8px] px-3 py-2 mb-4">
+        <p className="text-[15px] text-tr-d bg-tr-p border border-tr-l rounded-[8px] px-3 py-2 mb-4">
           {state.error}
         </p>
       )}
@@ -114,7 +114,7 @@ export function WaitlistForm() {
         {pending ? "Adding you…" : "Notify me at launch"}
       </button>
 
-      <p className="text-[12px] text-cl text-center mt-3 leading-relaxed">
+      <p className="text-[14px] text-cl text-center mt-3 leading-relaxed">
         No spam, ever.
       </p>
     </form>

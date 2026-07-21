@@ -14,7 +14,7 @@ export function Footer() {
               <span className="text-tr">Coda</span>
               <span className="text-sg">Co</span>
             </div>
-            <p className="text-[13px] text-cl leading-relaxed max-w-[200px]">
+            <p className="text-[15px] text-cl leading-relaxed max-w-[200px]">
               A curated marketplace for death and dying. Based in the US.
             </p>
           </div>
@@ -35,7 +35,7 @@ export function Footer() {
           </FooterColumn>
         </div>
 
-        <div className="border-t border-[rgba(255,255,255,.08)] max-w-[880px] mx-auto px-10 py-5 flex items-center justify-between text-[12px] text-cl">
+        <div className="border-t border-[rgba(255,255,255,.08)] max-w-[880px] mx-auto px-10 py-5 flex items-center justify-between text-[14px] text-cl">
           <span>© 2025 CodaCo, Inc. · United States</span>
           <div className="flex gap-5">
             <a href="#" className="hover:text-white transition-colors">Terms of service</a>
@@ -52,7 +52,7 @@ export function Footer() {
 function FooterColumn({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
     <div>
-      <h4 className="text-[12px] font-medium tracking-[.08em] uppercase text-[rgba(255,255,255,.5)] mb-3">
+      <h4 className="text-[14px] font-medium tracking-[.08em] uppercase text-[rgba(255,255,255,.5)] mb-3">
         {heading}
       </h4>
       <div className="flex flex-col gap-2">{children}</div>
@@ -64,7 +64,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
   return (
     <Link
       href={href}
-      className="text-[13px] text-cl hover:text-white transition-colors no-underline"
+      className="text-[15px] text-cl hover:text-white transition-colors no-underline"
     >
       {children}
     </Link>

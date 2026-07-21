@@ -30,13 +30,13 @@ export default async function VendorProfilePage() {
       <section className="bg-pl2 px-10 py-10 min-h-screen">
         <Container width="narrow">
           <div className="mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">
               Vendor
             </p>
             <h1 className="font-serif text-[32px] font-light text-ch">
               Your profile
             </h1>
-            <p className="text-[13px] text-cl mt-1.5">
+            <p className="text-[15px] text-cl mt-1.5">
               Upload a headshot and pick the frame color buyers see on{" "}
               <Link
                 href={`/services/${vendor.slug}`}

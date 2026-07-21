@@ -34,13 +34,13 @@ export function TestSendForm({
 
   return (
     <div className="mt-4 pt-4 border-t border-line">
-      <div className="text-[11px] tracking-[.1em] uppercase text-cl mb-2">Send a test</div>
+      <div className="text-[13px] tracking-[.1em] uppercase text-cl mb-2">Send a test</div>
       <div className="flex flex-wrap items-center gap-2">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 min-w-[220px] border border-line-bold rounded-[8px] px-3 py-2 text-[13px] text-ch bg-white outline-none focus:border-tr transition-colors"
+          className="flex-1 min-w-[220px] border border-line-bold rounded-[8px] px-3 py-2 text-[15px] text-ch bg-white outline-none focus:border-tr transition-colors"
           placeholder="you@example.com"
         />
         <button
@@ -52,7 +52,7 @@ export function TestSendForm({
           {pending ? "Sending…" : "Send test"}
         </button>
       </div>
-      <div className="text-[12px] mt-2 min-h-[16px]">
+      <div className="text-[14px] mt-2 min-h-[16px]">
         {status.kind === "ok" && (
           <span className="text-sg-d">Sent to {status.recipient} — check the inbox.</span>
         )}

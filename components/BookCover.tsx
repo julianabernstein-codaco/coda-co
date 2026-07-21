@@ -58,7 +58,7 @@ export function BookCover({
           <div className="font-serif text-[17px] font-normal text-white/95 leading-[1.2]">
             {title}
           </div>
-          <div className="text-[11px] text-white/70 mt-1 italic">{author}</div>
+          <div className="text-[13px] text-white/70 mt-1 italic">{author}</div>
         </div>
       </div>
     );

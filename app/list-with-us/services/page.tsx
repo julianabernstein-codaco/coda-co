@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ServicesForm } from "@/components/vendor/ServicesForm";
 import { getServiceTypes } from "@/lib/api/serviceTypes";
+import { paidFlowsOpenFor } from "@/lib/launch";
 
 export const metadata: Metadata = {
   title: "List services — CodaCo",
@@ -14,6 +15,7 @@ export default async function ListServicesPage() {
   if (!session?.user) redirect("/signup?next=/list-with-us/services");
 
   const serviceTypes = await getServiceTypes();
+  const paidOpen = await paidFlowsOpenFor(session.user.role);
 
   return (
     <>
@@ -24,7 +26,7 @@ export default async function ListServicesPage() {
           { label: "List services" },
         ]}
       />
-      <ServicesForm serviceTypes={serviceTypes} />
+      <ServicesForm serviceTypes={serviceTypes} paidOpen={paidOpen} />
     </>
   );
 }

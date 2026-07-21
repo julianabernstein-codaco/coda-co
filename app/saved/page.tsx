@@ -19,7 +19,7 @@ export default function SavedPage() {
             <h1 className="font-serif text-[32px] font-light text-ch mb-1">
               Saved items
             </h1>
-            <p className="text-[13px] text-cl">
+            <p className="text-[15px] text-cl">
               Products and providers you have saved, kept in this browser.
             </p>
           </div>

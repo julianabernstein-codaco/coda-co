@@ -15,7 +15,7 @@ export default function AboutPage() {
     <>
       {/* Hero — the ethos */}
       <section className="bg-white px-10 pt-[4.5rem] pb-12 text-center">
-        <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-3">
+        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-3">
           About CodaCo
         </p>
         <h1 className="font-serif italic text-[44px] font-light leading-[1.25] text-ch max-w-[760px] mx-auto mb-8">
@@ -26,7 +26,7 @@ export default function AboutPage() {
             healer.
           </span>
         </h1>
-        <p className="text-[11px] tracking-[.14em] uppercase text-cl">
+        <p className="text-[13px] tracking-[.14em] uppercase text-cl">
           — The CodaCo Market Ethos
         </p>
       </section>
@@ -47,7 +47,7 @@ export default function AboutPage() {
             }
           />
 
-          <div className="space-y-5 text-[15px] text-ink leading-[1.78]">
+          <div className="space-y-5 text-[17px] text-ink leading-[1.78]">
             <p>
               CodaCo Market was created out of a simple frustration: when
               facing the death of someone we love — or planning for our own —
@@ -68,10 +68,10 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* White space before the footer — invitation to meet the founders */}
+      {/* White space before the footer — invitation to meet the team */}
       <section className="bg-white px-10 py-16 text-center">
         <Link href="/company" className="btn-secondary btn-md no-underline">
-          Meet the founders
+          Meet the team
         </Link>
       </section>
     </>

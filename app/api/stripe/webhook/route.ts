@@ -2,7 +2,7 @@ import type Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { log } from "@/lib/log";
-import { markSetupFeePaid, syncStripeSubscription } from "@/lib/billing/sync";
+import { syncStripeSubscription } from "@/lib/billing/sync";
 import {
   recordGiftCardContribution,
   isPooled,
@@ -10,6 +10,7 @@ import {
 } from "@/lib/api/giftCards";
 import {
   sendGiftCardDeliveryEmail,
+  sendGiftCardReceiptEmail,
   sendGiftCardPoolCreatedEmail,
   sendGiftCardContributionEmail,
 } from "@/lib/email/templates";
@@ -57,20 +58,6 @@ export async function POST(req: Request) {
           await syncStripeSubscription(await stripe.subscriptions.retrieve(subId));
         } else if (
           session.mode === "payment" &&
-          session.metadata?.kind === "goods_setup" &&
-          session.metadata.vendorId
-        ) {
-          const paymentIntentId =
-            typeof session.payment_intent === "string"
-              ? session.payment_intent
-              : (session.payment_intent?.id ?? null);
-          const customerId =
-            typeof session.customer === "string"
-              ? session.customer
-              : (session.customer?.id ?? null);
-          await markSetupFeePaid(session.metadata.vendorId, paymentIntentId, customerId);
-        } else if (
-          session.mode === "payment" &&
           session.metadata?.kind === "gift_card" &&
           session.metadata.giftCardId
         ) {
@@ -116,15 +103,24 @@ export async function POST(req: Request) {
                 });
               }
             } else if (res.wasFirst) {
-              // Single-purchase card: deliver on payment, as before.
+              // Single-purchase card: deliver the card (with code) to the
+              // recipient, and email the buyer their payment receipt.
               await sendGiftCardDeliveryEmail({
                 toEmail: card.recipientEmail ?? card.purchaserEmail,
                 recipientName: card.recipientName,
+                purchaserName: card.purchaserName,
                 purchaserEmail: card.purchaserEmail,
                 isSelfPurchase: !card.recipientEmail,
                 code: card.code,
                 amountLabel: formatCents(res.balanceCents),
                 message: card.giftMessage,
+              });
+              await sendGiftCardReceiptEmail({
+                toEmail: card.purchaserEmail,
+                amountLabel: formatCents(res.balanceCents),
+                isSelfPurchase: !card.recipientEmail,
+                recipientName: card.recipientName,
+                recipientEmail: card.recipientEmail,
               });
             }
           }

@@ -218,7 +218,7 @@ export const services: Service[] = [
   {
     id: "svc-pr-burial",
     vendorId: "prairie-rest-conservation",
-    serviceType: "green-burial",
+    serviceType: "other",
     title: "Conservation burial plots",
     description:
       "Burial in a 180-acre protected shortgrass prairie. No vaults, no embalming. Plot fees fund land stewardship in perpetuity.",
@@ -232,7 +232,7 @@ export const services: Service[] = [
   {
     id: "svc-am-burial",
     vendorId: "aspen-meadow-natural-burial",
-    serviceType: "green-burial",
+    serviceType: "other",
     title: "Natural burial section plots",
     description:
       "Hybrid natural-burial section in an established community cemetery. Welcomes shrouded and biodegradable-casket burials.",

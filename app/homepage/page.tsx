@@ -163,7 +163,7 @@ export default async function PublicHomepage() {
 
       {/* Hero */}
       <section className="bg-white px-10 pt-[3.5rem] pb-12 text-center">
-        <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">
+        <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">
           Welcome
         </p>
         <h1 className="font-serif italic text-[52px] font-light leading-[1.12] text-ch mb-5">
@@ -171,7 +171,7 @@ export default async function PublicHomepage() {
           <br />
           <span className="text-tr">Support should be easy to find.</span>
         </h1>
-        <p className="text-[15px] text-cm max-w-[560px] mx-auto leading-[1.78] mb-8">
+        <p className="text-[17px] text-cm max-w-[560px] mx-auto leading-[1.78] mb-8">
           Carefully curated end-of-life goods, services, and planning
           resources.
         </p>
@@ -198,7 +198,7 @@ export default async function PublicHomepage() {
                 <div className="w-10 h-10 mx-auto mb-2.5 flex items-center justify-center">
                   {cat.icon}
                 </div>
-                <div className="text-[12px] font-medium text-ch leading-tight">
+                <div className="text-[14px] font-medium text-ch leading-tight">
                   {cat.label}
                 </div>
               </div>
@@ -220,10 +220,10 @@ export default async function PublicHomepage() {
             />
 
             <div className="flex items-center gap-2.5 bg-white border border-line rounded-[8px] px-4 py-2.5 mb-6">
-              <span className="text-[13px] text-cm flex-1">
+              <span className="text-[15px] text-cm flex-1">
                 Showing results near:
               </span>
-              <span className="font-sans text-[13px] text-tr font-medium">
+              <span className="font-sans text-[15px] text-tr font-medium">
                 Boulder, CO 80301
               </span>
             </div>
@@ -255,7 +255,7 @@ export default async function PublicHomepage() {
             subtitle="A short survey · about 5 minutes"
             subtitleTone="ink"
           />
-          <p className="text-[15px] text-cm text-center leading-[1.78] mb-7 max-w-[520px] mx-auto">
+          <p className="text-[17px] text-cm text-center leading-[1.78] mb-7 max-w-[520px] mx-auto">
             CodaCo is being shaped by the people who&apos;ll use it — those
             planning ahead, caring for someone dying, or grieving a recent
             loss, as well as practitioners and makers in the dying space.
@@ -282,7 +282,7 @@ export default async function PublicHomepage() {
 function PreviewBanner() {
   return (
     <div className="bg-sg-p border-b border-sg-l text-center px-6 py-2.5">
-      <p className="text-[12px] text-sg-d">
+      <p className="text-[14px] text-sg-d">
         Preview · CodaCo is in private development. Launching publicly later this year.
       </p>
     </div>
@@ -299,7 +299,7 @@ function StaticTopBar() {
             <span className="text-tr">Coda</span>
             <span className="text-sg">Co</span>
           </div>
-          <div className="text-[10px] tracking-[.11em] uppercase text-cl mt-[3px] whitespace-nowrap">
+          <div className="text-[12px] tracking-[.11em] uppercase text-cl mt-[3px] whitespace-nowrap">
             A curated marketplace for death and dying
           </div>
         </div>
@@ -316,23 +316,23 @@ function StaticHeroSearch() {
           the live waitlist CTA below — the fake Search pill in particular
           used to mirror the terracotta of the real survey button. */}
       <div className="flex max-w-[500px] mx-auto mb-4">
-        <div className="flex-1 px-5 py-3.5 border-[1.5px] border-r-0 border-line-strong rounded-l-[28px] bg-pl text-[14px] text-cl">
+        <div className="flex-1 px-5 py-3.5 border-[1.5px] border-r-0 border-line-strong rounded-l-[28px] bg-pl text-[16px] text-cl">
           Search goods, services, books…
         </div>
-        <div className="bg-pl2 text-cl border-[1.5px] border-l-0 border-line-strong px-6 py-3.5 rounded-r-[28px] text-[13px] flex items-center">
+        <div className="bg-pl2 text-cl border-[1.5px] border-l-0 border-line-strong px-6 py-3.5 rounded-r-[28px] text-[15px] flex items-center">
           Search
         </div>
       </div>
 
       <div className="bg-sg-p border border-sg-l rounded-[12px] px-6 py-5 max-w-[500px] mx-auto">
-        <p className="text-[14px] text-cm mb-3 text-center">
+        <p className="text-[16px] text-cm mb-3 text-center">
           How can we help you today?
         </p>
         <div className="grid grid-cols-2 gap-2.5">
           {heroEntries.map((label) => (
             <div
               key={label}
-              className="bg-pl border border-line rounded-[8px] px-4 py-3 text-[13px] text-cl text-center"
+              className="bg-pl border border-line rounded-[8px] px-4 py-3 text-[15px] text-cl text-center"
             >
               {label}
             </div>
@@ -343,7 +343,7 @@ function StaticHeroSearch() {
       {/* Scopes the "coming soon" note to the search + quick-link
           placeholders above — named explicitly so it can't be misread as
           applying to the live button below. */}
-      <p className="max-w-[500px] mx-auto mt-2.5 text-center text-[11px] uppercase tracking-[.1em] text-cl">
+      <p className="max-w-[500px] mx-auto mt-2.5 text-center text-[13px] uppercase tracking-[.1em] text-cl">
         Search &amp; browsing — coming soon at launch
       </p>
 
@@ -382,17 +382,17 @@ function StaticVendorCard({
         tone={vendor.photoTone}
         className="mb-3"
       />
-      <div className="text-[14px] font-medium text-ch mb-[2px]">{vendor.name}</div>
-      <div className="text-[10px] tracking-[.08em] uppercase text-cl mb-[7px]">
+      <div className="text-[16px] font-medium text-ch mb-[2px]">{vendor.name}</div>
+      <div className="text-[12px] tracking-[.08em] uppercase text-cl mb-[7px]">
         {typeLabel}
       </div>
-      <div className="text-[12px] text-cm mb-[5px]">
+      <div className="text-[14px] text-cm mb-[5px]">
         {vendorLocationSuffix(vendor, services.map((s) => s.locationType))}
       </div>
       <Stars
         rating={vendor.rating}
         reviewCount={vendor.reviewCount}
-        className="text-[12px]"
+        className="text-[14px]"
       />
     </Card>
   );
@@ -406,11 +406,11 @@ function StaticFooter() {
           <span className="text-tr">Coda</span>
           <span className="text-sg">Co</span>
         </div>
-        <p className="text-[13px] text-cl leading-relaxed max-w-[420px] mx-auto mb-6">
+        <p className="text-[15px] text-cl leading-relaxed max-w-[420px] mx-auto mb-6">
           A curated marketplace for death and dying. Based in the US.
           Launching publicly later this year.
         </p>
-        <p className="text-[12px] text-cl">
+        <p className="text-[14px] text-cl">
           © {new Date().getFullYear()} CodaCo, Inc. · Made with intention.
         </p>
       </Container>

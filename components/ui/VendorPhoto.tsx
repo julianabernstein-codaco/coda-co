@@ -27,6 +27,11 @@ interface VendorPhotoProps {
   size?: VendorPhotoSize;
   tone?: VendorPhotoTone;
   className?: string;
+  /**
+   * CSS `object-position` for the cropped image (e.g. "50% 25%" to move the
+   * visible crop toward the top of the photo). Defaults to centered.
+   */
+  objectPosition?: string;
 }
 
 export function VendorPhoto({
@@ -36,7 +41,10 @@ export function VendorPhoto({
   size = "md",
   tone = "sage",
   className = "",
+  objectPosition,
 }: VendorPhotoProps) {
+  const imgStyle = objectPosition ? { objectPosition } : undefined;
+
   return (
     <span
       className={`vendor-photo ${sizeClass[size]} ${tone === "terracotta" ? "vendor-photo-tr" : ""} ${className}`.trim()}
@@ -49,6 +57,7 @@ export function VendorPhoto({
             fill
             sizes={sizesAttr[size]}
             className="vendor-photo-img"
+            style={imgStyle}
           />
         ) : (
           <span aria-hidden="true">{initials}</span>

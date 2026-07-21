@@ -30,19 +30,19 @@ export function ListingRow({ listing }: { listing: Listing }) {
   return (
     <tr className="border-b border-pl2">
       <td className="px-4 py-3 align-top">
-        <div className="text-[13px] font-medium text-ch">{listing.title}</div>
-        <div className="text-[11px] text-cl">slug: {listing.slug}</div>
+        <div className="text-[15px] font-medium text-ch">{listing.title}</div>
+        <div className="text-[13px] text-cl">slug: {listing.slug}</div>
         {!listing.hasCover && (
-          <div className="text-[11px] text-tr-d mt-0.5">No cover photo</div>
+          <div className="text-[13px] text-tr-d mt-0.5">No cover photo</div>
         )}
       </td>
       <td className="px-4 py-3 align-top">
-        <div className="text-[13px] text-ch">{listing.vendorName}</div>
-        <div className="text-[11px] text-cl">{listing.vendorEmail}</div>
+        <div className="text-[15px] text-ch">{listing.vendorName}</div>
+        <div className="text-[13px] text-cl">{listing.vendorEmail}</div>
       </td>
-      <td className="px-4 py-3 align-top text-[12px] text-cm">{listing.productType}</td>
-      <td className="px-4 py-3 align-top text-[12px] text-cm tabular-nums">{listing.priceLabel}</td>
-      <td className="px-4 py-3 align-top text-[12px] text-cm">{listing.submittedAt}</td>
+      <td className="px-4 py-3 align-top text-[14px] text-cm">{listing.productType}</td>
+      <td className="px-4 py-3 align-top text-[14px] text-cm tabular-nums">{listing.priceLabel}</td>
+      <td className="px-4 py-3 align-top text-[14px] text-cm">{listing.submittedAt}</td>
       <td className="px-4 py-3 align-top">
         <div className="flex flex-col gap-2 min-w-[140px]">
           <button
@@ -61,7 +61,7 @@ export function ListingRow({ listing }: { listing: Listing }) {
           >
             Send back to draft
           </button>
-          {error && <span className="text-[11px] text-tr-d">{error}</span>}
+          {error && <span className="text-[13px] text-tr-d">{error}</span>}
         </div>
       </td>
     </tr>

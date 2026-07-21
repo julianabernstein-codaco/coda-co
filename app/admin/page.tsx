@@ -71,6 +71,12 @@ export default async function AdminPage() {
           </div>
           <div className="flex flex-col gap-2 shrink-0">
             <a
+              href="/admin/launch"
+              className="btn-secondary btn-sm no-underline"
+            >
+              Launch →
+            </a>
+            <a
               href="/admin/applications"
               className="btn-secondary btn-sm no-underline"
             >

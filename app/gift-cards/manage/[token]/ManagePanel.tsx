@@ -23,7 +23,7 @@ export function ShareLink({ url }: { url: string }) {
         readOnly
         value={url}
         onFocus={(e) => e.target.select()}
-        className="flex-1 px-3 py-2 rounded-[8px] border border-line-bold text-[13px] text-cm bg-white outline-none"
+        className="flex-1 px-3 py-2 rounded-[8px] border border-line-bold text-[15px] text-cm bg-white outline-none"
       />
       <button type="button" onClick={copy} className="btn-secondary btn-sm shrink-0">
         {copied ? "Copied" : "Copy"}
@@ -76,7 +76,7 @@ export function DeliverForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <label className="block">
-        <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
+        <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
           Recipient email
         </span>
         <input
@@ -84,22 +84,22 @@ export function DeliverForm({
           required
           value={recipientEmail}
           onChange={(e) => setRecipientEmail(e.target.value)}
-          className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none"
+          className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none"
         />
       </label>
       <label className="block">
-        <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
+        <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
           Recipient name (optional)
         </span>
         <input
           type="text"
           value={recipientName}
           onChange={(e) => setRecipientName(e.target.value)}
-          className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none"
+          className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none"
         />
       </label>
       <label className="block">
-        <span className="text-[12px] font-medium text-ch uppercase tracking-wide">
+        <span className="text-[14px] font-medium text-ch uppercase tracking-wide">
           Message (optional)
         </span>
         <textarea
@@ -107,13 +107,13 @@ export function DeliverForm({
           onChange={(e) => setGiftMessage(e.target.value)}
           rows={3}
           maxLength={500}
-          className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[14px] text-ch focus:border-tr outline-none resize-none"
+          className="mt-1 w-full px-3 py-2 rounded-[8px] border border-line-bold text-[16px] text-ch focus:border-tr outline-none resize-none"
         />
       </label>
 
-      {error && <p className="text-[13px] text-tr">{error}</p>}
+      {error && <p className="text-[15px] text-tr">{error}</p>}
       {sent && (
-        <p className="text-[13px] text-sg-d">
+        <p className="text-[15px] text-sg-d">
           Sent — the recipient has the gift card by email. You can keep collecting top-ups.
         </p>
       )}

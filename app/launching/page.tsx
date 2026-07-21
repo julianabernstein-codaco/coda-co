@@ -45,7 +45,7 @@ const launchCities = [
 const previewCategories = [
   "Urns & vessels",
   "Death doulas",
-  "Green burial",
+  "Funeral home",
   "Celebrants",
   "Ash jewelry",
   "Planning docs",
@@ -72,7 +72,7 @@ export default function LaunchingPage() {
           {/* Announcement kicker — small, letter-spaced, flanked by hairlines. */}
           <div className="flex items-center justify-center gap-3 mb-5">
             <span className="h-px w-9 bg-tr-l" aria-hidden="true" />
-            <span className="text-[12px] sm:text-[13px] tracking-[.26em] uppercase font-semibold text-tr">
+            <span className="text-[14px] sm:text-[15px] tracking-[.26em] uppercase font-semibold text-tr">
               Launching soon
             </span>
             <span className="h-px w-9 bg-tr-l" aria-hidden="true" />
@@ -89,7 +89,7 @@ export default function LaunchingPage() {
           </h1>
 
           {/* State + pin, kept as a quiet caption under the city names. */}
-          <p className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[13px] sm:text-[14px] text-cm mb-8">
+          <p className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[15px] sm:text-[16px] text-cm mb-8">
             {launchCities.map(({ city, state }, i) => (
               <Fragment key={city}>
                 {i > 0 && (
@@ -110,7 +110,7 @@ export default function LaunchingPage() {
             <span className="text-tr not-italic">Support should be easy to find.</span>
           </p>
 
-          <p className="text-[15px] text-cm max-w-[520px] mx-auto leading-[1.78]">
+          <p className="text-[17px] text-cm max-w-[520px] mx-auto leading-[1.78]">
             CodaCo is a carefully curated marketplace for end-of-life goods,
             services, and planning resources — bringing trusted makers and
             providers together in one calm, considered place. We&apos;re opening
@@ -124,18 +124,18 @@ export default function LaunchingPage() {
       {/* What you'll find — in the terracotta banner */}
       <section className="bg-tr-vp px-6 pt-5 pb-14 text-center">
         <Container width="narrow">
-          <p className="text-overline text-sg-d mb-3">What you&apos;ll find</p>
+          <p className="text-overline text-ink mb-3">What you&apos;ll find</p>
           <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
             {previewCategories.map((label) => (
               <span
                 key={label}
-                className="bg-white border border-line rounded-pill px-4 py-2 text-[13px] text-cm"
+                className="bg-white border border-line rounded-pill px-4 py-2 text-[15px] text-cm"
               >
                 {label}
               </span>
             ))}
           </div>
-          <p className="text-[14px] text-ink/75 max-w-[440px] mx-auto leading-relaxed">
+          <p className="text-[16px] text-ink/75 max-w-[440px] mx-auto leading-relaxed">
             From planning ahead to a recent loss — thoughtful goods and vetted
             local support, gathered with care.
           </p>
@@ -163,13 +163,13 @@ export default function LaunchingPage() {
             <span className="text-tr">Coda</span>
             <span className="text-sg">Co</span>
           </div>
-          <p className="text-[13px] text-cl leading-relaxed max-w-[420px] mx-auto mb-2">
+          <p className="text-[15px] text-cl leading-relaxed max-w-[420px] mx-auto mb-2">
             A curated marketplace for death and dying.
           </p>
-          <p className="text-[13px] text-sg-vp leading-relaxed mb-5">
+          <p className="text-[15px] text-sg-vp leading-relaxed mb-5">
             Launching soon in Boulder, CO &amp; Portland, OR.
           </p>
-          <p className="text-[12px] text-cl">
+          <p className="text-[14px] text-cl">
             © {new Date().getFullYear()} CodaCo, Inc. · Made with intention.
           </p>
         </Container>

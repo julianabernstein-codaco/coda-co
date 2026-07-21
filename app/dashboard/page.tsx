@@ -30,23 +30,18 @@ export default async function DashboardPage() {
     prisma.vendorInquiry.count({ where: { vendorId: vendor.id, readAt: null } }),
   ]);
 
-  // Billing summary differs by kind: services run on a subscription, goods
-  // on the free plan or a one-time Storefront set-up fee.
-  const offersServices = vendor.kind === "services" || vendor.kind === "both";
-  const servicesSub = vendor.subscriptions.find((s) => s.kind === "services");
-  const setupFee = vendor.payments.find((p) => p.type === "setup_fee");
-  const subActive =
-    servicesSub && ["active", "trialing"].includes(servicesSub.status);
-  const intervalWord = servicesSub?.interval === "year" ? "annual" : "monthly";
-  const billingLabel = offersServices
-    ? subActive
-      ? `${intervalWord} subscription`
-      : "Subscription needs setup"
-    : setupFee
-      ? setupFee.status === "paid"
-        ? "Storefront"
-        : "Set-up fee due"
-      : "Free plan";
+  // Billing summary: goods and services both run on a recurring subscription
+  // (Starter = free trial, then Monthly/Annual).
+  const subKind = vendor.kind === "services" ? "services" : "goods";
+  const sub = vendor.subscriptions.find((s) => s.kind === subKind);
+  const subActive = sub && ["active", "trialing"].includes(sub.status);
+  const intervalWord = sub?.interval === "year" ? "annual" : "monthly";
+  const billingLabel =
+    sub?.planId === "starter"
+      ? "Free trial"
+      : subActive
+        ? `${intervalWord} subscription`
+        : "Subscription needs setup";
 
   return (
     <>
@@ -57,9 +52,9 @@ export default async function DashboardPage() {
       <section className="bg-pl2 px-10 py-10 min-h-screen">
         <Container width="wide">
           <div className="mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
             <h1 className="font-serif text-[32px] font-light text-ch">{vendor.displayName}</h1>
-            <p className="text-[13px] text-cl mt-1.5">
+            <p className="text-[15px] text-cl mt-1.5">
               {vendor.kind === "services" ? "Services provider" : "Goods seller"} ·{" "}
               {billingLabel} · {vendor.location}
             </p>
@@ -122,15 +117,11 @@ export default async function DashboardPage() {
             <DashCard
               title="Billing"
               body={
-                offersServices
-                  ? subActive
+                sub?.planId === "starter"
+                  ? "You're on the free trial. Choose a plan when you're ready."
+                  : subActive
                     ? `Your ${intervalWord} subscription is active. Update your card or plan.`
                     : "Finish setting up your subscription to publish."
-                  : setupFee
-                    ? setupFee.status === "paid"
-                      ? "Storefront set-up fee paid."
-                      : "Pay your one-time Storefront set-up fee."
-                    : "You're on the free goods plan."
               }
               href="/dashboard/billing"
               cta="Manage billing →"
@@ -146,7 +137,7 @@ function DashStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="bg-white rounded-[10px] border border-line px-5 py-4">
       <p className="font-serif text-[28px] font-light text-ch tabular-nums">{value}</p>
-      <p className="text-[12px] text-cm mt-0.5">{label}</p>
+      <p className="text-[14px] text-cm mt-0.5">{label}</p>
     </div>
   );
 }
@@ -165,8 +156,8 @@ function DashCard({
   return (
     <div className="bg-white rounded-[10px] border border-line p-6">
       <h2 className="font-serif text-[20px] text-ch mb-2">{title}</h2>
-      <p className="text-[13px] text-cm mb-4 leading-relaxed">{body}</p>
-      <Link href={href} className="text-[13px] text-tr no-underline hover:underline">
+      <p className="text-[15px] text-cm mb-4 leading-relaxed">{body}</p>
+      <Link href={href} className="text-[15px] text-tr no-underline hover:underline">
         {cta}
       </Link>
     </div>

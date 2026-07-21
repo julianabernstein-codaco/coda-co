@@ -24,7 +24,7 @@ export function HomeLocationSearch() {
 
   return (
     <div className="flex items-center gap-2.5 bg-white border border-line rounded-[8px] px-4 py-2.5">
-      <span className="text-[13px] text-cm whitespace-nowrap">Find providers near you:</span>
+      <span className="text-[15px] text-cm whitespace-nowrap">Find providers near you:</span>
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -35,7 +35,7 @@ export function HomeLocationSearch() {
         autoComplete="postal-code"
         placeholder="Enter your zip code"
         aria-label="Search providers by zip code"
-        className="flex-1 min-w-0 border-0 bg-transparent font-sans text-[13px] text-tr font-medium outline-none placeholder:text-cl placeholder:font-normal"
+        className="flex-1 min-w-0 border-0 bg-transparent font-sans text-[15px] text-tr font-medium outline-none placeholder:text-cl placeholder:font-normal"
       />
       <button onClick={search} className="btn-secondary btn-sm">
         Search

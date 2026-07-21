@@ -6,6 +6,9 @@
   --color-tr-l:  #D4876F;
   --color-tr-p:  #F5EAE6;
   --color-tr-d:  #8B3E2D;
+  /* Deep terracotta — accent text that must stay warm yet clear AA (5.4:1)
+     on the terracotta banner (tr-vp). See the /where-to-start eyebrows/links. */
+  --color-tr-deep: #6E2E20;
   --color-tr-vp: #F0AE90;
 
   /* Sage */
@@ -58,10 +61,33 @@
     font-family: var(--font-sans);
     background: var(--color-white);
     color: var(--color-ch);
-    font-size: 15px;
+    font-size: 17px;
     line-height: 1.6;
     overflow-x: hidden;
   }
+}
+
+/*
+ * Contrast on the terracotta banner (bg-tr-vp, #F0AE90). Same-family colors
+ * read as low-contrast here (WCAG measures lightness, not hue). Two rules,
+ * kept unlayered so they win over Tailwind's utilities layer:
+ *
+ *  - Terracotta accents (text-tr ~2.2:1) deepen to tr-deep (#6E2E20, ~5.4:1),
+ *    keeping the warm identity. Also covers plain section-header eyebrows.
+ *  - Sage-toned section eyebrows (green on warm ~1.7:1) go to ink — sage never
+ *    reads on a warm ground, so we drop the hue rather than muddy it. Placed
+ *    after the terracotta rule so it wins for eyebrows carrying both classes.
+ *
+ * Inline sage *labels/links* sitting directly on the banner are fixed at the
+ * source instead (text-sg -> text-ink) — a blanket `.bg-tr-vp .text-sg` rule
+ * would wrongly ink sage check-marks and pills inside nested white cards.
+ */
+.bg-tr-vp .text-tr,
+.bg-tr-vp .section-eyebrow {
+  color: var(--color-tr-deep);
+}
+.bg-tr-vp .section-eyebrow-sg {
+  color: var(--color-ink);
 }
 
 @layer components {
@@ -69,7 +95,7 @@
    * Buttons — compose variant + size: `btn-primary btn-sm`
    *
    * Variants: btn-primary, btn-secondary, btn-ghost
-   * Sizes:    btn-sm (12px/6px 16px), btn-md (13px/10px 20px), btn-lg (15px/14px 24px)
+   * Sizes:    btn-sm (14px/6px 16px), btn-md (15px/10px 20px), btn-lg (17px/14px 24px)
    */
   .btn-primary {
     display: inline-flex;
@@ -118,9 +144,9 @@
   }
   .btn-ghost:hover { color: var(--color-tr); border-color: var(--color-tr); }
 
-  .btn-sm { font-size: 12px; padding: 6px 16px; }
-  .btn-md { font-size: 13px; padding: 10px 20px; }
-  .btn-lg { font-size: 15px; padding: 14px 24px; }
+  .btn-sm { font-size: 14px; padding: 6px 16px; }
+  .btn-md { font-size: 15px; padding: 10px 20px; }
+  .btn-lg { font-size: 17px; padding: 14px 24px; }
 
   /*
    * Filter pills — compose state: `filter-pill filter-pill-on` / `filter-pill filter-pill-off`
@@ -129,7 +155,7 @@
     display: inline-flex;
     align-items: center;
     font-family: var(--font-sans);
-    font-size: 12px;
+    font-size: 14px;
     padding: 6px 16px;
     border-radius: 9999px;
     border: 1px solid transparent;
@@ -162,7 +188,7 @@
   /* Label / overline text (caps + tracking) */
   .text-overline {
     font-family: var(--font-sans);
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 500;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -191,7 +217,7 @@
    */
   .section-header     { text-align: center; margin-bottom: 1.75rem; }
   .section-eyebrow    {
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--color-tr);
@@ -206,7 +232,7 @@
     margin-bottom: 0.25rem;
     line-height: 1.2;
   }
-  .section-subtitle   { font-size: 13px; color: var(--color-cl); }
+  .section-subtitle   { font-size: 15px; color: var(--color-cl); }
   .section-subtitle-ink { color: var(--color-ink); }
 
   /*

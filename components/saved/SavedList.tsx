@@ -36,7 +36,7 @@ export function SavedList() {
   // First load (before localStorage + the action have resolved).
   if (!hydrated || data == null) {
     return (
-      <p className="text-center py-16 text-cm text-[14px]">
+      <p className="text-center py-16 text-cm text-[16px]">
         Loading your saved items…
       </p>
     );
@@ -50,8 +50,8 @@ export function SavedList() {
   if (products.length === 0 && vendors.length === 0) {
     return (
       <div className="text-center py-16">
-        <p className="text-[15px] text-cm mb-2">You haven&apos;t saved anything yet.</p>
-        <p className="text-[13px] text-cl mb-6">
+        <p className="text-[17px] text-cm mb-2">You haven&apos;t saved anything yet.</p>
+        <p className="text-[15px] text-cl mb-6">
           Tap the heart on any product or provider to keep it here.
         </p>
         <div className="flex gap-3 justify-center">

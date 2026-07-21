@@ -32,11 +32,11 @@ export default async function ContributePage({
   return (
     <Container width="narrow" className="py-12">
       <div className="mb-8">
-        <p className="text-[12px] tracking-[.14em] uppercase text-tr mb-1.5">Group gift</p>
+        <p className="text-[14px] tracking-[.14em] uppercase text-tr mb-1.5">Group gift</p>
         <h1 className="font-serif text-[32px] font-light text-ch mb-2">
           Chip in on a CodaCo gift card{forWhom}
         </h1>
-        <p className="text-[15px] text-cl leading-relaxed">
+        <p className="text-[17px] text-cl leading-relaxed">
           Add to a shared gift card balance the recipient can put toward goods and services
           across the marketplace. No account needed.
         </p>
@@ -44,14 +44,14 @@ export default async function ContributePage({
 
       {status === "thanks" && (
         <div className="bg-sg-p border border-sg-l rounded-[10px] px-5 py-4 mb-6">
-          <p className="text-[13px] text-sg-d">
+          <p className="text-[15px] text-sg-d">
             Thank you for chipping in! Your contribution is added once the charge settles.
           </p>
         </div>
       )}
       {status === "cancelled" && (
         <div className="bg-white border border-line rounded-[10px] px-5 py-4 mb-6">
-          <p className="text-[13px] text-cm">Checkout cancelled — no charge was made.</p>
+          <p className="text-[15px] text-cm">Checkout cancelled — no charge was made.</p>
         </div>
       )}
 
@@ -60,29 +60,29 @@ export default async function ContributePage({
           {isStripeConfigured() ? (
             <ContributeForm token={token} />
           ) : (
-            <p className="text-[14px] text-cm">
+            <p className="text-[16px] text-cm">
               Contributions aren't available just yet. Please check back soon.
             </p>
           )}
         </Card>
 
         <Card hoverTone="none" className="space-y-2">
-          <div className="text-[12px] text-cl uppercase tracking-wide">Raised so far</div>
+          <div className="text-[14px] text-cl uppercase tracking-wide">Raised so far</div>
           <div className="font-serif text-[28px] font-light text-ch">
             {formatCents(view.balanceCents)}
           </div>
-          <div className="text-[13px] text-cm">
+          <div className="text-[15px] text-cm">
             {view.contributorCount === 1
               ? "1 contribution"
               : `${view.contributorCount} contributions`}
           </div>
           {view.giftMessage && (
-            <p className="pt-2 text-[13px] text-cm italic leading-relaxed border-t border-line mt-2">
+            <p className="pt-2 text-[15px] text-cm italic leading-relaxed border-t border-line mt-2">
               “{view.giftMessage}”
             </p>
           )}
           {view.delivered && (
-            <p className="pt-2 text-[12px] text-cl">
+            <p className="pt-2 text-[14px] text-cl">
               This gift has been sent to the recipient — top-ups still welcome.
             </p>
           )}

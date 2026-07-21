@@ -36,23 +36,23 @@ export default async function CheckoutSuccessPage({
   return (
     <Container width="mid" className="py-16">
       <h1 className="font-serif text-[34px] font-light text-ch mb-2">Thank you</h1>
-      <p className="text-[15px] text-cl mb-6">
+      <p className="text-[17px] text-cl mb-6">
         Your order has been placed.{" "}
         {order.status === "paid" ? "Payment received." : "Awaiting payment."}
       </p>
 
       <Card className="space-y-3 max-w-[480px]">
-        <div className="flex justify-between text-[14px]">
+        <div className="flex justify-between text-[16px]">
           <span className="text-cm">Order</span>
-          <span className="font-mono text-[12px] text-ch">{order.id}</span>
+          <span className="font-mono text-[14px] text-ch">{order.id}</span>
         </div>
-        <div className="flex justify-between text-[14px]">
+        <div className="flex justify-between text-[16px]">
           <span className="text-cm">Status</span>
           <span className="font-medium text-ch capitalize">{order.status}</span>
         </div>
         <ul className="space-y-1 border-t border-line pt-3">
           {order.items.map((it) => (
-            <li key={it.id} className="flex justify-between gap-3 text-[13px]">
+            <li key={it.id} className="flex justify-between gap-3 text-[15px]">
               <span className="text-cm">
                 {it.productTitleSnapshot} · {it.variantLabelSnapshot} × {it.quantity}
               </span>
@@ -62,7 +62,7 @@ export default async function CheckoutSuccessPage({
             </li>
           ))}
         </ul>
-        <div className="flex justify-between text-[14px] border-t border-line pt-3">
+        <div className="flex justify-between text-[16px] border-t border-line pt-3">
           <span className="text-cm">Total</span>
           <span className="font-medium text-ch">${order.totalCents / 100}</span>
         </div>
@@ -73,14 +73,14 @@ export default async function CheckoutSuccessPage({
           <button type="submit" className="btn-secondary btn-md">
             Mark as paid (dev)
           </button>
-          <p className="text-[12px] text-cl mt-2">
+          <p className="text-[14px] text-cl mt-2">
             Stand-in for Stripe payment until checkout payment lands (PR 3).
           </p>
         </form>
       )}
 
       <div className="mt-8">
-        <Link href="/shop" className="text-[13px] text-cm hover:text-tr no-underline">
+        <Link href="/shop" className="text-[15px] text-cm hover:text-tr no-underline">
           Continue shopping
         </Link>
       </div>

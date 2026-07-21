@@ -35,9 +35,9 @@ export default async function VendorMessagesPage() {
         <Container width="mid">
           <div className="mb-7 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[11px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
               <h1 className="font-serif text-[32px] font-light text-ch">Messages</h1>
-              <p className="text-[13px] text-cl mt-1.5">
+              <p className="text-[15px] text-cl mt-1.5">
                 Inquiries from clients who used the contact form on your public profile.
                 {unreadCount > 0 && (
                   <>
@@ -58,8 +58,8 @@ export default async function VendorMessagesPage() {
 
           {inquiries.length === 0 ? (
             <div className="bg-white rounded-[10px] border border-line p-8 text-center">
-              <p className="text-[14px] text-ch font-medium mb-1">No messages yet</p>
-              <p className="text-[13px] text-cm">
+              <p className="text-[16px] text-ch font-medium mb-1">No messages yet</p>
+              <p className="text-[15px] text-cm">
                 When a client contacts you from your profile, their message lands here.
               </p>
             </div>
@@ -75,24 +75,24 @@ export default async function VendorMessagesPage() {
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2">
                         {unread && (
-                          <span className="text-[10px] tracking-[.06em] uppercase bg-tr-p text-tr-d border border-tr-l px-2 py-0.5 rounded-full">
+                          <span className="text-[12px] tracking-[.06em] uppercase bg-tr-p text-tr-d border border-tr-l px-2 py-0.5 rounded-full">
                             New
                           </span>
                         )}
-                        <span className="text-[14px] font-medium text-ch">{i.clientName}</span>
+                        <span className="text-[16px] font-medium text-ch">{i.clientName}</span>
                       </div>
-                      <span className="text-[12px] text-cl">
+                      <span className="text-[14px] text-cl">
                         {formatMonthYear(i.createdAt.toISOString().slice(0, 10))}
                       </span>
                     </div>
-                    <p className="text-[13px] text-cm leading-[1.7] whitespace-pre-line mb-3">
+                    <p className="text-[15px] text-cm leading-[1.7] whitespace-pre-line mb-3">
                       {i.message}
                     </p>
                     <a
                       href={`mailto:${i.clientEmail}?subject=${encodeURIComponent(
                         `Re: your inquiry on CodaCo`,
                       )}`}
-                      className="text-[13px] text-tr no-underline hover:underline"
+                      className="text-[15px] text-tr no-underline hover:underline"
                     >
                       Reply to {i.clientEmail} →
                     </a>

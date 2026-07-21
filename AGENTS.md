@@ -64,6 +64,12 @@ submission) haven't started.
   filtering. Client filter components update the URL; the page RSC re-renders.
 - **Tokens**: brand colors live in `app/globals.css` under `@theme`. Use
   `bg-tr`, `text-sg-d`, `border-tr-l`, `font-serif`, etc. Don't hardcode hex.
+- **Typography**: base body text is **Nunito Sans at 17px** (`body` in
+  `app/globals.css`). There's no font-size token — sans sizes are set inline
+  with `text-[Npx]` utilities, sized for readability in the **12–17px** range
+  for body/UI copy. Serif (`font-serif`, Crimson Pro) is heading-only and
+  carries its own larger sizes; **don't shrink sans copy below 12px** or bump
+  serif headings when adjusting body text.
 - **Reuse primitives.** Before adding markup, scan the **Reuse conventions**
   section below. There's a primitive for almost every page-level pattern
   (containers, section headers, cards, avatars, filters, stars). Hard rules

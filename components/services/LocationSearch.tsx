@@ -34,7 +34,7 @@ export function LocationSearch() {
           </svg>
         </div>
         <input
-          className="flex-1 border-0 px-3.5 py-2.5 font-sans text-[13px] text-ch outline-none bg-transparent"
+          className="flex-1 border-0 px-3.5 py-2.5 font-sans text-[15px] text-ch outline-none bg-transparent"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onBlur={apply}
@@ -49,7 +49,7 @@ export function LocationSearch() {
       </div>
       <button
         onClick={apply}
-        className="bg-tr text-white border-0 px-[22px] py-[11px] rounded-[8px] text-[13px] font-sans cursor-pointer hover:bg-tr-d transition-colors whitespace-nowrap"
+        className="bg-tr text-white border-0 px-[22px] py-[11px] rounded-[8px] text-[15px] font-sans cursor-pointer hover:bg-tr-d transition-colors whitespace-nowrap"
       >
         Search
       </button>

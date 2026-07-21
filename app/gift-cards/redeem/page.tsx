@@ -15,7 +15,7 @@ export default async function RedeemGiftCardPage() {
     <Container width="narrow" className="py-12">
       <div className="mb-8">
         <h1 className="font-serif text-[34px] font-light text-ch mb-2">Gift card balance</h1>
-        <p className="text-[15px] text-cl leading-relaxed">
+        <p className="text-[17px] text-cl leading-relaxed">
           Enter your gift card code to see what's left on it. Sign in to add the balance to
           your account so it applies automatically at checkout.
         </p>

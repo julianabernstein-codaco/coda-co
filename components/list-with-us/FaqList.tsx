@@ -50,13 +50,13 @@ export function FaqList({ faqs }: { faqs: Faq[] }) {
             ].join(" ")}
           >
             <div className="flex justify-between items-center">
-              <span className="text-[14px] font-medium text-ch">{faq.q}</span>
+              <span className="text-[16px] font-medium text-ch">{faq.q}</span>
               <span className="text-[18px] text-tr leading-none">
                 {isOpen ? "−" : "+"}
               </span>
             </div>
             {isOpen && (
-              <div className="text-[13px] text-cm leading-[1.7] mt-2.5 pr-8">
+              <div className="text-[15px] text-cm leading-[1.7] mt-2.5 pr-8">
                 {faq.a}
               </div>
             )}

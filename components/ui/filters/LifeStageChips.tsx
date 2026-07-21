@@ -23,7 +23,7 @@ export function LifeStageChips({ label = "Relevance:", className = "" }: LifeSta
 
   return (
     <div className={`flex items-center gap-2 flex-wrap ${className}`}>
-      <span className="text-[13px] text-cl mr-1">{label}</span>
+      <span className="text-[15px] text-cl mr-1">{label}</span>
       <FilterPill
         label="Any stage"
         active={active.length === 0}

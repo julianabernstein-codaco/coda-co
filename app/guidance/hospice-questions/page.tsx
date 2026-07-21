@@ -96,13 +96,13 @@ export default function HospiceQuestionsPage() {
 
       {/* Hero */}
       <section className="bg-white px-10 pt-16 pb-10 text-center">
-        <p className="text-[11px] tracking-[.14em] uppercase text-sg-d mb-3">
+        <p className="text-[13px] tracking-[.14em] uppercase text-sg-d mb-3">
           Guidance &amp; support
         </p>
         <h1 className="font-serif text-[40px] font-light leading-[1.15] text-ch max-w-[640px] mx-auto mb-4">
           Questions to ask potential hospice providers
         </h1>
-        <p className="text-[15px] text-cm max-w-[560px] mx-auto leading-[1.75]">
+        <p className="text-[17px] text-cm max-w-[560px] mx-auto leading-[1.75]">
           Choosing a hospice provider is a personal decision, and it&apos;s okay
           to ask a lot of questions. Use this checklist as a starting point when
           you meet with potential providers.
@@ -122,7 +122,7 @@ export default function HospiceQuestionsPage() {
                   {group.questions.map((q) => (
                     <li
                       key={q}
-                      className="flex gap-2.5 text-[14px] text-ink leading-[1.65]"
+                      className="flex gap-2.5 text-[16px] text-ink leading-[1.65]"
                     >
                       <span
                         className="text-sg-d mt-[2px] flex-shrink-0"
@@ -138,7 +138,7 @@ export default function HospiceQuestionsPage() {
             ))}
           </div>
 
-          <p className="text-center text-[13px] text-cl leading-[1.7] mt-12">
+          <p className="text-center text-[15px] text-cl leading-[1.7] mt-12">
             Back to{" "}
             <Link href="/guidance" className="text-sg-d hover:underline">
               guidance on death &amp; dying

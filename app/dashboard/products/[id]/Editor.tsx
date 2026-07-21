@@ -38,7 +38,7 @@ interface DetailRow {
 }
 
 const inputCls =
-  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[14px] text-ch bg-white outline-none focus:border-tr transition-colors";
+  "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[16px] text-ch bg-white outline-none focus:border-tr transition-colors";
 
 function scalarDetailRows(details: Record<string, unknown>): DetailRow[] {
   return Object.entries(details)
@@ -198,16 +198,16 @@ export function ProductEditor({
     <div className="space-y-6">
       <div className="bg-white rounded-[10px] border border-line p-6">
         <div className="mb-4">
-          <p className="text-[11px] tracking-[.08em] uppercase text-cl mb-0.5">Status</p>
+          <p className="text-[13px] tracking-[.08em] uppercase text-cl mb-0.5">Status</p>
           <span
             className={[
-              "inline-block text-[11px] font-medium px-2 py-0.5 rounded-full",
+              "inline-block text-[13px] font-medium px-2 py-0.5 rounded-full",
               statusMeta.cls,
             ].join(" ")}
           >
             {statusMeta.label}
           </span>
-          <p className="text-[12px] text-cl mt-1.5">{statusBlurb}</p>
+          <p className="text-[14px] text-cl mt-1.5">{statusBlurb}</p>
         </div>
 
         <Field label="Title">
@@ -223,20 +223,20 @@ export function ProductEditor({
 
         <div className="mb-2">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="block text-[12px] font-medium text-ch">Details</span>
+            <span className="block text-[14px] font-medium text-ch">Details</span>
             <button
               type="button"
               onClick={addDetailRow}
-              className="text-[12px] text-tr no-underline hover:underline"
+              className="text-[14px] text-tr no-underline hover:underline"
             >
               + Add detail
             </button>
           </div>
-          <p className="text-[11px] text-cl mb-2">
+          <p className="text-[13px] text-cl mb-2">
             Free-form key / value pairs shown on the product page (e.g. material, dimensions, finish).
           </p>
           {detailRows.length === 0 ? (
-            <p className="text-[12px] text-cl italic">No details yet.</p>
+            <p className="text-[14px] text-cl italic">No details yet.</p>
           ) : (
             <div className="space-y-2">
               {detailRows.map((row, i) => (
@@ -277,14 +277,14 @@ export function ProductEditor({
             {pending ? "Saving…" : "Save changes"}
           </button>
           {savedAt && (
-            <span className="text-[12px] text-cl">Saved at {savedAt}</span>
+            <span className="text-[14px] text-cl">Saved at {savedAt}</span>
           )}
         </div>
       </div>
 
       <div className="bg-white rounded-[10px] border border-line p-6">
-        <h2 className="text-[15px] font-medium text-ch mb-1">Cover photo</h2>
-        <p className="text-[12px] text-cl mb-4">
+        <h2 className="text-[17px] font-medium text-ch mb-1">Cover photo</h2>
+        <p className="text-[14px] text-cl mb-4">
           Square. Shown on /shop tiles and at the start of the carousel on
           the product page. Required to publish.
         </p>
@@ -296,8 +296,8 @@ export function ProductEditor({
       </div>
 
       <div className="bg-white rounded-[10px] border border-line p-6">
-        <h2 className="text-[15px] font-medium text-ch mb-1">Gallery photos</h2>
-        <p className="text-[12px] text-cl mb-4">
+        <h2 className="text-[17px] font-medium text-ch mb-1">Gallery photos</h2>
+        <p className="text-[14px] text-cl mb-4">
           Up to {MAX_GALLERY_IMAGES} additional photos. Any aspect ratio.
           Shown after the cover on the product detail page.
         </p>
@@ -309,8 +309,8 @@ export function ProductEditor({
       </div>
 
       <div className="bg-white rounded-[10px] border border-line p-6">
-        <h2 className="text-[15px] font-medium text-ch mb-1">Variants &amp; stock</h2>
-        <p className="text-[12px] text-cl mb-4">
+        <h2 className="text-[17px] font-medium text-ch mb-1">Variants &amp; stock</h2>
+        <p className="text-[14px] text-cl mb-4">
           Price and stock changes save the moment you commit them.
         </p>
         <table className="w-full text-sm">
@@ -324,7 +324,7 @@ export function ProductEditor({
           <tbody>
             {variants.map((v) => (
               <tr key={v.id} className="border-b border-line last:border-b-0">
-                <td className="px-3 py-3 text-[13px] text-ch">{v.label}</td>
+                <td className="px-3 py-3 text-[15px] text-ch">{v.label}</td>
                 <td className="px-3 py-3">
                   <input
                     type="number"
@@ -339,7 +339,7 @@ export function ProductEditor({
                         (e.target as HTMLInputElement).blur();
                       }
                     }}
-                    className="w-28 border border-line-bold rounded-[6px] px-2 py-1.5 text-[13px] text-ch bg-white outline-none focus:border-tr"
+                    className="w-28 border border-line-bold rounded-[6px] px-2 py-1.5 text-[15px] text-ch bg-white outline-none focus:border-tr"
                   />
                 </td>
                 <td className="px-3 py-3">
@@ -356,7 +356,7 @@ export function ProductEditor({
                         (e.target as HTMLInputElement).blur();
                       }
                     }}
-                    className="w-24 border border-line-bold rounded-[6px] px-2 py-1.5 text-[13px] text-ch bg-white outline-none focus:border-tr"
+                    className="w-24 border border-line-bold rounded-[6px] px-2 py-1.5 text-[15px] text-ch bg-white outline-none focus:border-tr"
                   />
                 </td>
               </tr>
@@ -370,13 +370,13 @@ export function ProductEditor({
           scrolling back to the top. */}
       <div className="bg-white rounded-[10px] border border-line p-6">
         <div className="flex items-center justify-between gap-4">
-          <p className="text-[13px] text-cm min-w-0">{actionPrompt}</p>
+          <p className="text-[15px] text-cm min-w-0">{actionPrompt}</p>
           {isPublished ? (
             <button
               type="button"
               disabled={pending}
               onClick={returnToDraft}
-              className="shrink-0 px-5 py-2.5 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-pl2 text-cm hover:bg-pl"
+              className="shrink-0 px-5 py-2.5 rounded-full text-[15px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-pl2 text-cm hover:bg-pl"
             >
               Unpublish
             </button>
@@ -385,7 +385,7 @@ export function ProductEditor({
               type="button"
               disabled={pending}
               onClick={returnToDraft}
-              className="shrink-0 px-5 py-2.5 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-pl2 text-cm hover:bg-pl"
+              className="shrink-0 px-5 py-2.5 rounded-full text-[15px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-pl2 text-cm hover:bg-pl"
             >
               Withdraw
             </button>
@@ -394,7 +394,7 @@ export function ProductEditor({
               type="button"
               disabled={pending || !hasCover}
               onClick={requestGoLive}
-              className="shrink-0 px-6 py-2.5 rounded-full text-[13px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-tr text-white hover:bg-tr-d"
+              className="shrink-0 px-6 py-2.5 rounded-full text-[15px] font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed bg-tr text-white hover:bg-tr-d"
               title={!hasCover ? "Add a cover photo first" : undefined}
             >
               {goLiveLabel}
@@ -402,14 +402,14 @@ export function ProductEditor({
           )}
         </div>
         {statusError && (
-          <p className="text-[12px] text-tr-d bg-tr-p border border-tr-l rounded px-2.5 py-1.5 mt-3">
+          <p className="text-[14px] text-tr-d bg-tr-p border border-tr-l rounded px-2.5 py-1.5 mt-3">
             {statusError}
           </p>
         )}
         <div className="mt-3">
           <a
             href="/dashboard/products"
-            className="text-[12px] text-tr no-underline hover:underline"
+            className="text-[14px] text-tr no-underline hover:underline"
           >
             ← Back to products
           </a>
@@ -422,7 +422,7 @@ export function ProductEditor({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block mb-4">
-      <span className="block text-[12px] font-medium text-ch mb-1.5">{label}</span>
+      <span className="block text-[14px] font-medium text-ch mb-1.5">{label}</span>
       {children}
     </label>
   );
@@ -430,7 +430,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function Th({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <th className={`px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-cl ${className}`}>
+    <th className={`px-3 py-2 text-left text-[13px] font-medium uppercase tracking-wider text-cl ${className}`}>
       {children}
     </th>
   );

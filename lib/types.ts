@@ -127,7 +127,7 @@ export type ServiceType =
   | "organizer"
   | "grief"
   | "home-funeral"
-  | "green-burial"
+  | "funeral-home"
   | "cafe"
   | "life-celebration"
   | "somatic-practitioner"
@@ -221,8 +221,8 @@ export interface Plan {
   // above stay for the marketing cards; billing logic reads these.
   billingType: "free" | "recurring" | "one_time";
   // The charge amount in cents, present for plans that cost money.
-  // `one_time` plans charge this once at signup (the Storefront set-up
-  // fee); `recurring` plans charge it per `period`. Null/omitted for free.
+  // `recurring` plans charge this per `period`. (`one_time` is supported by
+  // the billing catalog but unused by current plans.) Null/omitted for free.
   amountCents?: number | null;
 }
 

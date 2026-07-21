@@ -7,6 +7,7 @@ import {
   buildApplicationRejectedEmail,
   buildApplicationSubmittedEmail,
   buildGiftCardDeliveryEmail,
+  buildGiftCardReceiptEmail,
   buildGiftCardPoolCreatedEmail,
   buildGiftCardContributionEmail,
   buildListingApprovedEmail,
@@ -31,6 +32,7 @@ export const TEMPLATE_KEYS = [
   "listing-approved",
   "inquiry",
   "gift-card",
+  "gift-receipt",
   "gift-pool-created",
   "gift-contribution",
   "waitlist-confirmation",
@@ -75,11 +77,20 @@ export function buildSample(key: TemplateKey): EmailPayload {
       return buildGiftCardDeliveryEmail({
         toEmail: FIXTURE.toEmail,
         recipientName: "Jordan Lee",
+        purchaserName: "Sam Rivera",
         purchaserEmail: "sam.rivera@example.com",
         isSelfPurchase: false,
         code: "Q7KP-3MWX-RBND",
         amountLabel: "$100",
         message: "Thinking of you and your family. With love, Sam.",
+      });
+    case "gift-receipt":
+      return buildGiftCardReceiptEmail({
+        toEmail: "sam.rivera@example.com",
+        amountLabel: "$100",
+        isSelfPurchase: false,
+        recipientName: "Jordan Lee",
+        recipientEmail: "jordan.lee@example.com",
       });
     case "gift-pool-created":
       return buildGiftCardPoolCreatedEmail({

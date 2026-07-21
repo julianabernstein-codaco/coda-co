@@ -60,14 +60,14 @@ export default function CartPage() {
         <h1 className="font-serif text-[34px] font-light text-ch mb-3">Your cart</h1>
         {isSignedIn ? (
           <>
-            <p className="text-[15px] text-cl mb-6">Your cart is empty.</p>
+            <p className="text-[17px] text-cl mb-6">Your cart is empty.</p>
             <Link href="/shop" className="btn-primary btn-md no-underline">
               Browse goods
             </Link>
           </>
         ) : (
           <>
-            <p className="text-[15px] text-cl mb-6">
+            <p className="text-[17px] text-cl mb-6">
               Sign in to start a cart — your cart is saved to your account and
               follows you across devices.
             </p>
@@ -93,12 +93,12 @@ export default function CartPage() {
             if (!product || !variant) {
               return (
                 <Card key={key} className="flex items-center justify-between gap-4">
-                  <div className="text-[13px] text-cl">
+                  <div className="text-[15px] text-cl">
                     This item is no longer available.
                   </div>
                   <button
                     onClick={() => removeItem(item.productId, item.variantId)}
-                    className="text-[12px] text-cm hover:text-tr underline cursor-pointer"
+                    className="text-[14px] text-cm hover:text-tr underline cursor-pointer"
                   >
                     Remove
                   </button>
@@ -129,13 +129,13 @@ export default function CartPage() {
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/shop/${product.id}`}
-                    className="text-[14px] font-medium text-ch no-underline hover:text-tr"
+                    className="text-[16px] font-medium text-ch no-underline hover:text-tr"
                   >
                     {product.title}
                   </Link>
-                  <div className="text-[12px] text-cl mt-[2px]">{product.seller}</div>
+                  <div className="text-[14px] text-cl mt-[2px]">{product.seller}</div>
                   {product.variants.length > 1 && (
-                    <div className="text-[12px] text-cm mt-[2px]">{variant.label}</div>
+                    <div className="text-[14px] text-cm mt-[2px]">{variant.label}</div>
                   )}
 
                   {/* Quantity stepper */}
@@ -144,24 +144,24 @@ export default function CartPage() {
                       <button
                         aria-label="Decrease quantity"
                         onClick={() => updateQty(item.productId, item.variantId, item.qty - 1)}
-                        className="px-2.5 py-1 text-[15px] text-cm hover:bg-pl cursor-pointer"
+                        className="px-2.5 py-1 text-[17px] text-cm hover:bg-pl cursor-pointer"
                       >
                         −
                       </button>
-                      <span className="px-3 py-1 text-[14px] font-medium text-ch min-w-[36px] text-center">
+                      <span className="px-3 py-1 text-[16px] font-medium text-ch min-w-[36px] text-center">
                         {item.qty}
                       </span>
                       <button
                         aria-label="Increase quantity"
                         onClick={() => updateQty(item.productId, item.variantId, item.qty + 1)}
-                        className="px-2.5 py-1 text-[15px] text-cm hover:bg-pl cursor-pointer"
+                        className="px-2.5 py-1 text-[17px] text-cm hover:bg-pl cursor-pointer"
                       >
                         +
                       </button>
                     </div>
                     <button
                       onClick={() => removeItem(item.productId, item.variantId)}
-                      className="text-[12px] text-cm hover:text-tr underline cursor-pointer"
+                      className="text-[14px] text-cm hover:text-tr underline cursor-pointer"
                     >
                       Remove
                     </button>
@@ -169,7 +169,7 @@ export default function CartPage() {
                 </div>
 
                 {/* Line total */}
-                <div className="text-[14px] font-medium text-tr shrink-0">
+                <div className="text-[16px] font-medium text-tr shrink-0">
                   ${variant.price * item.qty}
                 </div>
               </Card>
@@ -179,11 +179,11 @@ export default function CartPage() {
 
         {/* Summary */}
         <Card className="space-y-4">
-          <div className="flex items-center justify-between text-[14px]">
+          <div className="flex items-center justify-between text-[16px]">
             <span className="text-cm">Subtotal</span>
             <span className="font-medium text-ch">${subtotal}</span>
           </div>
-          <p className="text-[12px] text-cl">
+          <p className="text-[14px] text-cl">
             Shipping & taxes calculated at checkout.
           </p>
           <Link
@@ -194,7 +194,7 @@ export default function CartPage() {
           </Link>
           <Link
             href="/shop"
-            className="block text-center text-[13px] text-cm hover:text-tr no-underline"
+            className="block text-center text-[15px] text-cm hover:text-tr no-underline"
           >
             Continue shopping
           </Link>
@@ -202,7 +202,7 @@ export default function CartPage() {
       </div>
 
       {loading && (
-        <p className="text-[12px] text-cl mt-4">Updating cart…</p>
+        <p className="text-[14px] text-cl mt-4">Updating cart…</p>
       )}
     </Container>
   );

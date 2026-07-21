@@ -699,6 +699,9 @@ model GiftCard {
 
   purchaserUserId String?   @map("purchaser_user_id")
   purchaserEmail  String    @map("purchaser_email")
+  // The buyer's display name — shown to the recipient as who the gift is from
+  // ("Sam Rivera sent you a gift card"). Falls back to purchaserEmail if unset.
+  purchaserName   String?   @map("purchaser_name")
   recipientEmail  String?   @map("recipient_email")
   recipientName   String?   @map("recipient_name")
   giftMessage     String?   @map("gift_message")
@@ -821,4 +824,20 @@ model WaitlistSignup {
   updatedAt DateTime         @updatedAt @map("updated_at")
 
   @@map("waitlist_signups")
+}
+
+// Single-row platform configuration. `launchedAt` gates all paid billing
+// flows and sets the free-trial clock:
+//   • null, or a future date  → pre-launch: paid vendor checkout (service
+//     subscriptions, goods set-up fee) is blocked for everyone but admins;
+//     vendors sign up on the free trial only. (Gift cards stay on sale.)
+//   • a date in the past      → launched: paid flows open; every vendor's
+//     free trial runs from launchedAt for TRIAL_DAYS (see lib/launch.ts).
+// Edited from /admin/launch. Fixed id so there's exactly one row.
+model PlatformConfig {
+  id         String    @id @default("singleton")
+  launchedAt DateTime? @map("launched_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@map("platform_config")
 }

@@ -18,11 +18,11 @@ export function ServiceSort() {
 
   return (
     <div className="flex items-center gap-[7px]">
-      <label className="text-[12px] text-ink">Sort by</label>
+      <label className="text-[14px] text-ink">Sort by</label>
       <select
         value={active}
         onChange={(e) => setParam("sort", e.target.value === "best" ? "" : e.target.value)}
-        className="text-[12px] text-cm border border-line-bold rounded-[6px] px-2.5 py-[5px] bg-white font-sans outline-none cursor-pointer"
+        className="text-[14px] text-cm border border-line-bold rounded-[6px] px-2.5 py-[5px] bg-white font-sans outline-none cursor-pointer"
       >
         {OPTIONS.map((o) => (
           <option key={o.value} value={o.value}>

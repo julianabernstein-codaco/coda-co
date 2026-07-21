@@ -18,7 +18,7 @@ export function StepsBar({ steps, current }: StepsBarProps) {
             <div className="flex items-center gap-2">
               <div
                 className={[
-                  "w-7 h-7 rounded-full flex items-center justify-center text-[13px] font-medium border transition-colors",
+                  "w-7 h-7 rounded-full flex items-center justify-center text-[15px] font-medium border transition-colors",
                   done
                     ? "bg-tr border-tr text-white"
                     : active
@@ -30,7 +30,7 @@ export function StepsBar({ steps, current }: StepsBarProps) {
               </div>
               <span
                 className={[
-                  "text-[13px] whitespace-nowrap",
+                  "text-[15px] whitespace-nowrap",
                   done || active ? "text-ch font-medium" : "text-cl",
                 ].join(" ")}
               >

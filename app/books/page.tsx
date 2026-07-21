@@ -141,13 +141,13 @@ export default function BooksPage() {
       <section className="bg-white px-10 pt-12 pb-12">
         <Container width="wide">
           <div className="text-center mb-7">
-            <p className="text-[11px] tracking-[.14em] uppercase text-sg mb-1.5">
+            <p className="text-[13px] tracking-[.14em] uppercase text-sg mb-1.5">
               The reading room
             </p>
             <h1 className="font-serif text-[42px] font-light text-ch mb-2">
               Books on death &amp; dying
             </h1>
-            <p className="text-[13px] text-cl">
+            <p className="text-[15px] text-cl">
               Honest, beautifully written guides for the journey. Handpicked for
               you by the CodaCo team.
             </p>

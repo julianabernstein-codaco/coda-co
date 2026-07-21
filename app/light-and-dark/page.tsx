@@ -28,14 +28,14 @@ export default function GriefMeetsHumorPage() {
               <h1 className="font-serif text-[28px] font-light text-tr-vp mb-0.5">
                 Grief Meets Humor — Because death is also funny.
               </h1>
-              <p className="text-[13px] text-tr-vp/60 max-w-[340px]">
+              <p className="text-[15px] text-tr-vp/60 max-w-[340px]">
                 Prints, mugs, cards and gifts that find the levity in life&apos;s
                 only guarantee.
               </p>
             </div>
             <Link
               href="/shop?category=humor"
-              className="bg-tr text-white border-0 px-5 py-2.5 rounded-[18px] text-[13px] no-underline hover:bg-tr-d transition-colors"
+              className="bg-tr text-white border-0 px-5 py-2.5 rounded-[18px] text-[15px] no-underline hover:bg-tr-d transition-colors"
             >
               Shop all →
             </Link>
@@ -49,8 +49,8 @@ export default function GriefMeetsHumorPage() {
                 <div className="h-[86px] bg-ch rounded-[7px] flex items-center justify-center mb-2.5 font-serif text-[12px] text-tr-vp/85 px-3 leading-[1.45] italic">
                   {h.quote}
                 </div>
-                <div className="text-[12px] text-ch font-medium">{h.item}</div>
-                <div className="text-[12px] text-tr mt-0.5">{h.price}</div>
+                <div className="text-[14px] text-ch font-medium">{h.item}</div>
+                <div className="text-[14px] text-tr mt-0.5">{h.price}</div>
               </div>
             ))}
           </div>
