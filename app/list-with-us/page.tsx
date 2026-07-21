@@ -70,7 +70,7 @@ const whyItems = [
       </svg>
     ),
     title: "Fair, transparent fees",
-    body: "Start with a free 3-month trial, then one simple flat rate — no hidden costs or per-sale commission.",
+    body: "Start with a free 3-month trial, then one simple flat rate — no hidden fees.",
   },
 ];
 
