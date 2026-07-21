@@ -94,6 +94,21 @@ section.bg-pl {
 }
 
 /*
+ * PROTOTYPE variant switch — add class "airy-full" to <body> to also dissolve
+ * the tinted banners and the wave dividers, so the ombre runs edge-to-edge
+ * (only the thin breadcrumb strip keeps color). Without the class, the tinted
+ * banners stay solid (the "hybrid" look).
+ */
+body.airy-full section.bg-tr-vp,
+body.airy-full section.bg-sg-vp {
+  background-color: transparent !important;
+}
+body.airy-full .wave-divider,
+body.airy-full .wave-divider > * {
+  background: transparent !important;
+}
+
+/*
  * Contrast on the terracotta banner (bg-tr-vp, #F0AE90). Same-family colors
  * read as low-contrast here (WCAG measures lightness, not hue). Two rules,
  * kept unlayered so they win over Tailwind's utilities layer:
