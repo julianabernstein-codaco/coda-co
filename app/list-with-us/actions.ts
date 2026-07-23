@@ -14,6 +14,7 @@ import { prisma } from "@/lib/db";
 import {
   sendApplicationSubmittedEmail,
   sendListYourGoodsEmail,
+  sendNewVendorSignupEmail,
 } from "@/lib/email/templates";
 import { log } from "@/lib/log";
 
@@ -195,6 +196,25 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     serviceDays,
     serviceHours,
   });
+
+  // Ping the team inbox on every new signup. Goods shops (kind === "goods")
+  // are auto-approved and skip the review queue, so we flag them as such;
+  // services / both land in manual review. Best-effort — a mail hiccup must
+  // never fail the applicant's submission.
+  const adminPing = await sendNewVendorSignupEmail({
+    displayName: input.displayName.trim(),
+    kind: input.kind,
+    applicantEmail: session.user.email!,
+    applicantName: session.user.name ?? null,
+    location: `${input.city.trim()}, ${input.state.trim()}`,
+    needsReview: input.kind !== "goods",
+  });
+  if (!adminPing.ok) {
+    log.warn("application.admin_notify_failed", {
+      applicationId: app.id,
+      err: adminPing.error,
+    });
+  }
 
   // Pure goods shops are self-serve: we don't review the shop page itself,
   // only the vendor's first product listing (see the per-listing review

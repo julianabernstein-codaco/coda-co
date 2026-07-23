@@ -6,6 +6,7 @@ import { del, put } from "@vercel/blob";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { normalizeSlug } from "@/lib/api/applications";
+import { sendListingNeedsReviewEmail } from "@/lib/email/templates";
 import { isOwnedBlobUrl } from "@/lib/images";
 import { processUploadedImage } from "@/lib/images.server";
 import { log } from "@/lib/log";
@@ -159,7 +160,13 @@ export async function setProductStatus(
   const vendorId = await requireVendorId();
   const product = await prisma.product.findFirst({
     where: { id: productId, vendorId },
-    select: { coverImageUrl: true },
+    select: {
+      coverImageUrl: true,
+      title: true,
+      vendor: {
+        select: { displayName: true, user: { select: { email: true } } },
+      },
+    },
   });
   if (!product) return { ok: false, error: "Not your product" };
 
@@ -185,6 +192,16 @@ export async function setProductStatus(
         where: { id: productId },
         data: { status: "pending_review" },
       });
+      // Ping the team inbox so a reviewer knows there's a listing waiting.
+      // Best-effort — never fail the vendor's publish because mail hiccuped.
+      const ping = await sendListingNeedsReviewEmail({
+        productTitle: product.title,
+        vendorName: product.vendor.displayName,
+        vendorEmail: product.vendor.user.email,
+      });
+      if (!ping.ok) {
+        log.warn("listing.admin_notify_failed", { productId, err: ping.error });
+      }
       revalidatePath(`/dashboard/products/${productId}`);
       revalidatePath("/dashboard/products");
       return { ok: true, pendingReview: true };

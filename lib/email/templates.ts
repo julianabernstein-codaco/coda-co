@@ -715,6 +715,153 @@ export async function sendWaitlistConfirmationEmail(
   return sendEmail({ to: args.toEmail, ...buildWaitlistConfirmationEmail(args) });
 }
 
+// ── Internal admin notifications ─────────────────────────────────────────
+// These go to the CodaCo team inbox (ADMIN_NOTIFY_EMAIL, default
+// hello@codaco.market), NOT to a vendor. They let the team learn about new
+// signups and listings awaiting review without watching the admin queue.
+
+function adminUrl(path: string): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  return base ? `${base}${path}` : path;
+}
+
+// Where the internal pings land. Defaults to the shared team address so it
+// works out of the box; override per-environment with ADMIN_NOTIFY_EMAIL.
+export function adminNotifyEmail(): string {
+  return process.env.ADMIN_NOTIFY_EMAIL?.trim() || "hello@codaco.market";
+}
+
+// Small key/value rows shared by the two admin notification bodies.
+function detailRow(label: string, value: string): string {
+  return `<tr><td style="color:#7a7570;padding-right:16px;vertical-align:top;white-space:nowrap;">${label}</td><td style="color:#2c2825;">${value}</td></tr>`;
+}
+
+export interface NewVendorSignupArgs {
+  displayName: string;
+  kind: "goods" | "services" | "both";
+  applicantEmail: string;
+  applicantName: string | null;
+  // "City, ST" as captured on the application.
+  location: string;
+  // Goods shops self-approve; services / both wait in the review queue.
+  needsReview: boolean;
+}
+
+export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPayload {
+  const kindLabel =
+    args.kind === "goods" ? "Goods" : args.kind === "services" ? "Services" : "Goods & services";
+  const statusLabel = args.needsReview
+    ? "Needs review"
+    : "Auto-approved (goods shop)";
+  const subject = args.needsReview
+    ? `New vendor to review: ${args.displayName}`
+    : `New vendor signed up: ${args.displayName}`;
+  const applicant = args.applicantName
+    ? `${args.applicantName} <${args.applicantEmail}>`
+    : args.applicantEmail;
+  const queue = adminUrl("/admin/applications");
+
+  const text = [
+    "A new vendor just signed up on CodaCo.",
+    "",
+    `Vendor:     ${args.displayName}`,
+    `Applicant:  ${applicant}`,
+    `Location:   ${args.location}`,
+    `Type:       ${kindLabel}`,
+    `Status:     ${statusLabel}`,
+    "",
+    args.needsReview
+      ? `Review it in the admin queue:  ${queue}`
+      : `They're already live. See all vendors:  ${queue}`,
+    "",
+    "— CodaCo",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">A new vendor just signed up on CodaCo.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.7;">
+      ${detailRow("Vendor", `<strong>${escapeHtml(args.displayName)}</strong>`)}
+      ${detailRow("Applicant", `<a href="mailto:${escapeHtml(args.applicantEmail)}" style="color:#c1634f;">${escapeHtml(applicant)}</a>`)}
+      ${detailRow("Location", escapeHtml(args.location))}
+      ${detailRow("Type", escapeHtml(kindLabel))}
+      ${detailRow("Status", escapeHtml(statusLabel))}
+    </table>
+    <p style="margin:24px 0;">
+      <a href="${queue}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        ${args.needsReview ? "Review in the admin queue" : "Open the admin queue"}
+      </a>
+    </p>
+    <p style="margin:0;font-size:14px;color:#7a7570;">— CodaCo</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendNewVendorSignupEmail(
+  args: NewVendorSignupArgs,
+): Promise<SendResult> {
+  // replyTo = the applicant so a team member can respond to them directly.
+  return sendEmail({
+    to: adminNotifyEmail(),
+    replyTo: args.applicantEmail,
+    ...buildNewVendorSignupEmail(args),
+  });
+}
+
+export interface ListingNeedsReviewArgs {
+  productTitle: string;
+  vendorName: string;
+  // Vendor's account email, when available — set as reply-to so the team
+  // can reach the maker in one tap.
+  vendorEmail?: string | null;
+}
+
+export function buildListingNeedsReviewEmail(
+  args: ListingNeedsReviewArgs,
+): EmailPayload {
+  const subject = `New listing to review: ${args.productTitle}`;
+  const queue = adminUrl("/admin/listings");
+
+  const text = [
+    "A vendor submitted their first listing, which is waiting for review before it goes live.",
+    "",
+    `Listing:  ${args.productTitle}`,
+    `Vendor:   ${args.vendorName}`,
+    "",
+    `Review it in the admin queue:  ${queue}`,
+    "",
+    "— CodaCo",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      A vendor submitted their first listing, which is waiting for review before it goes live.
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.7;">
+      ${detailRow("Listing", `<strong>${escapeHtml(args.productTitle)}</strong>`)}
+      ${detailRow("Vendor", escapeHtml(args.vendorName))}
+    </table>
+    <p style="margin:24px 0;">
+      <a href="${queue}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        Review in the admin queue
+      </a>
+    </p>
+    <p style="margin:0;font-size:14px;color:#7a7570;">— CodaCo</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendListingNeedsReviewEmail(
+  args: ListingNeedsReviewArgs,
+): Promise<SendResult> {
+  return sendEmail({
+    to: adminNotifyEmail(),
+    replyTo: args.vendorEmail ?? undefined,
+    ...buildListingNeedsReviewEmail(args),
+  });
+}
+
 // Basic HTML-escape — applicant-supplied strings render unescaped
 // inside templates otherwise, and could break the layout (or worse).
 function escapeHtml(s: string): string {

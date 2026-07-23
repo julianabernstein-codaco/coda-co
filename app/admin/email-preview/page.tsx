@@ -63,6 +63,22 @@ const SECTIONS: PreviewSection[] = [
     payload: buildSample("listing-approved"),
   },
   {
+    key: "new-vendor-signup",
+    title: "New vendor signup (team notification)",
+    sentWhen:
+      "To the team inbox (ADMIN_NOTIFY_EMAIL, default hello@codaco.market) on every new vendor application. Flags whether it needs review (services / both) or was auto-approved (goods). Reply-to is the applicant. Best-effort.",
+    editFn: "buildNewVendorSignupEmail",
+    payload: buildSample("new-vendor-signup"),
+  },
+  {
+    key: "listing-needs-review",
+    title: "Listing needs review (team notification)",
+    sentWhen:
+      "To the team inbox (ADMIN_NOTIFY_EMAIL) when a vendor submits their first listing and it lands in pending_review. Reply-to is the vendor. Best-effort.",
+    editFn: "buildListingNeedsReviewEmail",
+    payload: buildSample("listing-needs-review"),
+  },
+  {
     key: "inquiry",
     title: "Vendor inquiry",
     sentWhen:

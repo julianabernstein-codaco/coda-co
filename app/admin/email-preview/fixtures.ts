@@ -11,7 +11,9 @@ import {
   buildGiftCardPoolCreatedEmail,
   buildGiftCardContributionEmail,
   buildListingApprovedEmail,
+  buildListingNeedsReviewEmail,
   buildListYourGoodsEmail,
+  buildNewVendorSignupEmail,
   buildVendorInquiryEmail,
   buildWaitlistConfirmationEmail,
   type EmailPayload,
@@ -30,6 +32,8 @@ export const TEMPLATE_KEYS = [
   "rejected",
   "list-goods",
   "listing-approved",
+  "new-vendor-signup",
+  "listing-needs-review",
   "inquiry",
   "gift-card",
   "gift-receipt",
@@ -63,6 +67,21 @@ export function buildSample(key: TemplateKey): EmailPayload {
         toName: FIXTURE.toName,
         productTitle: "Hand-thrown ceramic urn, sage glaze",
         productSlug: "urn-sage-001",
+      });
+    case "new-vendor-signup":
+      return buildNewVendorSignupEmail({
+        displayName: FIXTURE.displayName,
+        kind: "services",
+        applicantEmail: FIXTURE.toEmail,
+        applicantName: FIXTURE.toName,
+        location: "Brooklyn, NY",
+        needsReview: true,
+      });
+    case "listing-needs-review":
+      return buildListingNeedsReviewEmail({
+        productTitle: "Hand-thrown ceramic urn, sage glaze",
+        vendorName: FIXTURE.displayName,
+        vendorEmail: FIXTURE.toEmail,
       });
     case "inquiry":
       return buildVendorInquiryEmail({
