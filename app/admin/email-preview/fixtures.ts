@@ -70,17 +70,26 @@ export function buildSample(key: TemplateKey): EmailPayload {
       });
     case "new-vendor-signup":
       return buildNewVendorSignupEmail({
-        displayName: FIXTURE.displayName,
+        displayName: "Rosales Doula Care",
+        fullName: "Maria Rosales",
+        companyName: "Rosales Doula Care",
+        website: "rosalesdoulacare.com",
+        instagram: "@rosalesdoula",
         kind: "services",
+        city: "Brooklyn",
+        state: "NY",
+        serviceType: "End of life doula",
         applicantEmail: FIXTURE.toEmail,
-        applicantName: FIXTURE.toName,
-        location: "Brooklyn, NY",
         needsReview: true,
       });
     case "listing-needs-review":
       return buildListingNeedsReviewEmail({
         productTitle: "Hand-thrown ceramic urn, sage glaze",
+        productType: "Urns & vessels",
         vendorName: FIXTURE.displayName,
+        location: "Portland, OR",
+        website: "earthenstudio.com",
+        instagram: "@earthenstudio",
         vendorEmail: FIXTURE.toEmail,
       });
     case "inquiry":

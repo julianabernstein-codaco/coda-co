@@ -62,6 +62,11 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
     startTransition(async () => {
       const result = await submitGoodsApplication({
         displayName: shopName,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        companyName: data.companyName,
+        website: data.website,
+        instagram: data.instagram,
         bio: data.bio,
         city: data.city,
         state: data.state,

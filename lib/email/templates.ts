@@ -731,44 +731,102 @@ export function adminNotifyEmail(): string {
   return process.env.ADMIN_NOTIFY_EMAIL?.trim() || "hello@codaco.market";
 }
 
-// Small key/value rows shared by the two admin notification bodies.
-function detailRow(label: string, value: string): string {
-  return `<tr><td style="color:#7a7570;padding-right:16px;vertical-align:top;white-space:nowrap;">${label}</td><td style="color:#2c2825;">${value}</td></tr>`;
+// Renders a label/value table (html) + aligned lines (text) from a list of
+// rows, skipping any whose value is blank. Keeps the two admin-notification
+// bodies in sync and lets optional fields (company, website, …) drop out
+// cleanly when a vendor didn't provide them.
+interface DetailRow {
+  label: string;
+  value: string | null | undefined;
+  // Optional link target for the html cell (email → mailto:, site → url).
+  href?: string | null;
+}
+
+function detailBlock(rows: DetailRow[]): { html: string; text: string } {
+  const present = rows.filter((r) => r.value && r.value.trim());
+  const html = present
+    .map((r) => {
+      const v = escapeHtml(r.value!.trim());
+      const cell = r.href
+        ? `<a href="${escapeHtml(r.href)}" style="color:#c1634f;">${v}</a>`
+        : v;
+      return `<tr><td style="color:#7a7570;padding-right:16px;vertical-align:top;white-space:nowrap;">${r.label}</td><td style="color:#2c2825;">${cell}</td></tr>`;
+    })
+    .join("");
+  const pad = Math.max(...present.map((r) => r.label.length)) + 2;
+  const text = present
+    .map((r) => `${(r.label + ":").padEnd(pad)}${r.value!.trim()}`)
+    .join("\n");
+  return { html, text };
+}
+
+// "Maker (goods)" / "Service provider" / "Maker & service provider".
+function vendorTypeLabel(kind: "goods" | "services" | "both"): string {
+  return kind === "goods"
+    ? "Maker (goods)"
+    : kind === "services"
+      ? "Service provider"
+      : "Maker & service provider";
+}
+
+// Vendors type websites loosely ("example.com" or a full URL). Give the html
+// cell a valid href by prepending https:// when there's no scheme. Blank → null.
+function websiteHref(raw: string | null | undefined): string | null {
+  const v = raw?.trim();
+  if (!v) return null;
+  return /^https?:\/\//i.test(v) ? v : `https://${v}`;
 }
 
 export interface NewVendorSignupArgs {
+  // Headline name (company if given, else the person's full name).
   displayName: string;
+  fullName?: string | null;
+  companyName?: string | null;
+  website?: string | null;
+  // Handle or profile URL, shown as the vendor typed it.
+  instagram?: string | null;
   kind: "goods" | "services" | "both";
+  city: string;
+  state: string;
+  // Resolved ServiceType name for services / both; null for goods (a maker's
+  // product types aren't chosen until they list their first product).
+  serviceType?: string | null;
+  // Account email — reply-to, and shown so the team can reach out.
   applicantEmail: string;
-  applicantName: string | null;
-  // "City, ST" as captured on the application.
-  location: string;
   // Goods shops self-approve; services / both wait in the review queue.
   needsReview: boolean;
 }
 
 export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPayload {
-  const kindLabel =
-    args.kind === "goods" ? "Goods" : args.kind === "services" ? "Services" : "Goods & services";
-  const statusLabel = args.needsReview
-    ? "Needs review"
-    : "Auto-approved (goods shop)";
   const subject = args.needsReview
     ? `New vendor to review: ${args.displayName}`
     : `New vendor signed up: ${args.displayName}`;
-  const applicant = args.applicantName
-    ? `${args.applicantName} <${args.applicantEmail}>`
-    : args.applicantEmail;
   const queue = adminUrl("/admin/applications");
+  const website = args.website?.trim() || null;
+
+  const details = detailBlock([
+    { label: "Full name", value: args.fullName },
+    { label: "Company", value: args.companyName },
+    { label: "Type", value: vendorTypeLabel(args.kind) },
+    { label: "Location", value: `${args.city}, ${args.state}` },
+    { label: "Service type", value: args.serviceType },
+    { label: "Website", value: website, href: websiteHref(website) },
+    { label: "Instagram", value: args.instagram },
+    {
+      label: "Email",
+      value: args.applicantEmail,
+      href: `mailto:${args.applicantEmail}`,
+    },
+    {
+      label: "Status",
+      value: args.needsReview ? "Needs review" : "Auto-approved (goods shop)",
+    },
+  ]);
 
   const text = [
     "A new vendor just signed up on CodaCo.",
     "",
-    `Vendor:     ${args.displayName}`,
-    `Applicant:  ${applicant}`,
-    `Location:   ${args.location}`,
-    `Type:       ${kindLabel}`,
-    `Status:     ${statusLabel}`,
+    details.text,
     "",
     args.needsReview
       ? `Review it in the admin queue:  ${queue}`
@@ -779,12 +837,8 @@ export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPaylo
 
   const html = layout(`
     <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">A new vendor just signed up on CodaCo.</p>
-    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.7;">
-      ${detailRow("Vendor", `<strong>${escapeHtml(args.displayName)}</strong>`)}
-      ${detailRow("Applicant", `<a href="mailto:${escapeHtml(args.applicantEmail)}" style="color:#c1634f;">${escapeHtml(applicant)}</a>`)}
-      ${detailRow("Location", escapeHtml(args.location))}
-      ${detailRow("Type", escapeHtml(kindLabel))}
-      ${detailRow("Status", escapeHtml(statusLabel))}
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.8;">
+      ${details.html}
     </table>
     <p style="margin:24px 0;">
       <a href="${queue}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
@@ -810,9 +864,14 @@ export async function sendNewVendorSignupEmail(
 
 export interface ListingNeedsReviewArgs {
   productTitle: string;
+  // Goods product-type name (e.g. "Urns & vessels").
+  productType?: string | null;
   vendorName: string;
-  // Vendor's account email, when available — set as reply-to so the team
-  // can reach the maker in one tap.
+  // "City, ST" from the vendor's profile.
+  location?: string | null;
+  website?: string | null;
+  instagram?: string | null;
+  // Vendor's account email — reply-to, and shown for contact.
   vendorEmail?: string | null;
 }
 
@@ -821,12 +880,27 @@ export function buildListingNeedsReviewEmail(
 ): EmailPayload {
   const subject = `New listing to review: ${args.productTitle}`;
   const queue = adminUrl("/admin/listings");
+  const website = args.website?.trim() || null;
+
+  const details = detailBlock([
+    { label: "Listing", value: args.productTitle },
+    { label: "Product type", value: args.productType },
+    { label: "Vendor", value: args.vendorName },
+    { label: "Type", value: "Maker (goods)" },
+    { label: "Location", value: args.location },
+    { label: "Website", value: website, href: websiteHref(website) },
+    { label: "Instagram", value: args.instagram },
+    {
+      label: "Email",
+      value: args.vendorEmail,
+      href: args.vendorEmail ? `mailto:${args.vendorEmail}` : null,
+    },
+  ]);
 
   const text = [
     "A vendor submitted their first listing, which is waiting for review before it goes live.",
     "",
-    `Listing:  ${args.productTitle}`,
-    `Vendor:   ${args.vendorName}`,
+    details.text,
     "",
     `Review it in the admin queue:  ${queue}`,
     "",
@@ -837,9 +911,8 @@ export function buildListingNeedsReviewEmail(
     <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
       A vendor submitted their first listing, which is waiting for review before it goes live.
     </p>
-    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.7;">
-      ${detailRow("Listing", `<strong>${escapeHtml(args.productTitle)}</strong>`)}
-      ${detailRow("Vendor", escapeHtml(args.vendorName))}
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.8;">
+      ${details.html}
     </table>
     <p style="margin:24px 0;">
       <a href="${queue}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">

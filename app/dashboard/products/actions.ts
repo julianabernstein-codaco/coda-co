@@ -163,8 +163,15 @@ export async function setProductStatus(
     select: {
       coverImageUrl: true,
       title: true,
+      productType: { select: { name: true } },
       vendor: {
-        select: { displayName: true, user: { select: { email: true } } },
+        select: {
+          displayName: true,
+          location: true,
+          websiteUrl: true,
+          instagramHandle: true,
+          user: { select: { email: true } },
+        },
       },
     },
   });
@@ -196,7 +203,13 @@ export async function setProductStatus(
       // Best-effort — never fail the vendor's publish because mail hiccuped.
       const ping = await sendListingNeedsReviewEmail({
         productTitle: product.title,
+        productType: product.productType.name,
         vendorName: product.vendor.displayName,
+        location: product.vendor.location,
+        website: product.vendor.websiteUrl,
+        instagram: product.vendor.instagramHandle
+          ? `@${product.vendor.instagramHandle}`
+          : null,
         vendorEmail: product.vendor.user.email,
       });
       if (!ping.ok) {
