@@ -158,6 +158,12 @@ model VendorProfile {
   websiteUrl      String? @map("website_url")
   instagramHandle String? @map("instagram_handle")
 
+  // Per-vendor visibility switches for the public contact links, set by
+  // the CodaCo team from /admin/vendors. Default false: a saved link stays
+  // hidden on the public profile until the team turns it on.
+  showWebsite   Boolean @default(false) @map("show_website")
+  showInstagram Boolean @default(false) @map("show_instagram")
+
   // Service-area display fields shown on the public profile's "Services
   // & service area" card. Free-form text so vendors can phrase them
   // naturally ("25 mile radius", "Tue–Fri primary"). All optional.
@@ -304,6 +310,11 @@ model VendorApplication {
   // public "Service area & availability" card is populated from day one.
   serviceDays         String?             @map("service_days")
   serviceHours        String?             @map("service_hours")
+  // Contact links the applicant entered at signup. Stored as typed;
+  // normalized into vendor_profile.website_url / instagram_handle at
+  // approval. Kept here so nothing is lost between apply and approve.
+  website             String?             @map("website")
+  instagram           String?             @map("instagram")
   createdAt          DateTime             @default(now()) @map("created_at")
   updatedAt          DateTime             @updatedAt @map("updated_at")
 

@@ -205,6 +205,8 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     serviceLocationType,
     serviceDays,
     serviceHours,
+    website: input.website?.trim() || null,
+    instagram: input.instagram?.trim() || null,
   });
 
   // Ping the team inbox on every new signup. Goods shops (kind === "goods")

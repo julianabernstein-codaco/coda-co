@@ -48,6 +48,8 @@ function toVendor(v: DbVendor): Vendor {
     photoTone: (v.photoTone as Vendor["photoTone"]) ?? undefined,
     websiteUrl: v.websiteUrl ?? undefined,
     instagramHandle: v.instagramHandle ?? undefined,
+    showWebsite: v.showWebsite,
+    showInstagram: v.showInstagram,
     serviceRadius: v.serviceRadius ?? undefined,
     serviceRadiusMi: v.serviceRadiusMi ?? undefined,
     serviceFormats: v.serviceFormats ?? undefined,

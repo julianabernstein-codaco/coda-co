@@ -333,9 +333,12 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 Browse other providers →
               </Link>
             </div>
-            {(vendor.websiteUrl || instagramLabel) && (
+            {/* Each link shows only when its value is set AND the CodaCo
+                team has switched it on (VendorProfile.show*). */}
+            {((vendor.showWebsite && vendor.websiteUrl) ||
+              (vendor.showInstagram && instagramLabel)) && (
               <div className="text-[14px] text-cm pt-4 border-t border-tr-p mt-5 flex flex-wrap gap-x-3 gap-y-1 justify-center">
-                {vendor.websiteUrl && (
+                {vendor.showWebsite && vendor.websiteUrl && (
                   <a
                     href={vendor.websiteUrl}
                     target="_blank"
@@ -345,8 +348,11 @@ export default async function VendorProfilePage({ params }: PageProps) {
                     {vendor.websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                   </a>
                 )}
-                {vendor.websiteUrl && instagramLabel && <span>·</span>}
-                {instagramLabel && instagramUrl && (
+                {vendor.showWebsite &&
+                  vendor.websiteUrl &&
+                  vendor.showInstagram &&
+                  instagramLabel && <span>·</span>}
+                {vendor.showInstagram && instagramLabel && instagramUrl && (
                   <a
                     href={instagramUrl}
                     target="_blank"

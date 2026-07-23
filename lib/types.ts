@@ -99,6 +99,10 @@ export interface Vendor {
   // the dashboard; the public profile renders only what's set.
   websiteUrl?: string;
   instagramHandle?: string;
+  // Team-controlled visibility for the two contact links above. Default
+  // false — the public profile shows a link only when its flag is on.
+  showWebsite?: boolean;
+  showInstagram?: boolean;
   serviceRadius?: string;
   // Numeric service radius in miles, driving the geographic search
   // filter (paired with `zip`). Undefined for vendors with no

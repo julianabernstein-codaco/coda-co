@@ -83,6 +83,12 @@ export default async function AdminPage() {
               Vendor applications →
             </a>
             <a
+              href="/admin/vendors"
+              className="btn-secondary btn-sm no-underline"
+            >
+              Vendor contact links →
+            </a>
+            <a
               href="/admin/listings"
               className="btn-secondary btn-sm no-underline"
             >
