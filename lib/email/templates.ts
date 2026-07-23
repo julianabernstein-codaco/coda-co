@@ -777,6 +777,21 @@ function websiteHref(raw: string | null | undefined): string | null {
   return /^https?:\/\//i.test(v) ? v : `https://${v}`;
 }
 
+// Turn an Instagram value into a profile link. Accepts "@handle", "handle",
+// or a pasted instagram.com URL. Blank / handle-less → null (cell renders as
+// plain text). The displayed text stays as the vendor typed it.
+function instagramHref(raw: string | null | undefined): string | null {
+  const v = raw?.trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  const handle = v
+    .replace(/^@/, "")
+    .replace(/^(www\.)?instagram\.com\//i, "")
+    .replace(/\/+$/, "")
+    .trim();
+  return handle ? `https://instagram.com/${handle}` : null;
+}
+
 export interface NewVendorSignupArgs {
   // Headline name (company if given, else the person's full name).
   displayName: string;
@@ -811,7 +826,7 @@ export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPaylo
     { label: "Location", value: `${args.city}, ${args.state}` },
     { label: "Service type", value: args.serviceType },
     { label: "Website", value: website, href: websiteHref(website) },
-    { label: "Instagram", value: args.instagram },
+    { label: "Instagram", value: args.instagram, href: instagramHref(args.instagram) },
     {
       label: "Email",
       value: args.applicantEmail,
@@ -889,7 +904,7 @@ export function buildListingNeedsReviewEmail(
     { label: "Type", value: "Maker (goods)" },
     { label: "Location", value: args.location },
     { label: "Website", value: website, href: websiteHref(website) },
-    { label: "Instagram", value: args.instagram },
+    { label: "Instagram", value: args.instagram, href: instagramHref(args.instagram) },
     {
       label: "Email",
       value: args.vendorEmail,
