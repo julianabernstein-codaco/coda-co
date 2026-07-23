@@ -109,6 +109,14 @@ const SECTIONS: PreviewSection[] = [
     editFn: "buildWaitlistConfirmationEmail",
     payload: buildSample("waitlist-confirmation"),
   },
+  {
+    key: "password-reset",
+    title: "Password reset",
+    sentWhen:
+      "When someone requests a reset from /forgot-password. Only sent to addresses with a real credential account — the request endpoint stays silent otherwise, so it never reveals whether an email is registered. The link is single-use and expires in one hour.",
+    editFn: "buildPasswordResetEmail",
+    payload: buildSample("password-reset"),
+  },
 ];
 
 export default async function AdminEmailPreviewPage() {

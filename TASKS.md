@@ -48,10 +48,10 @@ Phase E.
 
 ## Smaller gaps
 
-- **No password reset / change UI.** Every user is stuck with the password
-  on their account; a forgotten password has no recovery path. The
-  `verification_tokens` table exists but is unused. Phase C didn't ship
-  this.
+- **No password *change* UI (self-serve, while signed in).** A signed-in
+  user still can't rotate their password from a settings page. The
+  forgotten-password *recovery* path now exists (see below); an
+  authenticated change form is the remaining gap.
 - **Email is unverified.** `email_verified_at` is in the schema but no
   flow sets it. If signup verification ships, this is the column to use.
 - **Cart count in nav.** Requires `Nav` to read cart state on the client
@@ -69,6 +69,14 @@ Phase E.
 
 ## Resolved (kept for posterity, can be deleted once stable)
 
+- ~~No password reset recovery path~~ — landed. `/forgot-password` issues a
+  one-hour, single-use token (SHA-256 hash stored in the previously-unused
+  `verification_tokens` table; raw token only in the emailed link), and
+  `/reset-password?token=…` consumes it and sets the new hash. The request
+  endpoint always responds generically so it never reveals whether an email
+  is registered. A "Forgot password?" link sits on the sign-in form. Email
+  copy lives in `buildPasswordResetEmail` (previewable at
+  `/admin/email-preview`).
 - ~~Server Actions for vendor forms~~ — landed in Phase D. Both
   `GoodsForm` and `ServicesForm` POST to `app/list-with-us/actions.ts`.
 - ~~Suspense boundaries around filter components~~ — landed.

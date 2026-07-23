@@ -52,6 +52,12 @@ function giftCardManageUrl(token: string): string {
   return base ? `${base}${path}` : path;
 }
 
+function resetPasswordUrl(token: string): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  const path = `/reset-password?token=${encodeURIComponent(token)}`;
+  return base ? `${base}${path}` : path;
+}
+
 // "Sam", "Sam and Jo", "Sam, Jo and Kim", "Sam, Jo, Kim and 2 others".
 function joinNames(names: string[]): string {
   if (names.length === 0) return "Several people";
@@ -713,6 +719,60 @@ export async function sendWaitlistConfirmationEmail(
   args: WaitlistConfirmationArgs,
 ): Promise<SendResult> {
   return sendEmail({ to: args.toEmail, ...buildWaitlistConfirmationEmail(args) });
+}
+
+// Sent when someone requests a password reset from /forgot-password. Carries
+// a one-hour, single-use link. Only ever sent to an address with a real
+// credential account — the request endpoint stays silent otherwise so it
+// never reveals whether an email is registered.
+export interface PasswordResetArgs {
+  toEmail: string;
+  toName: string | null;
+  token: string;
+}
+
+export function buildPasswordResetEmail(args: PasswordResetArgs): EmailPayload {
+  const greeting = args.toName ? `Hi ${args.toName},` : "Hi,";
+  const subject = "Reset your CodaCo password";
+  const reset = resetPasswordUrl(args.token);
+
+  const text = [
+    greeting,
+    "",
+    "We received a request to reset the password for your CodaCo account. Use the link below to choose a new one:",
+    "",
+    reset,
+    "",
+    "This link works once and expires in one hour. If you didn't ask to reset your password, you can safely ignore this email — your password won't change.",
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">${greeting}</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      We received a request to reset the password for your CodaCo account.
+      Choose a new one using the button below.
+    </p>
+    <p style="margin:24px 0;">
+      <a href="${reset}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        Reset your password
+      </a>
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;color:#7a7570;line-height:1.55;">
+      This link works once and expires in one hour. If you didn't ask to reset
+      your password, you can safely ignore this email — your password won't change.
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendPasswordResetEmail(
+  args: PasswordResetArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildPasswordResetEmail(args) });
 }
 
 // Basic HTML-escape — applicant-supplied strings render unescaped

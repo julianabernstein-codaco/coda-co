@@ -12,6 +12,7 @@ import {
   buildGiftCardContributionEmail,
   buildListingApprovedEmail,
   buildListYourGoodsEmail,
+  buildPasswordResetEmail,
   buildVendorInquiryEmail,
   buildWaitlistConfirmationEmail,
   type EmailPayload,
@@ -36,6 +37,7 @@ export const TEMPLATE_KEYS = [
   "gift-pool-created",
   "gift-contribution",
   "waitlist-confirmation",
+  "password-reset",
 ] as const;
 export type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
@@ -109,5 +111,11 @@ export function buildSample(key: TemplateKey): EmailPayload {
       });
     case "waitlist-confirmation":
       return buildWaitlistConfirmationEmail({ toEmail: FIXTURE.toEmail });
+    case "password-reset":
+      return buildPasswordResetEmail({
+        toEmail: FIXTURE.toEmail,
+        toName: FIXTURE.toName,
+        token: "Zr8kP2mWxQ1nB4tHv3Ke0Nd5Ry9Lc7H",
+      });
   }
 }
