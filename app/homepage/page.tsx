@@ -128,11 +128,15 @@ const categories: Array<{ label: string; icon: ReactNode }> = [
   },
 ];
 
-const heroEntries = [
-  "I'm planning ahead",
-  "Someone has died",
-  "Someone is dying",
-  "I'm just exploring",
+// Soft "stepping-stones" timeline that replaces the old 2x2 quick-link
+// grid: four life-stage moments as dots resting on a gentle sage wave, in
+// the order a life moves through them. Inert on this preview page (see the
+// "coming soon" note below) — purely illustrative, no links.
+const helpStages = [
+  { x: 60, y: 72, l1: "I'm planning", l2: "ahead" },
+  { x: 180, y: 140, l1: "Someone is", l2: "dying" },
+  { x: 300, y: 72, l1: "Someone", l2: "has died" },
+  { x: 420, y: 140, l1: "I'm just", l2: "exploring" },
 ];
 
 async function loadFeaturedVendors(): Promise<
@@ -328,16 +332,7 @@ function StaticHeroSearch() {
         <p className="text-[16px] text-cm mb-3 text-center">
           How can we help you today?
         </p>
-        <div className="grid grid-cols-2 gap-2.5">
-          {heroEntries.map((label) => (
-            <div
-              key={label}
-              className="bg-pl border border-line rounded-[8px] px-4 py-3 text-[15px] text-cl text-center"
-            >
-              {label}
-            </div>
-          ))}
-        </div>
+        <StaticHelpTimeline />
       </div>
 
       {/* Scopes the "coming soon" note to the search + quick-link
@@ -359,6 +354,51 @@ function StaticHeroSearch() {
         />
       </div>
     </>
+  );
+}
+
+// Illustrative-only timeline for the "How can we help you today?" box.
+// Dots rest on a sage wave with the label hanging beneath each; the whole
+// thing is decorative on this preview page (no links, no hover), matching
+// the "coming soon" placeholders around it.
+function StaticHelpTimeline() {
+  return (
+    <svg
+      viewBox="0 0 480 200"
+      className="w-full max-w-[440px] h-auto mx-auto block"
+      role="img"
+      aria-label="How can we help you today: I'm planning ahead, someone is dying, someone has died, or I'm just exploring."
+    >
+      <path
+        d="M4,106 C24,72 40,72 60,72 S150,140 180,140 S270,72 300,72 S390,140 420,140 S460,106 476,106"
+        fill="none"
+        stroke="var(--color-sg)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      {helpStages.map((s) => (
+        <g key={s.l2}>
+          <circle cx={s.x} cy={s.y} r="11" fill="var(--color-sg)" opacity="0.2" />
+          <circle cx={s.x} cy={s.y} r="6.5" fill="var(--color-sg)" />
+          <text
+            x={s.x}
+            y={s.y + 30}
+            fontSize="13"
+            textAnchor="middle"
+            fill="var(--color-ch)"
+            className="font-semibold"
+          >
+            <tspan x={s.x} dy="0">
+              {s.l1}
+            </tspan>
+            <tspan x={s.x} dy="15">
+              {s.l2}
+            </tspan>
+          </text>
+        </g>
+      ))}
+    </svg>
   );
 }
 
