@@ -47,43 +47,51 @@ export function HelpTimeline() {
         strokeLinecap="round"
         opacity="0.55"
       />
-      {STAGES.map((s) => (
-        <a
-          key={s.l2}
-          href={s.href}
-          aria-label={`${s.l1} ${s.l2}`}
-          className="group cursor-pointer no-underline outline-none"
-        >
-          <g className="transition-transform duration-200 group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5">
-            <circle
-              cx={s.x}
-              cy={s.y}
-              r="11"
-              className="fill-sg opacity-20 transition-opacity group-hover:opacity-30 group-focus-visible:opacity-30"
-            />
-            <circle
-              cx={s.x}
-              cy={s.y}
-              r="6.5"
-              className="fill-sg transition-colors group-hover:fill-sg-d group-focus-visible:fill-sg-d"
-            />
-            <text
-              x={s.x}
-              y={s.y + 30}
-              fontSize="13"
-              textAnchor="middle"
-              className="fill-ch font-semibold transition-colors group-hover:fill-sg-d group-focus-visible:fill-sg-d"
-            >
-              <tspan x={s.x} dy="0">
-                {s.l1}
-              </tspan>
-              <tspan x={s.x} dy="15">
-                {s.l2}
-              </tspan>
-            </text>
-          </g>
-        </a>
-      ))}
+      {STAGES.map((s) => {
+        // Dots resting high on the wave (the crests) carry their labels
+        // above the timeline; dots in the troughs keep theirs below. This
+        // splits the label weight across the wave for vertical balance,
+        // rather than piling every label beneath the curve.
+        const above = s.y < 106;
+        const labelY = above ? s.y - 33 : s.y + 30;
+        return (
+          <a
+            key={s.l2}
+            href={s.href}
+            aria-label={`${s.l1} ${s.l2}`}
+            className="group cursor-pointer no-underline outline-none"
+          >
+            <g className="transition-transform duration-200 group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5">
+              <circle
+                cx={s.x}
+                cy={s.y}
+                r="11"
+                className="fill-sg opacity-20 transition-opacity group-hover:opacity-30 group-focus-visible:opacity-30"
+              />
+              <circle
+                cx={s.x}
+                cy={s.y}
+                r="6.5"
+                className="fill-sg transition-colors group-hover:fill-sg-d group-focus-visible:fill-sg-d"
+              />
+              <text
+                x={s.x}
+                y={labelY}
+                fontSize="13"
+                textAnchor="middle"
+                className="fill-ch font-semibold transition-colors group-hover:fill-sg-d group-focus-visible:fill-sg-d"
+              >
+                <tspan x={s.x} dy="0">
+                  {s.l1}
+                </tspan>
+                <tspan x={s.x} dy="15">
+                  {s.l2}
+                </tspan>
+              </text>
+            </g>
+          </a>
+        );
+      })}
     </svg>
   );
 }
