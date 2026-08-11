@@ -152,13 +152,13 @@ export default async function LandingPage() {
           resources.
         </p>
 
-        <div className="mb-8">
+        <HeroQuickLinks />
+
+        <div className="mt-8">
           <Link href="/what-is-codaco" className="btn-primary btn-lg no-underline">
             What is CodaCo?
           </Link>
         </div>
-
-        <HeroQuickLinks />
       </section>
 
       <WaveDivider topColor="var(--color-white)" bottomColor="var(--color-tr-vp)" />
