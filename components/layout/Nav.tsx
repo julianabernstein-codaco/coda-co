@@ -53,9 +53,9 @@ export async function Nav({ active }: NavProps) {
       </Link>
 
       <ul className="flex gap-6 items-center list-none">
-        {link("Shop goods", "/shop", "shop")}
-        {link("Find services", "/services", "services")}
-        {link("Bookshop", "/books", "books")}
+        {link("Goods", "/shop", "shop")}
+        {link("Services", "/services", "services")}
+        {link("Books", "/books", "books")}
         {link("List with us", "/list-with-us", "list")}
         <NavCartLink />
         {session?.user ? (
