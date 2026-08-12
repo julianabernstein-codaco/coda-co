@@ -6,7 +6,7 @@ import { UserMenu } from "@/components/layout/UserMenu";
 import { prisma } from "@/lib/db";
 
 interface NavProps {
-  active?: "shop" | "services" | "books" | "light" | "list";
+  active?: "shop" | "services" | "books" | "guidance" | "light" | "list";
 }
 
 export async function Nav({ active }: NavProps) {
@@ -56,6 +56,7 @@ export async function Nav({ active }: NavProps) {
         {link("Goods", "/shop", "shop")}
         {link("Services", "/services", "services")}
         {link("Books", "/books", "books")}
+        {link("Guidance", "/guidance", "guidance")}
         {link("List with us", "/list-with-us", "list")}
         <NavCartLink />
         {session?.user ? (

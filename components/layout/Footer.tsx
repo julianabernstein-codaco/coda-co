@@ -29,7 +29,6 @@ export function Footer() {
           {/* Support column */}
           <FooterColumn heading="Support">
             <FooterLink href="/where-to-start">Where to start</FooterLink>
-            <FooterLink href="/guidance">Guidance</FooterLink>
             <FooterLink href="/gift-cards">Gift cards</FooterLink>
             <FooterLink href="/saved">Saved items</FooterLink>
           </FooterColumn>
