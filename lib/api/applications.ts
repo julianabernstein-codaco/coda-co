@@ -32,6 +32,39 @@ export interface ApplicationDraft {
   // Availability pills (joined) carried onto the profile at approval.
   serviceDays: string | null;
   serviceHours: string | null;
+  // Contact links as typed at signup. Stored raw on the application and
+  // normalized into the profile at approval.
+  website: string | null;
+  instagram: string | null;
+}
+
+// Lenient website normalization for the signup path: accept a scheme-less
+// "example.com" by prepending https://, validate, and drop anything that
+// still won't parse (so we never persist a broken link). Stricter than
+// this lives in the dashboard editor, which rejects rather than repairs.
+function normalizeWebsite(raw: string | null): string | null {
+  const s = raw?.trim();
+  if (!s) return null;
+  const withScheme = /^https?:\/\//i.test(s) ? s : `https://${s}`;
+  try {
+    const u = new URL(withScheme);
+    return u.protocol === "http:" || u.protocol === "https:" ? u.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+// Reduce an Instagram value ("@handle", "handle", or a profile URL) to the
+// bare handle the profile stores and the public page / emails expect.
+function normalizeInstagramHandle(raw: string | null): string | null {
+  const s = raw?.trim();
+  if (!s) return null;
+  const handle = s
+    .replace(/^@+/, "")
+    .replace(/^(https?:\/\/)?(www\.)?instagram\.com\//i, "")
+    .replace(/\/+$/, "")
+    .trim();
+  return handle || null;
 }
 
 // Human-readable "Formats" label derived from the service location type,
@@ -82,6 +115,8 @@ export async function createApplication(draft: ApplicationDraft) {
       serviceLocationType: draft.serviceLocationType,
       serviceDays: draft.serviceDays,
       serviceHours: draft.serviceHours,
+      website: draft.website,
+      instagram: draft.instagram,
       status: "submitted",
     },
   });
@@ -157,6 +192,11 @@ export async function approveApplication(
           serviceDescription: app.serviceDescription,
           pricingNotes: app.pricingNotes,
           lifeStages: app.lifeStages,
+          // Contact links captured at signup. Normalized here; visibility
+          // on the public profile is off by default and toggled by the
+          // team from /admin/vendors (showWebsite / showInstagram).
+          websiteUrl: normalizeWebsite(app.website),
+          instagramHandle: normalizeInstagramHandle(app.instagram),
         },
       });
 

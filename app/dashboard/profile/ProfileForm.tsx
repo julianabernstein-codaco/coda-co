@@ -184,7 +184,7 @@ export function ProfileForm({
         </Field>
       </Section>
 
-      <Section title="Contact links" subtitle="Shown below the 'Send a message' button. Leave any field blank to hide it.">
+      <Section title="Contact links" subtitle="Saved to your profile and shown below the 'Send a message' button. Whether each one appears on your public page is set by the CodaCo team.">
         <Field label="Website URL">
           <input
             type="url"
