@@ -1,8 +1,9 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { signIn } from "@/auth";
+import { LOGIN_EMAIL_LIMIT, LOGIN_IP_LIMIT, signIn } from "@/auth";
 import { isNextControlFlow, log } from "@/lib/log";
+import { clientIp, isRateLimited } from "@/lib/rate-limit";
 
 export interface LoginState {
   error?: string;
@@ -19,6 +20,19 @@ export async function loginAction(
 
   if (!email || !password) {
     return { error: "Enter your email and password." };
+  }
+
+  // Peek (no increment) at the same buckets `authorize` enforces, purely to
+  // give a throttled human a clear message instead of the generic "email or
+  // password is incorrect". Enforcement — and the counting — still happens in
+  // `authorize`, which a direct API POST can't bypass.
+  const ip = await clientIp();
+  if (
+    isRateLimited(`login:ip:${ip}`, LOGIN_IP_LIMIT) ||
+    isRateLimited(`login:email:${email}`, LOGIN_EMAIL_LIMIT)
+  ) {
+    log.warn("login.rate_limited", { ip, email });
+    return { error: "Too many attempts. Please wait a few minutes and try again." };
   }
 
   try {
