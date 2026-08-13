@@ -47,7 +47,7 @@ export async function signupAction(
 
   // Cheap brute-force / signup-spam shield. Keyed by IP — token bucket
   // refills slowly so a legit retry after a typo isn't blocked.
-  const limited = rateLimit(`signup:${ip}`, { limit: 5, windowMs: 60 * 60 * 1000 });
+  const limited = await rateLimit(`signup:${ip}`, { limit: 5, windowMs: 60 * 60 * 1000 });
   if (!limited.ok) {
     log.warn("signup.rate_limited", { ip });
     return { error: "Too many signup attempts. Try again later." };

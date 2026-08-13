@@ -28,8 +28,8 @@ export async function loginAction(
   // `authorize`, which a direct API POST can't bypass.
   const ip = await clientIp();
   if (
-    isRateLimited(`login:ip:${ip}`, LOGIN_IP_LIMIT) ||
-    isRateLimited(`login:email:${email}`, LOGIN_EMAIL_LIMIT)
+    (await isRateLimited(`login:ip:${ip}`, LOGIN_IP_LIMIT)) ||
+    (await isRateLimited(`login:email:${email}`, LOGIN_EMAIL_LIMIT))
   ) {
     log.warn("login.rate_limited", { ip, email });
     return { error: "Too many attempts. Please wait a few minutes and try again." };

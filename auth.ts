@@ -65,8 +65,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Same generic `null` return as any credential failure — no signal
         // that throttling (vs. a bad password) happened, so no enumeration.
         const ip = await clientIp();
-        const ipOk = rateLimit(`login:ip:${ip}`, LOGIN_IP_LIMIT).ok;
-        const emailOk = rateLimit(`login:email:${email}`, LOGIN_EMAIL_LIMIT).ok;
+        const ipOk = (await rateLimit(`login:ip:${ip}`, LOGIN_IP_LIMIT)).ok;
+        const emailOk = (await rateLimit(`login:email:${email}`, LOGIN_EMAIL_LIMIT)).ok;
         if (!ipOk || !emailOk) {
           log.warn("auth.rate_limited", { ip, email, reason: !emailOk ? "email" : "ip" });
           return null;

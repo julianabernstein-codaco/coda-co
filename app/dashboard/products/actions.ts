@@ -243,8 +243,8 @@ async function requireOwnedProduct(productId: string) {
   return { ...product, vendorId };
 }
 
-function checkUploadRateLimit(vendorId: string, kind: string): ActionError | null {
-  const limited = rateLimit(`upload:${vendorId}`, {
+async function checkUploadRateLimit(vendorId: string, kind: string): Promise<ActionError | null> {
+  const limited = await rateLimit(`upload:${vendorId}`, {
     limit: 100,
     windowMs: 60 * 60 * 1000,
   });
@@ -265,7 +265,7 @@ export async function updateProductCover(
   if (!(photo instanceof File) || photo.size === 0) {
     return { ok: false, error: "Pick a photo first." };
   }
-  const blocked = checkUploadRateLimit(product.vendorId, "product_cover");
+  const blocked = await checkUploadRateLimit(product.vendorId, "product_cover");
   if (blocked) return blocked;
   const processed = await processUploadedImage(photo);
   if (!processed.ok) return { ok: false, error: processed.error };
@@ -324,7 +324,7 @@ export async function addProductGalleryImage(
     };
   }
 
-  const blocked = checkUploadRateLimit(product.vendorId, "product_gallery");
+  const blocked = await checkUploadRateLimit(product.vendorId, "product_gallery");
   if (blocked) return blocked;
   const processed = await processUploadedImage(photo);
   if (!processed.ok) return { ok: false, error: processed.error };

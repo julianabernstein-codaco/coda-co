@@ -29,7 +29,7 @@ export async function sendTestEmail(
   }
 
   // Per-admin cap so a stolen session can't blast a domain.
-  const limited = rateLimit(`email-preview:${session.user.id}`, {
+  const limited = await rateLimit(`email-preview:${session.user.id}`, {
     limit: 20,
     windowMs: 60 * 60 * 1000,
   });

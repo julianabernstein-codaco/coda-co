@@ -66,20 +66,19 @@ Phase E.
 - **`DEMO_AUTO_APPROVE_VENDORS=1` is on in production.** Fine for the
   demo; flip off the moment there's a real applicant. The admin queue
   works either way.
-- **Auth rate limiting is in-memory (per-instance).** `lib/rate-limit.ts`
-  backs login (`authorize` in `auth.ts`) and signup with a process-local
-  `Map`. On Vercel each serverless instance keeps its own counters and cold
-  starts reset them, so it stops naive single-source scripting but a
-  distributed/patient bot spread across instances slips through. Production
-  hardening: back the limiter with **Upstash Redis** (or Vercel KV — same
-  engine; `@upstash/ratelimit` gives sliding-window out of the box) so
-  counters are shared and persistent. The call sites (`rateLimit(key, opts)`
-  / `isRateLimited`) stay put — only the store swaps, but note the Redis
-  client is async, so `rateLimit`/`isRateLimited`/`clientIp` become
-  `Promise`-returning and every call site gains an `await`. Complementary,
-  not a substitute: a WAF / Cloudflare Turnstile is the real answer to
-  distributed attacks and IP-header spoofing (`clientIp()` trusts the
-  leftmost `x-forwarded-for`, which the client controls).
+- **Rate limiting needs Upstash provisioning to be production-grade.**
+  `lib/rate-limit.ts` is now Redis-backed (`@upstash/ratelimit`,
+  sliding-window) when `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`
+  are set, and falls back to the per-process in-memory `Map` when they're
+  absent or if a Redis call throws (degraded, never fully fail-open). All
+  call sites (login, signup, inquiries, uploads, waitlist, admin actions)
+  already go through the async API. **Remaining, and it's an ops step, not
+  code:** create an Upstash database and set both env vars in the Vercel
+  project (preview + production) — until then production still runs on the
+  weaker in-memory backend. Still complementary, not a substitute: a WAF /
+  Cloudflare Turnstile is the real answer to distributed attacks and
+  IP-header spoofing (`clientIp()` trusts the leftmost `x-forwarded-for`,
+  which the client controls).
 
 ## Resolved (kept for posterity, can be deleted once stable)
 

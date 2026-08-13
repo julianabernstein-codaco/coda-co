@@ -38,7 +38,7 @@ export async function joinWaitlist(
   // Cheap signup-spam shield, keyed by IP — mirrors the account signup
   // flow. The window is generous so a legit retry after a typo isn't blocked.
   const ip = await clientIp();
-  const limited = rateLimit(`waitlist:${ip}`, { limit: 8, windowMs: 60 * 60 * 1000 });
+  const limited = await rateLimit(`waitlist:${ip}`, { limit: 8, windowMs: 60 * 60 * 1000 });
   if (!limited.ok) {
     log.warn("waitlist.rate_limited", { ip });
     return { error: "Too many signups from here. Try again a bit later." };

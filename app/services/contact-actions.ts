@@ -46,7 +46,7 @@ export async function sendVendorInquiry(input: ContactInput): Promise<ContactRes
   // Per-IP limit across all vendors — cheap first gate against scripted
   // abuse before we touch the DB.
   const ip = await clientIp();
-  const ipLimit = rateLimit(`inquiry:ip:${ip}`, { limit: 5, windowMs: 60 * 60 * 1000 });
+  const ipLimit = await rateLimit(`inquiry:ip:${ip}`, { limit: 5, windowMs: 60 * 60 * 1000 });
   if (!ipLimit.ok) {
     log.warn("inquiry.rate_limited", { scope: "ip" });
     return { ok: false, error: "You've sent several messages recently. Please try again later." };
@@ -59,7 +59,7 @@ export async function sendVendorInquiry(input: ContactInput): Promise<ContactRes
   if (!vendor) return { ok: false, error: "We couldn't find that provider." };
 
   // Per-vendor flood guard.
-  const vendorLimit = rateLimit(`inquiry:vendor:${vendor.id}`, {
+  const vendorLimit = await rateLimit(`inquiry:vendor:${vendor.id}`, {
     limit: 30,
     windowMs: 60 * 60 * 1000,
   });
