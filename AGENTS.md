@@ -22,9 +22,15 @@ truth for visual design and copy. See `TASKS.md` for known open work.
   config lives in `prisma.config.ts`.
 - **Auth.js v5 beta** (`next-auth`) with the Prisma adapter and a
   Credentials provider. JWT session strategy (DB sessions aren't
-  supported with Credentials in v5 — known limitation); the `session`
-  callback in `auth.ts` re-hydrates `role` from `users` on every
-  request, so role changes still apply immediately.
+  supported with Credentials in v5 — known limitation); the `jwt`
+  callback in `auth.ts` re-reads `users` on every request, so it
+  re-hydrates `role` (role changes apply immediately) and enforces
+  password-based session invalidation: it stamps `users.passwordChangedAt`
+  into the token at sign-in and returns `null` (a real logout) for any
+  token minted before the current value. Changing/resetting a password
+  bumps that column, so it logs out stale sessions; the change flow
+  re-issues the current device so only *other* sessions drop. The DB read
+  is Node-only — the edge middleware (`proxy.ts`) never imports `auth.ts`.
 
 If something about the Next.js / React APIs surprises you, check the docs
 shipped in `node_modules/next/dist/docs/` rather than relying on memory.

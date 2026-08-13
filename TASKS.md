@@ -48,10 +48,6 @@ Phase E.
 
 ## Smaller gaps
 
-- **No password reset / change UI.** Every user is stuck with the password
-  on their account; a forgotten password has no recovery path. The
-  `verification_tokens` table exists but is unused. Phase C didn't ship
-  this.
 - **Email is unverified.** `email_verified_at` is in the schema but no
   flow sets it. If signup verification ships, this is the column to use.
 - **Cart count in nav.** Requires `Nav` to read cart state on the client
@@ -83,6 +79,24 @@ Phase E.
 
 ## Resolved (kept for posterity, can be deleted once stable)
 
+- ~~No password reset recovery path~~ — landed. `/forgot-password` issues a
+  one-hour, single-use token (SHA-256 hash stored in the previously-unused
+  `verification_tokens` table; raw token only in the emailed link), and
+  `/reset-password?token=…` consumes it and sets the new hash. The request
+  endpoint always responds generically so it never reveals whether an email
+  is registered. A "Forgot password?" link sits on the sign-in form. Email
+  copy lives in `buildPasswordResetEmail` (previewable at
+  `/admin/email-preview`).
+- ~~No self-serve password *change* UI~~ — landed. `/account` (reachable by
+  any signed-in user, via the nav user menu) has a change-password form:
+  verifies the current password, sets the new hash, and voids any pending
+  reset links. Gated to accounts that actually have a password.
+- ~~Password change/reset didn't revoke existing sessions~~ — landed.
+  `users.passwordChangedAt` is stamped into the JWT at sign-in; the `jwt`
+  callback in `auth.ts` returns `null` (a real logout) for any token minted
+  before the current value. A reset or change bumps the column, so stale
+  sessions drop on their next request; the change flow re-issues the current
+  device so only *other* sessions are logged out.
 - ~~Server Actions for vendor forms~~ — landed in Phase D. Both
   `GoodsForm` and `ServicesForm` POST to `app/list-with-us/actions.ts`.
 - ~~Suspense boundaries around filter components~~ — landed.
