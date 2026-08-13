@@ -79,6 +79,18 @@ or not the Vendor also sees a confirmation screen.
 - **Free trial reminder**, **3–21 days before conversion**, if we ever offer
   trials longer than 31 days.
 
+### Cancellation UI
+
+- Cancel button reachable from the account dashboard in **no more clicks than
+  it took to subscribe**.
+- No phone-only, no mail-only, no "contact your account manager," no
+  business-hours limitation.
+- Retention offers are permitted, but the **cancel-now button must be
+  prominent on the same page** and must complete cancellation **in one
+  action**.
+- Confirmation of cancellation sent by email.
+- Do not require a reason, a survey, or a password reset to cancel.
+
 ## Smaller gaps
 
 - **Email is unverified.** `email_verified_at` is in the schema but no
