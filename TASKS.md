@@ -70,6 +70,15 @@ Send an acknowledgment email containing the renewal terms, cancellation
 policy, and cancellation instructions, in a retainable form. Send it whether
 or not the Vendor also sees a confirmation screen.
 
+### Ongoing
+
+- **Renewal reminder** before annual renewals, **15–45 days out**, with the
+  amount and a cancel link.
+- **Price change notice**, **7–30 days out**, with old price, new price,
+  effective date, and a cancel link.
+- **Free trial reminder**, **3–21 days before conversion**, if we ever offer
+  trials longer than 31 days.
+
 ## Smaller gaps
 
 - **Email is unverified.** `email_verified_at` is in the schema but no
