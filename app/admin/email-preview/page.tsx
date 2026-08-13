@@ -117,6 +117,14 @@ const SECTIONS: PreviewSection[] = [
     editFn: "buildPasswordResetEmail",
     payload: buildSample("password-reset"),
   },
+  {
+    key: "password-changed",
+    title: "Password changed",
+    sentWhen:
+      "After an account's password changes — via a reset link (/reset-password) or a direct change (/account). A security confirmation to the owner; best-effort, so a send failure never blocks the change.",
+    editFn: "buildPasswordChangedEmail",
+    payload: buildSample("password-changed"),
+  },
 ];
 
 export default async function AdminEmailPreviewPage() {

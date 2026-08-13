@@ -66,25 +66,29 @@ export async function invalidatePasswordResetTokens(email: string): Promise<void
 
 // Atomically consumes the token and sets the new password hash in one
 // transaction. The token is deleted before the password is written, so a
-// concurrent double-submit can't reuse it. Returns false if the token
-// vanished or expired between page-load and submit.
+// concurrent double-submit can't reuse it. Returns the affected user's
+// email + name on success (so the caller can send a confirmation), or null
+// if the token vanished or expired between page-load and submit.
 export async function consumePasswordResetToken(
   raw: string,
   newPasswordHash: string,
-): Promise<boolean> {
+): Promise<{ email: string; name: string | null } | null> {
   const token = hashResetToken(raw);
   try {
-    await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
       const row = await tx.verificationToken.findUnique({ where: { token } });
       if (!row || row.expires.getTime() <= Date.now()) throw new Error("invalid_token");
       if (!row.identifier.startsWith(IDENTIFIER_PREFIX)) throw new Error("invalid_token");
       const email = row.identifier.slice(IDENTIFIER_PREFIX.length);
       // Delete first so a racing request finds nothing to consume.
       await tx.verificationToken.delete({ where: { token } });
-      await tx.user.update({ where: { email }, data: { passwordHash: newPasswordHash } });
+      return tx.user.update({
+        where: { email },
+        data: { passwordHash: newPasswordHash },
+        select: { email: true, name: true },
+      });
     });
-    return true;
   } catch {
-    return false;
+    return null;
   }
 }

@@ -2,6 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { consumePasswordResetToken } from "@/lib/auth/password-reset";
+import { sendPasswordChangedEmail } from "@/lib/email/templates";
 import { isNextControlFlow, log } from "@/lib/log";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
@@ -33,14 +34,24 @@ export async function resetPasswordAction(
 
   try {
     const hash = await bcrypt.hash(password, 10);
-    const done = await consumePasswordResetToken(token, hash);
-    if (!done) {
+    const user = await consumePasswordResetToken(token, hash);
+    if (!user) {
       log.warn("password_reset.consume_failed", { ip });
       return {
         error: "This reset link is invalid or has expired. Request a new one to try again.",
       };
     }
     log.info("password_reset.completed", { ip });
+
+    // Security confirmation. Best-effort: the reset already succeeded, so a
+    // send failure is logged but never surfaced to the user.
+    const emailResult = await sendPasswordChangedEmail({
+      toEmail: user.email,
+      toName: user.name,
+    });
+    if (!emailResult.ok) {
+      log.error("password_reset.confirmation_email_failed", { err: emailResult.error });
+    }
   } catch (err) {
     if (!isNextControlFlow(err)) {
       log.error("password_reset.consume_error", { ip, err });

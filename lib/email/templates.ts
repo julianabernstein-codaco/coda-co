@@ -58,6 +58,11 @@ function resetPasswordUrl(token: string): string {
   return base ? `${base}${path}` : path;
 }
 
+function forgotPasswordUrl(): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  return base ? `${base}/forgot-password` : "/forgot-password";
+}
+
 // "Sam", "Sam and Jo", "Sam, Jo and Kim", "Sam, Jo, Kim and 2 others".
 function joinNames(names: string[]): string {
   if (names.length === 0) return "Several people";
@@ -773,6 +778,58 @@ export async function sendPasswordResetEmail(
   args: PasswordResetArgs,
 ): Promise<SendResult> {
   return sendEmail({ to: args.toEmail, ...buildPasswordResetEmail(args) });
+}
+
+// Sent whenever an account's password changes — after a reset via
+// /reset-password or a direct change from /account. A security
+// confirmation: if the owner didn't do it, it tells them how to re-secure
+// the account. Best-effort — a send failure never blocks the change itself.
+export interface PasswordChangedArgs {
+  toEmail: string;
+  toName: string | null;
+}
+
+export function buildPasswordChangedEmail(args: PasswordChangedArgs): EmailPayload {
+  const greeting = args.toName ? `Hi ${args.toName},` : "Hi,";
+  const subject = "Your CodaCo password was changed";
+  const forgot = forgotPasswordUrl();
+
+  const text = [
+    greeting,
+    "",
+    "This is a confirmation that the password for your CodaCo account was just changed.",
+    "",
+    "If this was you, no further action is needed.",
+    "",
+    `If you didn't change your password, reset it right away to secure your account: ${forgot}`,
+    "You can also reply to this email and we'll help.",
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">${greeting}</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      This is a confirmation that the password for your CodaCo account was just changed.
+    </p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      If this was you, no further action is needed.
+    </p>
+    <div style="margin:0 0 16px;padding:12px 14px;background:#f5f1ec;border-radius:8px;font-size:14px;line-height:1.55;color:#2c2825;">
+      <strong style="display:block;margin-bottom:4px;font-size:12px;color:#7a7570;text-transform:uppercase;letter-spacing:.06em;">Didn't do this?</strong>
+      <a href="${forgot}" style="color:#c1634f;">Reset your password</a> right away to secure
+      your account, or just reply to this email and we'll help.
+    </div>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendPasswordChangedEmail(
+  args: PasswordChangedArgs,
+): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildPasswordChangedEmail(args) });
 }
 
 // Basic HTML-escape — applicant-supplied strings render unescaped

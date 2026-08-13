@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { auth } from "@/auth";
 import { invalidatePasswordResetTokens } from "@/lib/auth/password-reset";
 import { prisma } from "@/lib/db";
+import { sendPasswordChangedEmail } from "@/lib/email/templates";
 import { isNextControlFlow, log } from "@/lib/log";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -42,7 +43,7 @@ export async function changePasswordAction(
   try {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, email: true, passwordHash: true },
+      select: { id: true, email: true, name: true, passwordHash: true },
     });
     if (!user?.passwordHash) {
       // No password on file — the account signs in another way (or the row
@@ -62,6 +63,16 @@ export async function changePasswordAction(
     // overwrite the password just set.
     await invalidatePasswordResetTokens(user.email);
     log.info("password_change.completed", { userId: user.id });
+
+    // Security confirmation. Best-effort: the change already succeeded, so a
+    // send failure is logged but never surfaced to the user.
+    const emailResult = await sendPasswordChangedEmail({
+      toEmail: user.email,
+      toName: user.name,
+    });
+    if (!emailResult.ok) {
+      log.error("password_change.confirmation_email_failed", { userId: user.id, err: emailResult.error });
+    }
   } catch (err) {
     if (!isNextControlFlow(err)) {
       log.error("password_change.error", { userId: session.user.id, err });
