@@ -51,7 +51,7 @@ const categories: Array<{ label: string; icon: ReactNode }> = [
     ),
   },
   {
-    label: "Burial shrouds",
+    label: "Burial goods",
     icon: (
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
         <path d="M11 8 C11 8 13 10 18 10 C23 10 25 8 25 8 L25 24 C25 27 22 29 18 29 C14 29 11 27 11 24 Z" stroke="var(--color-sg)" strokeWidth="1.5" fill="none" />
@@ -118,21 +118,29 @@ const categories: Array<{ label: string; icon: ReactNode }> = [
     ),
   },
   {
-    label: "Gifts & humor",
+    label: "Funeral homes",
     icon: (
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <path d="M10 22 C10 22 10 14 18 14 C26 14 26 22 26 22 L10 22Z" stroke="var(--color-tr)" strokeWidth="1.5" fill="none" />
-        <rect x="14" y="22" width="8" height="5" rx="1" stroke="var(--color-tr)" strokeWidth="1.3" />
+        <path d="M7 15 L18 8 L29 15" stroke="var(--color-tr)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <line x1="10" y1="16" x2="10" y2="26" stroke="var(--color-tr)" strokeWidth="1.3" />
+        <line x1="15" y1="16" x2="15" y2="26" stroke="var(--color-tr)" strokeWidth="1.3" />
+        <line x1="21" y1="16" x2="21" y2="26" stroke="var(--color-tr)" strokeWidth="1.3" />
+        <line x1="26" y1="16" x2="26" y2="26" stroke="var(--color-tr)" strokeWidth="1.3" />
+        <line x1="7" y1="27" x2="29" y2="27" stroke="var(--color-tr)" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
   },
 ];
 
-const heroEntries = [
-  "I'm planning ahead",
-  "Someone has died",
-  "Someone is dying",
-  "I'm just exploring",
+// Soft "stepping-stones" timeline that replaces the old 2x2 quick-link
+// grid: four life-stage moments as dots resting on a gentle sage wave, in
+// the order a life moves through them. Inert on this preview page (see the
+// "coming soon" note below) — purely illustrative, no links.
+const helpStages = [
+  { x: 60, y: 72, l1: "I'm planning", l2: "ahead" },
+  { x: 180, y: 140, l1: "Someone is", l2: "dying" },
+  { x: 300, y: 72, l1: "Someone", l2: "has died" },
+  { x: 420, y: 140, l1: "I'm just", l2: "exploring" },
 ];
 
 async function loadFeaturedVendors(): Promise<
@@ -328,16 +336,7 @@ function StaticHeroSearch() {
         <p className="text-[16px] text-cm mb-3 text-center">
           How can we help you today?
         </p>
-        <div className="grid grid-cols-2 gap-2.5">
-          {heroEntries.map((label) => (
-            <div
-              key={label}
-              className="bg-pl border border-line rounded-[8px] px-4 py-3 text-[15px] text-cl text-center"
-            >
-              {label}
-            </div>
-          ))}
-        </div>
+        <StaticHelpTimeline />
       </div>
 
       {/* Scopes the "coming soon" note to the search + quick-link
@@ -359,6 +358,51 @@ function StaticHeroSearch() {
         />
       </div>
     </>
+  );
+}
+
+// Illustrative-only timeline for the "How can we help you today?" box.
+// Dots rest on a sage wave with the label hanging beneath each; the whole
+// thing is decorative on this preview page (no links, no hover), matching
+// the "coming soon" placeholders around it.
+function StaticHelpTimeline() {
+  return (
+    <svg
+      viewBox="0 0 480 200"
+      className="w-full max-w-[440px] h-auto mx-auto block"
+      role="img"
+      aria-label="How can we help you today: I'm planning ahead, someone is dying, someone has died, or I'm just exploring."
+    >
+      <path
+        d="M4,106 C24,72 40,72 60,72 S150,140 180,140 S270,72 300,72 S390,140 420,140 S460,106 476,106"
+        fill="none"
+        stroke="var(--color-sg)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.55"
+      />
+      {helpStages.map((s) => (
+        <g key={s.l2}>
+          <circle cx={s.x} cy={s.y} r="11" fill="var(--color-sg)" opacity="0.2" />
+          <circle cx={s.x} cy={s.y} r="6.5" fill="var(--color-sg)" />
+          <text
+            x={s.x}
+            y={s.y + 30}
+            fontSize="13"
+            textAnchor="middle"
+            fill="var(--color-ch)"
+            className="font-semibold"
+          >
+            <tspan x={s.x} dy="0">
+              {s.l1}
+            </tspan>
+            <tspan x={s.x} dy="15">
+              {s.l2}
+            </tspan>
+          </text>
+        </g>
+      ))}
+    </svg>
   );
 }
 

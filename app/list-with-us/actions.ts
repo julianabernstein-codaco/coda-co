@@ -14,6 +14,7 @@ import { prisma } from "@/lib/db";
 import {
   sendApplicationSubmittedEmail,
   sendListYourGoodsEmail,
+  sendNewVendorSignupEmail,
 } from "@/lib/email/templates";
 import { log } from "@/lib/log";
 
@@ -33,6 +34,14 @@ const NOTES_MAX = 500;
 interface SubmitInput {
   kind: Exclude<ApplicationKind, "unknown">;
   displayName: string;
+  // Notification-only: surfaced in the team's new-signup email so admins can
+  // review without opening the site. Not persisted here — the vendor profile
+  // is built from the application at approval time.
+  firstName?: string;
+  lastName?: string;
+  companyName?: string;
+  website?: string;
+  instagram?: string;
   bio: string;
   city: string;
   state: string;
@@ -164,14 +173,16 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
   // only persist a slug that resolves at approval time. For goods, no
   // service type is in play.
   let serviceTypeSlug: string | null = null;
+  let serviceTypeName: string | null = null;
   if (input.kind === "services" || input.kind === "both") {
     const raw = input.serviceTypeSlug?.trim();
     if (raw) {
       const match = await prisma.serviceType.findUnique({
         where: { slug: raw },
-        select: { slug: true },
+        select: { slug: true, name: true },
       });
       serviceTypeSlug = match?.slug ?? null;
+      serviceTypeName = match?.name ?? null;
     }
   }
   const serviceLocationType = deriveLocationType(input.inHome, input.virtual);
@@ -194,7 +205,36 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     serviceLocationType,
     serviceDays,
     serviceHours,
+    website: input.website?.trim() || null,
+    instagram: input.instagram?.trim() || null,
   });
+
+  // Ping the team inbox on every new signup. Goods shops (kind === "goods")
+  // are auto-approved and skip the review queue, so we flag them as such;
+  // services / both land in manual review. Best-effort — a mail hiccup must
+  // never fail the applicant's submission.
+  const fullName =
+    `${input.firstName?.trim() ?? ""} ${input.lastName?.trim() ?? ""}`.trim() ||
+    null;
+  const adminPing = await sendNewVendorSignupEmail({
+    displayName: input.displayName.trim(),
+    fullName,
+    companyName: input.companyName?.trim() || null,
+    website: input.website?.trim() || null,
+    instagram: input.instagram?.trim() || null,
+    kind: input.kind,
+    city: input.city.trim(),
+    state: input.state.trim(),
+    serviceType: serviceTypeName,
+    applicantEmail: session.user.email!,
+    needsReview: input.kind !== "goods",
+  });
+  if (!adminPing.ok) {
+    log.warn("application.admin_notify_failed", {
+      applicationId: app.id,
+      err: adminPing.error,
+    });
+  }
 
   // Pure goods shops are self-serve: we don't review the shop page itself,
   // only the vendor's first product listing (see the per-listing review

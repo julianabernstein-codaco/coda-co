@@ -832,6 +832,241 @@ export async function sendPasswordChangedEmail(
   return sendEmail({ to: args.toEmail, ...buildPasswordChangedEmail(args) });
 }
 
+// ── Internal admin notifications ─────────────────────────────────────────
+// These go to the CodaCo team inbox (ADMIN_NOTIFY_EMAIL, default
+// hello@codaco.market), NOT to a vendor. They let the team learn about new
+// signups and listings awaiting review without watching the admin queue.
+
+function adminUrl(path: string): string {
+  const base = process.env.BASE_URL?.replace(/\/$/, "");
+  return base ? `${base}${path}` : path;
+}
+
+// Where the internal pings land. Defaults to the shared team address so it
+// works out of the box; override per-environment with ADMIN_NOTIFY_EMAIL.
+export function adminNotifyEmail(): string {
+  return process.env.ADMIN_NOTIFY_EMAIL?.trim() || "hello@codaco.market";
+}
+
+// Renders a label/value table (html) + aligned lines (text) from a list of
+// rows, skipping any whose value is blank. Keeps the two admin-notification
+// bodies in sync and lets optional fields (company, website, …) drop out
+// cleanly when a vendor didn't provide them.
+interface DetailRow {
+  label: string;
+  value: string | null | undefined;
+  // Optional link target for the html cell (email → mailto:, site → url).
+  href?: string | null;
+}
+
+function detailBlock(rows: DetailRow[]): { html: string; text: string } {
+  const present = rows.filter((r) => r.value && r.value.trim());
+  const html = present
+    .map((r) => {
+      const v = escapeHtml(r.value!.trim());
+      const cell = r.href
+        ? `<a href="${escapeHtml(r.href)}" style="color:#c1634f;">${v}</a>`
+        : v;
+      return `<tr><td style="color:#7a7570;padding-right:16px;vertical-align:top;white-space:nowrap;">${r.label}</td><td style="color:#2c2825;">${cell}</td></tr>`;
+    })
+    .join("");
+  const pad = Math.max(...present.map((r) => r.label.length)) + 2;
+  const text = present
+    .map((r) => `${(r.label + ":").padEnd(pad)}${r.value!.trim()}`)
+    .join("\n");
+  return { html, text };
+}
+
+// "Maker (goods)" / "Service provider" / "Maker & service provider".
+function vendorTypeLabel(kind: "goods" | "services" | "both"): string {
+  return kind === "goods"
+    ? "Maker (goods)"
+    : kind === "services"
+      ? "Service provider"
+      : "Maker & service provider";
+}
+
+// Vendors type websites loosely ("example.com" or a full URL). Give the html
+// cell a valid href by prepending https:// when there's no scheme. Blank → null.
+function websiteHref(raw: string | null | undefined): string | null {
+  const v = raw?.trim();
+  if (!v) return null;
+  return /^https?:\/\//i.test(v) ? v : `https://${v}`;
+}
+
+// Turn an Instagram value into a profile link. Accepts "@handle", "handle",
+// or a pasted instagram.com URL. Blank / handle-less → null (cell renders as
+// plain text). The displayed text stays as the vendor typed it.
+function instagramHref(raw: string | null | undefined): string | null {
+  const v = raw?.trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  const handle = v
+    .replace(/^@/, "")
+    .replace(/^(www\.)?instagram\.com\//i, "")
+    .replace(/\/+$/, "")
+    .trim();
+  return handle ? `https://instagram.com/${handle}` : null;
+}
+
+export interface NewVendorSignupArgs {
+  // Headline name (company if given, else the person's full name).
+  displayName: string;
+  fullName?: string | null;
+  companyName?: string | null;
+  website?: string | null;
+  // Handle or profile URL, shown as the vendor typed it.
+  instagram?: string | null;
+  kind: "goods" | "services" | "both";
+  city: string;
+  state: string;
+  // Resolved ServiceType name for services / both; null for goods (a maker's
+  // product types aren't chosen until they list their first product).
+  serviceType?: string | null;
+  // Account email — reply-to, and shown so the team can reach out.
+  applicantEmail: string;
+  // Goods shops self-approve; services / both wait in the review queue.
+  needsReview: boolean;
+}
+
+export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPayload {
+  const subject = args.needsReview
+    ? `New vendor to review: ${args.displayName}`
+    : `New vendor signed up: ${args.displayName}`;
+  const queue = adminUrl("/admin/applications");
+  const website = args.website?.trim() || null;
+
+  const details = detailBlock([
+    { label: "Full name", value: args.fullName },
+    { label: "Company", value: args.companyName },
+    { label: "Type", value: vendorTypeLabel(args.kind) },
+    { label: "Location", value: `${args.city}, ${args.state}` },
+    { label: "Service type", value: args.serviceType },
+    { label: "Website", value: website, href: websiteHref(website) },
+    { label: "Instagram", value: args.instagram, href: instagramHref(args.instagram) },
+    {
+      label: "Email",
+      value: args.applicantEmail,
+      href: `mailto:${args.applicantEmail}`,
+    },
+    {
+      label: "Status",
+      value: args.needsReview ? "Needs review" : "Auto-approved (goods shop)",
+    },
+  ]);
+
+  const text = [
+    "A new vendor just signed up on CodaCo.",
+    "",
+    details.text,
+    "",
+    args.needsReview
+      ? `Review it in the admin queue:  ${queue}`
+      : `They're already live. See all vendors:  ${queue}`,
+    "",
+    "— CodaCo",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">A new vendor just signed up on CodaCo.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.8;">
+      ${details.html}
+    </table>
+    <p style="margin:24px 0;">
+      <a href="${queue}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        ${args.needsReview ? "Review in the admin queue" : "Open the admin queue"}
+      </a>
+    </p>
+    <p style="margin:0;font-size:14px;color:#7a7570;">— CodaCo</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendNewVendorSignupEmail(
+  args: NewVendorSignupArgs,
+): Promise<SendResult> {
+  // replyTo = the applicant so a team member can respond to them directly.
+  return sendEmail({
+    to: adminNotifyEmail(),
+    replyTo: args.applicantEmail,
+    ...buildNewVendorSignupEmail(args),
+  });
+}
+
+export interface ListingNeedsReviewArgs {
+  productTitle: string;
+  // Goods product-type name (e.g. "Urns & vessels").
+  productType?: string | null;
+  vendorName: string;
+  // "City, ST" from the vendor's profile.
+  location?: string | null;
+  website?: string | null;
+  instagram?: string | null;
+  // Vendor's account email — reply-to, and shown for contact.
+  vendorEmail?: string | null;
+}
+
+export function buildListingNeedsReviewEmail(
+  args: ListingNeedsReviewArgs,
+): EmailPayload {
+  const subject = `New listing to review: ${args.productTitle}`;
+  const queue = adminUrl("/admin/listings");
+  const website = args.website?.trim() || null;
+
+  const details = detailBlock([
+    { label: "Listing", value: args.productTitle },
+    { label: "Product type", value: args.productType },
+    { label: "Vendor", value: args.vendorName },
+    { label: "Type", value: "Maker (goods)" },
+    { label: "Location", value: args.location },
+    { label: "Website", value: website, href: websiteHref(website) },
+    { label: "Instagram", value: args.instagram, href: instagramHref(args.instagram) },
+    {
+      label: "Email",
+      value: args.vendorEmail,
+      href: args.vendorEmail ? `mailto:${args.vendorEmail}` : null,
+    },
+  ]);
+
+  const text = [
+    "A vendor submitted their first listing, which is waiting for review before it goes live.",
+    "",
+    details.text,
+    "",
+    `Review it in the admin queue:  ${queue}`,
+    "",
+    "— CodaCo",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      A vendor submitted their first listing, which is waiting for review before it goes live.
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.8;">
+      ${details.html}
+    </table>
+    <p style="margin:24px 0;">
+      <a href="${queue}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        Review in the admin queue
+      </a>
+    </p>
+    <p style="margin:0;font-size:14px;color:#7a7570;">— CodaCo</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendListingNeedsReviewEmail(
+  args: ListingNeedsReviewArgs,
+): Promise<SendResult> {
+  return sendEmail({
+    to: adminNotifyEmail(),
+    replyTo: args.vendorEmail ?? undefined,
+    ...buildListingNeedsReviewEmail(args),
+  });
+}
+
 // Basic HTML-escape — applicant-supplied strings render unescaped
 // inside templates otherwise, and could break the layout (or worse).
 function escapeHtml(s: string): string {

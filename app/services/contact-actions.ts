@@ -1,19 +1,15 @@
 "use server";
 
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { sendVendorInquiryEmail } from "@/lib/email/templates";
 import { log } from "@/lib/log";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const NAME_MAX = 100;
-const EMAIL_MAX = 200;
 const MESSAGE_MAX = 2000;
 
 export interface ContactInput {
   vendorSlug: string;
-  name: string;
-  email: string;
   message: string;
   // Honeypot — a hidden field real users never see. Bots that fill every
   // input give themselves away; we silently drop those submissions.
@@ -30,15 +26,18 @@ export async function sendVendorInquiry(input: ContactInput): Promise<ContactRes
     return { ok: true };
   }
 
-  const name = input.name?.trim() ?? "";
-  const email = input.email?.trim() ?? "";
-  const message = input.message?.trim() ?? "";
-
-  if (!name) return { ok: false, error: "Please add your name." };
-  if (name.length > NAME_MAX) return { ok: false, error: "That name is too long." };
-  if (!EMAIL_RE.test(email) || email.length > EMAIL_MAX) {
-    return { ok: false, error: "Enter a valid email address." };
+  // Contacting a vendor requires an account. Identity comes from the
+  // session — never the form — so every lead is attributable to a real
+  // user and the reply-to email can't be spoofed.
+  const session = await auth();
+  if (!session?.user) {
+    return { ok: false, error: "Please sign in to contact this provider." };
   }
+  const clientUserId = session.user.id;
+  const email = session.user.email;
+  const name = (session.user.name ?? "").trim() || email;
+
+  const message = input.message?.trim() ?? "";
   if (!message) return { ok: false, error: "Please add a short message." };
   if (message.length > MESSAGE_MAX) {
     return { ok: false, error: `Keep your message under ${MESSAGE_MAX} characters.` };
@@ -75,7 +74,7 @@ export async function sendVendorInquiry(input: ContactInput): Promise<ContactRes
   // Save the lead first — a delivery failure must not lose it. It'll show
   // in the vendor's dashboard regardless of whether the email lands.
   await prisma.vendorInquiry.create({
-    data: { vendorId: vendor.id, clientName: name, clientEmail: email, message },
+    data: { vendorId: vendor.id, clientUserId, clientName: name, clientEmail: email, message },
   });
 
   const result = await sendVendorInquiryEmail({

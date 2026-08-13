@@ -5,6 +5,16 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/log";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
+
+// Login brute-force limits. Exported so the login server action can peek at
+// the same buckets/thresholds for its user-facing "too many attempts"
+// message without duplicating the numbers (enforcement still happens here in
+// `authorize`, the one path a direct API POST can't skip). 15-minute window;
+// per-email is tighter than per-IP so shared-NAT users aren't punished for a
+// neighbor while a single account still can't be ground down.
+export const LOGIN_IP_LIMIT = { limit: 10, windowMs: 15 * 60 * 1000 } as const;
+export const LOGIN_EMAIL_LIMIT = { limit: 5, windowMs: 15 * 60 * 1000 } as const;
 
 // Auth.js v5 config. Session strategy is JWT (Credentials can't use DB
 // sessions in v5), so the auth cookie is a signed token, not a DB session
@@ -48,6 +58,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const password = typeof creds?.password === "string" ? creds.password : "";
         if (!email || !password) {
           log.warn("auth.signin_failed", { reason: "missing_credentials", email: email || null });
+          return null;
+        }
+
+        // Brute-force shield at the true choke point: both the login form's
+        // server action and a raw POST to /api/auth/callback/credentials
+        // funnel through here, so this is the one place that covers every
+        // path. Keyed by IP *and* email — IP alone lets a botnet spread out,
+        // email alone lets one host grind many accounts. We check before the
+        // bcrypt.compare so an attacker can't burn CPU past the limit.
+        // Same generic `null` return as any credential failure — no signal
+        // that throttling (vs. a bad password) happened, so no enumeration.
+        const ip = await clientIp();
+        const ipOk = rateLimit(`login:ip:${ip}`, LOGIN_IP_LIMIT).ok;
+        const emailOk = rateLimit(`login:email:${email}`, LOGIN_EMAIL_LIMIT).ok;
+        if (!ipOk || !emailOk) {
+          log.warn("auth.rate_limited", { ip, email, reason: !emailOk ? "email" : "ip" });
           return null;
         }
 

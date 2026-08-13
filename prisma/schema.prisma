@@ -73,6 +73,7 @@ model User {
   reviewedApps  VendorApplication[] @relation("VendorApplicationsReviewer")
   orders        Order[]
   cartItems     CartItem[]
+  inquiriesSent VendorInquiry[]     @relation("VendorInquiriesFromUser")
 
   // Gift cards a user bought / claimed into their account. Both are
   // optional links (a guest can buy or redeem without an account), so the
@@ -163,6 +164,12 @@ model VendorProfile {
   // ones the vendor fills in. instagramHandle is the raw handle (no @).
   websiteUrl      String? @map("website_url")
   instagramHandle String? @map("instagram_handle")
+
+  // Per-vendor visibility switches for the public contact links, set by
+  // the CodaCo team from /admin/vendors. Default false: a saved link stays
+  // hidden on the public profile until the team turns it on.
+  showWebsite   Boolean @default(false) @map("show_website")
+  showInstagram Boolean @default(false) @map("show_instagram")
 
   // Service-area display fields shown on the public profile's "Services
   // & service area" card. Free-form text so vendors can phrase them
@@ -310,6 +317,11 @@ model VendorApplication {
   // public "Service area & availability" card is populated from day one.
   serviceDays         String?             @map("service_days")
   serviceHours        String?             @map("service_hours")
+  // Contact links the applicant entered at signup. Stored as typed;
+  // normalized into vendor_profile.website_url / instagram_handle at
+  // approval. Kept here so nothing is lost between apply and approve.
+  website             String?             @map("website")
+  instagram           String?             @map("instagram")
   createdAt          DateTime             @default(now()) @map("created_at")
   updatedAt          DateTime             @updatedAt @map("updated_at")
 
@@ -572,17 +584,24 @@ model VendorReview {
 // email lives here (and is the email's reply-to) but the vendor's email
 // is never exposed to the client.
 model VendorInquiry {
-  id          String    @id @default(cuid())
-  vendorId    String    @map("vendor_id")
-  clientName  String    @map("client_name")
-  clientEmail String    @map("client_email")
-  message     String
-  readAt      DateTime? @map("read_at")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  id           String    @id @default(cuid())
+  vendorId     String    @map("vendor_id")
+  // The signed-in client who sent the inquiry. Contact is gated to
+  // logged-in users, so new rows always carry this; it's nullable so the
+  // link SetNull-detaches if that account is later deleted (the lead is
+  // kept for the vendor either way).
+  clientUserId String?   @map("client_user_id")
+  clientName   String    @map("client_name")
+  clientEmail  String    @map("client_email")
+  message      String
+  readAt       DateTime? @map("read_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
-  vendor VendorProfile @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  vendor     VendorProfile @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  clientUser User?         @relation("VendorInquiriesFromUser", fields: [clientUserId], references: [id], onDelete: SetNull)
 
   @@index([vendorId])
+  @@index([clientUserId])
   @@map("vendor_inquiries")
 }
 

@@ -54,6 +54,12 @@ export default async function VendorProfilePage({ params }: PageProps) {
   ]);
   if (!vendor) notFound();
 
+  // Contacting a vendor requires an account, so the contact button and
+  // form are gated on being signed in; anon visitors get a sign-in prompt
+  // that returns them here afterward.
+  const isSignedIn = Boolean(session?.user);
+  const loginHref = `/login?next=${encodeURIComponent(`/services/${vendorId}`)}`;
+
   // The signed-in owner viewing their own profile sees draft services
   // (tagged, with a nudge to publish); the public sees published only.
   const isOwner = Boolean(session?.user) && session!.user.id === ownerUserId;
@@ -149,9 +155,15 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 className="text-[15px]"
               />
               <div className="flex flex-wrap gap-3 items-center mt-5">
-                <a href="#contact" className="btn-primary btn-md no-underline">
-                  Contact ↗
-                </a>
+                {isSignedIn ? (
+                  <a href="#contact" className="btn-primary btn-md no-underline">
+                    Contact ↗
+                  </a>
+                ) : (
+                  <Link href={loginHref} className="btn-primary btn-md no-underline">
+                    Sign in to contact ↗
+                  </Link>
+                )}
                 <SaveButton
                   kind="vendor"
                   slug={vendor.id}
@@ -327,15 +339,33 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 calls are free.
               </p>
             </div>
-            <ContactVendorForm vendorSlug={vendor.id} vendorName={vendor.name} />
+            {isSignedIn ? (
+              <ContactVendorForm vendorSlug={vendor.id} vendorName={vendor.name} />
+            ) : (
+              <div className="bg-white border border-tr-p rounded-[10px] p-6 text-center">
+                <p className="text-[16px] text-ch font-medium mb-1">
+                  Sign in to contact {vendor.name}
+                </p>
+                <p className="text-[15px] text-cm mb-5">
+                  You’ll need a free account to send a message. It takes a moment, and
+                  keeps your conversations in one place.
+                </p>
+                <Link href={loginHref} className="btn-primary btn-md no-underline">
+                  Sign in to contact
+                </Link>
+              </div>
+            )}
             <div className="text-center mt-4">
               <Link href="/services" className="text-[15px] text-tr no-underline hover:underline">
                 Browse other providers →
               </Link>
             </div>
-            {(vendor.websiteUrl || instagramLabel) && (
+            {/* Each link shows only when its value is set AND the CodaCo
+                team has switched it on (VendorProfile.show*). */}
+            {((vendor.showWebsite && vendor.websiteUrl) ||
+              (vendor.showInstagram && instagramLabel)) && (
               <div className="text-[14px] text-cm pt-4 border-t border-tr-p mt-5 flex flex-wrap gap-x-3 gap-y-1 justify-center">
-                {vendor.websiteUrl && (
+                {vendor.showWebsite && vendor.websiteUrl && (
                   <a
                     href={vendor.websiteUrl}
                     target="_blank"
@@ -345,8 +375,11 @@ export default async function VendorProfilePage({ params }: PageProps) {
                     {vendor.websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                   </a>
                 )}
-                {vendor.websiteUrl && instagramLabel && <span>·</span>}
-                {instagramLabel && instagramUrl && (
+                {vendor.showWebsite &&
+                  vendor.websiteUrl &&
+                  vendor.showInstagram &&
+                  instagramLabel && <span>·</span>}
+                {vendor.showInstagram && instagramLabel && instagramUrl && (
                   <a
                     href={instagramUrl}
                     target="_blank"

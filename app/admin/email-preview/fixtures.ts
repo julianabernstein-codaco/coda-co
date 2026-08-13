@@ -11,7 +11,9 @@ import {
   buildGiftCardPoolCreatedEmail,
   buildGiftCardContributionEmail,
   buildListingApprovedEmail,
+  buildListingNeedsReviewEmail,
   buildListYourGoodsEmail,
+  buildNewVendorSignupEmail,
   buildPasswordChangedEmail,
   buildPasswordResetEmail,
   buildVendorInquiryEmail,
@@ -32,6 +34,8 @@ export const TEMPLATE_KEYS = [
   "rejected",
   "list-goods",
   "listing-approved",
+  "new-vendor-signup",
+  "listing-needs-review",
   "inquiry",
   "gift-card",
   "gift-receipt",
@@ -67,6 +71,30 @@ export function buildSample(key: TemplateKey): EmailPayload {
         toName: FIXTURE.toName,
         productTitle: "Hand-thrown ceramic urn, sage glaze",
         productSlug: "urn-sage-001",
+      });
+    case "new-vendor-signup":
+      return buildNewVendorSignupEmail({
+        displayName: "Rosales Doula Care",
+        fullName: "Maria Rosales",
+        companyName: "Rosales Doula Care",
+        website: "rosalesdoulacare.com",
+        instagram: "@rosalesdoula",
+        kind: "services",
+        city: "Brooklyn",
+        state: "NY",
+        serviceType: "End of life doula",
+        applicantEmail: FIXTURE.toEmail,
+        needsReview: true,
+      });
+    case "listing-needs-review":
+      return buildListingNeedsReviewEmail({
+        productTitle: "Hand-thrown ceramic urn, sage glaze",
+        productType: "Urns & vessels",
+        vendorName: FIXTURE.displayName,
+        location: "Portland, OR",
+        website: "earthenstudio.com",
+        instagram: "@earthenstudio",
+        vendorEmail: FIXTURE.toEmail,
       });
     case "inquiry":
       return buildVendorInquiryEmail({

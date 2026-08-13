@@ -133,6 +133,11 @@ async function main() {
         photoTone: v.photoTone,
         websiteUrl: v.websiteUrl,
         instagramHandle: v.instagramHandle,
+        // Demo: reveal whatever links exist so the seeded public profiles
+        // look complete. Real vendors default to hidden until the team
+        // switches them on from /admin/vendors.
+        showWebsite: Boolean(v.websiteUrl),
+        showInstagram: Boolean(v.instagramHandle),
         serviceRadius: v.serviceRadius,
         serviceFormats: v.serviceFormats,
         serviceDays: v.serviceDays,
