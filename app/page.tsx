@@ -39,7 +39,7 @@ const categories = [
     ),
   },
   {
-    label: "Burial shrouds",
+    label: "Burial goods",
     href: "/shop?category=shrouds",
     icon: (
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -113,12 +113,16 @@ const categories = [
     ),
   },
   {
-    label: "Gifts & humor",
-    href: "/shop?category=humor",
+    label: "Funeral homes",
+    href: "/services?type=funeral-home",
     icon: (
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <path d="M10 22 C10 22 10 14 18 14 C26 14 26 22 26 22 L10 22Z" stroke="var(--color-tr)" strokeWidth="1.5" fill="none"/>
-        <rect x="14" y="22" width="8" height="5" rx="1" stroke="var(--color-tr)" strokeWidth="1.3"/>
+        <path d="M7 15 L18 8 L29 15" stroke="var(--color-tr)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <line x1="10" y1="16" x2="10" y2="26" stroke="var(--color-tr)" strokeWidth="1.3"/>
+        <line x1="15" y1="16" x2="15" y2="26" stroke="var(--color-tr)" strokeWidth="1.3"/>
+        <line x1="21" y1="16" x2="21" y2="26" stroke="var(--color-tr)" strokeWidth="1.3"/>
+        <line x1="26" y1="16" x2="26" y2="26" stroke="var(--color-tr)" strokeWidth="1.3"/>
+        <line x1="7" y1="27" x2="29" y2="27" stroke="var(--color-tr)" strokeWidth="1.5" strokeLinecap="round"/>
       </svg>
     ),
   },
