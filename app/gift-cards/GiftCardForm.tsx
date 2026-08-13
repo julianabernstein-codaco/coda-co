@@ -24,6 +24,8 @@ export function GiftCardForm() {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [giftMessage, setGiftMessage] = useState("");
+  // Honeypot — hidden off-screen; real users never fill it (see the action).
+  const [company, setCompany] = useState("");
 
   function resolveAmountCents(): number | null {
     if (preset !== "custom") return preset;
@@ -56,6 +58,7 @@ export function GiftCardForm() {
         recipientEmail: !group ? recipientEmail || undefined : undefined,
         recipientName: !group ? recipientName || undefined : undefined,
         giftMessage: giftMessage || undefined,
+        company: company || undefined,
       });
       if (res.url) {
         window.location.href = res.url;
@@ -67,6 +70,24 @@ export function GiftCardForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7">
+      {/* Honeypot — off-screen, aria-hidden, non-tabbable. Bots that fill
+          every field trip it; the server action drops those submissions. */}
+      <div
+        aria-hidden="true"
+        className="absolute left-[-9999px] top-[-9999px] h-0 w-0 overflow-hidden"
+      >
+        <label htmlFor="gc-company">Company</label>
+        <input
+          id="gc-company"
+          name="company"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+        />
+      </div>
+
       {/* Mode */}
       <div className="grid grid-cols-2 gap-2">
         <ModeButton

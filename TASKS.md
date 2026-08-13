@@ -76,6 +76,19 @@ Phase E.
   not a substitute: a WAF / Cloudflare Turnstile is the real answer to
   distributed attacks and IP-header spoofing (`clientIp()` trusts the
   leftmost `x-forwarded-for`, which the client controls).
+- **Gift-card guest paths now have layered bot protection.**
+  `purchaseGiftCard` / `contributeToPool` (`app/gift-cards/actions.ts`) run
+  honeypot → per-IP rate limit → **Vercel BotID** (invisible, `lib/botid.ts` +
+  `instrumentation-client.ts` + `withBotId` in `next.config.ts`). No account
+  is required to buy — the account gate stays at redemption
+  (`claimGiftCardAction`). Deploy step: enable **BotID** for the project in the
+  Vercel dashboard (Basic tier is free; no env var needed). BotID fails open
+  on infra errors and bypasses in dev/preview, so local flows are unaffected.
+  Follow-ups: (a) consider BotID `checkLevel: 'deepAnalysis'` (paid) if card
+  testing persists; (b) extend the same gates to the account checkout
+  `placeOrder` (`app/checkout/actions.ts`); (c) tune Stripe Radar rules — the
+  backstop on the payment itself; (d) void a gift card whose funding payment is
+  later disputed (extend `reconcile`/webhook).
 
 ## Resolved (kept for posterity, can be deleted once stable)
 

@@ -17,6 +17,8 @@ export function ContributeForm({ token }: { token: string }) {
   const [customDollars, setCustomDollars] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  // Honeypot — hidden off-screen; real users never fill it (see the action).
+  const [company, setCompany] = useState("");
 
   function resolveAmountCents(): number | null {
     if (preset !== "custom") return preset;
@@ -42,6 +44,7 @@ export function ContributeForm({ token }: { token: string }) {
         amountCents,
         contributorName: name || undefined,
         contributorEmail: email || undefined,
+        company: company || undefined,
       });
       if (res.url) {
         window.location.href = res.url;
@@ -53,6 +56,23 @@ export function ContributeForm({ token }: { token: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Honeypot — off-screen, aria-hidden, non-tabbable (see the action). */}
+      <div
+        aria-hidden="true"
+        className="absolute left-[-9999px] top-[-9999px] h-0 w-0 overflow-hidden"
+      >
+        <label htmlFor="gcc-company">Company</label>
+        <input
+          id="gcc-company"
+          name="company"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+        />
+      </div>
+
       <fieldset className="space-y-3">
         <legend className="text-[14px] font-medium text-ch uppercase tracking-wide mb-1">
           Your contribution

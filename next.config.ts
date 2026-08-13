@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withBotId } from "botid/next/config";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -24,4 +25,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// withBotId adds the proxy rewrites that serve Vercel BotID's challenge
+// script from our own origin. See instrumentation-client.ts for the routes
+// it protects and lib/botid.ts for the server-side verification.
+export default withBotId(nextConfig);

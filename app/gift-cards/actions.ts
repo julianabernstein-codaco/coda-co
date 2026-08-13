@@ -5,6 +5,8 @@ import { auth } from "@/auth";
 import { stripe, isStripeConfigured } from "@/lib/stripe";
 import { CURRENCY } from "@/lib/billing/catalog";
 import { log } from "@/lib/log";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { isBotRequest } from "@/lib/botid";
 import {
   createPendingGiftCard,
   lookupGiftCard,
@@ -38,6 +40,9 @@ export interface PurchaseGiftCardInput {
   // Group gift: mint a shareable contribution link + a private organizer link,
   // and don't auto-deliver (the organizer sends it from the manage page).
   pooled?: boolean;
+  // Honeypot — a hidden field real buyers never fill. Bots that complete every
+  // input trip it and are silently turned away before any Stripe call.
+  company?: string;
 }
 
 export interface PurchaseResult {
@@ -52,10 +57,33 @@ export interface PurchaseResult {
 export async function purchaseGiftCard(
   input: PurchaseGiftCardInput,
 ): Promise<PurchaseResult> {
+  // Honeypot tripped → drop it. Cheapest possible gate, before any work.
+  if (input.company && input.company.trim() !== "") {
+    log.warn("giftcard.honeypot_tripped", { scope: "purchase" });
+    return { error: "Something went wrong. Please try again." };
+  }
+
   if (!isStripeConfigured()) return { error: "Gift cards aren't available yet." };
 
   const purchaserEmail = input.purchaserEmail?.trim();
   if (!purchaserEmail) return { error: "Enter your email so we can send a receipt." };
+
+  // Per-IP velocity cap on the guest purchase path — a first gate against
+  // scripted card-stuffing before we mint a Stripe Checkout session. Mirrors
+  // the signup/waitlist limiter (in-memory; see lib/rate-limit.ts caveats — a
+  // distributed attacker needs the WAF/BotID layer, which is why we also run
+  // the invisible bot check below).
+  const ip = await clientIp();
+  if (!rateLimit(`giftcard:purchase:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 }).ok) {
+    log.warn("giftcard.rate_limited", { scope: "purchase" });
+    return { error: "Too many attempts from here. Please try again in a little while." };
+  }
+
+  // Invisible bot check (Vercel BotID). Turns away confident bots; fails open
+  // on infra errors so a real buyer is never blocked mid-checkout.
+  if (await isBotRequest("giftcard.purchase")) {
+    return { error: "We couldn't verify your request. Please refresh and try again." };
+  }
 
   const purchaserName = input.purchaserName?.trim() || null;
 
@@ -129,6 +157,8 @@ export interface ContributeInput {
   amountCents: number;
   contributorName?: string;
   contributorEmail?: string;
+  // Honeypot — see PurchaseGiftCardInput.company.
+  company?: string;
 }
 
 // Chip into an existing group gift via its public contribution token. No auth —
@@ -138,7 +168,24 @@ export async function contributeToPool(
   token: string,
   input: ContributeInput,
 ): Promise<PurchaseResult> {
+  // Honeypot tripped → drop it before any work.
+  if (input.company && input.company.trim() !== "") {
+    log.warn("giftcard.honeypot_tripped", { scope: "contribute" });
+    return { error: "Something went wrong. Please try again." };
+  }
+
   if (!isStripeConfigured()) return { error: "Gift cards aren't available yet." };
+
+  // Per-IP velocity cap on the guest contribution path (see purchaseGiftCard).
+  const ip = await clientIp();
+  if (!rateLimit(`giftcard:contribute:${ip}`, { limit: 15, windowMs: 60 * 60 * 1000 }).ok) {
+    log.warn("giftcard.rate_limited", { scope: "contribute" });
+    return { error: "Too many attempts from here. Please try again in a little while." };
+  }
+
+  if (await isBotRequest("giftcard.contribute")) {
+    return { error: "We couldn't verify your request. Please refresh and try again." };
+  }
 
   const card = await findPoolByContributeToken(token);
   if (!card) return { error: "This contribution link is no longer valid." };
