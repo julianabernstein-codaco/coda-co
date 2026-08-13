@@ -57,6 +57,13 @@ export async function verifyPasswordResetToken(raw: string): Promise<string | nu
   return row.identifier.slice(IDENTIFIER_PREFIX.length);
 }
 
+// Voids any outstanding reset links for an email. Called after a signed-in
+// user changes their password directly, so a still-valid emailed link can't
+// later be used to overwrite the password they just set.
+export async function invalidatePasswordResetTokens(email: string): Promise<void> {
+  await prisma.verificationToken.deleteMany({ where: { identifier: identifierFor(email) } });
+}
+
 // Atomically consumes the token and sets the new password hash in one
 // transaction. The token is deleted before the password is written, so a
 // concurrent double-submit can't reuse it. Returns false if the token
