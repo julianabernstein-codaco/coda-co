@@ -124,7 +124,7 @@ export function ContactVendorForm({
         >
           {pending ? "Sending…" : "Send message →"}
         </button>
-        <span className="text-[13px] text-cl">
+        <span className="text-[13px] text-cm">
           Your email is shared only with {vendorName}.
         </span>
       </div>

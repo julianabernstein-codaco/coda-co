@@ -23,7 +23,7 @@ export function StepsBar({ steps, current }: StepsBarProps) {
                     ? "bg-tr border-tr text-white"
                     : active
                     ? "bg-white border-tr text-tr"
-                    : "bg-white border-[rgba(44,40,37,.2)] text-cl",
+                    : "bg-white border-[rgba(44,40,37,.2)] text-cm",
                 ].join(" ")}
               >
                 {done ? "✓" : i + 1}
@@ -31,7 +31,7 @@ export function StepsBar({ steps, current }: StepsBarProps) {
               <span
                 className={[
                   "text-[15px] whitespace-nowrap",
-                  done || active ? "text-ch font-medium" : "text-cl",
+                  done || active ? "text-ch font-medium" : "text-cm",
                 ].join(" ")}
               >
                 {step.label}

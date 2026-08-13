@@ -17,7 +17,7 @@ export function Pagination({ page, totalPages }: { page: number; totalPages: num
       <button
         onClick={() => go(page - 1)}
         disabled={page <= 1}
-        className="bg-white border border-line-bold text-cl px-4 py-1.5 rounded-[7px] text-[15px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+        className="bg-white border border-line-bold text-cm px-4 py-1.5 rounded-[7px] text-[15px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
       >
         ← Prev
       </button>

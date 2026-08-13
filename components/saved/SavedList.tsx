@@ -51,7 +51,7 @@ export function SavedList() {
     return (
       <div className="text-center py-16">
         <p className="text-[17px] text-cm mb-2">You haven&apos;t saved anything yet.</p>
-        <p className="text-[15px] text-cl mb-6">
+        <p className="text-[15px] text-cm mb-6">
           Tap the heart on any product or provider to keep it here.
         </p>
         <div className="flex gap-3 justify-center">

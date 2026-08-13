@@ -43,7 +43,7 @@ function VendorCompactCard({
         className="mb-3"
       />
       <div className="text-[16px] font-medium text-ch mb-[2px]">{vendor.name}</div>
-      <div className="text-[12px] tracking-[.08em] uppercase text-cl mb-[7px]">
+      <div className="text-[12px] tracking-[.08em] uppercase text-cm mb-[7px]">
         {primaryTypeLabel(services)}
       </div>
       <div className="text-[14px] text-cm mb-[5px]">
@@ -100,18 +100,18 @@ function VendorSearchCard({
         </div>
         <div className="text-[16px] text-cm leading-[1.6] mb-2">{vendor.bio}</div>
         <div className="flex flex-wrap gap-3 mb-3">
-          <span className="text-[14px] text-cl">
+          <span className="text-[14px] text-cm">
             📍 <strong className="text-cm">{vendor.location}</strong>
             {vendor.distanceMi != null && ` · ${vendor.distanceMi} mi`}
           </span>
           {inPerson && virtual && (
-            <span className="text-[14px] text-cl">In-home &amp; virtual</span>
+            <span className="text-[14px] text-cm">In-home &amp; virtual</span>
           )}
           {inPerson && !virtual && (
-            <span className="text-[14px] text-cl">In-home</span>
+            <span className="text-[14px] text-cm">In-home</span>
           )}
           {!inPerson && virtual && (
-            <span className="text-[14px] text-cl">Virtual only</span>
+            <span className="text-[14px] text-cm">Virtual only</span>
           )}
         </div>
 

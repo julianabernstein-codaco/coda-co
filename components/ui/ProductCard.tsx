@@ -29,7 +29,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="text-[15px] font-medium text-ch mb-[3px] leading-[1.35]">
           {product.title}
         </div>
-        <div className="text-[13px] text-cl mb-[6px]">
+        <div className="text-[13px] text-cm mb-[6px]">
           {product.seller}, {product.location}
         </div>
         <div className="text-[16px] font-medium text-tr flex items-center flex-wrap gap-1">

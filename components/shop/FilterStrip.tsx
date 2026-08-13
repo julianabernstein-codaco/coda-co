@@ -44,7 +44,7 @@ export function FilterStrip() {
         </div>
       )}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-[15px] text-cl mr-1">Filter:</span>
+        <span className="text-[15px] text-cm mr-1">Filter:</span>
         {CATEGORIES.map((cat) => (
           <FilterPill
             key={cat.value}

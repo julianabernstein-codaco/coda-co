@@ -6,7 +6,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
     return (
       <div className="text-center py-16 text-cm">
         <p className="text-[17px] mb-2">No products found.</p>
-        <p className="text-[15px] text-cl">Try a different category or clear your filters.</p>
+        <p className="text-[15px] text-cm">Try a different category or clear your filters.</p>
       </div>
     );
   }

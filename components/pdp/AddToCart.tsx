@@ -64,7 +64,7 @@ export function AddToCart({ product }: AddToCartProps) {
                     ].join(" ")}
                     style={{ background: colors[glaze] ?? "#ccc" }}
                   />
-                  <span className="text-[13px] text-cl">{glaze}</span>
+                  <span className="text-[13px] text-cm">{glaze}</span>
                 </button>
               );
             })}
@@ -118,7 +118,7 @@ export function AddToCart({ product }: AddToCartProps) {
             </button>
           </div>
         </div>
-        <div className="text-[14px] text-cl leading-relaxed pt-5">
+        <div className="text-[14px] text-cm leading-relaxed pt-5">
           Free shipping · Ships in 3–5 business days
         </div>
       </div>
