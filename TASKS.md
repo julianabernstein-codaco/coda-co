@@ -64,6 +64,12 @@ entry covers **checkout disclosure and consent**.
 | **No undermining language** | Nothing elsewhere in the flow may contradict, obscure, or detract from the renewal disclosure. |
 | **Consent record** | Log Vendor ID, timestamp, IP, the exact disclosure text shown, and the consent event. Retain **3 years / 1 year post-termination, whichever is longer**. Version the disclosure text so you can prove what a Vendor saw in 2026 rather than what the page says today. |
 
+### Immediately after purchase
+
+Send an acknowledgment email containing the renewal terms, cancellation
+policy, and cancellation instructions, in a retainable form. Send it whether
+or not the Vendor also sees a confirmation screen.
+
 ## Smaller gaps
 
 - **Email is unverified.** `email_verified_at` is in the schema but no
