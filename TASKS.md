@@ -46,6 +46,24 @@ plan using Vercel Blob; full scope in `docs/images-plan.md`. Phase 1
 (vendor headshot) is the suggested starting point and not blocked by
 Phase E.
 
+## Vendor renewal & cancellation (compliance workstream)
+
+Requirements for automatic-renewal subscriptions sold to Vendors. Nothing
+here is built yet — this is the durable record of what the checkout and
+account flows must satisfy before auto-renewing vendor plans can ship.
+These center on renewal and cancellation for our vendor users; this first
+entry covers **checkout disclosure and consent**.
+
+### At checkout — disclosure and consent
+
+| Requirement | What it means concretely |
+|---|---|
+| **Clear and conspicuous** | Renewal terms in the same font size and prominence as surrounding text, in visual proximity to the consent action — not behind a link, not in a footer, not in the Terms modal. |
+| **Before payment** | Disclosed before the Vendor submits payment information, not on the confirmation page. |
+| **Separate consent** | A dedicated, unchecked checkbox for automatic renewal, distinct from the checkbox accepting the Terms. Never pre-ticked. Never bundled. |
+| **No undermining language** | Nothing elsewhere in the flow may contradict, obscure, or detract from the renewal disclosure. |
+| **Consent record** | Log Vendor ID, timestamp, IP, the exact disclosure text shown, and the consent event. Retain **3 years / 1 year post-termination, whichever is longer**. Version the disclosure text so you can prove what a Vendor saw in 2026 rather than what the page says today. |
+
 ## Smaller gaps
 
 - **Email is unverified.** `email_verified_at` is in the schema but no
