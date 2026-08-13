@@ -6,10 +6,13 @@ import { sendVendorInquiry } from "@/app/services/contact-actions";
 const inputCls =
   "w-full border border-line-bold rounded-[8px] px-3 py-2.5 text-[16px] text-ch bg-white outline-none focus:border-tr transition-colors";
 
-// Public "get in touch" form on the vendor profile. Posts to the
-// sendVendorInquiry server action, which validates, spam-checks, saves
-// the lead, and emails the vendor (reply-to the client). Uncontrolled
-// inputs read via FormData so the honeypot captures whatever a bot types.
+// "Get in touch" form on the vendor profile, shown only to signed-in
+// users. Posts to the sendVendorInquiry server action, which validates,
+// spam-checks, saves the lead, and emails the vendor (reply-to the
+// client). The client's name and email come from their account session on
+// the server — not this form — so only the message is collected here.
+// Uncontrolled inputs read via FormData so the honeypot captures whatever
+// a bot types.
 export function ContactVendorForm({
   vendorSlug,
   vendorName,
@@ -28,8 +31,6 @@ export function ContactVendorForm({
     startTransition(async () => {
       const res = await sendVendorInquiry({
         vendorSlug,
-        name: String(fd.get("name") ?? ""),
-        email: String(fd.get("email") ?? ""),
         message: String(fd.get("message") ?? ""),
         company: String(fd.get("company") ?? ""),
       });
@@ -54,38 +55,6 @@ export function ContactVendorForm({
       onSubmit={handleSubmit}
       className="bg-white border border-tr-p rounded-[10px] p-6 space-y-4 text-left"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="ci-name" className="block text-[14px] text-cm mb-1.5">
-            Your name
-          </label>
-          <input
-            id="ci-name"
-            name="name"
-            required
-            maxLength={100}
-            className={inputCls}
-            placeholder="Jordan Lee"
-            autoComplete="name"
-          />
-        </div>
-        <div>
-          <label htmlFor="ci-email" className="block text-[14px] text-cm mb-1.5">
-            Your email
-          </label>
-          <input
-            id="ci-email"
-            name="email"
-            type="email"
-            required
-            maxLength={200}
-            className={inputCls}
-            placeholder="you@example.com"
-            autoComplete="email"
-          />
-        </div>
-      </div>
-
       <div>
         <label htmlFor="ci-message" className="block text-[14px] text-cm mb-1.5">
           What are you looking for?
@@ -125,7 +94,7 @@ export function ContactVendorForm({
           {pending ? "Sending…" : "Send message →"}
         </button>
         <span className="text-[13px] text-cl">
-          Your email is shared only with {vendorName}.
+          Sent from your account email, shared only with {vendorName}.
         </span>
       </div>
     </form>
