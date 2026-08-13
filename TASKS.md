@@ -91,6 +91,12 @@ or not the Vendor also sees a confirmation screen.
 - Confirmation of cancellation sent by email.
 - Do not require a reason, a survey, or a password reset to cancel.
 
+### Records to keep
+
+Consent logs, disclosure text versions, sent-notice logs (reminders, price
+changes, acknowledgments), and cancellation request timestamps. In a dispute,
+**the absence of a log is generally treated as absence of the notice.**
+
 ## Smaller gaps
 
 - **Email is unverified.** `email_verified_at` is in the schema but no
