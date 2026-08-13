@@ -41,6 +41,16 @@ export function rateLimit(
   return { ok: true, remaining: opts.limit - bucket.count };
 }
 
+// Read-only check: is this key already at/over its limit right now?
+// Does NOT count as an attempt (no increment), so a caller can peek to
+// pick a user-facing message while the authoritative `rateLimit()` call
+// elsewhere does the counting. Returns false for an unseen or expired key.
+export function isRateLimited(key: string, opts: { limit: number }): boolean {
+  const bucket = buckets.get(key);
+  if (!bucket || bucket.resetAt <= Date.now()) return false;
+  return bucket.count >= opts.limit;
+}
+
 // Best-effort client IP. On Vercel `x-forwarded-for` is the trusted
 // chain; we take the leftmost entry, which is the original client.
 export async function clientIp(): Promise<string> {
