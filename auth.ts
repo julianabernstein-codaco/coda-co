@@ -6,8 +6,11 @@ import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/log";
 
-// Auth.js v5 config. The adapter writes sessions to the DB so we never
-// hand a JWT to the browser; sessions are server-truth and revocable.
+// Auth.js v5 config. Session strategy is JWT (Credentials can't use DB
+// sessions in v5), so the auth cookie is a signed token, not a DB session
+// id. We keep it revocable anyway: the `jwt` callback re-reads the user
+// every request and returns null (a hard logout) once the token is stale
+// — see the callbacks below.
 //
 // Phase C only wires Credentials. OAuth providers slot in here later
 // without schema or callback changes — that's the whole point of the
@@ -23,9 +26,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
 
   // The Credentials provider can't use the database session strategy
-  // directly (Auth.js limitation), so we issue a JWT for the auth
-  // cookie and re-hydrate the user (including role) from the DB on
-  // every request via the `session` callback below.
+  // directly (Auth.js limitation), so we issue a JWT for the auth cookie
+  // and re-hydrate the user (including role) from the DB on every request
+  // via the `jwt` callback below — which also enforces password-based
+  // session invalidation.
   session: { strategy: "jwt" },
 
   pages: {
