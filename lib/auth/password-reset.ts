@@ -84,7 +84,10 @@ export async function consumePasswordResetToken(
       await tx.verificationToken.delete({ where: { token } });
       return tx.user.update({
         where: { email },
-        data: { passwordHash: newPasswordHash },
+        // Bumping passwordChangedAt invalidates every JWT minted before now
+        // (see the `jwt` callback in auth.ts) — so a reset also logs out any
+        // sessions an attacker may have had.
+        data: { passwordHash: newPasswordHash, passwordChangedAt: new Date() },
         select: { email: true, name: true },
       });
     });

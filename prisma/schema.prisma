@@ -57,6 +57,12 @@ model User {
   emailVerified DateTime? @map("email_verified")
   image         String?
 
+  // Bumped whenever the password changes (reset or self-serve change). The
+  // JWT stamps this at login; the `jwt` callback in auth.ts invalidates any
+  // token carrying an older value, so a password change logs out stale
+  // sessions. Null = never changed since the account's baseline.
+  passwordChangedAt DateTime? @map("password_changed_at")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

@@ -18,5 +18,10 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     uid?: string;
+    role?: UserRole;
+    // Password version this token was minted against (users.passwordChangedAt
+    // as epoch ms, 0 when null). The `jwt` callback invalidates the token if
+    // the DB value has moved on — i.e. the password changed since sign-in.
+    pwc?: number;
   }
 }

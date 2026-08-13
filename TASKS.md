@@ -48,20 +48,6 @@ Phase E.
 
 ## Smaller gaps
 
-- **Password change/reset doesn't revoke existing sessions.** With the JWT
-  session strategy, changing or resetting a password leaves already-issued
-  session cookies valid until they expire (Auth.js default 30 days). So a
-  reset — the exact "someone got into my account" recovery action — won't
-  actually evict an attacker's live session, and the confirmation email's
-  "reset to secure your account" advice is only partly true. Fix is
-  auth-wide, not specific to the reset flow: add a `passwordChangedAt` (or
-  integer `sessionVersion`) column on `users`, stamp it into the JWT at
-  login (`jwt` callback), and reject/downgrade the session in the `session`
-  callback when the token's value is older than the DB's. Bump the column in
-  the change/reset actions (next to the existing
-  `invalidatePasswordResetTokens` call, which already voids stale *reset
-  links* but not *sessions*). Needs a migration — generate it against a
-  local Postgres per AGENTS.md rather than hand-writing.
 - **Email is unverified.** `email_verified_at` is in the schema but no
   flow sets it. If signup verification ships, this is the column to use.
 - **Cart count in nav.** Requires `Nav` to read cart state on the client
@@ -91,6 +77,12 @@ Phase E.
   any signed-in user, via the nav user menu) has a change-password form:
   verifies the current password, sets the new hash, and voids any pending
   reset links. Gated to accounts that actually have a password.
+- ~~Password change/reset didn't revoke existing sessions~~ — landed.
+  `users.passwordChangedAt` is stamped into the JWT at sign-in; the `jwt`
+  callback in `auth.ts` returns `null` (a real logout) for any token minted
+  before the current value. A reset or change bumps the column, so stale
+  sessions drop on their next request; the change flow re-issues the current
+  device so only *other* sessions are logged out.
 - ~~Server Actions for vendor forms~~ — landed in Phase D. Both
   `GoodsForm` and `ServicesForm` POST to `app/list-with-us/actions.ts`.
 - ~~Suspense boundaries around filter components~~ — landed.

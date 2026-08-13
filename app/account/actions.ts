@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { auth } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { invalidatePasswordResetTokens } from "@/lib/auth/password-reset";
 import { prisma } from "@/lib/db";
 import { sendPasswordChangedEmail } from "@/lib/email/templates";
@@ -58,7 +58,13 @@ export async function changePasswordAction(
     }
 
     const passwordHash = await bcrypt.hash(next, 10);
-    await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+    // Bumping passwordChangedAt invalidates every JWT minted before now (see
+    // the `jwt` callback in auth.ts), logging out other devices. The current
+    // device is re-issued a fresh token below so it stays signed in.
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash, passwordChangedAt: new Date() },
+    });
     // Void any pending reset links so an old emailed link can't later
     // overwrite the password just set.
     await invalidatePasswordResetTokens(user.email);
@@ -78,6 +84,21 @@ export async function changePasswordAction(
       log.error("password_change.error", { userId: session.user.id, err });
     }
     return { error: "Something went wrong updating your password. Please try again." };
+  }
+
+  // Re-issue this device's session with a token stamped at the new password
+  // version, so the person who just changed their password isn't logged out
+  // by the invalidation above — only their *other* sessions are. Best-effort:
+  // if this fails the change still stands and they'll simply sign in again.
+  try {
+    await signIn("credentials", {
+      email: session.user.email,
+      password: next,
+      redirect: false,
+    });
+  } catch (err) {
+    if (isNextControlFlow(err)) throw err;
+    log.error("password_change.reissue_failed", { userId: session.user.id, err });
   }
 
   return { ok: true };
