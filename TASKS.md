@@ -113,6 +113,16 @@ changes, acknowledgments), and cancellation request timestamps. In a dispute,
 - **`DEMO_AUTO_APPROVE_VENDORS=1` is on in production.** Fine for the
   demo; flip off the moment there's a real applicant. The admin queue
   works either way.
+- **CSP is Report-Only, not enforced.** `lib/security-headers.ts` ships
+  the policy as `Content-Security-Policy-Report-Only` so a missed source
+  reports instead of breaking a page. Watch `event=csp.violation` in
+  Vercel logs across a full traffic cycle, then flip the `CSP_ENFORCE`
+  constant to `true`. Two known follow-ups at that point: `script-src`
+  still carries `'unsafe-inline'` (a per-request nonce in `proxy.ts` is
+  the strict alternative and is nearly free here — the app is already
+  fully dynamic), and `/admin/email-preview` renders email HTML in a
+  `srcDoc` iframe that inherits the page policy, so remote images inside
+  previewed emails may report violations.
 - **Auth rate limiting is in-memory (per-instance).** `lib/rate-limit.ts`
   backs login (`authorize` in `auth.ts`) and signup with a process-local
   `Map`. On Vercel each serverless instance keeps its own counters and cold

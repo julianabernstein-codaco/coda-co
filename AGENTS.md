@@ -199,6 +199,31 @@ Methods are bound to the underlying client so
 flow) keep working. Don't naively rewrite as a direct `new
 PrismaClient()` export.
 
+### Security headers (`lib/security-headers.ts`)
+Site-wide response headers, applied to every route by the `headers()`
+block in `next.config.ts` (not `vercel.json`, so they also apply under
+`next dev` / `next start`). Sets `Content-Security-Policy`,
+`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, and
+`Referrer-Policy: strict-origin-when-cross-origin`. HSTS is not set
+here — Vercel adds it at the platform level.
+
+- **The CSP ships as `Report-Only`.** It is observed, never enforced.
+  Violations POST to `/api/csp-report`, which logs them as
+  `event=csp.violation` (extension noise filtered, rate-limited per IP).
+  Flip the `CSP_ENFORCE` constant to `true` once the reports are quiet.
+- **The policy is static, not nonce-based**, so `script-src` needs
+  `'unsafe-inline'` to cover Next's inline bootstrap and Flight payload.
+  A per-request nonce minted in `proxy.ts` is the stricter option and
+  would cost little here (the app is already ~fully dynamic — `proxy.ts`
+  sets `x-pathname` and `app/layout.tsx` reads `headers()`, so only
+  `/launching/opengraph-image` prerenders).
+- **Adding a third-party script, iframe, or API host means editing this
+  file** — otherwise it'll be reported now and blocked once enforced.
+  Stripe needs nothing today (Checkout and the Billing Portal are
+  top-level redirects), but Elements/Payment Element would need
+  `js.stripe.com` in `script-src` + `frame-src` and `api.stripe.com` in
+  `connect-src`.
+
 ### Workflow
 - One PR per logical change, cut from latest `main`, squash-merged.
 - Phase branches: `claude/phase-{a-f}-{short-kebab-slug}`. Other
