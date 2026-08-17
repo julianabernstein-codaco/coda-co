@@ -73,12 +73,44 @@ function memIsRateLimited(key: string, opts: LimitOpts): boolean {
 // does. `null` means "not configured, use in-memory".
 let redis: Redis | null | undefined;
 
+// Hard ceiling on any single Redis round-trip. Upstash REST normally answers
+// in tens of ms from Vercel; if a call hasn't returned by this deadline the
+// endpoint is misconfigured or unreachable, and we must not make the auth path
+// wait on it. On timeout we throw, which the callers below turn into the
+// in-memory fallback — never an indefinite stall.
+const REDIS_TIMEOUT_MS = 1000;
+
 function getRedis(): Redis | null {
   if (redis !== undefined) return redis;
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  redis = url && token ? new Redis({ url, token }) : null;
+  // `retry: false` fails fast — on the auth path we'd rather fall back to the
+  // in-memory limiter than spend seconds on @upstash/redis's default 5-retry
+  // backoff. The withTimeout wrapper is the real backstop; this just avoids
+  // burning the whole budget on retries first.
+  redis = url && token ? new Redis({ url, token, retry: false }) : null;
   return redis;
+}
+
+// Race a Redis call against REDIS_TIMEOUT_MS. Rejecting on timeout means a
+// hung endpoint is treated exactly like any other Redis error by the callers
+// (log once, fall back to in-memory) instead of blocking the request forever.
+// Needed because @upstash/redis has no per-request fetch timeout and
+// @upstash/ratelimit only guards limit(), not getRemaining().
+function withTimeout<T>(p: Promise<T>): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("ratelimit_redis_timeout")), REDIS_TIMEOUT_MS);
+    p.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      },
+    );
+  });
 }
 
 // One Ratelimit instance per distinct (limit, window) config — the limiter
@@ -129,7 +161,7 @@ export async function rateLimit(key: string, opts: LimitOpts): Promise<RateLimit
   const client = getRedis();
   if (!client) return memRateLimit(key, opts);
   try {
-    const { success, remaining } = await getLimiter(client, opts).limit(key);
+    const { success, remaining } = await withTimeout(getLimiter(client, opts).limit(key));
     noteRedisUp();
     return { ok: success, remaining };
   } catch (err) {
@@ -146,7 +178,7 @@ export async function isRateLimited(key: string, opts: LimitOpts): Promise<boole
   const client = getRedis();
   if (!client) return memIsRateLimited(key, opts);
   try {
-    const { remaining } = await getLimiter(client, opts).getRemaining(key);
+    const { remaining } = await withTimeout(getLimiter(client, opts).getRemaining(key));
     noteRedisUp();
     return remaining <= 0;
   } catch (err) {
