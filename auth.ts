@@ -1,4 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
@@ -15,8 +16,11 @@ import { clientIp, rateLimit } from "@/lib/rate-limit";
 export const LOGIN_IP_LIMIT = { limit: 10, windowMs: 15 * 60 * 1000 } as const;
 export const LOGIN_EMAIL_LIMIT = { limit: 5, windowMs: 15 * 60 * 1000 } as const;
 
-// Auth.js v5 config. The adapter writes sessions to the DB so we never
-// hand a JWT to the browser; sessions are server-truth and revocable.
+// Auth.js v5 config. Session strategy is JWT (Credentials can't use DB
+// sessions in v5), so the auth cookie is a signed token, not a DB session
+// id. We keep it revocable anyway: the `jwt` callback re-reads the user
+// every request and returns null (a hard logout) once the token is stale
+// — see the callbacks below.
 //
 // Phase C only wires Credentials. OAuth providers slot in here later
 // without schema or callback changes — that's the whole point of the
@@ -32,9 +36,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
 
   // The Credentials provider can't use the database session strategy
-  // directly (Auth.js limitation), so we issue a JWT for the auth
-  // cookie and re-hydrate the user (including role) from the DB on
-  // every request via the `session` callback below.
+  // directly (Auth.js limitation), so we issue a JWT for the auth cookie
+  // and re-hydrate the user (including role) from the DB on every request
+  // via the `jwt` callback below — which also enforces password-based
+  // session invalidation.
   session: { strategy: "jwt" },
 
   pages: {
@@ -91,31 +96,58 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
 
   callbacks: {
+    // Runs on sign-in (with `user`) and on every session read (without it).
+    // We re-read the user from the DB each time — the same cost the previous
+    // `session`-callback hydration paid — to keep `role` live AND to enforce
+    // password-based session invalidation. Returning null clears the cookie,
+    // a real logout. Node-runtime only: the edge middleware (`proxy.ts`)
+    // never imports this config, so Prisma is never pulled into the edge.
     async jwt({ token, user }) {
       if (user) token.uid = user.id;
+
+      // JWT-field augmentation is inert under next-auth v5's module layout, so
+      // token reads are cast (matching the rest of this file).
+      const uid = token.uid as string | undefined;
+      if (!uid) return token;
+
+      const u = await prisma.user.findUnique({
+        where: { id: uid },
+        select: { email: true, name: true, role: true, passwordChangedAt: true },
+      });
+      if (!u) {
+        // User deleted between cookie issuance and now — kill the stale
+        // session instead of carrying a dangling reference.
+        log.warn("auth.session_user_missing", { userId: uid });
+        return null;
+      }
+
+      const dbVersion = u.passwordChangedAt?.getTime() ?? 0;
+      if (user) {
+        // Fresh sign-in (or a post-change re-issue): adopt the current
+        // password version so this new token is valid.
+        token.pwc = dbVersion;
+      } else if (((token.pwc as number | undefined) ?? 0) !== dbVersion) {
+        // The password changed after this token was minted (a reset, or a
+        // change on another device). Invalidate this session.
+        log.info("auth.session_invalidated", { userId: uid, reason: "password_changed" });
+        return null;
+      }
+
+      token.email = u.email;
+      token.name = u.name;
+      token.role = u.role;
       return token;
     },
     async session({ session, token }) {
       const uid = token.uid as string | undefined;
       if (uid) {
-        const u = await prisma.user.findUnique({
-          where: { id: uid },
-          select: { id: true, email: true, name: true, role: true },
-        });
-        if (u) {
-          session.user = {
-            ...session.user,
-            id: u.id,
-            email: u.email,
-            name: u.name,
-            role: u.role,
-          };
-        } else {
-          // JWT references a user that no longer exists — likely deleted
-          // between cookie issuance and this request. Stale session, but
-          // worth knowing about: a real user just hit a dead session.
-          log.warn("auth.session_user_missing", { userId: uid });
-        }
+        session.user = {
+          ...session.user,
+          id: uid,
+          email: (token.email as string | null | undefined) ?? session.user.email,
+          name: (token.name as string | null | undefined) ?? null,
+          role: (token.role as UserRole | undefined) ?? "unknown",
+        };
       }
       return session;
     },

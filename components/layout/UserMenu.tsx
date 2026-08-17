@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { signOutAction } from "./userMenuActions";
 
 // Signed-in account control for the Nav. Collapses the user's name and the
@@ -57,6 +58,14 @@ export function UserMenu({ display }: { display: string }) {
             <p className="text-[12px] text-cl">Signed in as</p>
             <p className="truncate text-[14px] text-ch">{display}</p>
           </div>
+          <Link
+            href="/account"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 text-left text-[14px] text-cm no-underline transition-colors hover:bg-tr-vp hover:text-tr"
+          >
+            Account settings
+          </Link>
           <form action={signOutAction}>
             <button
               type="submit"
