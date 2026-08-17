@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
+import { securityHeaders } from "./lib/security-headers";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  // Site-wide security headers. Defined here rather than in vercel.json so
+  // they also apply under `next dev` and `next start`, and so the policy
+  // sits next to the code it describes. See lib/security-headers.ts.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: securityHeaders(process.env.NODE_ENV === "development"),
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
