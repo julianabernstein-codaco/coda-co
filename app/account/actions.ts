@@ -31,7 +31,7 @@ export async function changePasswordAction(
 
   // Cap current-password guesses per account. Being signed in already gates
   // this hard, but a shared/borrowed session shouldn't get unlimited tries.
-  const limited = rateLimit(`change-password:${session.user.id}`, {
+  const limited = await rateLimit(`change-password:${session.user.id}`, {
     limit: 10,
     windowMs: 60 * 60 * 1000,
   });

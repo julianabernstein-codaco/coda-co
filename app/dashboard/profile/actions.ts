@@ -161,7 +161,7 @@ export async function updateVendorProfile(
 
   let nextPhotoUrl: string | null | undefined; // undefined = leave column alone
   if (hasNewPhoto) {
-    const limited = rateLimit(`upload:${vendor.userId}`, {
+    const limited = await rateLimit(`upload:${vendor.userId}`, {
       limit: 100,
       windowMs: 60 * 60 * 1000,
     });

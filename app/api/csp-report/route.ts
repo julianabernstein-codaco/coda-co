@@ -47,7 +47,7 @@ export async function POST(req: Request) {
   // run up a logging bill. Cap it per IP; dropped reports are no loss when
   // a real violation repeats on every page load anyway.
   const ip = await clientIp();
-  const { ok } = rateLimit(`csp-report:${ip}`, {
+  const { ok } = await rateLimit(`csp-report:${ip}`, {
     limit: 30,
     windowMs: 60_000,
   });

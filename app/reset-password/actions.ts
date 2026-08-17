@@ -26,7 +26,7 @@ export async function resetPasswordAction(
   // Cap attempts per source so a leaked/guessable token space can't be
   // brute-forced. Tokens are 256-bit random, so this is belt-and-braces.
   const ip = await clientIp();
-  const limited = rateLimit(`reset-password:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
+  const limited = await rateLimit(`reset-password:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
   if (!limited.ok) {
     log.warn("password_reset.consume_rate_limited", { ip });
     return { error: "Too many attempts. Please try again in a little while." };

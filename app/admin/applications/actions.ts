@@ -43,7 +43,7 @@ export async function resendApprovalEmail(
 ): Promise<ResendResult> {
   const admin = await requireAdmin();
 
-  const limited = rateLimit(`resend-approval:${admin.id}`, {
+  const limited = await rateLimit(`resend-approval:${admin.id}`, {
     limit: 30,
     windowMs: 60 * 60 * 1000,
   });

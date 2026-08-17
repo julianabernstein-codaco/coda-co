@@ -22,7 +22,7 @@ export async function requestPasswordResetAction(
   // domain. A soft cap; keyed by source, not by target email, so it never
   // becomes a way to probe which addresses are registered.
   const ip = await clientIp();
-  const limited = rateLimit(`forgot-password:${ip}`, { limit: 5, windowMs: 60 * 60 * 1000 });
+  const limited = await rateLimit(`forgot-password:${ip}`, { limit: 5, windowMs: 60 * 60 * 1000 });
   if (!limited.ok) {
     log.warn("password_reset.rate_limited", { ip });
     return { error: "Too many requests. Please try again in a little while." };
