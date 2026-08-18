@@ -1,4 +1,5 @@
-import type { Prisma } from "@prisma/client";
+import type { $Enums, Prisma } from "@prisma/client";
+import { normalizeSlug } from "@/lib/api/applications";
 import { prisma } from "@/lib/db";
 import type {
   LifeStage,
@@ -221,4 +222,65 @@ export async function getRelatedProducts(product: Product): Promise<ProductWithR
 
   const combined = [...sameTypeAndVendor, ...filler];
   return attachRatings(combined.map((p) => ({ dbId: p.id, ...toProduct(p) })));
+}
+
+// ── Listing creation ────────────────────────────────────────────────────────
+
+// Product slugs are the public id, so they have to be unique. Appends
+// -2, -3, … when the title collides with an existing listing.
+export async function uniqueProductSlug(title: string): Promise<string> {
+  const base = normalizeSlug(title) || "listing";
+  let slug = base;
+  let n = 2;
+  while (await prisma.product.findUnique({ where: { slug }, select: { id: true } })) {
+    slug = `${base}-${n++}`;
+  }
+  return slug;
+}
+
+export interface ListingDraft {
+  vendorId: string;
+  productTypeSlug: string;
+  slug: string;
+  title: string;
+  description: string;
+  // Seeds the default variant — price and stock live on variants, and the
+  // vendor renames/reprices/adds more from the product editor.
+  priceCents: number;
+  coverImageUrl: string | null;
+  // The DB enum, not lib/types' public ProductStatus — the review queue
+  // uses `pending_review`, which never surfaces in the public types.
+  status: $Enums.ProductStatus;
+}
+
+// Creates a product plus its default variant. Used by the goods signup
+// flow, which collects the seller's first listing before they ever reach
+// the dashboard. Returns null when the product type doesn't resolve.
+export async function createListing(draft: ListingDraft) {
+  const productType = await prisma.productType.findUnique({
+    where: { slug: draft.productTypeSlug },
+    select: { id: true },
+  });
+  if (!productType) return null;
+
+  return prisma.product.create({
+    data: {
+      vendorId: draft.vendorId,
+      productTypeId: productType.id,
+      slug: draft.slug,
+      title: draft.title,
+      description: draft.description,
+      coverImageUrl: draft.coverImageUrl,
+      status: draft.status,
+      variants: {
+        create: [{
+          label: "Default",
+          priceCents: draft.priceCents,
+          currency: "USD",
+          stock: 0,
+        }],
+      },
+    },
+    select: { id: true, slug: true, title: true },
+  });
 }

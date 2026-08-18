@@ -258,28 +258,40 @@ export async function sendApplicationRejectedEmail(
   return sendEmail({ to: args.toEmail, ...buildApplicationRejectedEmail(args) });
 }
 
-// Sent right after a goods seller sets up their shop (self-serve, no admin
-// review of the shop itself). Welcomes them and nudges them to add their
-// first listing — which DOES get reviewed before it goes live.
+// Sent right after a goods seller finishes signup. They upload their first
+// item during signup, so this confirms that listing is with our team — and
+// that their shop goes live once it's approved. Falls back to a "add your
+// goods" nudge when the listing didn't make it through (see
+// createFirstListing in app/list-with-us/actions.ts).
 export interface ListYourGoodsArgs {
   toEmail: string;
   toName: string | null;
   displayName: string;
+  // Title of the listing now awaiting review; null when signup couldn't
+  // park one there.
+  firstListingTitle?: string | null;
 }
 
 export function buildListYourGoodsEmail(args: ListYourGoodsArgs): EmailPayload {
   const greeting = args.toName ? `Hi ${args.toName},` : "Hi,";
-  const subject = "Your CodaCo shop is ready — add your first listing";
+  const listing = args.firstListingTitle?.trim() || null;
+  const subject = listing
+    ? "Your CodaCo shop is set up — your first listing is with our team"
+    : "Your CodaCo shop is ready — add your first listing";
   const products = productsDashboardUrl();
+
+  const opening = listing
+    ? `Your shop "${args.displayName}" is set up on CodaCo, and your first listing — "${listing}" — is with our team for review. Once we approve it, both the listing and your shop go live in the marketplace (it usually takes a day or two). Every listing you add after that publishes instantly — no waiting.`
+    : `Your shop "${args.displayName}" is set up on CodaCo. The next step is to list your goods — add photos and prices for each item you want to sell. Your first listing is reviewed by our team before it (and your shop) appears in the marketplace; after that, every listing you add publishes instantly.`;
 
   const text = [
     greeting,
     "",
-    `Your shop "${args.displayName}" is set up on CodaCo. The next step is to list your goods — add photos and prices for each item you want to sell.`,
+    opening,
     "",
-    `Add your goods:  ${products}`,
+    `${listing ? "Your listings" : "Add your goods"}:  ${products}`,
     "",
-    "A quick note on how listings go live: your first listing is reviewed by our team before it appears in the marketplace (it usually takes a day or two). After that first one is approved, every listing you add publishes instantly — no waiting.",
+    "In the meantime you can keep adding items, edit your shop profile, and get everything ready.",
     "",
     "— The CodaCo team",
   ].join("\n");
@@ -287,19 +299,20 @@ export function buildListYourGoodsEmail(args: ListYourGoodsArgs): EmailPayload {
   const html = layout(`
     <p style="margin:0 0 16px;font-size:15px;">${greeting}</p>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
-      Your shop <strong>${escapeHtml(args.displayName)}</strong> is set up on CodaCo.
-      The next step is to list your goods — add photos and prices for each item you
-      want to sell.
+      ${
+        listing
+          ? `Your shop <strong>${escapeHtml(args.displayName)}</strong> is set up on CodaCo, and your first listing — <strong>${escapeHtml(listing)}</strong> — is with our team for review. Once we approve it, both the listing and your shop go live in the marketplace (usually a day or two). Every listing you add after that publishes instantly — no waiting.`
+          : `Your shop <strong>${escapeHtml(args.displayName)}</strong> is set up on CodaCo. The next step is to list your goods — add photos and prices for each item you want to sell. Your <strong>first</strong> listing is reviewed by our team before it (and your shop) appears in the marketplace; after that, every listing you add publishes instantly.`
+      }
     </p>
     <p style="margin:24px 0;">
       <a href="${products}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
-        Add your goods
+        ${listing ? "See your listings" : "Add your goods"}
       </a>
     </p>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
-      A quick note on how listings go live: your <strong>first</strong> listing is reviewed
-      by our team before it appears in the marketplace (usually a day or two). After that
-      first one is approved, every listing you add publishes instantly — no waiting.
+      In the meantime you can keep adding items, edit your shop profile, and get
+      everything ready.
     </p>
     <p style="margin:0;font-size:15px;">— The CodaCo team</p>
   `);
@@ -931,13 +944,29 @@ export interface NewVendorSignupArgs {
   // contact before a buyer can order. Worth flagging because goods shops
   // skip the review queue — this email is the team's only heads-up.
   requiresCustomOrder?: boolean;
+  // Goods shops only: the item uploaded during signup. Present means the
+  // shop is waiting on this listing to be approved before it goes public.
+  firstListing?: {
+    title: string;
+    productType: string | null;
+    priceLabel: string;
+    awaitingReview: boolean;
+  } | null;
 }
 
 export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPayload {
-  const subject = args.needsReview
+  // A goods seller uploads their first item during signup, and their shop
+  // stays hidden until that listing is approved — so point the team at the
+  // listing queue, not the application queue.
+  const pendingListing = args.firstListing?.awaitingReview
+    ? args.firstListing
+    : null;
+  const subject = pendingListing
     ? `New vendor to review: ${args.displayName}`
-    : `New vendor signed up: ${args.displayName}`;
-  const queue = adminUrl("/admin/applications");
+    : args.needsReview
+      ? `New vendor to review: ${args.displayName}`
+      : `New vendor signed up: ${args.displayName}`;
+  const queue = adminUrl(pendingListing ? "/admin/listings" : "/admin/applications");
   const website = args.website?.trim() || null;
 
   const details = detailBlock([
@@ -959,32 +988,50 @@ export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPaylo
         ? "Yes — goods need personalization / contact before purchase"
         : null,
     },
+    { label: "First listing", value: args.firstListing?.title },
+    { label: "Listing type", value: args.firstListing?.productType },
+    { label: "Listing price", value: args.firstListing?.priceLabel },
     {
       label: "Status",
-      value: args.needsReview ? "Needs review" : "Auto-approved (goods shop)",
+      value: pendingListing
+        ? "Shop hidden until their first listing is approved"
+        : args.needsReview
+          ? "Needs review"
+          : "Auto-approved (goods shop)",
     },
   ]);
 
+  const lede = pendingListing
+    ? "A new goods seller just signed up and uploaded their first listing. Their shop stays hidden until you approve it."
+    : "A new vendor just signed up on CodaCo.";
+  const cta = pendingListing
+    ? "Review their first listing"
+    : args.needsReview
+      ? "Review in the admin queue"
+      : "Open the admin queue";
+
   const text = [
-    "A new vendor just signed up on CodaCo.",
+    lede,
     "",
     details.text,
     "",
-    args.needsReview
-      ? `Review it in the admin queue:  ${queue}`
-      : `They're already live. See all vendors:  ${queue}`,
+    pendingListing
+      ? `Review their first listing:  ${queue}`
+      : args.needsReview
+        ? `Review it in the admin queue:  ${queue}`
+        : `They're already live. See all vendors:  ${queue}`,
     "",
     "— CodaCo",
   ].join("\n");
 
   const html = layout(`
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">A new vendor just signed up on CodaCo.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">${lede}</p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px;font-size:14px;line-height:1.8;">
       ${details.html}
     </table>
     <p style="margin:24px 0;">
       <a href="${queue}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
-        ${args.needsReview ? "Review in the admin queue" : "Open the admin queue"}
+        ${cta}
       </a>
     </p>
     <p style="margin:0;font-size:14px;color:#7a7570;">— CodaCo</p>

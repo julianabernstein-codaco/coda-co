@@ -23,6 +23,7 @@ instead.
 | `/dashboard/products`  | A vendor's product list (draft + published)      | Signed-in vendors only |
 | `/admin`               | **Database Viewer** — read-only browser of every table | Signed-in admins only |
 | `/admin/applications`  | **Vendor application queue** — approve/reject signups | Signed-in admins only |
+| `/admin/listings`      | **Listing review queue** — approving a goods seller's first listing publishes their shop | Signed-in admins only |
 
 If you visit an admin or dashboard URL without being signed in, the site
 redirects you to `/login` and brings you back after sign-in. If you're
@@ -162,6 +163,12 @@ applicant can re-apply. No profile or subscription is created.
 **Recently decided** — the 20 most recent approved/rejected applications,
 for context. Useful if someone asks "did we approve this one already?"
 
+### Goods sellers don't come through this queue
+
+A goods seller sets their shop up self-serve and lands straight in their
+dashboard — you won't see them here. What you review instead is the first
+item they uploaded during signup; see the listing queue below.
+
 ### Auto-approve is on in production
 
 The live site has the env var `DEMO_AUTO_APPROVE_VENDORS=1` set. While
@@ -173,6 +180,36 @@ This is intentional for the live demo. If you see an empty queue but
 applications are coming through, that's why. The flag should be flipped
 off the moment we onboard real vendors who need real review. The queue UI
 itself still works in both modes — auto-approve just skips it.
+
+---
+
+## Tour: the listing queue (`/admin/listings`)
+
+**This is how a goods seller gets published.** Their signup wizard ends by
+collecting one item — title, product type, starting price, description, and
+a photo — and that item lands here as `pending_review`. Until you act on it:
+
+- The seller has a working dashboard and can add more items, but
+- their shop is **not public** — `vendor_profile.published` is false, so
+  they don't appear in `/services`, search, or on their own profile URL, and
+- none of their listings appear on `/shop`.
+
+You'll get an email on every goods signup ("New vendor to review") with the
+seller's details, their item's title/type/price, and a link straight here.
+
+**Approve & publish** does three things in one transaction:
+
+1. Publishes the listing
+2. Publishes the vendor — their shop and profile go public
+3. Flips `listings_auto_approve`, so every later listing they publish goes
+   live instantly, no review
+
+**Send back to draft** returns the listing to the seller as a draft. Their
+shop stays unpublished until they resubmit something you approve. Tell them
+why out-of-band — there's no reviewer-note email yet.
+
+Services vendors are unaffected: they're published when you approve their
+application, because a human read it.
 
 ---
 
@@ -250,8 +287,20 @@ the submission time.
 
 ### "A new vendor signed up but I don't see them in the queue"
 
-Almost always because auto-approve is on. They went straight to a
+If they're a goods seller, that's expected — they never enter the
+application queue. Check `/admin/listings` for the item they uploaded
+during signup; approving it publishes their shop. For services vendors,
+it's almost always because auto-approve is on: they went straight to a
 vendor profile. Look under Vendors in `/admin` and you'll find them.
+
+### "A goods seller says their shop isn't showing up anywhere"
+
+Their first listing is probably still awaiting review. Check
+`/admin/listings` — until you approve it, `vendor_profile.published` stays
+false and they're hidden from the whole public site. If the queue is empty,
+look at their products in `/admin`: a listing stuck in `draft` means they
+never finished it (a signup whose photo upload failed lands that way), so
+ask them to publish it from their dashboard.
 
 ### "We're ready to launch with real vendors — clear the test data"
 

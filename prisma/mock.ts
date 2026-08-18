@@ -147,9 +147,11 @@ async function main() {
         serviceDescription: v.serviceDescription,
         pricingNotes: v.pricingNotes,
         specializations: v.specializations,
-        // Demo shops are established — their listings publish without the
-        // first-listing review so the marketplace looks populated.
+        // Demo shops are established — they're live on the public site and
+        // their listings publish without the first-listing review so the
+        // marketplace looks populated.
         listingsAutoApprove: true,
+        published: true,
         user: { connect: { id: user.id } },
       },
     });

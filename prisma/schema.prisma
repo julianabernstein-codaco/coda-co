@@ -214,6 +214,14 @@ model VendorProfile {
   // no per-listing review. See app/admin/listings + setProductStatus.
   listingsAutoApprove Boolean @default(false) @map("listings_auto_approve")
 
+  // Whether the vendor is visible anywhere public (listings, search, their
+  // own profile page). A goods seller signs up self-serve and gets a
+  // dashboard right away, but stays unpublished until CodaCo approves the
+  // first listing they submitted during signup — approving flips both this
+  // and listingsAutoApprove. Services vendors are published at approval,
+  // since a human reviewed the application itself.
+  published Boolean @default(false)
+
   // One Stripe Customer per vendor, reused for both the services
   // subscription and the goods one-time set-up fee. Null until the vendor
   // first opens Checkout. (VendorPayment also stores the id for audit, but

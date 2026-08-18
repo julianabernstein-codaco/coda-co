@@ -2,15 +2,19 @@
 
 import type { ApplicationKind, SubscriptionPlanId } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { put } from "@vercel/blob";
 import { auth } from "@/auth";
 import {
   autoApproveAsAdmin,
   createApplication,
   normalizeSlug,
 } from "@/lib/api/applications";
+import { createListing, uniqueProductSlug } from "@/lib/api/products";
 import { isValidSpecialization } from "@/lib/data/specializations";
+import { formatPriceRange } from "@/lib/format/product";
 import { normalizeZip, parseRadiusLabel } from "@/lib/geo/zip";
 import { prisma } from "@/lib/db";
+import { processUploadedImage, type ProcessedImage } from "@/lib/images.server";
 import {
   sendApplicationSubmittedEmail,
   sendListYourGoodsEmail,
@@ -30,6 +34,8 @@ const VALID_PLANS = new Set<SubscriptionPlanId>(["starter", "standard", "pro"]);
 const BIO_MAX = 500;
 const DESC_MAX = 500;
 const NOTES_MAX = 500;
+// Mirrors the maxLength on the first-item description in GoodsForm.
+const ITEM_DESC_MAX = 1000;
 
 interface SubmitInput {
   kind: Exclude<ApplicationKind, "unknown">;
@@ -69,6 +75,22 @@ interface SubmitInput {
   // Goods form only — the seller declared their goods need personalization
   // or contact with the buyer, so they can't be bought outright on the site.
   requiresCustomOrder?: boolean;
+  // Goods form only — the first listing, collected during signup so CodaCo
+  // can review it before the shop goes public. Required for goods.
+  firstItem?: FirstItemInput;
+}
+
+export interface FirstItemInput {
+  title: string;
+  productTypeSlug: string;
+  // Dollars as typed in the form; converted to cents server-side.
+  startingPrice: number;
+  description: string;
+  // Cropped cover photo from the signup form's uploader. Server actions
+  // can carry a File across the boundary, so this arrives as the real
+  // bytes and goes through the same sharp + Blob pipeline as a cover
+  // uploaded later from the dashboard.
+  photo: File;
 }
 
 const VALID_LIFE_STAGES = new Set<string>([
@@ -107,6 +129,65 @@ async function uniqueSlug(seed: string): Promise<string> {
     if (!profile && !app) return candidate;
     candidate = `${base}-${n++}`;
   }
+}
+
+// Turns the item captured on Step 2 into the vendor's first product:
+// uploads the processed cover, then writes the product + its default
+// variant. Lands in `pending_review` so it shows up in /admin/listings —
+// approving it is what publishes both the listing and the shop.
+//
+// A cover upload failure downgrades the listing to a draft instead of
+// failing the signup: publishing needs a cover, so parking it in review
+// without one would stall the seller behind a listing nobody can approve.
+async function createFirstListing(
+  vendorId: string,
+  item: FirstItemInput,
+  image: ProcessedImage,
+) {
+  const slug = await uniqueProductSlug(item.title);
+
+  let coverImageUrl: string | null = null;
+  try {
+    const key = `products/${slug}/cover-${Date.now()}.${image.ext}`;
+    const blob = await put(key, image.buffer, {
+      access: "public",
+      contentType: image.contentType,
+    });
+    coverImageUrl = blob.url;
+  } catch (err) {
+    log.warn("application.first_listing_cover_failed", { vendorId, err });
+  }
+
+  const productType = await prisma.productType.findUnique({
+    where: { slug: item.productTypeSlug },
+    select: { name: true },
+  });
+  const priceCents = Math.round(item.startingPrice * 100);
+  const status = coverImageUrl ? "pending_review" : "draft";
+
+  const product = await createListing({
+    vendorId,
+    productTypeSlug: item.productTypeSlug,
+    slug,
+    title: item.title.trim(),
+    description: item.description.trim(),
+    priceCents,
+    coverImageUrl,
+    status,
+  });
+  if (!product) return null;
+
+  log.info("application.first_listing_created", {
+    vendorId,
+    productId: product.id,
+    status,
+  });
+  return {
+    ...product,
+    status,
+    productTypeName: productType?.name ?? null,
+    priceLabel: formatPriceRange(priceCents / 100, priceCents / 100),
+  };
 }
 
 async function submit(input: SubmitInput): Promise<ApplicationFormState> {
@@ -149,6 +230,35 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
       return { error: `Service description is too long — keep it under ${DESC_MAX} characters.` };
     }
   }
+  // Goods signup collects the seller's first listing on Step 2. Validate it
+  // before anything is written, so a bad item can't leave a half-built shop.
+  let firstItemImage: ProcessedImage | null = null;
+  if (input.kind === "goods") {
+    const item = input.firstItem;
+    if (!item?.title.trim()) return { error: "Give your first item a title." };
+    if (!item.productTypeSlug.trim()) return { error: "Pick a product type for your item." };
+    if (!Number.isFinite(item.startingPrice) || item.startingPrice < 0) {
+      return { error: "Enter a starting price for your item." };
+    }
+    if (item.description.length > ITEM_DESC_MAX) {
+      return { error: `Item description is too long — keep it under ${ITEM_DESC_MAX} characters.` };
+    }
+    if (!(item.photo instanceof File) || item.photo.size === 0) {
+      return { error: "Add a photo of your item." };
+    }
+    const known = await prisma.productType.findUnique({
+      where: { slug: item.productTypeSlug },
+      select: { id: true },
+    });
+    if (!known) return { error: "Pick a product type for your item." };
+    // Decode/strip/re-encode up front: a corrupt or hostile file fails here,
+    // before the application row exists, so the seller can just fix it and
+    // resubmit.
+    const processed = await processUploadedImage(item.photo);
+    if (!processed.ok) return { error: processed.error };
+    firstItemImage = processed.image;
+  }
+
   if (
     input.pricingNotes !== undefined &&
     input.pricingNotes.length > NOTES_MAX
@@ -226,6 +336,28 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     requiresCustomOrder: input.kind === "goods" && input.requiresCustomOrder === true,
   });
 
+  // Pure goods shops are self-serve: the shop page itself isn't reviewed.
+  // Auto-approve so the maker lands straight in their dashboard, then park
+  // the item they just uploaded in the listing-review queue. The shop stays
+  // unpublished (vendor_profile.published = false) until CodaCo approves
+  // that listing. Services / both still go through manual review below.
+  let firstListing: Awaited<ReturnType<typeof createFirstListing>> = null;
+  if (input.kind === "goods") {
+    const vendor = await autoApproveAsAdmin(app.id, { notify: false });
+    // Past this point the vendor row exists and the applicant can't
+    // resubmit (vendor_profile.user_id is unique), so a listing failure is
+    // logged and recovered from in the dashboard — never thrown at them.
+    try {
+      firstListing = await createFirstListing(vendor.id, input.firstItem!, firstItemImage!);
+    } catch (err) {
+      log.error("application.first_listing_failed", {
+        applicationId: app.id,
+        vendorId: vendor.id,
+        err,
+      });
+    }
+  }
+
   // Ping the team inbox on every new signup. Goods shops (kind === "goods")
   // are auto-approved and skip the review queue, so we flag them as such;
   // services / both land in manual review. Best-effort — a mail hiccup must
@@ -246,6 +378,14 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     applicantEmail: session.user.email!,
     needsReview: input.kind !== "goods",
     requiresCustomOrder: input.kind === "goods" && input.requiresCustomOrder === true,
+    firstListing: firstListing
+      ? {
+          title: firstListing.title,
+          productType: firstListing.productTypeName,
+          priceLabel: firstListing.priceLabel,
+          awaitingReview: firstListing.status === "pending_review",
+        }
+      : null,
   });
   if (!adminPing.ok) {
     log.warn("application.admin_notify_failed", {
@@ -254,18 +394,14 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     });
   }
 
-  // Pure goods shops are self-serve: we don't review the shop page itself,
-  // only the vendor's first product listing (see the per-listing review
-  // gate in app/admin/listings + setProductStatus). Auto-approve silently
-  // so the maker lands straight in their dashboard, then send the
-  // "list your goods" welcome/nudge instead of the generic approval email.
-  // Services / both still go through manual review below.
+  // Welcome the maker and tell them where their first listing stands,
+  // instead of the generic "application approved" note.
   if (input.kind === "goods") {
-    await autoApproveAsAdmin(app.id, { notify: false });
     const nudge = await sendListYourGoodsEmail({
       toEmail: session.user.email!,
       toName: session.user.name ?? null,
       displayName: input.displayName.trim(),
+      firstListingTitle: firstListing?.status === "pending_review" ? firstListing.title : null,
     });
     if (!nudge.ok) {
       log.warn("application.list_goods_email_failed", {
@@ -273,7 +409,14 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
         err: nudge.error,
       });
     }
-    redirect("/dashboard");
+    // A listing that couldn't be created (or lost its photo) lands the
+    // seller in the product editor to finish it rather than a dashboard
+    // that looks like their item vanished.
+    redirect(
+      firstListing && firstListing.status !== "pending_review"
+        ? `/dashboard/products/${firstListing.id}`
+        : "/dashboard",
+    );
   }
 
   // Demo auto-approve: a single env flag flips the admin queue off so a

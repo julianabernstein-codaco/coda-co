@@ -21,6 +21,7 @@ export default async function DashboardPage() {
     draftServiceCount,
     inquiryCount,
     unreadInquiryCount,
+    pendingListingCount,
   ] = await Promise.all([
     prisma.product.count({ where: { vendorId: vendor.id, status: "published" } }),
     prisma.product.count({ where: { vendorId: vendor.id, status: "draft" } }),
@@ -28,7 +29,14 @@ export default async function DashboardPage() {
     prisma.service.count({ where: { vendorId: vendor.id, status: "draft" } }),
     prisma.vendorInquiry.count({ where: { vendorId: vendor.id } }),
     prisma.vendorInquiry.count({ where: { vendorId: vendor.id, readAt: null } }),
+    // Drives the "we're reviewing your first item" banner below.
+    prisma.product.count({ where: { vendorId: vendor.id, status: "pending_review" } }),
   ]);
+
+  // A listing awaiting review still belongs to the vendor, so it counts
+  // toward "how many products do I have" — otherwise a seller whose only
+  // item is in review is told to add their first product.
+  const totalProducts = productCount + draftProductCount + pendingListingCount;
 
   // Billing summary: goods and services both run on a recurring subscription
   // (Starter = free trial, then Monthly/Annual).
@@ -60,8 +68,26 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-7">
+          {!vendor.published && (
+            <div className="mb-7 rounded-[10px] border border-tr-l bg-tr-p px-4 py-3 text-[15px] text-cm">
+              <span className="font-medium text-ch">
+                Your shop isn&apos;t public yet.
+              </span>{" "}
+              {pendingListingCount > 0
+                ? "Our team is reviewing the first item you listed. Once it's approved, your shop and that listing go live — and everything you add afterwards publishes instantly."
+                : "Publish your first listing and our team will review it. Once it's approved, your shop goes live and everything you add afterwards publishes instantly."}
+            </div>
+          )}
+
+          <div
+            className={`grid grid-cols-2 gap-3 mb-7 ${
+              pendingListingCount > 0 ? "lg:grid-cols-5" : "lg:grid-cols-4"
+            }`}
+          >
             <DashStat label="Published products" value={productCount} />
+            {pendingListingCount > 0 && (
+              <DashStat label="Products in review" value={pendingListingCount} />
+            )}
             <DashStat label="Draft products" value={draftProductCount} />
             <DashStat label="Published services" value={serviceCount} />
             <DashStat label="Draft services" value={draftServiceCount} />
@@ -71,16 +97,12 @@ export default async function DashboardPage() {
             <DashCard
               title="Your products"
               body={
-                productCount + draftProductCount === 0
+                totalProducts === 0
                   ? "Add your first product so buyers can find it."
-                  : `${productCount + draftProductCount} total. Edit, publish, and adjust stock.`
+                  : `${totalProducts} total. Edit, publish, and adjust stock.`
               }
               href="/dashboard/products"
-              cta={
-                productCount + draftProductCount === 0
-                  ? "Create a product →"
-                  : "Manage products →"
-              }
+              cta={totalProducts === 0 ? "Create a product →" : "Manage products →"}
             />
             <DashCard
               title="Your services"

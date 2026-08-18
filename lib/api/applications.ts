@@ -182,6 +182,11 @@ export async function approveApplication(
           location: app.location,
           kind: app.kind,
           verified: false,
+          // Services applications reach here only after a human reviewed
+          // them, so they go public immediately. Goods shops auto-approve
+          // themselves at signup — they stay unpublished until CodaCo
+          // approves the first listing they submitted (see approveListing).
+          published: app.kind !== "goods",
           specializations: app.specializations,
           zip: app.zip,
           serviceRadiusMi: app.serviceRadiusMi,
