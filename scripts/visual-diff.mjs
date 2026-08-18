@@ -50,7 +50,7 @@ const sections = [
   { name: "services-results",   protoPage: "p1", baseline: "#p1 .wu",     actualPath: "/services?type=doula&distance=15%20mi&minRating=4", actual: "main > section", actualNth: 1 },
   // Other prototype pages — full-page diffs only for now; per-section
   // breakdowns can be added when chasing drift on a specific page.
-  { name: "product-detail",     protoPage: "p2", baseline: "#p2", actualPath: "/shop/urn-sage-001",         actual: "main" },
+  { name: "product-detail",     protoPage: "p2", baseline: "#p2", actualPath: "/shop/remains-bracelet-001",         actual: "main" },
   { name: "shop",               protoPage: "p3", baseline: "#p3", actualPath: "/shop",                      actual: "main" },
   { name: "list-with-us",       protoPage: "p4", baseline: "#p4", actualPath: "/list-with-us",              actual: "main" },
   { name: "list-goods",         protoPage: "p5", baseline: "#p5", actualPath: "/list-with-us/goods",        actual: "main" },

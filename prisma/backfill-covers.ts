@@ -1,6 +1,6 @@
 // Cover-image backfill — attaches static cover photos to the example
 // product listings from files in public/products, named by slug
-// (e.g. public/products/urn-sage-001.jpg). See public/products/README.md.
+// (e.g. public/products/remains-bracelet-001.jpg). See public/products/README.md.
 //
 // Safe to run on every deploy: it is NON-DESTRUCTIVE and idempotent. It
 // only *sets* coverImageUrl on a product when a matching public file
@@ -23,7 +23,7 @@ config({ path: ".env" });
 
 const COVER_EXTS = ["jpg", "jpeg", "png", "webp"];
 
-// Returns the public path (e.g. "/products/urn-sage-001.jpg") if a cover
+// Returns the public path (e.g. "/products/remains-bracelet-001.jpg") if a cover
 // file for this slug exists in public/products, else null.
 function coverImageForSlug(slug: string): string | null {
   for (const ext of COVER_EXTS) {

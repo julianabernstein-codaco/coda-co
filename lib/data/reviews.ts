@@ -3,7 +3,7 @@ import type { Review } from "@/lib/types";
 export const reviews: Review[] = [
   {
     id: "rv-001",
-    productId: "urn-sage-001",
+    productId: "remains-bracelet-001",
     reviewer: "Diane M.",
     location: "Seattle, WA",
     date: "2025-03-12",
@@ -12,16 +12,16 @@ export const reviews: Review[] = [
   },
   {
     id: "rv-002",
-    productId: "urn-sage-001",
+    productId: "remains-bracelet-001",
     reviewer: "Theo R.",
     location: "Austin, TX",
     date: "2025-01-08",
     rating: 5,
-    body: "The craftsmanship feels deeply intentional. It sits on our mantle and gets more beautiful every day.",
+    body: "The craftsmanship feels deeply intentional. I wear it every day and no one has to know what it is unless I tell them.",
   },
   {
     id: "rv-003",
-    productId: "urn-sage-001",
+    productId: "remains-bracelet-001",
     reviewer: "Sandra K.",
     location: "Chicago, IL",
     date: "2024-11-21",
