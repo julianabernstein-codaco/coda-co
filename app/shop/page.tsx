@@ -7,10 +7,7 @@ import { ProductGrid } from "@/components/shop/ProductGrid";
 import { SavedLink } from "@/components/saved/SavedLink";
 import { Container } from "@/components/ui/Container";
 import { GiftCardCallout } from "@/components/ui/GiftCardCallout";
-import { ProductCard } from "@/components/ui/ProductCard";
-import { SectionHeader } from "@/components/ui/SectionHeader";
-import { WaveDivider } from "@/components/ui/WaveDivider";
-import { getFeaturedProducts, getProducts } from "@/lib/api/products";
+import { getProducts } from "@/lib/api/products";
 import { parseLifeStageParam } from "@/lib/format/lifeStage";
 import type { ProductType } from "@/lib/types";
 
@@ -37,14 +34,11 @@ interface ShopPageProps {
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const { category, sort, lifeStage, q, page } = await searchParams;
 
-  const [products, featuredProducts] = await Promise.all([
-    getProducts({
-      productType: category as ProductType | undefined,
-      lifeStage: parseLifeStageParam(lifeStage),
-      q,
-    }),
-    getFeaturedProducts(4),
-  ]);
+  const products = await getProducts({
+    productType: category as ProductType | undefined,
+    lifeStage: parseLifeStageParam(lifeStage),
+    q,
+  });
 
   // Client-side sort can't be done on RSC, so we handle it here. Sort by
   // the cheapest variant when ascending, the most expensive when descending —
@@ -78,35 +72,17 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     <>
       <Breadcrumb crumbs={[{ label: "Home", href: "/" }, { label: "Shop goods" }]} />
 
-      {/* Featured in the marketplace */}
-      <section className="bg-white px-10 pt-12 pb-10">
-        <Container width="wide">
-          <SectionHeader
-            eyebrow="Handpicked goods"
-            title="Featured in the marketplace"
-            subtitle="Available locally or shipped anywhere in the US"
-          />
-          <div className="grid-auto-178">
-            {featuredProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-
-          <div className="mt-12">
-            <GiftCardCallout />
-          </div>
-        </Container>
-      </section>
-
-      <WaveDivider topColor="#ffffff" bottomColor="#B5C9AB" />
-
-      <section className="bg-sg-vp px-10 py-10">
+      <section className="bg-sg-vp px-10 pt-12 pb-10">
         <Container width="wide">
           <div className="text-center mb-8">
-            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-2">All goods</p>
-            <h1 className="font-serif text-[32px] font-light text-ch mb-1">The marketplace</h1>
+            <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-2">
+              Handpicked goods
+            </p>
+            <h1 className="font-serif text-[32px] font-light text-ch mb-1">
+              For planning, remembering &amp; honoring
+            </h1>
             <p className="text-[15px] text-cl">
-              Handmade, purposeful goods — available locally or shipped anywhere in the US
+              Beautiful, selected goods made by thoughtful artisans.
             </p>
           </div>
 
@@ -123,6 +99,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <Suspense>
             <Pagination page={currentPage} totalPages={totalPages} />
           </Suspense>
+
+          <div className="mt-12">
+            <GiftCardCallout />
+          </div>
         </Container>
       </section>
     </>
