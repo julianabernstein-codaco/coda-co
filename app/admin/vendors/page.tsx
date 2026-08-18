@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { getVendors } from "@/lib/api/vendors";
 import { ContactToggle } from "./ContactToggle";
+import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = {
   title: "Vendor contact links — Admin | CodaCo",
@@ -13,9 +12,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminVendorsPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login?next=/admin/vendors");
-  if (session.user.role !== "admin") redirect("/");
+  await requireAdminPage("/admin/vendors");
 
   const vendors = await getVendors();
 

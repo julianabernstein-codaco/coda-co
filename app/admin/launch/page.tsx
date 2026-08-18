@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { getLaunchedAt, launchedFrom, trialWindow, TRIAL_DAYS } from "@/lib/launch";
 import { goLiveNow, revertToPrelaunch, scheduleLaunch } from "./actions";
+import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = { title: "Launch — Admin | CodaCo" };
 export const dynamic = "force-dynamic";
@@ -13,9 +12,7 @@ function fmt(d: Date | null): string {
 }
 
 export default async function AdminLaunchPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login?next=/admin/launch");
-  if (session.user.role !== "admin") redirect("/");
+  await requireAdminPage("/admin/launch");
 
   const launchedAt = await getLaunchedAt();
   const live = launchedFrom(launchedAt);

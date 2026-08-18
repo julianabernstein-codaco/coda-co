@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { prisma } from "@/lib/db";
 import { formatPriceRange } from "@/lib/format/product";
 import { ListingRow } from "./ListingRow";
+import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = {
   title: "Listing review — Admin | CodaCo",
@@ -14,9 +13,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminListingsPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login?next=/admin/listings");
-  if (session.user.role !== "admin") redirect("/");
+  await requireAdminPage("/admin/listings");
 
   const products = await prisma.product.findMany({
     where: { status: "pending_review" },

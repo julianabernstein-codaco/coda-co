@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import type { EmailPayload } from "@/lib/email/templates";
 import { buildSample, type TemplateKey } from "./fixtures";
 import { TestSendForm } from "./TestSendForm";
+import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = {
   title: "Email preview — Admin | CodaCo",
@@ -144,11 +143,9 @@ const SECTIONS: PreviewSection[] = [
 ];
 
 export default async function AdminEmailPreviewPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login?next=/admin/email-preview");
-  if (session.user.role !== "admin") redirect("/");
+  const admin = await requireAdminPage("/admin/email-preview");
 
-  const defaultTestEmail = session.user.email ?? "";
+  const defaultTestEmail = admin.email ?? "";
 
   return (
     <>
