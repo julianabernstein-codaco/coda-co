@@ -23,6 +23,9 @@ import { log } from "@/lib/log";
 export interface RateLimitResult {
   ok: boolean;
   remaining: number;
+  // Epoch ms at which the window resets — lets HTTP callers emit an accurate
+  // RateLimit-Reset / Retry-After. Approximate on the in-memory backend.
+  reset: number;
 }
 
 interface LimitOpts {
@@ -46,16 +49,17 @@ function memRateLimit(key: string, opts: LimitOpts): RateLimitResult {
   const bucket = buckets.get(key);
 
   if (!bucket || bucket.resetAt <= now) {
-    buckets.set(key, { count: 1, resetAt: now + opts.windowMs });
-    return { ok: true, remaining: opts.limit - 1 };
+    const resetAt = now + opts.windowMs;
+    buckets.set(key, { count: 1, resetAt });
+    return { ok: true, remaining: opts.limit - 1, reset: resetAt };
   }
 
   if (bucket.count >= opts.limit) {
-    return { ok: false, remaining: 0 };
+    return { ok: false, remaining: 0, reset: bucket.resetAt };
   }
 
   bucket.count += 1;
-  return { ok: true, remaining: opts.limit - bucket.count };
+  return { ok: true, remaining: opts.limit - bucket.count, reset: bucket.resetAt };
 }
 
 function memIsRateLimited(key: string, opts: LimitOpts): boolean {
@@ -161,9 +165,9 @@ export async function rateLimit(key: string, opts: LimitOpts): Promise<RateLimit
   const client = getRedis();
   if (!client) return memRateLimit(key, opts);
   try {
-    const { success, remaining } = await withTimeout(getLimiter(client, opts).limit(key));
+    const { success, remaining, reset } = await withTimeout(getLimiter(client, opts).limit(key));
     noteRedisUp();
-    return { ok: success, remaining };
+    return { ok: success, remaining, reset };
   } catch (err) {
     noteRedisDown(err);
     return memRateLimit(key, opts);
