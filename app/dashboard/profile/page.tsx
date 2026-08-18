@@ -64,6 +64,9 @@ export default async function VendorProfilePage() {
             currentServiceDescription={vendor.serviceDescription}
             currentPricingNotes={vendor.pricingNotes}
             currentLifeStages={vendor.lifeStages}
+            sellsGoods={vendor.kind === "goods" || vendor.kind === "both"}
+            currentRequiresCustomOrder={vendor.requiresCustomOrder}
+            requiresServiceDescription={vendor.kind !== "goods"}
           />
         </Container>
       </section>

@@ -90,8 +90,11 @@ export async function updateVendorProfile(
   }
   const bio = bioRaw.trim();
 
+  // Goods-only shops never gave a service description at signup and have no
+  // services to describe, so requiring one here would lock them out of their
+  // own profile form. Everyone else still has to fill it in.
   const descRaw = String(formData.get("serviceDescription") ?? "");
-  if (!descRaw.trim()) {
+  if (!descRaw.trim() && vendor.kind !== "goods") {
     return { status: "error", error: "Add a service description." };
   }
   if (descRaw.length > DESC_MAX) {
@@ -100,7 +103,9 @@ export async function updateVendorProfile(
       error: `Service description is too long — keep it under ${DESC_MAX} characters.`,
     };
   }
-  const serviceDescription = descRaw.trim();
+  // Null rather than "" when a goods-only shop leaves it blank — the public
+  // profile hides the row on null, not on empty string.
+  const serviceDescription = descRaw.trim() || null;
 
   const notesRaw = String(formData.get("pricingNotes") ?? "");
   if (notesRaw.length > NOTES_MAX) {
@@ -156,6 +161,13 @@ export async function updateVendorProfile(
 
   const zip = emptyToNull(formData.get("zip"));
 
+  // Only goods vendors are shown the custom-order checkbox, so only their
+  // submissions may write the column — otherwise an unchecked box (which
+  // browsers omit from FormData entirely) would silently clear it for a
+  // services vendor whose form never had the control.
+  const sellsGoods = vendor.kind === "goods" || vendor.kind === "both";
+  const requiresCustomOrder = formData.get("requiresCustomOrder") != null;
+
   const photo = formData.get("photo");
   const hasNewPhoto = photo instanceof File && photo.size > 0;
 
@@ -194,6 +206,7 @@ export async function updateVendorProfile(
       serviceDescription,
       pricingNotes,
       lifeStages,
+      ...(sellsGoods ? { requiresCustomOrder } : {}),
       ...(nextPhotoUrl !== undefined ? { photoSrc: nextPhotoUrl } : {}),
     },
   });
