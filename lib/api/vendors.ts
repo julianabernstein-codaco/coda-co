@@ -100,7 +100,9 @@ async function attachRatings(
 }
 
 export async function getVendors(filters: VendorFilters = {}): Promise<VendorWithRating[]> {
-  const where: Prisma.VendorProfileWhereInput = {};
+  // Unpublished vendors never surface publicly — a goods seller waits here
+  // until CodaCo approves the first listing from their signup.
+  const where: Prisma.VendorProfileWhereInput = { published: true };
   if (filters.kind) {
     // 'both' covers either listing surface; an exact 'goods' or 'services'
     // filter should still surface vendors flagged as 'both'.
@@ -154,9 +156,16 @@ export async function getVendors(filters: VendorFilters = {}): Promise<VendorWit
   return results;
 }
 
-export async function getVendor(id: string): Promise<VendorWithRating | null> {
+export async function getVendor(
+  id: string,
+  // Owner-preview: return the vendor even while they're unpublished, so a
+  // seller waiting on first-listing review can see their own profile. The
+  // caller is responsible for checking ownership — every public caller
+  // leaves this off and gets "no such vendor" instead.
+  opts: { includeUnpublished?: boolean } = {},
+): Promise<VendorWithRating | null> {
   const v = await prisma.vendorProfile.findUnique({ where: { slug: id } });
-  if (!v) return null;
+  if (!v || (!v.published && !opts.includeUnpublished)) return null;
   const summary = await prisma.vendorReview.aggregate({
     where: { vendorId: v.id },
     _count: { _all: true },
@@ -171,7 +180,7 @@ export async function getVendor(id: string): Promise<VendorWithRating | null> {
 
 export async function getFeaturedVendors(limit = 4): Promise<VendorWithRating[]> {
   const rows = await prisma.vendorProfile.findMany({
-    where: { verified: true, kind: { in: ["services", "both"] } },
+    where: { published: true, verified: true, kind: { in: ["services", "both"] } },
     orderBy: { createdAt: "asc" },
     take: limit,
   });
@@ -189,7 +198,7 @@ const HOME_VENDOR_IDS = [
 
 export async function getHomeFeaturedVendors(): Promise<VendorWithRating[]> {
   const rows = await prisma.vendorProfile.findMany({
-    where: { slug: { in: [...HOME_VENDOR_IDS] } },
+    where: { published: true, slug: { in: [...HOME_VENDOR_IDS] } },
   });
   const bySlug = new Map(rows.map((v) => [v.slug, v]));
   const ordered = HOME_VENDOR_IDS.map((id) => bySlug.get(id)).filter(

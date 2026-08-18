@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { submitGoodsApplication } from "@/app/list-with-us/actions";
+import {
+  ImageUploader,
+  type ImageUploaderHandle,
+} from "@/components/ui/ImageUploader";
 import { StepsBar } from "@/components/ui/StepsBar";
 import {
   goodsPlanIncludes,
@@ -13,7 +17,20 @@ import { normalizeZip } from "@/lib/geo/zip";
 
 type PlanId = "starter" | "standard" | "pro";
 
-const STEPS = [{ label: "Your shop" }, { label: "Choose a plan" }];
+const STEPS = [
+  { label: "Your shop" },
+  { label: "About you & first item" },
+  { label: "Choose a plan" },
+];
+
+// Server enforces these in app/list-with-us/actions.ts. Keep in sync.
+const BIO_MAX = 500;
+const ITEM_DESC_MAX = 1000;
+
+export interface ProductTypeOption {
+  slug: string;
+  name: string;
+}
 
 interface FormData {
   firstName: string;
@@ -26,13 +43,34 @@ interface FormData {
   state: string;
   zip: string;
   bio: string;
+  itemTitle: string;
+  itemType: string;
+  // Kept as a string so the field can be empty; parsed at submit time.
+  itemPrice: string;
+  itemDescription: string;
+  requiresCustomOrder: boolean;
 }
 
-export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
+// The text fields `field()` can bind to — everything but the checkbox.
+type TextField = {
+  [K in keyof FormData]: FormData[K] extends string ? K : never;
+}[keyof FormData];
+
+export function GoodsForm({
+  productTypes,
+  paidOpen = true,
+}: {
+  productTypes: ProductTypeOption[];
+  paidOpen?: boolean;
+}) {
   const [step, setStep] = useState(0);
   const [plan, setPlan] = useState<PlanId>("starter");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const uploaderRef = useRef<ImageUploaderHandle>(null);
+  // The uploader unmounts when the seller moves past Step 2, so the cropped
+  // photo is pulled out and held here on the way to the plan step.
+  const [itemPhoto, setItemPhoto] = useState<File | null>(null);
   const [data, setData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -44,9 +82,25 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
     state: "",
     zip: "",
     bio: "",
+    itemTitle: "",
+    itemType: "",
+    itemPrice: "",
+    itemDescription: "",
+    requiresCustomOrder: false,
   });
 
-  function field(key: keyof FormData) {
+  // Reads the current crop out of the uploader, falling back to whatever was
+  // captured last time — going back to Step 2 remounts the uploader empty,
+  // but the photo they already picked is still good.
+  async function captureItemPhoto(): Promise<File | null> {
+    const blob = await uploaderRef.current?.getCroppedBlob();
+    if (!blob) return itemPhoto;
+    const file = new File([blob], "item.webp", { type: blob.type });
+    setItemPhoto(file);
+    return file;
+  }
+
+  function field(key: TextField) {
     return {
       value: data[key],
       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -54,11 +108,20 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
     };
   }
 
+  // Company name is required, so it's the shop name. The name fallback only
+  // covers a half-filled preview render before the seller reaches it.
   const shopName =
     data.companyName.trim() || `${data.firstName} ${data.lastName}`.trim();
 
   async function handleSubmit() {
     setSubmitError(null);
+    // Captured on the way out of Step 2; re-read in case they came back.
+    const photo = itemPhoto;
+    if (!photo) {
+      setSubmitError("Add a photo of your item.");
+      setStep(1);
+      return;
+    }
     startTransition(async () => {
       const result = await submitGoodsApplication({
         displayName: shopName,
@@ -72,6 +135,14 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
         state: data.state,
         zip: data.zip,
         planId: plan,
+        requiresCustomOrder: data.requiresCustomOrder,
+        firstItem: {
+          title: data.itemTitle,
+          productTypeSlug: data.itemType,
+          startingPrice: Number(data.itemPrice),
+          description: data.itemDescription,
+          photo,
+        },
       });
       // The action redirects on success, so we only land here on a
       // validation failure with the error returned in the payload.
@@ -98,17 +169,20 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                   prices — right after this.
                 </p>
 
+                <FormField label="Company name" required>
+                  <input className={inputCls} placeholder="Earthen Studio" {...field("companyName")} />
+                  <p className="text-[13px] text-cl mt-1.5">
+                    This is the shop name buyers will see.
+                  </p>
+                </FormField>
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                  <FormField label="First name">
+                  <FormField label="First name" required>
                     <input className={inputCls} placeholder="First name" {...field("firstName")} />
                   </FormField>
-                  <FormField label="Last name">
+                  <FormField label="Last name" required>
                     <input className={inputCls} placeholder="Last name" {...field("lastName")} />
                   </FormField>
                 </div>
-                <FormField label="Company name (optional)">
-                  <input className={inputCls} placeholder="Earthen Studio" {...field("companyName")} />
-                </FormField>
                 <FormField label="Website">
                   <input className={inputCls} placeholder="https://" {...field("website")} />
                 </FormField>
@@ -143,20 +217,130 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                     />
                   </FormField>
                 </div>
-                <FormField label="About you (shown on your shop page)">
-                  <textarea
-                    className={`${inputCls} min-h-[100px] resize-y`}
-                    placeholder="Tell buyers about yourself and your work…"
-                    {...field("bio")}
-                  />
-                </FormField>
+                <div className="border border-line-strong rounded-[10px] bg-pl2 p-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="accent-tr mt-1 flex-shrink-0"
+                      checked={data.requiresCustomOrder}
+                      onChange={() =>
+                        setData((d) => ({
+                          ...d,
+                          requiresCustomOrder: !d.requiresCustomOrder,
+                        }))
+                      }
+                    />
+                    <span className="text-[15px] text-cm">
+                      Some of my goods require significant personalization or
+                      communication with clients outside of a simple purchase.
+                      E.g. shipping of cremated remains, images, textiles or
+                      other goods specific to a person who has died.{" "}
+                      <span className="font-medium text-ch">
+                        Check here if a customer cannot simply purchase a good
+                        from you directly on this site.
+                      </span>
+                    </span>
+                  </label>
+                </div>
               </div>
             )}
 
             {step === 1 && (
               <div className="bg-white rounded-[14px] border border-line p-8">
                 <h2 className="font-serif text-[24px] font-light text-ch mb-1">
-                  Step 2 — Choose a plan
+                  Step 2 — About you and your first item
+                </h2>
+                <p className="text-[15px] text-cl mb-6">
+                  Our team reviews this first item before your shop goes live.
+                  Once it&apos;s approved, everything you list after it
+                  publishes instantly.
+                </p>
+
+                <FormField label="About you (shown on your shop page)" required>
+                  <textarea
+                    className={`${inputCls} min-h-[110px] resize-y`}
+                    placeholder="Tell buyers about yourself and your work…"
+                    maxLength={BIO_MAX}
+                    {...field("bio")}
+                  />
+                  <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
+                    {data.bio.length} / {BIO_MAX}
+                  </div>
+                </FormField>
+
+                <div className="border-t border-line pt-5 mt-6 mb-4">
+                  <h3 className="font-serif text-[19px] text-ch">
+                    Your first item
+                  </h3>
+                  <p className="text-[14px] text-cl mt-0.5">
+                    One item is enough to get started — you can add the rest
+                    from your dashboard.
+                  </p>
+                </div>
+
+                <FormField label="Item title" required>
+                  <input
+                    className={inputCls}
+                    placeholder="Hand-thrown ceramic urn"
+                    {...field("itemTitle")}
+                  />
+                </FormField>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField label="Product type" required>
+                    <select className={inputCls} {...field("itemType")}>
+                      <option value="" disabled>
+                        Choose…
+                      </option>
+                      {productTypes.map((t) => (
+                        <option key={t.slug} value={t.slug}>
+                          {t.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+                  <FormField label="Starting price (USD)" required>
+                    <input
+                      className={inputCls}
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      inputMode="decimal"
+                      placeholder="0.00"
+                      {...field("itemPrice")}
+                    />
+                  </FormField>
+                </div>
+                <FormField label="Description">
+                  <textarea
+                    className={`${inputCls} min-h-[110px] resize-y`}
+                    placeholder="Materials, sizing, how it's made, what makes it special…"
+                    maxLength={ITEM_DESC_MAX}
+                    {...field("itemDescription")}
+                  />
+                  <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
+                    {data.itemDescription.length} / {ITEM_DESC_MAX}
+                  </div>
+                </FormField>
+
+                <ImageUploader
+                  ref={uploaderRef}
+                  name="itemPhoto"
+                  shape="square"
+                  label="Item photo *"
+                  hint="Required — this is the photo buyers see in the shop. JPEG, PNG, or WebP, under 5 MB."
+                />
+                {itemPhoto && (
+                  <p className="text-[13px] text-sg-d mt-2">
+                    Photo added. Pick another file to replace it.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="bg-white rounded-[14px] border border-line p-8">
+                <h2 className="font-serif text-[24px] font-light text-ch mb-1">
+                  Step 3 — Choose a plan
                 </h2>
                 <p className="text-[15px] text-cl mb-6">
                   Start free. Upgrade anytime.
@@ -220,9 +404,10 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                 <p className="text-[13px] text-cl mt-3">{planRenewalNote}</p>
 
                 <div className="mt-5 bg-sg-vp rounded-[8px] px-4 py-3 text-[15px] text-cm border border-sg-p">
-                  After this, you&apos;ll add your goods from your dashboard. Your
-                  first listing is reviewed by our team before it goes live; every
-                  listing after that publishes instantly.
+                  After this, your dashboard opens so you can add more goods.
+                  Your first item goes to our team for review — approving it
+                  puts your shop and that listing live, and everything you add
+                  afterwards publishes instantly.
                 </div>
               </div>
             )}
@@ -241,14 +426,18 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
               </button>
               {step < STEPS.length - 1 ? (
                 <button
-                  onClick={() => {
-                    // Validate every required Step 1 field here so the seller
+                  onClick={async () => {
+                    // Validate each step's required fields here so the seller
                     // fixes them in place rather than bouncing back from the
-                    // final submit on Step 2 (the State <select> in particular
-                    // defaults to empty, which is easy to miss otherwise).
+                    // final submit (the State <select> and the product-type
+                    // one both default to empty, which is easy to miss).
                     if (step === 0) {
-                      if (!shopName) {
-                        setSubmitError("Add your name or a company name for your shop.");
+                      if (!data.companyName.trim()) {
+                        setSubmitError("Add a company name for your shop.");
+                        return;
+                      }
+                      if (!data.firstName.trim() || !data.lastName.trim()) {
+                        setSubmitError("Add your first and last name.");
                         return;
                       }
                       if (!data.city.trim() || !data.state.trim()) {
@@ -259,8 +448,28 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                         setSubmitError("Enter a valid 5-digit zip code so buyers can find you.");
                         return;
                       }
+                    }
+                    if (step === 1) {
                       if (!data.bio.trim()) {
                         setSubmitError("Add a short bio in the About you field.");
+                        return;
+                      }
+                      if (!data.itemTitle.trim()) {
+                        setSubmitError("Give your first item a title.");
+                        return;
+                      }
+                      if (!data.itemType) {
+                        setSubmitError("Pick a product type for your item.");
+                        return;
+                      }
+                      const price = Number(data.itemPrice);
+                      if (!data.itemPrice.trim() || !Number.isFinite(price) || price < 0) {
+                        setSubmitError("Enter a starting price for your item.");
+                        return;
+                      }
+                      // Pull the crop out before the uploader unmounts.
+                      if (!(await captureItemPhoto())) {
+                        setSubmitError("Add a photo of your item.");
                         return;
                       }
                     }

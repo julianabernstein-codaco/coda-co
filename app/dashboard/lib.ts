@@ -16,3 +16,15 @@ export async function requireVendor() {
 
   return { user: session.user, vendor };
 }
+
+// The mirror image, for the signup wizards: a user who already has a shop
+// can't create a second one (vendor_profile.user_id is unique), so send
+// them to the dashboard rather than letting them fill out a form that
+// can only fail at the end.
+export async function redirectIfVendor(userId: string) {
+  const vendor = await prisma.vendorProfile.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+  if (vendor) redirect("/dashboard");
+}

@@ -16,11 +16,12 @@ async function requireAdmin() {
   return session.user;
 }
 
-// Approve a vendor's listing that's awaiting review. Publishes it and —
-// crucially — flips the vendor's `listingsAutoApprove` so every later
-// listing they publish goes live without review. Both writes happen in
-// one transaction so a vendor can't end up "trusted" with an unpublished
-// first listing (or vice versa).
+// Approve a vendor's listing that's awaiting review. Publishes it, puts
+// the vendor themselves live (a goods shop stays unpublished from signup
+// until this moment), and flips `listingsAutoApprove` so every later
+// listing they publish goes live without review. All three writes happen
+// in one transaction so a vendor can't end up "trusted" with an
+// unpublished first listing (or vice versa).
 export async function approveListing(
   productId: string,
 ): Promise<ListingReviewResult> {
@@ -32,6 +33,7 @@ export async function approveListing(
       vendor: {
         select: {
           id: true,
+          slug: true,
           user: { select: { email: true, name: true } },
         },
       },
@@ -49,7 +51,7 @@ export async function approveListing(
     }),
     prisma.vendorProfile.update({
       where: { id: product.vendor.id },
-      data: { listingsAutoApprove: true },
+      data: { listingsAutoApprove: true, published: true },
     }),
   ]);
 
@@ -77,6 +79,9 @@ export async function approveListing(
   revalidatePath("/dashboard/products");
   revalidatePath(`/dashboard/products/${product.id}`);
   revalidatePath("/shop");
+  // The vendor themselves just went public too.
+  revalidatePath("/services");
+  revalidatePath(`/services/${product.vendor.slug}`);
   return { ok: true };
 }
 

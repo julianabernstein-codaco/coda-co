@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { redirectIfVendor } from "@/app/dashboard/lib";
 import { GoodsForm } from "@/components/vendor/GoodsForm";
+import { prisma } from "@/lib/db";
 import { paidFlowsOpenFor } from "@/lib/launch";
 
 export const metadata: Metadata = {
@@ -15,8 +17,17 @@ export const metadata: Metadata = {
 export default async function ListGoodsPage() {
   const session = await auth();
   if (!session?.user) redirect("/signup?next=/list-with-us/goods");
+  await redirectIfVendor(session.user.id);
 
-  const paidOpen = await paidFlowsOpenFor(session.user.role);
+  // Step 2 collects the seller's first listing, so it needs the same
+  // product-type list the dashboard's product form uses.
+  const [paidOpen, productTypes] = await Promise.all([
+    paidFlowsOpenFor(session.user.role),
+    prisma.productType.findMany({
+      orderBy: { name: "asc" },
+      select: { slug: true, name: true },
+    }),
+  ]);
 
   return (
     <>
@@ -27,7 +38,7 @@ export default async function ListGoodsPage() {
           { label: "List goods" },
         ]}
       />
-      <GoodsForm paidOpen={paidOpen} />
+      <GoodsForm paidOpen={paidOpen} productTypes={productTypes} />
     </>
   );
 }

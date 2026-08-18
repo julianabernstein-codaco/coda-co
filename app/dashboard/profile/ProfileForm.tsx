@@ -25,6 +25,13 @@ interface ProfileFormProps {
   currentServiceDescription: string | null;
   currentPricingNotes: string | null;
   currentLifeStages: string[];
+  // Goods sellers only — services-only vendors never see the custom-order
+  // section, and the server leaves their column alone.
+  sellsGoods: boolean;
+  currentRequiresCustomOrder: boolean;
+  // False for goods-only shops, which have no services to describe. Mirrors
+  // the same carve-out in the server action.
+  requiresServiceDescription: boolean;
 }
 
 const initial: ProfileFormState = { status: "idle" };
@@ -53,6 +60,9 @@ export function ProfileForm({
   currentServiceDescription,
   currentPricingNotes,
   currentLifeStages,
+  sellsGoods,
+  currentRequiresCustomOrder,
+  requiresServiceDescription,
 }: ProfileFormProps) {
   const uploaderRef = useRef<ImageUploaderHandle>(null);
   // Chip toggles drive local state; hidden inputs at submit time
@@ -152,14 +162,14 @@ export function ProfileForm({
       </Section>
 
       <Section title="Service description" subtitle="A short overview of what you offer, shown above the list of specific services on your public profile.">
-        <Field label="Description" required>
+        <Field label="Description" required={requiresServiceDescription}>
           <textarea
             name="serviceDescription"
             defaultValue={currentServiceDescription ?? ""}
             className={`${inputCls} min-h-[120px] resize-y`}
             placeholder="Describe your usual services, including any packages that you offer."
             maxLength={DESC_MAX}
-            required
+            required={requiresServiceDescription}
             onChange={(e) => setDescLen(e.target.value.length)}
           />
           <div className="text-[13px] text-cl mt-1 text-right tabular-nums">
@@ -183,6 +193,32 @@ export function ProfileForm({
           </div>
         </Field>
       </Section>
+
+      {sellsGoods && (
+        <Section
+          title="Custom orders"
+          subtitle="Tells our team whether buyers can order your goods outright, or need to reach you first."
+        >
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="requiresCustomOrder"
+              defaultChecked={currentRequiresCustomOrder}
+              className="accent-tr mt-1 flex-shrink-0"
+            />
+            <span className="text-[15px] text-cm">
+              Some of my goods require significant personalization or
+              communication with clients outside of a simple purchase. E.g.
+              shipping of cremated remains, images, textiles or other goods
+              specific to a person who has died.{" "}
+              <span className="font-medium text-ch">
+                Check here if a customer cannot simply purchase a good from you
+                directly on this site.
+              </span>
+            </span>
+          </label>
+        </Section>
+      )}
 
       <Section title="Contact links" subtitle="Saved to your profile and shown below the 'Send a message' button. Whether each one appears on your public page is set by the CodaCo team.">
         <Field label="Website URL">
