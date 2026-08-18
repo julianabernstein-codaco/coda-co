@@ -33,12 +33,6 @@ const hasDb = Boolean(process.env.DATABASE_URL);
 if (hasDb) {
   run("prisma migrate deploy");
   run("prisma db seed");
-  // TEMPORARY (preview only): convert the old urn example listing into
-  // the remains-infused bracelet on databases seeded before
-  // lib/data/products.ts changed. Self-skips unless VERCEL_ENV=preview,
-  // is idempotent, and deletes nothing. Runs before the cover backfill so
-  // the new slug picks up its photo. Remove once previews are confirmed.
-  run("tsx prisma/swap-urn-to-bracelet.ts");
   // Attach static cover photos (public/products/<slug>.<ext>) to the
   // example listings. Non-destructive + idempotent — safe on every
   // deploy, unlike db:mock. See prisma/backfill-covers.ts.
