@@ -9,7 +9,6 @@ import { ShopSort } from "@/components/shop/ShopSort";
 import { SavedLink } from "@/components/saved/SavedLink";
 import { Container } from "@/components/ui/Container";
 import { GiftCardCallout } from "@/components/ui/GiftCardCallout";
-import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 import { countProducts, getProducts } from "@/lib/api/products";
 import { parseLifeStageParam } from "@/lib/format/lifeStage";
 import type { ProductType } from "@/lib/types";
@@ -91,20 +90,19 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         <Container width="wide">
           <div className="text-center mb-8">
             <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-2">
-              Handpicked goods
+              Goods for the end of life
             </p>
             <h1 className="font-serif text-[32px] font-light text-ch mb-1">
-              For planning, remembering &amp; honoring
+              Planning, remembering &amp; honoring
             </h1>
-            <p className="text-[15px] text-cl">
-              Beautiful, selected goods made by thoughtful artisans.
+            {/* Constrained measure — the subtitle is long enough that the
+                full container width would leave a single sprawling line. */}
+            <p className="text-[15px] text-cl max-w-[560px] mx-auto">
+              A carefully chosen collection — shrouds and urns, planning workbooks, pottery
+              and jewelry made with cremated remains. Useful when you need it, lovely long
+              after.
             </p>
           </div>
-
-          {/* Relevance / life-stage stays horizontal across the top */}
-          <Suspense>
-            <LifeStageChips className="mb-2" />
-          </Suspense>
 
           <div className="grid grid-cols-[210px_1fr] gap-0">
             {/* Filter column */}

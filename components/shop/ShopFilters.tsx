@@ -1,9 +1,11 @@
 "use client";
 
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
+import { FilterDivider } from "@/components/ui/filters/FilterDivider";
 import { FilterPill } from "@/components/ui/filters/FilterPill";
 import { FilterPillGroup } from "@/components/ui/filters/FilterPillGroup";
 import { FilterSection } from "@/components/ui/filters/FilterSection";
+import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 
 const CATEGORIES = [
   { value: "", label: "All goods" },
@@ -15,9 +17,9 @@ const CATEGORIES = [
   { value: "humor", label: "Gifts & humor" },
 ];
 
-// Left-hand filter rail for /shop, mirroring <ServiceFilters> on /services.
-// The life-stage ("Relevance") chips deliberately stay horizontal above the
-// results instead of living in here.
+// Left-hand filter rail for /shop, mirroring <ServiceFilters> on /services:
+// category first, then the life-stage ("Relevance") chips as a stacked
+// section below it, so every filter lives in one column.
 export function ShopFilters() {
   const { get, setParams, clearAll } = useFilterParams();
   const activeCategory = get("category");
@@ -46,6 +48,10 @@ export function ShopFilters() {
           ))}
         </FilterPillGroup>
       </FilterSection>
+
+      <FilterDivider />
+
+      <LifeStageChips layout="stack" />
     </div>
   );
 }

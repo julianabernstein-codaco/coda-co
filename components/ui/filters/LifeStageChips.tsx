@@ -2,14 +2,26 @@
 
 import { useFilterParams } from "@/lib/hooks/useFilterParams";
 import { FilterPill } from "@/components/ui/filters/FilterPill";
+import { FilterPillGroup } from "@/components/ui/filters/FilterPillGroup";
+import { FilterSection } from "@/components/ui/filters/FilterSection";
 import { LIFE_STAGES } from "@/lib/format/lifeStage";
 
 interface LifeStageChipsProps {
   label?: string;
+  /**
+   * `row` (default) — inline "Relevance: [chips]" strip for use above a
+   * results grid. `stack` — a headed section sized for a filter rail,
+   * matching the other <FilterSection> blocks around it.
+   */
+  layout?: "row" | "stack";
   className?: string;
 }
 
-export function LifeStageChips({ label = "Relevance:", className = "" }: LifeStageChipsProps) {
+export function LifeStageChips({
+  label,
+  layout = "row",
+  className = "",
+}: LifeStageChipsProps) {
   const { get, setParam } = useFilterParams();
   const raw = get("lifeStage");
   const active = raw ? raw.split(",").map((s) => s.trim()).filter(Boolean) : [];
@@ -21,9 +33,8 @@ export function LifeStageChips({ label = "Relevance:", className = "" }: LifeSta
     setParam("lifeStage", next.join(","));
   }
 
-  return (
-    <div className={`flex items-center gap-2 flex-wrap ${className}`}>
-      <span className="text-[15px] text-cl mr-1">{label}</span>
+  const pills = (
+    <>
       <FilterPill
         label="Any stage"
         active={active.length === 0}
@@ -37,6 +48,23 @@ export function LifeStageChips({ label = "Relevance:", className = "" }: LifeSta
           onClick={() => toggle(s.value)}
         />
       ))}
+    </>
+  );
+
+  if (layout === "stack") {
+    return (
+      <div className={className}>
+        <FilterSection heading={label ?? "Relevance"}>
+          <FilterPillGroup>{pills}</FilterPillGroup>
+        </FilterSection>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex items-center gap-2 flex-wrap ${className}`}>
+      <span className="text-[15px] text-cl mr-1">{label ?? "Relevance:"}</span>
+      {pills}
     </div>
   );
 }
