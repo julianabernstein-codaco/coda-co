@@ -273,6 +273,22 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     redirect(`/signup?next=/list-with-us/${input.kind === "services" ? "services" : "goods"}`);
   }
 
+  // One shop per account — vendor_profile.user_id is unique, so a second
+  // signup would blow up on the profile insert at approval time (after the
+  // application row is already written). Both wizards redirect an existing
+  // vendor to their dashboard before they see the form; this catches anyone
+  // who got past that, and keeps the failure a message rather than a 500.
+  const existingVendor = await prisma.vendorProfile.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true },
+  });
+  if (existingVendor) {
+    return {
+      error:
+        "This account already has a shop on CodaCo. Open your dashboard to add listings or edit it.",
+    };
+  }
+
   const slug = await uniqueSlug(input.displayName);
 
   // Drop anything not in the canonical lists; de-dupe just in case the

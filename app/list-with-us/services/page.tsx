@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { redirectIfVendor } from "@/app/dashboard/lib";
 import { ServicesForm } from "@/components/vendor/ServicesForm";
 import { getServiceTypes } from "@/lib/api/serviceTypes";
 import { paidFlowsOpenFor } from "@/lib/launch";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 export default async function ListServicesPage() {
   const session = await auth();
   if (!session?.user) redirect("/signup?next=/list-with-us/services");
+  await redirectIfVendor(session.user.id);
 
   const serviceTypes = await getServiceTypes();
   const paidOpen = await paidFlowsOpenFor(session.user.role);
