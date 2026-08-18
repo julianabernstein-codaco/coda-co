@@ -75,7 +75,13 @@ export default async function DashboardPage() {
               </span>{" "}
               {pendingListingCount > 0
                 ? "Our team is reviewing the first item you listed. Once it's approved, your shop and that listing go live — and everything you add afterwards publishes instantly."
-                : "Publish your first listing and our team will review it. Once it's approved, your shop goes live and everything you add afterwards publishes instantly."}
+                : "Publish your first listing and our team will review it. Once it's approved, your shop goes live and everything you add afterwards publishes instantly."}{" "}
+              <Link
+                href={`/services/${vendor.slug}`}
+                className="text-tr no-underline hover:underline"
+              >
+                Preview your page
+              </Link>
             </div>
           )}
 
@@ -120,7 +126,11 @@ export default async function DashboardPage() {
             />
             <DashCard
               title="Your public profile"
-              body={`Edit your photo and bio — buyers see this at /services/${vendor.slug}.`}
+              body={
+                vendor.published
+                  ? `Edit your photo and bio — buyers see this at /services/${vendor.slug}.`
+                  : `Edit your photo and bio, and preview the page at /services/${vendor.slug} — only you can see it until your shop goes live.`
+              }
               href="/dashboard/profile"
               cta="Edit profile →"
             />

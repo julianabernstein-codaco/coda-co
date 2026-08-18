@@ -156,11 +156,16 @@ export async function getVendors(filters: VendorFilters = {}): Promise<VendorWit
   return results;
 }
 
-export async function getVendor(id: string): Promise<VendorWithRating | null> {
+export async function getVendor(
+  id: string,
+  // Owner-preview: return the vendor even while they're unpublished, so a
+  // seller waiting on first-listing review can see their own profile. The
+  // caller is responsible for checking ownership — every public caller
+  // leaves this off and gets "no such vendor" instead.
+  opts: { includeUnpublished?: boolean } = {},
+): Promise<VendorWithRating | null> {
   const v = await prisma.vendorProfile.findUnique({ where: { slug: id } });
-  // Reads as "no such vendor" until they're published, so the public
-  // profile 404s rather than previewing an unreviewed shop.
-  if (!v || !v.published) return null;
+  if (!v || (!v.published && !opts.includeUnpublished)) return null;
   const summary = await prisma.vendorReview.aggregate({
     where: { vendorId: v.id },
     _count: { _all: true },

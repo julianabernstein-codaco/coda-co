@@ -24,7 +24,9 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { vendorId } = await params;
-  const vendor = await getVendor(vendorId);
+  // Unpublished-inclusive so an owner previewing their own page gets a
+  // real title; the page itself 404s for everyone else.
+  const vendor = await getVendor(vendorId, { includeUnpublished: true });
   if (!vendor) return { title: "Provider not found — CodaCo" };
   return {
     title: `${vendor.name} — CodaCo`,
@@ -45,12 +47,15 @@ function bioParagraphs(bio: string): string[] {
 export default async function VendorProfilePage({ params }: PageProps) {
   const { vendorId } = await params;
   const session = await auth();
-  const [vendor, vendorReviewList, ownerUserId] = await Promise.all([
-    getVendor(vendorId),
+  const [vendor, vendorReviewList, owner] = await Promise.all([
+    // Fetched unpublished-inclusive so the owner can preview; the
+    // ownership check below is what keeps everyone else out.
+    getVendor(vendorId, { includeUnpublished: true }),
     getVendorReviews(vendorId),
-    prisma.vendorProfile
-      .findUnique({ where: { slug: vendorId }, select: { userId: true } })
-      .then((v) => v?.userId ?? null),
+    prisma.vendorProfile.findUnique({
+      where: { slug: vendorId },
+      select: { userId: true, published: true },
+    }),
   ]);
   if (!vendor) notFound();
 
@@ -62,7 +67,12 @@ export default async function VendorProfilePage({ params }: PageProps) {
 
   // The signed-in owner viewing their own profile sees draft services
   // (tagged, with a nudge to publish); the public sees published only.
-  const isOwner = Boolean(session?.user) && session!.user.id === ownerUserId;
+  const isOwner = Boolean(session?.user) && session!.user.id === owner?.userId;
+
+  // A vendor awaiting first-listing review is visible to nobody but
+  // themselves — everyone else gets the same 404 as a bad slug.
+  const isPreview = !owner?.published;
+  if (isPreview && !isOwner) notFound();
   const vendorServices = await getServices({ vendorId, includeUnpublished: isOwner });
   const draftCount = vendorServices.filter((s) => s.status !== "published").length;
 
@@ -102,6 +112,26 @@ export default async function VendorProfilePage({ params }: PageProps) {
           { label: vendor.name },
         ]}
       />
+
+      {isPreview && (
+        <section className="bg-tr-p border-b border-tr-l px-10 py-3">
+          <Container width="mid">
+            <p className="text-[15px] text-cm">
+              <span className="font-medium text-ch">
+                Preview — only you can see this page.
+              </span>{" "}
+              Your shop goes public once our team approves your first
+              listing.{" "}
+              <Link
+                href="/dashboard"
+                className="text-tr no-underline hover:underline"
+              >
+                Back to your dashboard
+              </Link>
+            </p>
+          </Container>
+        </section>
+      )}
 
       {/* Hero */}
       <section className="bg-white px-10 pt-10 pb-12">
