@@ -927,6 +927,10 @@ export interface NewVendorSignupArgs {
   applicantEmail: string;
   // Goods shops self-approve; services / both wait in the review queue.
   needsReview: boolean;
+  // Goods shops only: the seller says their goods need personalization or
+  // contact before a buyer can order. Worth flagging because goods shops
+  // skip the review queue — this email is the team's only heads-up.
+  requiresCustomOrder?: boolean;
 }
 
 export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPayload {
@@ -948,6 +952,12 @@ export function buildNewVendorSignupEmail(args: NewVendorSignupArgs): EmailPaylo
       label: "Email",
       value: args.applicantEmail,
       href: `mailto:${args.applicantEmail}`,
+    },
+    {
+      label: "Custom orders",
+      value: args.requiresCustomOrder
+        ? "Yes — goods need personalization / contact before purchase"
+        : null,
     },
     {
       label: "Status",

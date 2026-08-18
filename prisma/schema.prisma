@@ -196,6 +196,12 @@ model VendorProfile {
   serviceDescription String? @map("service_description")
   pricingNotes       String? @map("pricing_notes")
 
+  // Declared at goods signup: this seller's goods need personalization or
+  // conversation with the buyer (cremated remains, images, textiles made
+  // for a specific person), so they can't be bought outright on the site.
+  // Set at signup only for now — no dashboard editor for it yet.
+  requiresCustomOrder Boolean @default(false) @map("requires_custom_order")
+
   // Curated tag list from lib/data/specializations.ts. Drives the
   // /services filter chips — vendors declare what they specialize in,
   // clients filter to find them. Stored as a TEXT[] mirroring lifeStages.
@@ -317,6 +323,11 @@ model VendorApplication {
   // public "Service area & availability" card is populated from day one.
   serviceDays         String?             @map("service_days")
   serviceHours        String?             @map("service_hours")
+  // Goods signup only. True when the seller's goods need personalization
+  // or back-and-forth with the buyer (cremated remains, images, textiles
+  // made for a specific person), so a buyer can't just check out on the
+  // site. Copied to vendor_profile on approval.
+  requiresCustomOrder Boolean             @default(false) @map("requires_custom_order")
   // Contact links the applicant entered at signup. Stored as typed;
   // normalized into vendor_profile.website_url / instagram_handle at
   // approval. Kept here so nothing is lost between apply and approve.

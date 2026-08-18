@@ -66,6 +66,9 @@ interface SubmitInput {
   // picked. Joined and carried onto the profile's display fields.
   availableDays?: string[];
   availableHours?: string[];
+  // Goods form only — the seller declared their goods need personalization
+  // or contact with the buyer, so they can't be bought outright on the site.
+  requiresCustomOrder?: boolean;
 }
 
 const VALID_LIFE_STAGES = new Set<string>([
@@ -219,6 +222,8 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     serviceHours,
     website: input.website?.trim() || null,
     instagram: input.instagram?.trim() || null,
+    // Only the goods form asks this; services applications always store false.
+    requiresCustomOrder: input.kind === "goods" && input.requiresCustomOrder === true,
   });
 
   // Ping the team inbox on every new signup. Goods shops (kind === "goods")
@@ -240,6 +245,7 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     serviceType: serviceTypeName,
     applicantEmail: session.user.email!,
     needsReview: input.kind !== "goods",
+    requiresCustomOrder: input.kind === "goods" && input.requiresCustomOrder === true,
   });
   if (!adminPing.ok) {
     log.warn("application.admin_notify_failed", {

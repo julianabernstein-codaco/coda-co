@@ -36,6 +36,9 @@ export interface ApplicationDraft {
   // normalized into the profile at approval.
   website: string | null;
   instagram: string | null;
+  // Goods only: the seller's goods need personalization / contact before a
+  // buyer can order. False for services applications.
+  requiresCustomOrder: boolean;
 }
 
 // Lenient website normalization for the signup path: accept a scheme-less
@@ -117,6 +120,7 @@ export async function createApplication(draft: ApplicationDraft) {
       serviceHours: draft.serviceHours,
       website: draft.website,
       instagram: draft.instagram,
+      requiresCustomOrder: draft.requiresCustomOrder,
       status: "submitted",
     },
   });
@@ -197,6 +201,8 @@ export async function approveApplication(
           // team from /admin/vendors (showWebsite / showInstagram).
           websiteUrl: normalizeWebsite(app.website),
           instagramHandle: normalizeInstagramHandle(app.instagram),
+          // Declared at signup; vendor-editable from the dashboard later.
+          requiresCustomOrder: app.requiresCustomOrder,
         },
       });
 

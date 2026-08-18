@@ -26,7 +26,13 @@ interface FormData {
   state: string;
   zip: string;
   bio: string;
+  requiresCustomOrder: boolean;
 }
+
+// The text fields `field()` can bind to — everything but the checkbox.
+type TextField = {
+  [K in keyof FormData]: FormData[K] extends string ? K : never;
+}[keyof FormData];
 
 export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
   const [step, setStep] = useState(0);
@@ -44,9 +50,10 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
     state: "",
     zip: "",
     bio: "",
+    requiresCustomOrder: false,
   });
 
-  function field(key: keyof FormData) {
+  function field(key: TextField) {
     return {
       value: data[key],
       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -74,6 +81,7 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
         state: data.state,
         zip: data.zip,
         planId: plan,
+        requiresCustomOrder: data.requiresCustomOrder,
       });
       // The action redirects on success, so we only land here on a
       // validation failure with the error returned in the payload.
@@ -155,6 +163,32 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                     {...field("bio")}
                   />
                 </FormField>
+
+                <div className="border border-line-strong rounded-[10px] bg-pl2 p-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="accent-tr mt-1 flex-shrink-0"
+                      checked={data.requiresCustomOrder}
+                      onChange={() =>
+                        setData((d) => ({
+                          ...d,
+                          requiresCustomOrder: !d.requiresCustomOrder,
+                        }))
+                      }
+                    />
+                    <span className="text-[15px] text-cm">
+                      Some of my goods require significant personalization or
+                      communication with clients outside of a simple purchase.
+                      E.g. shipping of cremated remains, images, textiles or
+                      other goods specific to a person who has died.{" "}
+                      <span className="font-medium text-ch">
+                        Check here if a customer cannot simply purchase a good
+                        from you directly on this site.
+                      </span>
+                    </span>
+                  </label>
+                </div>
               </div>
             )}
 
