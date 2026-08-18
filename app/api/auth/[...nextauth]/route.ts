@@ -26,10 +26,18 @@ function rateLimitHeaders(remaining: number, reset: number): Record<string, stri
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
-  // Only throttle credential sign-in; leave CSRF/session/provider calls alone.
-  const isCredentialSignin = req.nextUrl.pathname.endsWith("/callback/credentials");
-  if (!isCredentialSignin) return handlers.POST(req);
+  // Sign-out is a legitimate, low-frequency POST from an already-authenticated
+  // user — don't let login-flood throttling lock someone out of signing out.
+  if (req.nextUrl.pathname.endsWith("/signout")) return handlers.POST(req);
 
+  // Throttle every other auth POST by IP at the very top — before Auth.js
+  // parses the body or routes the action. That's deliberate: a flood aimed at
+  // a bogus action (e.g. /api/auth/login) or a credential POST with no CSRF
+  // token would otherwise be cheaply 400'd by Auth.js *before* any limiter
+  // ran, so it would never be counted. Counting here means every request that
+  // reaches the endpoint counts, regardless of shape. The real login form
+  // doesn't touch this path (it goes through the server action → in-process
+  // authorize()), so legitimate users are unaffected.
   const ip = await clientIp();
   const { ok, remaining, reset } = await rateLimit(`auth-http:ip:${ip}`, AUTH_HTTP_IP_LIMIT);
   const headers = rateLimitHeaders(remaining, reset);
