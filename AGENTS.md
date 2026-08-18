@@ -263,7 +263,7 @@ inline (see Decision rules below).
 | `<FilterCheck>`    | Checkbox with label.                             |
 | `<FilterSection>`  | Section heading + body wrapper.                  |
 | `<FilterDivider>`  | Hairline divider between sections.               |
-| `<LifeStageChips>` | Pre-wired chip strip filtering by `lifeStage` URL param. Use at the top of any list page so users can narrow by `planning-ahead` / `active-dying` / `post-death` / `throughout`. Multi-select — clicking a chip toggles its value in/out of a comma-separated `lifeStage` param. Wrap in `<Suspense>` since it reads `searchParams`. |
+| `<LifeStageChips>` | Pre-wired chips filtering by `lifeStage` URL param, letting users narrow by `planning-ahead` / `active-dying` / `post-death` / `throughout`. Multi-select — clicking a chip toggles its value in/out of a comma-separated `lifeStage` param. `layout="row"` (default) is the inline "Relevance: […]" strip for above a results grid; `layout="stack"` is a headed `<FilterSection>` sized for a filter rail (what `<ShopFilters>` uses). Wrap in `<Suspense>` since it reads `searchParams`. |
 
 URL-param state for filters goes through **`useFilterParams()`** in
 `lib/hooks/useFilterParams.ts` — `get`, `setParam`, `toggleBool`,
