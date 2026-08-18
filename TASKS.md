@@ -123,19 +123,25 @@ changes, acknowledgments), and cancellation request timestamps. In a dispute,
   fully dynamic), and `/admin/email-preview` renders email HTML in a
   `srcDoc` iframe that inherits the page policy, so remote images inside
   previewed emails may report violations.
-- **Rate limiting needs Upstash provisioning to be production-grade.**
-  `lib/rate-limit.ts` is now Redis-backed (`@upstash/ratelimit`,
-  sliding-window) when `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`
-  are set, and falls back to the per-process in-memory `Map` when they're
-  absent or if a Redis call throws (degraded, never fully fail-open). All
-  call sites (login, signup, inquiries, uploads, waitlist, admin actions)
-  already go through the async API. **Remaining, and it's an ops step, not
-  code:** create an Upstash database and set both env vars in the Vercel
-  project (preview + production) — until then production still runs on the
-  weaker in-memory backend. Still complementary, not a substitute: a WAF /
-  Cloudflare Turnstile is the real answer to distributed attacks and
-  IP-header spoofing (`clientIp()` trusts the leftmost `x-forwarded-for`,
-  which the client controls).
+- **Add a Vercel Firewall rate-limit rule on `/api/auth/*` (edge backstop).**
+  App-level rate limiting is now layered and live: an IP throttle at the auth
+  HTTP boundary (`app/api/auth/[...nextauth]/route.ts`) returns a real `429`
+  + `Retry-After`/`RateLimit-*` on every auth POST, a per-account limit in
+  `authorize()` is the defense-in-depth layer, and `lib/rate-limit.ts` is
+  Redis-backed via Upstash (env vars set in Vercel preview + production) with
+  an in-memory fallback and a 1s timeout guard so a Redis blip can't hang
+  auth. **Remaining (dashboard config, no code):** add a Vercel Firewall
+  rate-limit rule on `/api/auth/*` — a per-IP wall at the *edge* that counts
+  every request before it reaches the function, immune to handler-order and
+  to app-layer IP-header spoofing (`clientIp()` trusts the leftmost
+  `x-forwarded-for`, which the client controls). Use it *in addition to* the
+  app-level per-account logic, not instead of. A CAPTCHA / Cloudflare
+  Turnstile is the further step if credential-stuffing persists.
+- **Verify Upstash is actually serving prod (not silently on the fallback).**
+  After a login burst on production, confirm `rl:*` keys appear in the
+  Upstash Data Browser and that `event=ratelimit.redis_unavailable` is *not*
+  logging in Vercel. If it is, the limiter is degraded to per-instance
+  in-memory and the effective ceiling is ~×(instance count).
 
 ## Resolved (kept for posterity, can be deleted once stable)
 
