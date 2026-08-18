@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { listApplications } from "@/lib/api/applications";
 import { ApplicationRow } from "./ApplicationRow";
 import { ResendApprovalButton } from "./ResendApprovalButton";
+import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = {
   title: "Vendor applications — Admin | CodaCo",
@@ -14,9 +13,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminApplicationsPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login?next=/admin/applications");
-  if (session.user.role !== "admin") redirect("/");
+  await requireAdminPage("/admin/applications");
 
   const [pending, decided] = await Promise.all([
     listApplications("submitted"),

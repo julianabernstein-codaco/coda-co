@@ -5,18 +5,18 @@ import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ContactVendorForm } from "@/components/services/ContactVendorForm";
 import { Container } from "@/components/ui/Container";
+import { ProductCard } from "@/components/ui/ProductCard";
 import { SaveButton } from "@/components/ui/SaveButton";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Stars } from "@/components/ui/Stars";
 import { VendorPhoto } from "@/components/ui/VendorPhoto";
 import { WaveDivider } from "@/components/ui/WaveDivider";
 import { prisma } from "@/lib/db";
-import { getServices } from "@/lib/api/services";
+import { getProducts } from "@/lib/api/products";
 import { getVendor } from "@/lib/api/vendors";
 import { getVendorReviews } from "@/lib/api/vendor-reviews";
 import { formatMonthYear } from "@/lib/format/date";
 import { lifeStageLabel } from "@/lib/format/lifeStage";
-import { serviceTypeLabel } from "@/lib/format/vendor";
 
 interface PageProps {
   params: Promise<{ vendorId: string }>;
@@ -24,19 +24,18 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { vendorId } = await params;
-  // Unpublished-inclusive so an owner previewing their own page gets a
-  // real title; the page itself 404s for everyone else.
+  // Unpublished-inclusive so an owner previewing their own shop gets a real
+  // title; the page itself 404s for everyone else.
   const vendor = await getVendor(vendorId, { includeUnpublished: true });
-  if (!vendor) return { title: "Provider not found — CodaCo" };
+  if (!vendor) return { title: "Maker not found — CodaCo" };
   return {
     title: `${vendor.name} — CodaCo`,
     description: vendor.bio,
   };
 }
 
-// Splits bio on blank lines so vendors can write multi-paragraph bios
-// in the dashboard's single textarea and have them render as proper
-// paragraphs here.
+// Splits bio on blank lines so makers can write multi-paragraph bios in
+// the dashboard's single textarea and have them render as paragraphs here.
 function bioParagraphs(bio: string): string[] {
   return bio
     .split(/\n\s*\n/)
@@ -44,12 +43,10 @@ function bioParagraphs(bio: string): string[] {
     .filter(Boolean);
 }
 
-export default async function VendorProfilePage({ params }: PageProps) {
+export default async function MakerShopPage({ params }: PageProps) {
   const { vendorId } = await params;
   const session = await auth();
   const [vendor, vendorReviewList, owner] = await Promise.all([
-    // Fetched unpublished-inclusive so the owner can preview; the
-    // ownership check below is what keeps everyone else out.
     getVendor(vendorId, { includeUnpublished: true }),
     getVendorReviews(vendorId),
     prisma.vendorProfile.findUnique({
@@ -59,48 +56,30 @@ export default async function VendorProfilePage({ params }: PageProps) {
   ]);
   if (!vendor) notFound();
 
-  // Goods sellers have a shop page built around their products instead of
-  // services. Old links and bookmarks land here, so pass them along.
-  if (vendor.kind === "goods") redirect(`/makers/${vendorId}`);
+  // Service providers live on /services — send anyone who lands here with
+  // their slug to the page built for them.
+  if (vendor.kind !== "goods") redirect(`/services/${vendorId}`);
 
-  // Contacting a vendor requires an account, so the contact button and
-  // form are gated on being signed in; anon visitors get a sign-in prompt
-  // that returns them here afterward.
   const isSignedIn = Boolean(session?.user);
-  const loginHref = `/login?next=${encodeURIComponent(`/services/${vendorId}`)}`;
-
-  // The signed-in owner viewing their own profile sees draft services
-  // (tagged, with a nudge to publish); the public sees published only.
+  const loginHref = `/login?next=${encodeURIComponent(`/makers/${vendorId}`)}`;
   const isOwner = Boolean(session?.user) && session!.user.id === owner?.userId;
 
-  // A vendor awaiting first-listing review is visible to nobody but
+  // A maker awaiting first-listing review is visible to nobody but
   // themselves — everyone else gets the same 404 as a bad slug.
   const isPreview = !owner?.published;
   if (isPreview && !isOwner) notFound();
-  const vendorServices = await getServices({ vendorId, includeUnpublished: isOwner });
-  const draftCount = vendorServices.filter((s) => s.status !== "published").length;
 
-  const primaryType = vendorServices[0]?.serviceType;
-
-  // Derive a default "Formats" string from the union of the vendor's
-  // services' location types. The vendor's own serviceFormats string
-  // overrides this when set.
-  const inPerson = vendorServices.some(
-    (s) => s.locationType === "in_person" || s.locationType === "both",
-  );
-  const virtual = vendorServices.some(
-    (s) => s.locationType === "virtual" || s.locationType === "both",
-  );
-  const derivedFormats = [inPerson && "In-home", virtual && "Virtual"]
-    .filter(Boolean)
-    .join(" · ");
-  const formats = vendor.serviceFormats ?? (derivedFormats || null);
+  // The owner sees their drafts and in-review listings (tagged); buyers see
+  // published goods only.
+  const goods = await getProducts({
+    sellerId: vendorId,
+    includeUnpublished: isOwner,
+  });
+  const unpublishedCount = goods.filter((p) => p.status !== "published").length;
 
   const paragraphs = bioParagraphs(vendor.bio);
   const hasReviews = vendorReviewList.length > 0;
 
-  // Instagram display: prepend "@" for the visible label, keep handle
-  // raw on the link path.
   const instagramHandle = vendor.instagramHandle ?? null;
   const instagramLabel = instagramHandle ? `@${instagramHandle}` : null;
   const instagramUrl = instagramHandle
@@ -112,7 +91,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
       <Breadcrumb
         crumbs={[
           { label: "Home", href: "/" },
-          { label: "Find services", href: "/services" },
+          { label: "Goods", href: "/shop" },
           { label: vendor.name },
         ]}
       />
@@ -146,7 +125,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
               alt={vendor.name}
               initials={vendor.initials}
               size="xl"
-              tone={vendor.photoTone}
+              tone={vendor.photoTone ?? "terracotta"}
             />
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-3 mb-1">
@@ -167,16 +146,11 @@ export default async function VendorProfilePage({ params }: PageProps) {
                   </span>
                 ))}
               </div>
-              {primaryType && (
-                <div className="text-[13px] tracking-[.14em] uppercase text-tr mb-3">
-                  {serviceTypeLabel(primaryType)}
-                </div>
-              )}
+              <div className="text-[13px] tracking-[.14em] uppercase text-tr mb-3">
+                Maker
+              </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 items-center mb-2">
                 <span className="text-[15px] text-cm">📍 {vendor.location}</span>
-                {vendor.distanceMi != null && (
-                  <span className="text-[15px] text-cl">{vendor.distanceMi} mi away</span>
-                )}
                 {vendor.memberSince && (
                   <span className="text-[15px] text-cl">
                     CodaCo member since {formatMonthYear(vendor.memberSince)}
@@ -189,15 +163,9 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 className="text-[15px]"
               />
               <div className="flex flex-wrap gap-3 items-center mt-5">
-                {isSignedIn ? (
-                  <a href="#contact" className="btn-primary btn-md no-underline">
-                    Contact ↗
-                  </a>
-                ) : (
-                  <Link href={loginHref} className="btn-primary btn-md no-underline">
-                    Sign in to contact ↗
-                  </Link>
-                )}
+                <a href="#goods" className="btn-primary btn-md no-underline">
+                  See their goods ↓
+                </a>
                 <SaveButton
                   kind="vendor"
                   slug={vendor.id}
@@ -215,115 +183,86 @@ export default async function VendorProfilePage({ params }: PageProps) {
               {p}
             </p>
           ))}
+
+          {vendor.requiresCustomOrder && (
+            <div className="mt-6 rounded-[10px] border border-tr-l bg-tr-p px-5 py-4">
+              <p className="text-[15px] text-cm">
+                <span className="font-medium text-ch">Made for one person.</span>{" "}
+                Some of {vendor.name}&apos;s work needs personalization or a
+                conversation before it can be made — sending cremated remains,
+                an image, or a textile, for instance. Message them to start.
+              </p>
+            </div>
+          )}
         </Container>
       </section>
 
-      <WaveDivider topColor="var(--color-white)" bottomColor="var(--color-sg-vp)" />
+      <WaveDivider topColor="var(--color-white)" bottomColor="var(--color-tr-vp)" />
 
-      {/* Services + service area */}
-      <section className="bg-sg-vp px-10 pt-4 pb-16">
+      {/* Their goods */}
+      <section id="goods" className="bg-tr-vp px-10 pt-4 pb-16 scroll-mt-24">
         <Container width="mid">
           <SectionHeader
-            eyebrow="At a glance"
-            eyebrowTone="sg"
-            title="Services & service area"
+            eyebrow="For sale"
+            title={`Goods from ${vendor.name}`}
+            subtitle={
+              goods.length > 0
+                ? `${goods.length} ${goods.length === 1 ? "piece" : "pieces"}, made and shipped by the maker.`
+                : undefined
+            }
             className="mb-8"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-[10px] p-6 border border-line">
-              {vendor.serviceDescription && (
-                <p className="text-[15px] text-cm leading-relaxed mb-5 whitespace-pre-line">
-                  {vendor.serviceDescription}
-                </p>
-              )}
-              {isOwner && draftCount > 0 && (
-                <div className="bg-tr-vp border border-tr-p rounded-[8px] px-4 py-3 mb-5 text-[14px] text-ink">
-                  {draftCount === 1
-                    ? "Your service is still a draft — only you can see it."
-                    : `${draftCount} of your services are still drafts — only you can see them.`}{" "}
-                  <Link
-                    href="/dashboard/services"
-                    className="text-tr no-underline hover:underline"
-                  >
-                    Publish from your dashboard →
-                  </Link>
-                </div>
-              )}
-              <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-3">
-                Services offered
-              </div>
-              <ul className="space-y-3 mb-5">
-                {vendorServices.length === 0 && (
-                  <li className="text-[15px] text-cl italic">
-                    {isOwner
-                      ? "You haven’t added a service yet — add one from your dashboard."
-                      : "This provider hasn’t published any services yet."}
-                  </li>
-                )}
-                {vendorServices.map((s) => (
-                  <li key={s.id} className="border-b border-line last:border-b-0 pb-2 last:pb-0">
-                    <div className="text-[15px] font-medium text-ch flex items-center gap-2">
-                      {s.title}
-                      {s.status !== "published" && (
-                        <span className="text-[12px] tracking-[.06em] uppercase bg-pl2 text-cl border border-line px-1.5 py-0.5 rounded-full">
-                          Draft
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[14px] text-cm leading-relaxed mt-0.5">{s.description}</p>
-                  </li>
-                ))}
-              </ul>
-              {vendor.credentials && (
-                <>
-                  <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-1">
-                    Credentials
-                  </div>
-                  <div className="text-[15px] text-cm">{vendor.credentials}</div>
-                </>
-              )}
-            </div>
 
-            <div className="bg-white rounded-[10px] p-6 border border-line">
-              <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-3">
-                Service area & availability
-              </div>
-              <dl className="text-[15px] space-y-2.5">
-                <ProfileRow label="Located in">{vendor.location}</ProfileRow>
-                {vendor.serviceRadius && (
-                  <ProfileRow label="Radius">{vendor.serviceRadius}</ProfileRow>
-                )}
-                {formats && <ProfileRow label="Formats">{formats}</ProfileRow>}
-                {vendor.serviceDays && (
-                  <ProfileRow label="Days">{vendor.serviceDays}</ProfileRow>
-                )}
-                {vendor.serviceHours && (
-                  <ProfileRow label="Hours">{vendor.serviceHours}</ProfileRow>
-                )}
-              </dl>
-              {vendor.pricingNotes && (
-                <div className="mt-5 pt-5 border-t border-line">
-                  <div className="text-[13px] tracking-[.08em] uppercase text-cl mb-1">
-                    Pricing
-                  </div>
-                  <p className="text-[15px] text-cm leading-relaxed whitespace-pre-line">
-                    {vendor.pricingNotes}
-                  </p>
-                </div>
-              )}
+          {isOwner && unpublishedCount > 0 && (
+            <div className="bg-white border border-tr-p rounded-[8px] px-4 py-3 mb-6 text-[14px] text-ink">
+              {unpublishedCount === 1
+                ? "One of your listings isn't live yet — only you can see it here."
+                : `${unpublishedCount} of your listings aren't live yet — only you can see them here.`}{" "}
+              <Link
+                href="/dashboard/products"
+                className="text-tr no-underline hover:underline"
+              >
+                Manage listings →
+              </Link>
             </div>
-          </div>
+          )}
+
+          {goods.length === 0 ? (
+            <p className="text-[16px] text-cl italic text-center">
+              {isOwner
+                ? "You haven’t added any goods yet — add your first from your dashboard."
+                : `${vendor.name} hasn’t published any goods yet.`}
+            </p>
+          ) : (
+            <div className="grid-auto-200">
+              {goods.map((p) => (
+                <div key={p.id} className="relative">
+                  {p.status !== "published" && (
+                    <span className="absolute z-10 top-2 left-2 text-[12px] tracking-[.06em] uppercase bg-white text-cl border border-line px-1.5 py-0.5 rounded-full">
+                      {p.status === "draft" ? "Draft" : "In review"}
+                    </span>
+                  )}
+                  <ProductCard product={p} />
+                </div>
+              ))}
+            </div>
+          )}
         </Container>
       </section>
 
       {hasReviews && (
         <>
-          <WaveDivider topColor="var(--color-sg-vp)" bottomColor="var(--color-tr-vp)" />
+          <WaveDivider topColor="var(--color-tr-vp)" bottomColor="var(--color-sg-vp)" />
 
           {/* Reviews */}
-          <section className="bg-tr-vp px-10 pt-4 pb-16">
+          <section className="bg-sg-vp px-10 pt-4 pb-16">
             <Container width="narrow">
-              <SectionHeader eyebrow="What clients say" title="Reviews" className="mb-8" />
+              <SectionHeader
+                eyebrow="What buyers say"
+                eyebrowTone="sg"
+                title="Reviews"
+                className="mb-8"
+              />
               <div className="text-center mb-8">
                 <div className="font-serif text-[42px] font-light text-ch leading-none mb-2">
                   {vendor.rating.toFixed(1)}
@@ -356,7 +295,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
       )}
 
       <WaveDivider
-        topColor={hasReviews ? "var(--color-tr-vp)" : "var(--color-sg-vp)"}
+        topColor={hasReviews ? "var(--color-sg-vp)" : "var(--color-tr-vp)"}
         bottomColor="var(--color-white)"
       />
 
@@ -366,11 +305,12 @@ export default async function VendorProfilePage({ params }: PageProps) {
           <div className="bg-tr-vp border border-tr-p rounded-[14px] p-8">
             <div className="text-center">
               <h2 className="font-serif text-[26px] font-light text-ch mb-3">
-                Reach out to {vendor.name}
+                Message {vendor.name}
               </h2>
               <p className="text-[15px] text-ink max-w-[420px] mx-auto mb-6 leading-[1.75]">
-                Send a message and {vendor.name} will reply straight to your email. Initial
-                calls are free.
+                {vendor.requiresCustomOrder
+                  ? `Commissions, questions about materials, timing — send a note and ${vendor.name} will reply straight to your email.`
+                  : `Questions about a piece, a custom size, or timing — send a note and ${vendor.name} will reply straight to your email.`}
               </p>
             </div>
             {isSignedIn ? (
@@ -378,20 +318,20 @@ export default async function VendorProfilePage({ params }: PageProps) {
             ) : (
               <div className="bg-white border border-tr-p rounded-[10px] p-6 text-center">
                 <p className="text-[16px] text-ch font-medium mb-1">
-                  Sign in to contact {vendor.name}
+                  Sign in to message {vendor.name}
                 </p>
                 <p className="text-[15px] text-cm mb-5">
-                  You’ll need a free account to send a message. It takes a moment, and
-                  keeps your conversations in one place.
+                  You’ll need a free account to send a message. It takes a
+                  moment, and keeps your conversations in one place.
                 </p>
                 <Link href={loginHref} className="btn-primary btn-md no-underline">
-                  Sign in to contact
+                  Sign in to message
                 </Link>
               </div>
             )}
             <div className="text-center mt-4">
-              <Link href="/services" className="text-[15px] text-tr no-underline hover:underline">
-                Browse other providers →
+              <Link href="/shop" className="text-[15px] text-tr no-underline hover:underline">
+                Browse all goods →
               </Link>
             </div>
             {/* Each link shows only when its value is set AND the CodaCo
@@ -429,14 +369,5 @@ export default async function VendorProfilePage({ params }: PageProps) {
         </Container>
       </section>
     </>
-  );
-}
-
-function ProfileRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex gap-4">
-      <dt className="text-cl w-[78px] flex-shrink-0">{label}</dt>
-      <dd className="text-cm flex-1">{children}</dd>
-    </div>
   );
 }

@@ -26,6 +26,11 @@ export interface ProductFilters {
   // Free-text keyword. Case-insensitive substring match over the product
   // title and description.
   q?: string;
+  // Owner-preview: include the seller's drafts and in-review listings
+  // alongside published ones (never archived), so a maker looking at their
+  // own shop page sees everything they've started. Mirrors
+  // getServices({ includeUnpublished }). Public callers leave it off.
+  includeUnpublished?: boolean;
 }
 
 type DbProduct = Prisma.ProductGetPayload<{
@@ -117,7 +122,9 @@ async function attachRatings<T extends { id: string }>(
 export async function getProducts(filters: ProductFilters = {}): Promise<ProductWithRating[]> {
   // Public catalog only ever surfaces `published` rows. Drafts and
   // archived products live in the vendor dashboard via getVendorProducts.
-  const where: Prisma.ProductWhereInput = { status: "published" };
+  const where: Prisma.ProductWhereInput = filters.includeUnpublished
+    ? { status: { in: ["draft", "pending_review", "published"] } }
+    : { status: "published" };
   if (filters.productType) where.productType = { slug: filters.productType };
   if (filters.sellerId) where.vendor = { slug: filters.sellerId };
   if (filters.verified != null) where.verified = filters.verified;

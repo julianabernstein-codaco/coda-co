@@ -27,8 +27,10 @@ instead.
 
 If you visit an admin or dashboard URL without being signed in, the site
 redirects you to `/login` and brings you back after sign-in. If you're
-signed in as a non-admin, `/admin*` silently redirects you home (the nav
-won't even show the admin links).
+signed in as a non-admin — easy to do when you've been testing as a
+seller — `/admin*` sends you to the sign-in page with a note saying which
+account you're on, so you can switch to your admin one and carry on to
+the page you wanted. (The nav won't show the admin links either way.)
 
 ---
 

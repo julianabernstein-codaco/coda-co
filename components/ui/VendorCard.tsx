@@ -5,6 +5,7 @@ import { SaveButton } from "@/components/ui/SaveButton";
 import { Stars } from "@/components/ui/Stars";
 import { VendorPhoto } from "@/components/ui/VendorPhoto";
 import { serviceTypeLabel, vendorLocationSuffix } from "@/lib/format/vendor";
+import { vendorPagePath } from "@/lib/format/vendor";
 
 type Layout = "compact" | "search";
 
@@ -34,7 +35,7 @@ function VendorCompactCard({
   services: Service[];
 }) {
   return (
-    <Card hoverTone="sage" href={`/services/${vendor.id}`}>
+    <Card hoverTone="sage" href={vendorPagePath(vendor.kind, vendor.id)}>
       <VendorPhoto
         src={vendor.photoSrc}
         alt={vendor.name}
@@ -89,7 +90,7 @@ function VendorSearchCard({
       <div className="min-w-0">
         <div className="flex items-start justify-between gap-3 mb-[6px]">
           <Link
-            href={`/services/${vendor.id}`}
+            href={vendorPagePath(vendor.kind, vendor.id)}
             className="text-[16px] font-medium text-ch no-underline hover:text-tr min-w-0"
           >
             {vendor.name}
@@ -125,7 +126,7 @@ function VendorSearchCard({
 
         <div className="flex flex-wrap gap-2">
           <Link
-            href={`/services/${vendor.id}`}
+            href={vendorPagePath(vendor.kind, vendor.id)}
             className="btn-primary btn-sm no-underline"
           >
             View profile →

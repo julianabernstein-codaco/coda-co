@@ -12,55 +12,58 @@ export interface EmailPayload {
   text: string;
 }
 
-// Falls back to a path-only link when BASE_URL isn't set. Production
-// should always have BASE_URL configured (Vercel sets VERCEL_URL but
-// users typed BASE_URL in env historically — keep it for parity).
+// Absolute link for an email. An email has no origin for a browser to
+// resolve a relative href against, so a bare "/admin/listings" lands the
+// reader wherever their mail client decides — never where we meant.
+// BASE_URL wins; otherwise use the host Vercel injects (the project's
+// production domain in production, the deployment's own URL on a preview,
+// so a preview signup's links stay on that preview). Local dev has
+// neither and falls back to a path, which is fine there.
+function siteUrl(path: string): string {
+  const explicit = process.env.BASE_URL?.trim().replace(/\/$/, "");
+  if (explicit) return `${explicit}${path}`;
+
+  const vercelHost =
+    process.env.VERCEL_ENV === "production"
+      ? process.env.VERCEL_PROJECT_PRODUCTION_URL
+      : process.env.VERCEL_URL;
+  return vercelHost ? `https://${vercelHost}${path}` : path;
+}
+
 function dashboardUrl(): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  return base ? `${base}/dashboard` : "/dashboard";
+  return siteUrl("/dashboard");
 }
 
 function listingUrl(slug: string): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  return base ? `${base}/services/${slug}` : `/services/${slug}`;
+  return siteUrl(`/services/${slug}`);
 }
 
 function productUrl(slug: string): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  return base ? `${base}/shop/${slug}` : `/shop/${slug}`;
+  return siteUrl(`/shop/${slug}`);
 }
 
 function productsDashboardUrl(): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  return base ? `${base}/dashboard/products` : "/dashboard/products";
+  return siteUrl("/dashboard/products");
 }
 
 function giftCardRedeemUrl(): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  return base ? `${base}/gift-cards/redeem` : "/gift-cards/redeem";
+  return siteUrl("/gift-cards/redeem");
 }
 
 function giftCardContributeUrl(token: string): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  const path = `/gift-cards/contribute/${token}`;
-  return base ? `${base}${path}` : path;
+  return siteUrl(`/gift-cards/contribute/${token}`);
 }
 
 function giftCardManageUrl(token: string): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  const path = `/gift-cards/manage/${token}`;
-  return base ? `${base}${path}` : path;
+  return siteUrl(`/gift-cards/manage/${token}`);
 }
 
 function resetPasswordUrl(token: string): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  const path = `/reset-password?token=${encodeURIComponent(token)}`;
-  return base ? `${base}${path}` : path;
+  return siteUrl(`/reset-password?token=${encodeURIComponent(token)}`);
 }
 
 function forgotPasswordUrl(): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  return base ? `${base}/forgot-password` : "/forgot-password";
+  return siteUrl("/forgot-password");
 }
 
 // "Sam", "Sam and Jo", "Sam, Jo and Kim", "Sam, Jo, Kim and 2 others".
@@ -851,8 +854,7 @@ export async function sendPasswordChangedEmail(
 // signups and listings awaiting review without watching the admin queue.
 
 function adminUrl(path: string): string {
-  const base = process.env.BASE_URL?.replace(/\/$/, "");
-  return base ? `${base}${path}` : path;
+  return siteUrl(path);
 }
 
 // Where the internal pings land. Defaults to the shared team address so it

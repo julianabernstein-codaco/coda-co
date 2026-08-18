@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
+import { vendorPagePath } from "@/lib/format/vendor";
 import { requireVendor } from "@/app/dashboard/lib";
 import { ProfileForm } from "./ProfileForm";
 
@@ -39,7 +40,7 @@ export default async function VendorProfilePage() {
             <p className="text-[15px] text-cl mt-1.5">
               Upload a headshot and pick the frame color buyers see on{" "}
               <Link
-                href={`/services/${vendor.slug}`}
+                href={vendorPagePath(vendor.kind, vendor.slug)}
                 className="text-tr no-underline hover:underline"
               >
                 your public profile
