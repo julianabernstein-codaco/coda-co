@@ -26,6 +26,9 @@ export async function setVendorContactVisibility(
   }
 
   revalidatePath("/admin/vendors");
+  // A vendor lives on one page or the other depending on kind; revalidate
+  // both rather than reading the row again just to pick one.
   revalidatePath(`/services/${slug}`);
+  revalidatePath(`/makers/${slug}`);
   return { ok: true };
 }

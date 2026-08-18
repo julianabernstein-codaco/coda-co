@@ -59,6 +59,7 @@ function toVendor(v: DbVendor): Vendor {
     serviceDescription: v.serviceDescription ?? undefined,
     pricingNotes: v.pricingNotes ?? undefined,
     specializations: v.specializations,
+    requiresCustomOrder: v.requiresCustomOrder,
   };
 }
 

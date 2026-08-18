@@ -229,6 +229,7 @@ export async function updateVendorProfile(
 
   revalidatePath("/dashboard/profile");
   revalidatePath(`/services/${vendor.slug}`);
+  revalidatePath(`/makers/${vendor.slug}`);
   revalidatePath("/services");
 
   return { status: "ok" };

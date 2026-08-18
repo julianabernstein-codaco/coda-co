@@ -116,6 +116,10 @@ export interface Vendor {
   serviceDescription?: string;
   pricingNotes?: string;
   specializations: string[];
+  // Goods sellers: their work needs personalization or a conversation
+  // before a buyer can order. Declared at signup, editable from the
+  // dashboard. Surfaces as a note on their shop page.
+  requiresCustomOrder?: boolean;
 }
 
 export interface VendorWithRating extends Vendor {

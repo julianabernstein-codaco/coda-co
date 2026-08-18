@@ -81,6 +81,7 @@ export async function approveListing(
   revalidatePath("/shop");
   // The vendor themselves just went public too.
   revalidatePath("/services");
+  revalidatePath(`/makers/${product.vendor.slug}`);
   revalidatePath(`/services/${product.vendor.slug}`);
   return { ok: true };
 }

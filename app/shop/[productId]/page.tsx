@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { AddToCart } from "@/components/pdp/AddToCart";
 import { ProductTabs } from "@/components/pdp/ProductTabs";
@@ -12,6 +13,7 @@ import { getProduct, getRelatedProducts } from "@/lib/api/products";
 import { getReviews, getReviewSummary } from "@/lib/api/reviews";
 import { getVendor } from "@/lib/api/vendors";
 import { formatPriceRange, productThumbBg } from "@/lib/format/product";
+import { vendorPagePath } from "@/lib/format/vendor";
 
 interface PDPProps {
   params: Promise<{ productId: string }>;
@@ -98,7 +100,18 @@ export default async function ProductDetailPage({ params }: PDPProps) {
             <div className="flex items-center gap-2 mb-4">
               <Avatar initials={product.seller.slice(0, 2).toUpperCase()} size="sm" />
               <div>
-                <div className="text-[16px] font-medium text-ch">{product.seller}</div>
+                {/* Links to the maker's shop page when we resolved the
+                    vendor; falls back to plain text if we didn't. */}
+                {vendor ? (
+                  <Link
+                    href={vendorPagePath(vendor.kind, vendor.id)}
+                    className="text-[16px] font-medium text-ch no-underline hover:text-tr transition-colors"
+                  >
+                    {product.seller}
+                  </Link>
+                ) : (
+                  <div className="text-[16px] font-medium text-ch">{product.seller}</div>
+                )}
                 <div className="text-[14px] text-cl">{product.location}</div>
               </div>
               {product.verified && (

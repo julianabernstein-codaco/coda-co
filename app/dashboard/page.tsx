@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { prisma } from "@/lib/db";
+import { vendorPagePath } from "@/lib/format/vendor";
 import { requireVendor } from "./lib";
 
 export const metadata: Metadata = {
@@ -37,6 +38,9 @@ export default async function DashboardPage() {
   // toward "how many products do I have" — otherwise a seller whose only
   // item is in review is told to add their first product.
   const totalProducts = productCount + draftProductCount + pendingListingCount;
+
+  // Goods sellers get a shop page; everyone else the services profile.
+  const publicPagePath = vendorPagePath(vendor.kind, vendor.slug);
 
   // Billing summary: goods and services both run on a recurring subscription
   // (Starter = free trial, then Monthly/Annual).
@@ -77,7 +81,7 @@ export default async function DashboardPage() {
                 ? "Our team is reviewing the first item you listed. Once it's approved, your shop and that listing go live — and everything you add afterwards publishes instantly."
                 : "Publish your first listing and our team will review it. Once it's approved, your shop goes live and everything you add afterwards publishes instantly."}{" "}
               <Link
-                href={`/services/${vendor.slug}`}
+                href={publicPagePath}
                 className="text-tr no-underline hover:underline"
               >
                 Preview your page
@@ -128,8 +132,8 @@ export default async function DashboardPage() {
               title="Your public profile"
               body={
                 vendor.published
-                  ? `Edit your photo and bio — buyers see this at /services/${vendor.slug}.`
-                  : `Edit your photo and bio, and preview the page at /services/${vendor.slug} — only you can see it until your shop goes live.`
+                  ? `Edit your photo and bio — buyers see this at ${publicPagePath}.`
+                  : `Edit your photo and bio, and preview the page at ${publicPagePath} — only you can see it until your shop goes live.`
               }
               href="/dashboard/profile"
               cta="Edit profile →"
