@@ -36,7 +36,8 @@ interface SubmitInput {
   displayName: string;
   // Notification-only: surfaced in the team's new-signup email so admins can
   // review without opening the site. Not persisted here — the vendor profile
-  // is built from the application at approval time.
+  // is built from the application at approval time. Required for goods
+  // applicants (see the kind check below); optional for services.
   firstName?: string;
   lastName?: string;
   companyName?: string;
@@ -109,6 +110,17 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
   if (!VALID_KINDS.has(input.kind)) return { error: "Invalid application kind." };
   if (!VALID_PLANS.has(input.planId)) return { error: "Pick a plan to continue." };
   if (!input.displayName.trim()) return { error: "Tell us your shop or practice name." };
+  // Goods sellers must give both a company name (which becomes the shop
+  // name) and the person behind it, so we always know who we're dealing
+  // with. Mirrors the Step 1 gate in GoodsForm.
+  if (input.kind === "goods") {
+    if (!input.companyName?.trim()) {
+      return { error: "Add a company name for your shop." };
+    }
+    if (!input.firstName?.trim() || !input.lastName?.trim()) {
+      return { error: "Add your first and last name." };
+    }
+  }
   if (!input.city.trim() || !input.state.trim()) {
     return { error: "Add a city and state." };
   }

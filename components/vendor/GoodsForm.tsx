@@ -54,6 +54,8 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
     };
   }
 
+  // Company name is required, so it's the shop name. The name fallback only
+  // covers a half-filled preview render before the seller reaches it.
   const shopName =
     data.companyName.trim() || `${data.firstName} ${data.lastName}`.trim();
 
@@ -98,17 +100,20 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                   prices — right after this.
                 </p>
 
+                <FormField label="Company name" required>
+                  <input className={inputCls} placeholder="Earthen Studio" {...field("companyName")} />
+                  <p className="text-[13px] text-cl mt-1.5">
+                    This is the shop name buyers will see.
+                  </p>
+                </FormField>
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                  <FormField label="First name">
+                  <FormField label="First name" required>
                     <input className={inputCls} placeholder="First name" {...field("firstName")} />
                   </FormField>
-                  <FormField label="Last name">
+                  <FormField label="Last name" required>
                     <input className={inputCls} placeholder="Last name" {...field("lastName")} />
                   </FormField>
                 </div>
-                <FormField label="Company name (optional)">
-                  <input className={inputCls} placeholder="Earthen Studio" {...field("companyName")} />
-                </FormField>
                 <FormField label="Website">
                   <input className={inputCls} placeholder="https://" {...field("website")} />
                 </FormField>
@@ -247,8 +252,12 @@ export function GoodsForm({ paidOpen = true }: { paidOpen?: boolean }) {
                     // final submit on Step 2 (the State <select> in particular
                     // defaults to empty, which is easy to miss otherwise).
                     if (step === 0) {
-                      if (!shopName) {
-                        setSubmitError("Add your name or a company name for your shop.");
+                      if (!data.companyName.trim()) {
+                        setSubmitError("Add a company name for your shop.");
+                        return;
+                      }
+                      if (!data.firstName.trim() || !data.lastName.trim()) {
+                        setSubmitError("Add your first and last name.");
                         return;
                       }
                       if (!data.city.trim() || !data.state.trim()) {
