@@ -69,8 +69,8 @@ export function buildSample(key: TemplateKey): EmailPayload {
       return buildListingApprovedEmail({
         toEmail: FIXTURE.toEmail,
         toName: FIXTURE.toName,
-        productTitle: "Hand-thrown ceramic urn, sage glaze",
-        productSlug: "urn-sage-001",
+        productTitle: "Remains infused bracelet",
+        productSlug: "remains-bracelet-001",
       });
     case "new-vendor-signup":
       return buildNewVendorSignupEmail({
@@ -88,8 +88,8 @@ export function buildSample(key: TemplateKey): EmailPayload {
       });
     case "listing-needs-review":
       return buildListingNeedsReviewEmail({
-        productTitle: "Hand-thrown ceramic urn, sage glaze",
-        productType: "Urns & vessels",
+        productTitle: "Remains infused bracelet",
+        productType: "Ash jewelry",
         vendorName: FIXTURE.displayName,
         location: "Portland, OR",
         website: "earthenstudio.com",

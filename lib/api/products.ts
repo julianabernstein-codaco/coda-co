@@ -156,6 +156,13 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   return attachRatings(mapped);
 }
 
+// Total size of the public catalog, for the "N goods · M after filters"
+// line on /shop. A count query avoids hydrating every product just to read
+// `.length`.
+export async function countProducts(): Promise<number> {
+  return prisma.product.count({ where: { status: "published" } });
+}
+
 export async function getProduct(id: string): Promise<ProductWithRating | null> {
   // The PDP is public, so we only return published rows here. The
   // dashboard editor uses getDashboardProduct (below) to fetch drafts.

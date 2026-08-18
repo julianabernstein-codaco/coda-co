@@ -43,7 +43,7 @@ const DEV_PASSWORD = "codaco-dev";
 const ADMIN_EMAIL = "admin@codaco.local";
 
 // Cover images for example listings live as static files in
-// public/products, named by the product slug (e.g. urn-sage-001.jpg).
+// public/products, named by the product slug (e.g. remains-bracelet-001.jpg).
 // Drop a slug-named image there and it attaches on the next db:mock —
 // no per-product code edit. Returns the public path (served by Next at
 // /products/<slug>.<ext>) or null when no file is present, in which case
