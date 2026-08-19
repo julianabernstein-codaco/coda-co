@@ -3,7 +3,7 @@ import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Container } from "@/components/ui/Container";
 import { prisma } from "@/lib/db";
 import { formatPriceRange } from "@/lib/format/product";
-import { ListingRow } from "./ListingRow";
+import { ListingReviewCard, type Listing } from "./ListingReviewCard";
 import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = {
@@ -20,12 +20,19 @@ export default async function AdminListingsPage() {
     include: {
       productType: true,
       variants: true,
-      vendor: { select: { displayName: true, user: { select: { email: true } } } },
+      images: { orderBy: { sortOrder: "asc" } },
+      vendor: {
+        select: {
+          displayName: true,
+          location: true,
+          user: { select: { email: true } },
+        },
+      },
     },
     orderBy: { updatedAt: "asc" },
   });
 
-  const listings = products.map((p) => {
+  const listings: Listing[] = products.map((p) => {
     const prices = p.variants.map((v) => v.priceCents / 100);
     const priceMin = prices.length ? Math.min(...prices) : 0;
     const priceMax = prices.length ? Math.max(...prices) : 0;
@@ -35,9 +42,16 @@ export default async function AdminListingsPage() {
       slug: p.slug,
       productType: p.productType.name,
       priceLabel: formatPriceRange(priceMin, priceMax),
+      description: p.description,
+      coverImageUrl: p.coverImageUrl,
+      gallery: p.images.map((img) => ({
+        id: img.id,
+        url: img.url,
+        alt: img.alt,
+      })),
       vendorName: p.vendor.displayName,
       vendorEmail: p.vendor.user.email,
-      hasCover: p.coverImageUrl !== null,
+      vendorLocation: p.vendor.location,
       submittedAt: p.updatedAt.toISOString().slice(0, 10),
     };
   });
@@ -67,41 +81,20 @@ export default async function AdminListingsPage() {
           <h2 className="text-[17px] font-medium text-ch mb-3">
             Awaiting review <span className="text-cl">({listings.length})</span>
           </h2>
-          <div className="bg-white rounded-[10px] border border-line overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-pl border-b border-pl2">
-                <tr>
-                  <Th>Listing</Th>
-                  <Th>Seller</Th>
-                  <Th>Type</Th>
-                  <Th>Price</Th>
-                  <Th>Submitted</Th>
-                  <Th>Decision</Th>
-                </tr>
-              </thead>
-              <tbody>
-                {listings.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="py-10 text-center text-cm text-sm">
-                      No listings awaiting review.
-                    </td>
-                  </tr>
-                ) : (
-                  listings.map((l) => <ListingRow key={l.id} listing={l} />)
-                )}
-              </tbody>
-            </table>
-          </div>
+          {listings.length === 0 ? (
+            <div className="bg-white rounded-[10px] border border-line py-10 text-center text-[15px] text-cm">
+              No listings awaiting review.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {listings.map((l) => (
+                <ListingReviewCard key={l.id} listing={l} />
+              ))}
+            </div>
+          )}
         </Container>
       </section>
     </>
   );
 }
 
-function Th({ children }: { children: React.ReactNode }) {
-  return (
-    <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-cl whitespace-nowrap">
-      {children}
-    </th>
-  );
-}
