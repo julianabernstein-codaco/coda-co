@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { submitServicesApplication } from "@/app/list-with-us/actions";
+import { StateOptions } from "@/components/vendor/StateOptions";
 import { StepsBar } from "@/components/ui/StepsBar";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
 import {
@@ -188,12 +189,7 @@ export function ServicesForm({
                   </FormField>
                   <FormField label="State" required>
                     <select className={inputCls} {...field("state")}>
-                      <option value="" disabled>
-                        State…
-                      </option>
-                      {["NY", "CA", "OR", "TX", "WA", "FL", "CO", "MA"].map((s) => (
-                        <option key={s}>{s}</option>
-                      ))}
+                      <StateOptions />
                     </select>
                   </FormField>
                   <FormField label="Zip" required>

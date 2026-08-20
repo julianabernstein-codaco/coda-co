@@ -6,6 +6,7 @@ import {
   ImageUploader,
   type ImageUploaderHandle,
 } from "@/components/ui/ImageUploader";
+import { StateOptions } from "@/components/vendor/StateOptions";
 import { StepsBar } from "@/components/ui/StepsBar";
 import {
   goodsPlanIncludes,
@@ -198,12 +199,7 @@ export function GoodsForm({
                   </FormField>
                   <FormField label="State" required>
                     <select className={inputCls} {...field("state")}>
-                      <option value="" disabled>
-                        State…
-                      </option>
-                      {["OR", "CA", "NY", "TX", "WA", "FL", "CO", "MA"].map((s) => (
-                        <option key={s}>{s}</option>
-                      ))}
+                      <StateOptions />
                     </select>
                   </FormField>
                   <FormField label="Zip" required>
