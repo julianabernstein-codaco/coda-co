@@ -5,7 +5,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
 import { log } from "@/lib/log";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { clientIp, rateLimit, resetRateLimit } from "@/lib/rate-limit";
 
 // Login brute-force limits. Exported so the login server action can peek at
 // the same buckets/thresholds for its user-facing "too many attempts"
@@ -88,6 +88,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           log.warn("auth.signin_failed", { reason: "wrong_password", email, userId: user.id });
           return null;
         }
+
+        // Successful auth clears the per-account counter so a customer who
+        // mistyped a few times then got in isn't left near the limit. Only
+        // the email key — the per-IP counter is machine-level protection and
+        // shouldn't be reset just because one account on that IP succeeded
+        // (matters on shared / office IPs).
+        await resetRateLimit(`login:email:${email}`, LOGIN_EMAIL_LIMIT);
 
         log.info("auth.signin_succeeded", { userId: user.id, email });
         return { id: user.id, email: user.email, name: user.name ?? null };

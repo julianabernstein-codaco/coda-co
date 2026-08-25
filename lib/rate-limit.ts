@@ -191,6 +191,25 @@ export async function isRateLimited(key: string, opts: LimitOpts): Promise<boole
   }
 }
 
+// Clear a key's counter — e.g. after a successful login, so a customer who
+// mistyped a few times then got in isn't left near the limit. Best-effort:
+// a failed reset is non-fatal (the window would expire on its own anyway),
+// so Redis errors/timeouts are swallowed rather than surfaced to the caller.
+export async function resetRateLimit(key: string, opts: LimitOpts): Promise<void> {
+  const client = getRedis();
+  if (!client) {
+    buckets.delete(key);
+    return;
+  }
+  try {
+    await withTimeout(getLimiter(client, opts).resetUsedTokens(key));
+    noteRedisUp();
+  } catch (err) {
+    noteRedisDown(err);
+    buckets.delete(key);
+  }
+}
+
 // Best-effort client IP. On Vercel `x-forwarded-for` is the trusted
 // chain; we take the leftmost entry, which is the original client.
 export async function clientIp(): Promise<string> {
