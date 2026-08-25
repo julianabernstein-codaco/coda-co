@@ -512,7 +512,10 @@ const ACCOUNT_ROLES = ['unknown', 'user', 'admin'] as const;
 function AccountsTab({ accounts }: { accounts: AccountHolderRow[] }) {
   const [search, setSearch] = useState('');
   const [role, setRole] = useState('');
-  const [isVendor, setIsVendor] = useState('');
+  // 'customer' = no vendor_profile attached. That's the whole definition —
+  // a customer is just an account that never became a vendor, so it's
+  // derived here rather than stored.
+  const [accountType, setAccountType] = useState('');
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -525,26 +528,26 @@ function AccountsTab({ accounts }: { accounts: AccountHolderRow[] }) {
       )
         return false;
       if (role && a.role !== role) return false;
-      if (isVendor === 'yes' && !a.vendorSlug) return false;
-      if (isVendor === 'no' && a.vendorSlug) return false;
+      if (accountType === 'vendor' && !a.vendorSlug) return false;
+      if (accountType === 'customer' && a.vendorSlug) return false;
       return true;
     });
-  }, [accounts, search, role, isVendor]);
+  }, [accounts, search, role, accountType]);
 
   return (
     <>
       <FilterBar>
         <SearchInput value={search} onChange={setSearch} placeholder="Search email, name, vendor…" />
+        <Select value={accountType} onChange={setAccountType} label="Account type">
+          <option value="">All accounts</option>
+          <option value="customer">Customers (no vendor profile)</option>
+          <option value="vendor">Vendors (has profile)</option>
+        </Select>
         <Select value={role} onChange={setRole} label="Role">
           <option value="">All roles</option>
           {ACCOUNT_ROLES.map((r) => (
             <option key={r} value={r}>{r}</option>
           ))}
-        </Select>
-        <Select value={isVendor} onChange={setIsVendor} label="Vendor">
-          <option value="">Any</option>
-          <option value="yes">Vendors</option>
-          <option value="no">Buyers only</option>
         </Select>
         <RecordCount count={filtered.length} total={accounts.length} />
       </FilterBar>

@@ -54,6 +54,8 @@ export default async function AdminPage() {
     body: r.body,
   }));
 
+  const customerCount = accounts.filter((a) => a.vendorSlug === null).length;
+
   return (
     <div className="min-h-screen bg-pl2">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-10">
@@ -106,13 +108,15 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-7">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-7">
           {[
             { label: 'Products', count: products.length, color: 'bg-tr-p border-tr-l/40' },
             { label: 'Vendors', count: vendors.length, color: 'bg-sg-p border-sg-l/40' },
             { label: 'Services', count: services.length, color: 'bg-sg-p border-sg-l/40' },
             { label: 'Reviews', count: reviews.length + vendorReviews.length, color: 'bg-pl border-pl2' },
             { label: 'Accounts', count: accounts.length, color: 'bg-pl border-pl2' },
+            // Accounts with no vendor_profile — the customer side of the base.
+            { label: 'Customers', count: customerCount, color: 'bg-pl border-pl2' },
           ].map(({ label, count, color }) => (
             <div key={label} className={`rounded-lg border px-4 py-3 ${color}`}>
               <p className="text-2xl font-serif text-ch tabular-nums">{count}</p>
