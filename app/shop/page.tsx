@@ -62,11 +62,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     if (sort === "price-desc") return b.priceMax - a.priceMax;
     if (sort === "most-reviewed") return b.reviewCount - a.reviewCount;
     // featured (default): listings with a cover photo first so the grid
-    // never leads with placeholder-icon tiles, then verified. The sort is
-    // stable, so getProducts' order is preserved within each tie group.
-    const cover = Number(Boolean(b.coverImageUrl)) - Number(Boolean(a.coverImageUrl));
-    if (cover !== 0) return cover;
-    return (b.verified ? 1 : 0) - (a.verified ? 1 : 0);
+    // never leads with placeholder-icon tiles. The sort is stable, so
+    // getProducts' order is preserved within each tie group. (Verification
+    // is intentionally not a sort key — no formal workflow yet.)
+    return Number(Boolean(b.coverImageUrl)) - Number(Boolean(a.coverImageUrl));
   });
 
   // Paginate the sorted results. `page` is clamped to the valid range so a

@@ -186,9 +186,11 @@ export async function getVendor(
 }
 
 export async function getFeaturedVendors(limit = 4): Promise<VendorWithRating[]> {
+  // `verified` is intentionally not a filter here: verification has no formal
+  // workflow yet, so featuring is by published + kind only. Restore the
+  // `verified: true` condition once verification ships.
   const where: Prisma.VendorProfileWhereInput = {
     published: true,
-    verified: true,
     kind: { in: ["services", "both"] },
   };
   if (await isDemoHidden()) where.demo = false;
