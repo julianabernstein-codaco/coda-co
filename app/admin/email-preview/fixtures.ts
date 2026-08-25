@@ -18,6 +18,7 @@ import {
   buildPasswordResetEmail,
   buildVendorInquiryEmail,
   buildWaitlistConfirmationEmail,
+  buildWelcomeEmail,
   type EmailPayload,
 } from "@/lib/email/templates";
 
@@ -42,6 +43,7 @@ export const TEMPLATE_KEYS = [
   "gift-pool-created",
   "gift-contribution",
   "waitlist-confirmation",
+  "welcome",
   "password-reset",
   "password-changed",
 ] as const;
@@ -141,6 +143,11 @@ export function buildSample(key: TemplateKey): EmailPayload {
       });
     case "waitlist-confirmation":
       return buildWaitlistConfirmationEmail({ toEmail: FIXTURE.toEmail });
+    case "welcome":
+      return buildWelcomeEmail({
+        toEmail: FIXTURE.toEmail,
+        toName: FIXTURE.toName,
+      });
     case "password-reset":
       return buildPasswordResetEmail({
         toEmail: FIXTURE.toEmail,
