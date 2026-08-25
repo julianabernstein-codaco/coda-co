@@ -58,7 +58,6 @@ export const goodsPlans: Plan[] = [
 
 export const servicePlanIncludes = [
   "Service profile",
-  "Verified badge (pending CodaCo approval)",
   "CodaCo messaging",
   "Direct client payments through CodaCo",
   "Client reviews",

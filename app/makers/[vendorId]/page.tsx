@@ -134,11 +134,6 @@ export default async function MakerShopPage({ params }: PageProps) {
                   {vendor.name}
                 </h1>
                 {vendor.demo && <ExampleBadge />}
-                {vendor.verified && (
-                  <span className="text-[12px] tracking-[.06em] uppercase bg-sg-p text-sg-d border border-sg-l px-2.5 py-0.5 rounded-full">
-                    CodaCo verified
-                  </span>
-                )}
                 {vendor.lifeStages.map((s) => (
                   <span
                     key={s}
