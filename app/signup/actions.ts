@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/db";
+import { sendWelcomeEmail } from "@/lib/email/templates";
 import { isNextControlFlow, log } from "@/lib/log";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
@@ -72,6 +73,14 @@ export async function signupAction(
     select: { id: true },
   });
   log.info("signup.user_created", { userId: created.id, email });
+
+  // Welcome email. Best-effort: the account already exists, so a send
+  // failure is logged and never surfaced. Sent before signIn because
+  // signIn throws a redirect on success — nothing after it runs.
+  const welcome = await sendWelcomeEmail({ toEmail: email, toName: name || null });
+  if (!welcome.ok) {
+    log.warn("signup.welcome_email_failed", { userId: created.id, email, err: welcome.error });
+  }
 
   try {
     await signIn("credentials", { email, password, redirectTo });

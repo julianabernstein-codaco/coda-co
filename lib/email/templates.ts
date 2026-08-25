@@ -66,6 +66,14 @@ function forgotPasswordUrl(): string {
   return siteUrl("/forgot-password");
 }
 
+function whereToStartUrl(): string {
+  return siteUrl("/where-to-start");
+}
+
+function whatIsCodaCoUrl(): string {
+  return siteUrl("/what-is-codaco");
+}
+
 // "Sam", "Sam and Jo", "Sam, Jo and Kim", "Sam, Jo, Kim and 2 others".
 function joinNames(names: string[]): string {
   if (names.length === 0) return "Several people";
@@ -740,6 +748,74 @@ export async function sendWaitlistConfirmationEmail(
   args: WaitlistConfirmationArgs,
 ): Promise<SendResult> {
   return sendEmail({ to: args.toEmail, ...buildWaitlistConfirmationEmail(args) });
+}
+
+// Sent right after someone creates an account from /signup. A plain
+// welcome — no action required of the reader — that says what CodaCo is
+// and where to begin. Deliberately unhurried in tone: people arrive here
+// planning ahead, caring for someone, or newly bereaved. Best-effort, so
+// a send failure never blocks the signup.
+export interface WelcomeArgs {
+  toEmail: string;
+  toName: string | null;
+}
+
+export function buildWelcomeEmail(args: WelcomeArgs): EmailPayload {
+  const greeting = args.toName ? `Hi ${args.toName},` : "Hi,";
+  const subject = "Welcome to CodaCo";
+  const explore = whereToStartUrl();
+  const about = whatIsCodaCoUrl();
+
+  const text = [
+    greeting,
+    "",
+    "Thank you for joining CodaCo. It means a great deal to have you here.",
+    "",
+    "CodaCo is a curated marketplace for the end of life — the goods and services people look for when they're planning ahead, caring for someone, or finding their way after a death. Every maker and provider here is chosen by hand, so you can spend less time searching and more time on what actually matters.",
+    "",
+    `Have a look around whenever you're ready. And if you're not sure where to begin, we've put together a place to start:  ${about}`,
+    "",
+    `Explore the marketplace:  ${explore}`,
+    "",
+    "Questions, or something you can't find? Email us at hello@codaco.market. A real person reads every message, and we're always glad to help.",
+    "",
+    "— The CodaCo team",
+  ].join("\n");
+
+  const html = layout(`
+    <p style="margin:0 0 16px;font-size:15px;">${greeting}</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      Thank you for joining CodaCo. It means a great deal to have you here.
+    </p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      CodaCo is a curated marketplace for the end of life — the goods and services
+      people look for when they're planning ahead, caring for someone, or finding
+      their way after a death. Every maker and provider here is chosen by hand, so
+      you can spend less time searching and more time on what actually matters.
+    </p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      Have a look around whenever you're ready. And if you're not sure where to
+      begin, we've put together
+      <a href="${about}" style="color:#c1634f;">a place to start</a>.
+    </p>
+    <p style="margin:24px 0;">
+      <a href="${explore}" style="display:inline-block;background:#c1634f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:999px;font-size:14px;">
+        Explore the marketplace
+      </a>
+    </p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
+      Questions, or something you can't find? Email us at
+      <a href="mailto:hello@codaco.market" style="color:#c1634f;">hello@codaco.market</a>.
+      A real person reads every message, and we're always glad to help.
+    </p>
+    <p style="margin:0;font-size:15px;">— The CodaCo team</p>
+  `);
+
+  return { subject, html, text };
+}
+
+export async function sendWelcomeEmail(args: WelcomeArgs): Promise<SendResult> {
+  return sendEmail({ to: args.toEmail, ...buildWelcomeEmail(args) });
 }
 
 // Sent when someone requests a password reset from /forgot-password. Carries
