@@ -115,11 +115,6 @@ export default async function ProductDetailPage({ params }: PDPProps) {
                 )}
                 <div className="text-[14px] text-cl">{product.location}</div>
               </div>
-              {product.verified && (
-                <span className="ml-auto text-[12px] bg-sg-p text-sg-d px-2 py-0.5 rounded-full border border-sg-l">
-                  CodaCo verified
-                </span>
-              )}
             </div>
 
             {product.demo && <div className="mb-2"><ExampleBadge /></div>}
