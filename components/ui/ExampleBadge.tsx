@@ -4,7 +4,7 @@
 export function ExampleBadge({ className = "" }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-center text-[11px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-full bg-pl border border-line text-cm ${className}`}
+      className={`inline-flex items-center text-[11px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-full bg-sg-p border border-sg-l text-sg-d ${className}`}
     >
       Example
     </span>
