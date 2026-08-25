@@ -18,6 +18,19 @@ code — the code gate (`lib/launch.ts` + `/admin/launch`) already exists.
 - `launchedAt` also starts every vendor's **90-day free trial** (`TRIAL_DAYS`
   in `lib/launch.ts`) — the clock runs from launch for everyone.
 
+## Demo / example vendors
+
+- The mock vendors can stay live after launch as **labeled samples** so the
+  marketplace looks populated. A vendor flagged `demo` (`VendorProfile.demo`)
+  renders with a sage **"Example"** badge; contact + purchase are disabled and
+  its reviews are labeled as examples. Real signups are never `demo`.
+- Manage from **`/admin/launch` → Demo / example vendors**:
+  - **Flag mock vendors as examples** — marks the reserved `@codaco.local`
+    accounts as `demo` (in-app `npm run demo:flag`; idempotent).
+  - **Hide demo vendors** — the retirement switch
+    (`PlatformConfig.demoVendorsHidden`); hides every demo vendor and their
+    products/services from all public surfaces at once. Reversible.
+
 ## Environment variables (Vercel → Settings → Environment Variables)
 
 Only two Stripe vars are read by the app:
@@ -46,8 +59,13 @@ Notes:
 
 ## Launch day
 
-1. **Clean test data.** Remove mock/test vendors from the production DB so real
-   vendors aren't mixed with demo rows. (Ask Claude for the cleanup if needed.)
+1. **Flag the mock vendors as examples** (you no longer delete them). On
+   `/admin/launch` → **Demo / example vendors**, click **Flag mock vendors as
+   examples**. They stay live as sample listings with a sage **"Example"** badge
+   — contact + purchase disabled, reviews labeled as examples — so the
+   marketplace looks populated for new visitors without misleading buyers.
+   Retire them later with **Hide demo vendors** on the same page. (CLI
+   equivalent: `npm run demo:flag`.)
 2. **Null out stale test-mode Stripe refs** on any *real* vendor who attempted a
    test-mode checkout: clear `vendor_profile.stripe_customer_id` (and any
    `subscriptions.stripe_subscription_id`) so live mode creates fresh customers.
