@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { Product } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
+import { ExampleBadge } from "@/components/ui/ExampleBadge";
 import { formatPriceRange, productThumbBg } from "@/lib/format/product";
 
 export function ProductCard({ product }: { product: Product }) {
@@ -26,6 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
       )}
 
       <div className="px-4 pt-3 pb-[.95rem]">
+        {product.demo && <div className="mb-1.5"><ExampleBadge /></div>}
         <div className="text-[15px] font-medium text-ch mb-[3px] leading-[1.35]">
           {product.title}
         </div>

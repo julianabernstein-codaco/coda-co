@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { setLaunchedAt } from "@/lib/launch";
+import { setDemoVendorsHidden, setLaunchedAt } from "@/lib/launch";
 import { log } from "@/lib/log";
 
 async function requireAdmin(): Promise<void> {
@@ -38,5 +38,19 @@ export async function revertToPrelaunch(): Promise<void> {
   await requireAdmin();
   await setLaunchedAt(null);
   log.info("launch.reverted_to_prelaunch");
+  revalidateAll();
+}
+
+export async function hideDemoVendors(): Promise<void> {
+  await requireAdmin();
+  await setDemoVendorsHidden(true);
+  log.info("launch.demo_vendors_hidden", { hidden: true });
+  revalidateAll();
+}
+
+export async function showDemoVendors(): Promise<void> {
+  await requireAdmin();
+  await setDemoVendorsHidden(false);
+  log.info("launch.demo_vendors_hidden", { hidden: false });
   revalidateAll();
 }

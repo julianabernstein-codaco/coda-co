@@ -130,8 +130,13 @@ export function AddToCart({ product }: AddToCartProps) {
       </div>
 
       {/* CTA — the cart is sign-in only, so signed-out shoppers get a
-          sign-in prompt that returns them to this product. */}
-      {isSignedIn ? (
+          sign-in prompt that returns them to this product. Example (demo)
+          listings aren't for sale. */}
+      {product.demo ? (
+        <div className="w-full py-3.5 rounded-full text-[16px] font-medium text-center bg-pl text-cm border border-line cursor-not-allowed">
+          Example listing — not for sale
+        </div>
+      ) : isSignedIn ? (
         <button
           onClick={handleAdd}
           className={[

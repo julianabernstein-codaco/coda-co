@@ -4,6 +4,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ContactVendorForm } from "@/components/services/ContactVendorForm";
+import { ExampleBadge } from "@/components/ui/ExampleBadge";
 import { Container } from "@/components/ui/Container";
 import { SaveButton } from "@/components/ui/SaveButton";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -153,6 +154,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 <h1 className="font-serif text-[34px] font-light text-ch leading-tight">
                   {vendor.name}
                 </h1>
+                {vendor.demo && <ExampleBadge />}
                 {vendor.verified && (
                   <span className="text-[12px] tracking-[.06em] uppercase bg-sg-p text-sg-d border border-sg-l px-2.5 py-0.5 rounded-full">
                     CodaCo verified
@@ -189,7 +191,11 @@ export default async function VendorProfilePage({ params }: PageProps) {
                 className="text-[15px]"
               />
               <div className="flex flex-wrap gap-3 items-center mt-5">
-                {isSignedIn ? (
+                {vendor.demo ? (
+                  <span className="btn-secondary btn-md opacity-60 cursor-not-allowed">
+                    Example profile — contact disabled
+                  </span>
+                ) : isSignedIn ? (
                   <a href="#contact" className="btn-primary btn-md no-underline">
                     Contact ↗
                   </a>
@@ -324,6 +330,12 @@ export default async function VendorProfilePage({ params }: PageProps) {
           <section className="bg-tr-vp px-10 pt-4 pb-16">
             <Container width="narrow">
               <SectionHeader eyebrow="What clients say" title="Reviews" className="mb-8" />
+              {vendor.demo && (
+                <p className="text-center text-[13px] text-cl mb-6 -mt-4">
+                  Example reviews — shown to illustrate how client reviews appear on a
+                  vendor profile.
+                </p>
+              )}
               <div className="text-center mb-8">
                 <div className="font-serif text-[42px] font-light text-ch leading-none mb-2">
                   {vendor.rating.toFixed(1)}
@@ -366,14 +378,15 @@ export default async function VendorProfilePage({ params }: PageProps) {
           <div className="bg-tr-vp border border-tr-p rounded-[14px] p-8">
             <div className="text-center">
               <h2 className="font-serif text-[26px] font-light text-ch mb-3">
-                Reach out to {vendor.name}
+                {vendor.demo ? "Example profile" : `Reach out to ${vendor.name}`}
               </h2>
               <p className="text-[15px] text-ink max-w-[420px] mx-auto mb-6 leading-[1.75]">
-                Send a message and {vendor.name} will reply straight to your email. Initial
-                calls are free.
+                {vendor.demo
+                  ? `${vendor.name} is a sample listing showing how CodaCo vendor profiles look. Contact is disabled for example profiles.`
+                  : `Send a message and ${vendor.name} will reply straight to your email. Initial calls are free.`}
               </p>
             </div>
-            {isSignedIn ? (
+            {vendor.demo ? null : isSignedIn ? (
               <ContactVendorForm vendorSlug={vendor.id} vendorName={vendor.name} />
             ) : (
               <div className="bg-white border border-tr-p rounded-[10px] p-6 text-center">

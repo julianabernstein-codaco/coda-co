@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
-import { getLaunchedAt, launchedFrom, trialWindow, TRIAL_DAYS } from "@/lib/launch";
-import { goLiveNow, revertToPrelaunch, scheduleLaunch } from "./actions";
+import {
+  getLaunchedAt,
+  isDemoHidden,
+  launchedFrom,
+  trialWindow,
+  TRIAL_DAYS,
+} from "@/lib/launch";
+import {
+  goLiveNow,
+  hideDemoVendors,
+  revertToPrelaunch,
+  scheduleLaunch,
+  showDemoVendors,
+} from "./actions";
 import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = { title: "Launch — Admin | CodaCo" };
@@ -15,6 +27,7 @@ export default async function AdminLaunchPage() {
   await requireAdminPage("/admin/launch");
 
   const launchedAt = await getLaunchedAt();
+  const demoHidden = await isDemoHidden();
   const live = launchedFrom(launchedAt);
   const scheduled = launchedAt != null && !live; // set, but in the future
   const { endsAt } = trialWindow(launchedAt);
@@ -101,6 +114,29 @@ export default async function AdminLaunchPage() {
             <form action={revertToPrelaunch}>
               <button className="btn-ghost btn-md" type="submit">
                 Back to pre-launch
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[10px] border border-line p-6 mt-5">
+          <h2 className="font-serif text-[18px] text-ch mb-2">Demo / example vendors</h2>
+          <p className="text-[13px] text-cm mb-4 leading-relaxed">
+            Sample vendors show new visitors what a populated marketplace looks
+            like. They render with an “Example” badge and can’t be contacted or
+            bought from. Once real vendors fill the site, hide them all here.
+          </p>
+          <div className="flex items-center gap-3">
+            <span
+              className={`text-[11px] font-medium tracking-wide px-2.5 py-1 rounded-full border ${
+                demoHidden ? "bg-pl border-line text-cm" : "bg-sg-p border-sg-l text-sg-d"
+              }`}
+            >
+              {demoHidden ? "HIDDEN" : "SHOWING"}
+            </span>
+            <form action={demoHidden ? showDemoVendors : hideDemoVendors}>
+              <button className="btn-secondary btn-md" type="submit">
+                {demoHidden ? "Show demo vendors" : "Hide demo vendors"}
               </button>
             </form>
           </div>

@@ -81,6 +81,11 @@ export function ProductTabs({ product, reviews, summary, sellerBio }: ProductTab
 
         {active === "reviews" && (
           <div>
+            {product.demo && (
+              <p className="text-[13px] text-cl mb-5">
+                Example reviews — shown to illustrate how product reviews appear.
+              </p>
+            )}
             {summary && (
               <div className="flex items-center gap-6 mb-6 pb-5 border-b border-line">
                 <div className="text-center">

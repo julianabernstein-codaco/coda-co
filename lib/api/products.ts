@@ -1,6 +1,7 @@
 import type { $Enums, Prisma } from "@prisma/client";
 import { normalizeSlug } from "@/lib/api/applications";
 import { prisma } from "@/lib/db";
+import { isDemoHidden } from "@/lib/launch";
 import type {
   LifeStage,
   Product,
@@ -85,6 +86,7 @@ function toProduct(p: DbProduct, images: DbProductImage[] = []): Product {
     lifeStages: p.lifeStages as LifeStage[],
     coverImageUrl: p.coverImageUrl,
     images: images.map(toImage),
+    demo: p.vendor.demo,
   };
 }
 
@@ -126,7 +128,12 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
     ? { status: { in: ["draft", "pending_review", "published"] } }
     : { status: "published" };
   if (filters.productType) where.productType = { slug: filters.productType };
-  if (filters.sellerId) where.vendor = { slug: filters.sellerId };
+  // Vendor filter merges the seller filter with the demo-hidden retirement
+  // switch (exclude sample vendors' products when hidden).
+  const vendorWhere: Prisma.VendorProfileWhereInput = {};
+  if (filters.sellerId) vendorWhere.slug = filters.sellerId;
+  if (await isDemoHidden()) vendorWhere.demo = false;
+  if (Object.keys(vendorWhere).length) where.vendor = vendorWhere;
   if (filters.verified != null) where.verified = filters.verified;
   if (filters.ids) where.slug = { in: filters.ids };
   if (filters.lifeStage) {
@@ -168,7 +175,9 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
 // line on /shop. A count query avoids hydrating every product just to read
 // `.length`.
 export async function countProducts(): Promise<number> {
-  return prisma.product.count({ where: { status: "published" } });
+  const where: Prisma.ProductWhereInput = { status: "published" };
+  if (await isDemoHidden()) where.vendor = { demo: false };
+  return prisma.product.count({ where });
 }
 
 export async function getProduct(id: string): Promise<ProductWithRating | null> {
@@ -179,6 +188,8 @@ export async function getProduct(id: string): Promise<ProductWithRating | null> 
     include: { vendor: true, productType: true, variants: true },
   });
   if (!p) return null;
+  // Hidden demo vendors' products 404 publicly.
+  if (p.vendor.demo && (await isDemoHidden())) return null;
 
   const [summary, images] = await Promise.all([
     prisma.productReview.aggregate({
@@ -214,14 +225,16 @@ export async function getRelatedProducts(product: Product): Promise<ProductWithR
   });
 
   const need = 4 - sameTypeAndVendor.length;
+  const fillerWhere: Prisma.ProductWhereInput = {
+    slug: { not: product.id },
+    status: "published",
+    productType: { slug: product.productType },
+    NOT: { id: { in: sameTypeAndVendor.map((p) => p.id) } },
+  };
+  if (await isDemoHidden()) fillerWhere.vendor = { demo: false };
   const filler = need > 0
     ? await prisma.product.findMany({
-        where: {
-          slug: { not: product.id },
-          status: "published",
-          productType: { slug: product.productType },
-          NOT: { id: { in: sameTypeAndVendor.map((p) => p.id) } },
-        },
+        where: fillerWhere,
         include: { vendor: true, productType: true, variants: true },
         take: need,
       })
