@@ -222,6 +222,13 @@ model VendorProfile {
   // since a human reviewed the application itself.
   published Boolean @default(false)
 
+  // Sample/example vendor used to show what a populated marketplace looks
+  // like pre- and post-launch. Renders publicly with an "Example" badge,
+  // but contact + purchase are disabled and its reviews are labeled as
+  // examples. Hidden everywhere at once via PlatformConfig.demoVendorsHidden.
+  // The mock seed sets this true; real signups never do.
+  demo Boolean @default(false)
+
   // One Stripe Customer per vendor, reused for both the services
   // subscription and the goods one-time set-up fee. Null until the vendor
   // first opens Checkout. (VendorPayment also stores the id for audit, but
@@ -881,6 +888,10 @@ model WaitlistSignup {
 model PlatformConfig {
   id         String    @id @default("singleton")
   launchedAt DateTime? @map("launched_at")
+  // Retirement switch for the demo/example vendors: true hides every
+  // `demo` vendor (and their products/services) from all public surfaces.
+  // Flip it from /admin/launch once real content is enough.
+  demoVendorsHidden Boolean @default(false) @map("demo_vendors_hidden")
   updatedAt  DateTime  @updatedAt @map("updated_at")
 
   @@map("platform_config")

@@ -59,3 +59,21 @@ export async function setLaunchedAt(launchedAt: Date | null): Promise<void> {
     update: { launchedAt },
   });
 }
+
+// Whether the demo/example vendors are currently hidden from public
+// surfaces (the retirement switch, flipped from /admin/launch).
+export async function isDemoHidden(): Promise<boolean> {
+  const cfg = await prisma.platformConfig.findUnique({
+    where: { id: CONFIG_ID },
+    select: { demoVendorsHidden: true },
+  });
+  return cfg?.demoVendorsHidden ?? false;
+}
+
+export async function setDemoVendorsHidden(hidden: boolean): Promise<void> {
+  await prisma.platformConfig.upsert({
+    where: { id: CONFIG_ID },
+    create: { id: CONFIG_ID, demoVendorsHidden: hidden },
+    update: { demoVendorsHidden: hidden },
+  });
+}

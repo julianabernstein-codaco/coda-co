@@ -7,6 +7,7 @@ import { ProductTabs } from "@/components/pdp/ProductTabs";
 import { ProductGallery } from "@/components/pdp/ProductGallery";
 import { Avatar } from "@/components/ui/Avatar";
 import { Container } from "@/components/ui/Container";
+import { ExampleBadge } from "@/components/ui/ExampleBadge";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { Stars } from "@/components/ui/Stars";
 import { getProduct, getRelatedProducts } from "@/lib/api/products";
@@ -121,6 +122,7 @@ export default async function ProductDetailPage({ params }: PDPProps) {
               )}
             </div>
 
+            {product.demo && <div className="mb-2"><ExampleBadge /></div>}
             <h1 className="font-serif text-[28px] font-light text-ch mb-3 leading-tight">
               {product.title}
             </h1>

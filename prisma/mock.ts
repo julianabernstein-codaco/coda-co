@@ -152,6 +152,9 @@ async function main() {
         // marketplace looks populated.
         listingsAutoApprove: true,
         published: true,
+        // Sample/example vendors — render publicly with an "Example" badge,
+        // contact + purchase disabled. Retire them all via /admin/launch.
+        demo: true,
         user: { connect: { id: user.id } },
       },
     });

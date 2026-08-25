@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { setLaunchedAt } from "@/lib/launch";
+import { prisma } from "@/lib/db";
+import { setDemoVendorsHidden, setLaunchedAt } from "@/lib/launch";
 import { log } from "@/lib/log";
 
 async function requireAdmin(): Promise<void> {
@@ -38,5 +39,39 @@ export async function revertToPrelaunch(): Promise<void> {
   await requireAdmin();
   await setLaunchedAt(null);
   log.info("launch.reverted_to_prelaunch");
+  revalidateAll();
+}
+
+export async function hideDemoVendors(): Promise<void> {
+  await requireAdmin();
+  await setDemoVendorsHidden(true);
+  log.info("launch.demo_vendors_hidden", { hidden: true });
+  revalidateAll();
+}
+
+export async function showDemoVendors(): Promise<void> {
+  await requireAdmin();
+  await setDemoVendorsHidden(false);
+  log.info("launch.demo_vendors_hidden", { hidden: false });
+  revalidateAll();
+}
+
+// Flag the mock/sample vendors (reserved @codaco.local emails) as demo, so
+// they render with the "Example" badge and disabled contact/purchase. The
+// runtime equivalent of `npm run demo:flag` — runnable from the deployed
+// app against the live DB, no terminal. Idempotent.
+export async function flagMockVendorsAsExamples(): Promise<void> {
+  await requireAdmin();
+  const mock = await prisma.vendorProfile.findMany({
+    where: { user: { email: { endsWith: "@codaco.local" } } },
+    select: { id: true },
+  });
+  if (mock.length > 0) {
+    await prisma.vendorProfile.updateMany({
+      where: { id: { in: mock.map((v) => v.id) } },
+      data: { demo: true },
+    });
+  }
+  log.info("launch.flag_mock_demo", { count: mock.length });
   revalidateAll();
 }

@@ -72,6 +72,8 @@ export interface Product {
   coverImageUrl: string | null;
   // Empty on list views (getProducts); populated on getProduct.
   images: ProductImage[];
+  // True when the seller is a sample/example vendor — badge + no purchase.
+  demo?: boolean;
 }
 
 export interface ProductWithRating extends Product {
@@ -120,6 +122,9 @@ export interface Vendor {
   // before a buyer can order. Declared at signup, editable from the
   // dashboard. Surfaces as a note on their shop page.
   requiresCustomOrder?: boolean;
+  // Sample/example vendor. Rendered with an "Example" badge; contact and
+  // purchase are disabled and reviews are labeled as examples.
+  demo?: boolean;
 }
 
 export interface VendorWithRating extends Vendor {
@@ -172,6 +177,8 @@ export interface Service {
   price?: number;
   currency: string;
   status: ServiceStatus;
+  // True when the provider is a sample/example vendor.
+  demo?: boolean;
 }
 
 export interface Review {

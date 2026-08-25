@@ -13,6 +13,7 @@
     "db:seed": "prisma db seed",
     "db:mock": "tsx prisma/mock.ts",
     "db:backfill-covers": "tsx prisma/backfill-covers.ts",
+    "demo:flag": "tsx scripts/flag-demo-vendors.ts",
     "db:reset": "prisma migrate reset --force"
   },
   "dependencies": {

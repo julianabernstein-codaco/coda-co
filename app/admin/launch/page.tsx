@@ -1,6 +1,20 @@
 import type { Metadata } from "next";
-import { getLaunchedAt, launchedFrom, trialWindow, TRIAL_DAYS } from "@/lib/launch";
-import { goLiveNow, revertToPrelaunch, scheduleLaunch } from "./actions";
+import { prisma } from "@/lib/db";
+import {
+  getLaunchedAt,
+  isDemoHidden,
+  launchedFrom,
+  trialWindow,
+  TRIAL_DAYS,
+} from "@/lib/launch";
+import {
+  flagMockVendorsAsExamples,
+  goLiveNow,
+  hideDemoVendors,
+  revertToPrelaunch,
+  scheduleLaunch,
+  showDemoVendors,
+} from "./actions";
 import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = { title: "Launch — Admin | CodaCo" };
@@ -15,6 +29,13 @@ export default async function AdminLaunchPage() {
   await requireAdminPage("/admin/launch");
 
   const launchedAt = await getLaunchedAt();
+  const demoHidden = await isDemoHidden();
+  const [demoCount, mockUnflagged] = await Promise.all([
+    prisma.vendorProfile.count({ where: { demo: true } }),
+    prisma.vendorProfile.count({
+      where: { demo: false, user: { email: { endsWith: "@codaco.local" } } },
+    }),
+  ]);
   const live = launchedFrom(launchedAt);
   const scheduled = launchedAt != null && !live; // set, but in the future
   const { endsAt } = trialWindow(launchedAt);
@@ -101,6 +122,50 @@ export default async function AdminLaunchPage() {
             <form action={revertToPrelaunch}>
               <button className="btn-ghost btn-md" type="submit">
                 Back to pre-launch
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[10px] border border-line p-6 mt-5">
+          <h2 className="font-serif text-[18px] text-ch mb-2">Demo / example vendors</h2>
+          <p className="text-[13px] text-cm mb-4 leading-relaxed">
+            Sample vendors show new visitors what a populated marketplace looks
+            like. They render with an “Example” badge and can’t be contacted or
+            bought from. Once real vendors fill the site, hide them all here.
+          </p>
+          <p className="text-[13px] text-cm mb-4">
+            <span className="text-ch tabular-nums">{demoCount}</span> vendor
+            {demoCount === 1 ? "" : "s"} currently flagged as examples.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <span
+              className={`text-[11px] font-medium tracking-wide px-2.5 py-1 rounded-full border ${
+                demoHidden ? "bg-pl border-line text-cm" : "bg-sg-p border-sg-l text-sg-d"
+              }`}
+            >
+              {demoHidden ? "HIDDEN" : "SHOWING"}
+            </span>
+            <form action={demoHidden ? showDemoVendors : hideDemoVendors}>
+              <button className="btn-secondary btn-md" type="submit">
+                {demoHidden ? "Show demo vendors" : "Hide demo vendors"}
+              </button>
+            </form>
+          </div>
+
+          <div className="border-t border-line mt-5 pt-5">
+            <h3 className="text-[14px] font-medium text-ch mb-1">Flag mock vendors</h3>
+            <p className="text-[13px] text-cl mb-3 leading-relaxed">
+              Marks the sample vendors (reserved <code className="text-cm">@codaco.local</code>{" "}
+              accounts) as examples — the in-app equivalent of{" "}
+              <code className="text-cm">npm run demo:flag</code>.{" "}
+              {mockUnflagged > 0
+                ? `${mockUnflagged} not yet flagged.`
+                : "All mock vendors are already flagged."}
+            </p>
+            <form action={flagMockVendorsAsExamples}>
+              <button className="btn-secondary btn-md" type="submit">
+                Flag mock vendors as examples
               </button>
             </form>
           </div>

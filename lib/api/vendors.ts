@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { isDemoHidden } from "@/lib/launch";
 import { isKnownZip, milesBetweenZips } from "@/lib/geo";
 import type {
   LifeStage,
@@ -60,6 +61,7 @@ function toVendor(v: DbVendor): Vendor {
     pricingNotes: v.pricingNotes ?? undefined,
     specializations: v.specializations,
     requiresCustomOrder: v.requiresCustomOrder,
+    demo: v.demo,
   };
 }
 
@@ -104,6 +106,8 @@ export async function getVendors(filters: VendorFilters = {}): Promise<VendorWit
   // Unpublished vendors never surface publicly — a goods seller waits here
   // until CodaCo approves the first listing from their signup.
   const where: Prisma.VendorProfileWhereInput = { published: true };
+  // Retirement switch: exclude sample/example vendors when hidden.
+  if (await isDemoHidden()) where.demo = false;
   if (filters.kind) {
     // 'both' covers either listing surface; an exact 'goods' or 'services'
     // filter should still surface vendors flagged as 'both'.
@@ -167,6 +171,8 @@ export async function getVendor(
 ): Promise<VendorWithRating | null> {
   const v = await prisma.vendorProfile.findUnique({ where: { slug: id } });
   if (!v || (!v.published && !opts.includeUnpublished)) return null;
+  // Hidden demo vendors 404 publicly (owner-preview still resolves).
+  if (v.demo && !opts.includeUnpublished && (await isDemoHidden())) return null;
   const summary = await prisma.vendorReview.aggregate({
     where: { vendorId: v.id },
     _count: { _all: true },
@@ -180,8 +186,14 @@ export async function getVendor(
 }
 
 export async function getFeaturedVendors(limit = 4): Promise<VendorWithRating[]> {
+  const where: Prisma.VendorProfileWhereInput = {
+    published: true,
+    verified: true,
+    kind: { in: ["services", "both"] },
+  };
+  if (await isDemoHidden()) where.demo = false;
   const rows = await prisma.vendorProfile.findMany({
-    where: { published: true, verified: true, kind: { in: ["services", "both"] } },
+    where,
     orderBy: { createdAt: "asc" },
     take: limit,
   });
@@ -198,9 +210,12 @@ const HOME_VENDOR_IDS = [
 ] as const;
 
 export async function getHomeFeaturedVendors(): Promise<VendorWithRating[]> {
-  const rows = await prisma.vendorProfile.findMany({
-    where: { published: true, slug: { in: [...HOME_VENDOR_IDS] } },
-  });
+  const where: Prisma.VendorProfileWhereInput = {
+    published: true,
+    slug: { in: [...HOME_VENDOR_IDS] },
+  };
+  if (await isDemoHidden()) where.demo = false;
+  const rows = await prisma.vendorProfile.findMany({ where });
   const bySlug = new Map(rows.map((v) => [v.slug, v]));
   const ordered = HOME_VENDOR_IDS.map((id) => bySlug.get(id)).filter(
     (v): v is DbVendor => v != null,

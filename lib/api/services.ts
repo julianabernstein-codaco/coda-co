@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { isDemoHidden } from "@/lib/launch";
 import type {
   Service,
   ServiceLocationType,
@@ -34,6 +35,7 @@ function toService(s: DbService): Service {
     price: s.priceCents != null ? s.priceCents / 100 : undefined,
     currency: s.currency,
     status: s.status as ServiceStatus,
+    demo: s.vendor.demo,
   };
 }
 
@@ -41,7 +43,10 @@ export async function getServices(filters: ServiceFilters = {}): Promise<Service
   const where: Prisma.ServiceWhereInput = filters.includeUnpublished
     ? { status: { in: ["draft", "published"] } }
     : { status: "published" };
-  if (filters.vendorId) where.vendor = { slug: filters.vendorId };
+  const vendorWhere: Prisma.VendorProfileWhereInput = {};
+  if (filters.vendorId) vendorWhere.slug = filters.vendorId;
+  if (await isDemoHidden()) vendorWhere.demo = false;
+  if (Object.keys(vendorWhere).length) where.vendor = vendorWhere;
   if (filters.serviceType) where.serviceType = { slug: filters.serviceType };
   if (filters.locationType && filters.locationType !== "unknown") {
     // 'both' covers either intent; an exact 'virtual' or 'in_person'
@@ -63,5 +68,7 @@ export async function getService(id: string): Promise<Service | null> {
     where: { slug: id },
     include: { vendor: true, serviceType: true },
   });
-  return s ? toService(s) : null;
+  if (!s) return null;
+  if (s.vendor.demo && (await isDemoHidden())) return null;
+  return toService(s);
 }

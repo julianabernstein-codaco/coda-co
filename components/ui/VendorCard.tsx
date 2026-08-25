@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Service, VendorWithRating } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
+import { ExampleBadge } from "@/components/ui/ExampleBadge";
 import { SaveButton } from "@/components/ui/SaveButton";
 import { Stars } from "@/components/ui/Stars";
 import { VendorPhoto } from "@/components/ui/VendorPhoto";
@@ -43,6 +44,7 @@ function VendorCompactCard({
         tone={vendor.photoTone}
         className="mb-3"
       />
+      {vendor.demo && <div className="mb-1.5"><ExampleBadge /></div>}
       <div className="text-[16px] font-medium text-ch mb-[2px]">{vendor.name}</div>
       <div className="text-[12px] tracking-[.08em] uppercase text-cl mb-[7px]">
         {primaryTypeLabel(services)}
@@ -88,6 +90,7 @@ function VendorSearchCard({
       />
 
       <div className="min-w-0">
+        {vendor.demo && <div className="mb-1.5"><ExampleBadge /></div>}
         <div className="flex items-start justify-between gap-3 mb-[6px]">
           <Link
             href={vendorPagePath(vendor.kind, vendor.id)}
