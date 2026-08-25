@@ -777,7 +777,7 @@ export function buildWelcomeEmail(args: WelcomeArgs): EmailPayload {
     "",
     `Explore the marketplace:  ${explore}`,
     "",
-    "Questions, or something you can't find? Email us at hello@codaco.market. A real person reads every message, and we're always glad to help.",
+    "Questions, feedback or something you can't find? Email us at hello@codaco.market. A real person reads every message, and we're always glad to help.",
     "",
     "— The CodaCo team",
   ].join("\n");
@@ -804,7 +804,7 @@ export function buildWelcomeEmail(args: WelcomeArgs): EmailPayload {
       </a>
     </p>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.55;">
-      Questions, or something you can't find? Email us at
+      Questions, feedback or something you can't find? Email us at
       <a href="mailto:hello@codaco.market" style="color:#c1634f;">hello@codaco.market</a>.
       A real person reads every message, and we're always glad to help.
     </p>
