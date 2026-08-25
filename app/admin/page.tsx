@@ -4,6 +4,7 @@ import { goodsPlans, servicePlans } from '@/lib/data/plans';
 import { prisma } from '@/lib/db';
 import { getProducts } from '@/lib/api/products';
 import { getServices } from '@/lib/api/services';
+import { getAccountHolders } from '@/lib/api/users';
 import { getVendors } from '@/lib/api/vendors';
 import { DatabaseViewer } from '@/components/admin/DatabaseViewer';
 
@@ -18,10 +19,11 @@ export default async function AdminPage() {
   await requireAdminPage('/admin');
 
   const plans = [...goodsPlans, ...servicePlans];
-  const [products, vendors, services, reviewRows, vendorReviewRows] = await Promise.all([
+  const [products, vendors, services, accounts, reviewRows, vendorReviewRows] = await Promise.all([
     getProducts(),
     getVendors(),
     getServices(),
+    getAccountHolders(),
     prisma.productReview.findMany({
       include: { product: { select: { slug: true } } },
       orderBy: { reviewedAt: "desc" },
@@ -61,7 +63,7 @@ export default async function AdminPage() {
             <h1 className="font-serif text-4xl text-ch">Database Viewer</h1>
             <p className="text-cm text-sm mt-1.5">
               Read-only view of all database records.{' '}
-              <span className="text-cl">No authentication — development only.</span>
+              <span className="text-cl">Admin-only — includes account holder emails.</span>
             </p>
           </div>
           <div className="flex flex-col gap-2 shrink-0">
@@ -104,12 +106,13 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-7">
           {[
             { label: 'Products', count: products.length, color: 'bg-tr-p border-tr-l/40' },
             { label: 'Vendors', count: vendors.length, color: 'bg-sg-p border-sg-l/40' },
             { label: 'Services', count: services.length, color: 'bg-sg-p border-sg-l/40' },
             { label: 'Reviews', count: reviews.length + vendorReviews.length, color: 'bg-pl border-pl2' },
+            { label: 'Accounts', count: accounts.length, color: 'bg-pl border-pl2' },
           ].map(({ label, count, color }) => (
             <div key={label} className={`rounded-lg border px-4 py-3 ${color}`}>
               <p className="text-2xl font-serif text-ch tabular-nums">{count}</p>
@@ -125,6 +128,7 @@ export default async function AdminPage() {
           reviews={reviews}
           vendorReviews={vendorReviews}
           plans={plans}
+          accounts={accounts}
         />
       </div>
     </div>

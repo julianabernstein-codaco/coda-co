@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import type { AccountHolderRow } from '@/lib/api/users';
 import type {
   Plan,
   ProductWithRating,
@@ -10,7 +11,14 @@ import type {
   VendorWithRating,
 } from '@/lib/types';
 
-type Tab = 'products' | 'vendors' | 'services' | 'reviews' | 'vendorReviews' | 'plans';
+type Tab =
+  | 'products'
+  | 'vendors'
+  | 'services'
+  | 'reviews'
+  | 'vendorReviews'
+  | 'plans'
+  | 'accounts';
 
 interface Props {
   products: ProductWithRating[];
@@ -19,6 +27,7 @@ interface Props {
   reviews: Review[];
   vendorReviews: VendorReview[];
   plans: Plan[];
+  accounts: AccountHolderRow[];
 }
 
 function Badge({ label, color }: { label: string; color: 'tr' | 'sg' | 'neutral' }) {
@@ -494,6 +503,94 @@ function PlansTab({ plans }: { plans: Plan[] }) {
   );
 }
 
+// ── Accounts ──────────────────────────────────────────────────────────────────
+
+// Everyone who can sign in. `role` mirrors the UserRole enum; the vendor
+// column is derived from whether the user has a vendor_profile.
+const ACCOUNT_ROLES = ['unknown', 'user', 'admin'] as const;
+
+function AccountsTab({ accounts }: { accounts: AccountHolderRow[] }) {
+  const [search, setSearch] = useState('');
+  const [role, setRole] = useState('');
+  const [isVendor, setIsVendor] = useState('');
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return accounts.filter((a) => {
+      if (
+        q &&
+        !a.email.toLowerCase().includes(q) &&
+        !(a.name ?? '').toLowerCase().includes(q) &&
+        !(a.vendorSlug ?? '').toLowerCase().includes(q)
+      )
+        return false;
+      if (role && a.role !== role) return false;
+      if (isVendor === 'yes' && !a.vendorSlug) return false;
+      if (isVendor === 'no' && a.vendorSlug) return false;
+      return true;
+    });
+  }, [accounts, search, role, isVendor]);
+
+  return (
+    <>
+      <FilterBar>
+        <SearchInput value={search} onChange={setSearch} placeholder="Search email, name, vendor…" />
+        <Select value={role} onChange={setRole} label="Role">
+          <option value="">All roles</option>
+          {ACCOUNT_ROLES.map((r) => (
+            <option key={r} value={r}>{r}</option>
+          ))}
+        </Select>
+        <Select value={isVendor} onChange={setIsVendor} label="Vendor">
+          <option value="">Any</option>
+          <option value="yes">Vendors</option>
+          <option value="no">Buyers only</option>
+        </Select>
+        <RecordCount count={filtered.length} total={accounts.length} />
+      </FilterBar>
+
+      <TableWrap>
+        <table className="w-full text-sm">
+          <thead>
+            <Tr header>
+              <Th>Email</Th>
+              <Th>Name</Th>
+              <Th>Role</Th>
+              <Th>Vendor</Th>
+              <Th>Applications</Th>
+              <Th>Orders</Th>
+              <Th>Password</Th>
+              <Th>Email&nbsp;verified</Th>
+              <Th>Joined</Th>
+            </Tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <EmptyRow cols={9} />
+            ) : (
+              filtered.map((a) => (
+                <Tr key={a.id}>
+                  <Td>{a.email}</Td>
+                  <Td>{a.name ?? '—'}</Td>
+                  <Td>
+                    <Badge label={a.role} color={a.role === 'admin' ? 'tr' : 'neutral'} />
+                  </Td>
+                  <Td mono>{a.vendorSlug ?? '—'}</Td>
+                  <Td mono>{a.applicationCount}</Td>
+                  <Td mono>{a.orderCount}</Td>
+                  <Td><BoolCell value={a.hasPassword} /></Td>
+                  <Td><BoolCell value={a.emailVerified} /></Td>
+                  <Td mono>{a.createdAt}</Td>
+                </Tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </TableWrap>
+    </>
+  );
+}
+
 // ── Shared primitives ─────────────────────────────────────────────────────────
 
 function FilterBar({ children }: { children: React.ReactNode }) {
@@ -578,7 +675,7 @@ function Td({ children, mono, max }: { children: React.ReactNode; mono?: boolean
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function DatabaseViewer({ products, vendors, services, reviews, vendorReviews, plans }: Props) {
+export function DatabaseViewer({ products, vendors, services, reviews, vendorReviews, plans, accounts }: Props) {
   const [tab, setTab] = useState<Tab>('products');
 
   const tabs: { id: Tab; label: string; count: number }[] = [
@@ -588,6 +685,7 @@ export function DatabaseViewer({ products, vendors, services, reviews, vendorRev
     { id: 'reviews', label: 'Reviews', count: reviews.length },
     { id: 'vendorReviews', label: 'Vendor reviews', count: vendorReviews.length },
     { id: 'plans', label: 'Plans', count: plans.length },
+    { id: 'accounts', label: 'Accounts', count: accounts.length },
   ];
 
   return (
@@ -623,6 +721,7 @@ export function DatabaseViewer({ products, vendors, services, reviews, vendorRev
       {tab === 'reviews' && <ReviewsTab reviews={reviews} />}
       {tab === 'vendorReviews' && <VendorReviewsTab vendorReviews={vendorReviews} />}
       {tab === 'plans' && <PlansTab plans={plans} />}
+      {tab === 'accounts' && <AccountsTab accounts={accounts} />}
     </div>
   );
 }
