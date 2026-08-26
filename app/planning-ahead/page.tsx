@@ -102,7 +102,10 @@ const groups: ChecklistGroup[] = [
         body: (
           <>
             using a helpful workbook. Consider{" "}
-            <InlineLink href="/shop?category=planning">
+            <InlineLink
+              href="https://www.theheartwoodcollective.com/workbook"
+              external
+            >
               this version, from the Heartwood Collective
             </InlineLink>
             .
