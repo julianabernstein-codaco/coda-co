@@ -36,10 +36,17 @@ const adapter = new PrismaPg({
 });
 const prisma = new PrismaClient({ adapter });
 
-// Every mock account uses the same dev password so a tester can sign in as
-// any vendor without a credential cheat-sheet. Never store this in a real
-// system — the mock script hard-fails in production for that reason.
-const DEV_PASSWORD = "codaco-dev";
+// Every mock account uses the same password so a tester can sign in as any
+// vendor without a credential cheat-sheet. The default is fine on a laptop
+// where the DB isn't reachable from the internet — it's written down right
+// here and this repo is public, so treat it as a *known* password, not a
+// secret.
+//
+// Set MOCK_PASSWORD before seeding anything a stranger can reach (a shared
+// staging box, a demo deploy running with ALLOW_MOCK_SEED=1). Otherwise the
+// seeded admin — which can browse every table via /admin — is open to anyone
+// who has read the docs.
+const DEV_PASSWORD = process.env.MOCK_PASSWORD || "codaco-dev";
 const ADMIN_EMAIL = "admin@codaco.local";
 
 // Cover images for example listings live as static files in

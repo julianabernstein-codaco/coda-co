@@ -37,15 +37,27 @@ the page you wanted. (The nav won't show the admin links either way.)
 ## Logging in
 
 Everyone uses email + password. There is **no password reset or change UI
-yet** (see `TASKS.md`), so the only credentials that work are the ones in
-this doc or whatever a real user signed up with.
+yet** (see `TASKS.md`), so the only credentials that work are the seeded
+ones described below or whatever a real user signed up with.
+
+> **This repo is public. The seeded password is not a secret.**
+>
+> `prisma/mock.ts` seeds every `@codaco.local` account with the same
+> password — `codaco-dev` unless `MOCK_PASSWORD` is set. That's fine on a
+> laptop. It is **not** fine on anything reachable from the internet,
+> because the seeded admin can read every table via `/admin`.
+>
+> Before seeding a deployed environment, set `MOCK_PASSWORD` to something
+> generated and keep it in the team password manager — not in this file.
+> If a deployed DB was already seeded with the default, see
+> [Rotating a deployed seed password](#rotating-a-deployed-seed-password).
 
 ### As the admin
 
-| Field    | Value                  |
-|----------|------------------------|
-| Email    | `admin@codaco.local`   |
-| Password | `codaco-dev`           |
+| Field    | Value                                          |
+|----------|------------------------------------------------|
+| Email    | `admin@codaco.local`                           |
+| Password | `MOCK_PASSWORD` at seed time (local default: `codaco-dev`) |
 
 The admin account can:
 
@@ -60,10 +72,10 @@ Every seeded vendor uses the same pattern:
 | Field    | Value                              |
 |----------|------------------------------------|
 | Email    | `{vendor-slug}@codaco.local`       |
-| Password | `codaco-dev`                       |
+| Password | same as the admin, above           |
 
-Example: `earthen-studio@codaco.local` / `codaco-dev` signs you in as the
-Earthen Studio vendor, with three urns already listed on their dashboard.
+Example: `earthen-studio@codaco.local` signs you in as the Earthen Studio
+vendor, with three urns already listed on their dashboard.
 
 The 18 seeded vendor slugs are:
 
@@ -95,10 +107,12 @@ to build but not done.
 sees a friendly "That invite code isn't valid" error and no account is
 created — that's the bot shield while we're still in demo mode.
 
-The current code is **`codaco-2026-invited`**. Hand it to the vendor
-along with the signup URL when you schedule a demo. Rotate it (in
-Vercel → Settings → Environment Variables → `INVITE_CODE`) if it leaks
-or after the demo phase ends.
+The current code lives in Vercel → Settings → Environment Variables →
+`INVITE_CODE`, and in the team password manager. **Don't write it down
+here** — this repo is public, and a published invite code is no shield at
+all. Read it from Vercel when you need to hand it to a vendor along with
+the signup URL, and rotate it there if it leaks or once the demo phase
+ends.
 
 If `INVITE_CODE` is unset in Vercel, `/signup` is disabled entirely
 ("Signup is currently disabled.") — fail-closed by design, so a
@@ -326,6 +340,34 @@ When the time comes:
    The script should default to a **dry-run** that just prints "would
    delete N users". An explicit `--confirm` flag actually runs the delete.
 
+### Rotating a deployed seed password
+
+Needed if a reachable environment was seeded before `MOCK_PASSWORD`
+existed, so its `@codaco.local` accounts still use the published default.
+The admin one matters most — it reads every table via `/admin`.
+
+Fastest fix, if the test data has served its purpose: delete it, per
+["We're ready to launch with real vendors"](#were-ready-to-launch-with-real-vendors--clear-the-test-data)
+above. No password to rotate if the accounts are gone.
+
+To keep the accounts, ask a developer to re-hash with a new password:
+
+```ts
+const hash = await bcrypt.hash(process.env.MOCK_PASSWORD!, 10);
+await prisma.user.updateMany({
+  where: { email: { endsWith: "@codaco.local" } },
+  data: { passwordHash: hash, passwordChangedAt: new Date() },
+});
+```
+
+Setting `passwordChangedAt` matters: the `jwt` callback in `auth.ts`
+compares it against every token on every request, so bumping it forces a
+logout on any session already minted with the old password. Without it,
+someone who signed in earlier keeps their access.
+
+Then store the new value in the team password manager. Don't put it back
+in this file.
+
 ### "I want to test the full vendor signup flow as a brand-new user"
 
 1. Sign out of any current session.
@@ -360,11 +402,12 @@ developer**, but it helps to know what they do.
 | Var                            | Effect when set                                       |
 |--------------------------------|-------------------------------------------------------|
 | `DEMO_AUTO_APPROVE_VENDORS=1`  | Auto-approves every vendor application on submission. Currently ON for the live demo. Turn off once real vendor review is needed. |
-| `INVITE_CODE`                  | Shared secret required at `/signup`. Current value: `codaco-2026-invited`. Unsetting it disables signup entirely (fail-closed). See **Inviting a new vendor** above. |
+| `INVITE_CODE`                  | Shared secret required at `/signup`. Read the current value from Vercel — it's deliberately not recorded in this repo. Unsetting it disables signup entirely (fail-closed). See **Inviting a new vendor** above. |
 | `DATABASE_URL`                 | The Neon Postgres connection string for **production**. Preview deploys get their own branch URL injected per-deployment by the Vercel-Neon integration — don't set `DATABASE_URL` in Preview scope manually. Changing the Production value points the site at a different database. |
 | `DATABASE_URL_UNPOOLED`        | Direct (non-pooled) Neon URL used by `prisma migrate deploy` (Neon's pgbouncer can't proxy migration DDL). Also injected by the Vercel-Neon integration; mirror any prod rotation of `DATABASE_URL` here. |
 | `AUTH_SECRET`                  | Signs session tokens. Changing it logs everyone out. |
 | `ALLOW_MOCK_SEED=1`            | Bypasses the safety guard that blocks `db:mock` in production. Should NOT be set in production env vars. (Even if it is, the build doesn't call `db:mock`, so it's inert — but tidier to remove it.) |
+| `MOCK_PASSWORD`                | Password given to every seeded `@codaco.local` account by `db:mock`. Defaults to the published `codaco-dev` — set it to something generated before seeding anything reachable from the internet. See **Rotating a deployed seed password** above. |
 
 ---
 
