@@ -150,10 +150,14 @@ Strictly separated so a prod deploy can never push fake vendors:
   build script.
 
 Mock accounts use `{slug}@codaco.local` emails (admin is
-`admin@codaco.local`); all share password `codaco-dev`. The
-`.local` domain reservation (RFC 6762) means real users can't
-collide with it — that's the natural marker for identifying mock
-rows when you eventually need to delete them.
+`admin@codaco.local`); all share the password from `MOCK_PASSWORD`,
+defaulting to `codaco-dev`. That default is published here and this
+repo is public, so it's a *known* password — set `MOCK_PASSWORD`
+before seeding anything reachable from the internet, since the
+seeded admin can browse every table via `/admin`. The `.local`
+domain reservation (RFC 6762) means real users can't collide with
+it — that's the natural marker for identifying mock rows when you
+eventually need to delete them.
 
 ### Auth & role gating
 - Session shape is augmented in `types/next-auth.d.ts`:
