@@ -57,7 +57,10 @@ const sections = [
   { name: "list-services",      protoPage: "p6", baseline: "#p6", actualPath: "/list-with-us/services",     actual: "main" },
   { name: "plan",               protoPage: "p7", baseline: "#p7", actualPath: "/list-with-us/plan?type=goods", actual: "main" },
   { name: "confirm",            protoPage: "p8", baseline: "#p8", actualPath: "/list-with-us/confirm",      actual: "main" },
-  { name: "where-to-start",     protoPage: "p9", baseline: "#p9", actualPath: "/where-to-start",            actual: "main" },
+  // /where-to-start is temporarily retired (it 307s to /guidance), so there's
+  // nothing to diff the p9 prototype pane against. Restore this line when the
+  // page comes back.
+  // { name: "where-to-start",  protoPage: "p9", baseline: "#p9", actualPath: "/where-to-start",            actual: "main" },
 ];
 
 async function setProtoPage(page, pageId) {

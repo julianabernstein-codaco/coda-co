@@ -128,7 +128,7 @@ const SECTIONS: PreviewSection[] = [
     key: "welcome",
     title: "Welcome (new account)",
     sentWhen:
-      "Right after someone creates an account on /signup. A plain welcome with no action required — says what CodaCo is, links to /what-is-codaco and /where-to-start, and points at hello@codaco.market. Best-effort: a send failure is logged but never blocks the signup.",
+      "Right after someone creates an account on /signup. A plain welcome with no action required — says what CodaCo is, links to /what-is-codaco and /guidance, and points at hello@codaco.market. Best-effort: a send failure is logged but never blocks the signup.",
     editFn: "buildWelcomeEmail",
     payload: buildSample("welcome"),
   },

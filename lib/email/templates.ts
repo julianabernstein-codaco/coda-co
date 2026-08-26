@@ -66,8 +66,8 @@ function forgotPasswordUrl(): string {
   return siteUrl("/forgot-password");
 }
 
-function whereToStartUrl(): string {
-  return siteUrl("/where-to-start");
+function guidanceUrl(): string {
+  return siteUrl("/guidance");
 }
 
 function whatIsCodaCoUrl(): string {
@@ -763,7 +763,7 @@ export interface WelcomeArgs {
 export function buildWelcomeEmail(args: WelcomeArgs): EmailPayload {
   const greeting = args.toName ? `Hi ${args.toName},` : "Hi,";
   const subject = "Welcome to CodaCo";
-  const explore = whereToStartUrl();
+  const explore = guidanceUrl();
   const about = whatIsCodaCoUrl();
 
   const text = [

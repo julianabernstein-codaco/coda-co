@@ -107,7 +107,7 @@ export function FaqBrowser({
             &ldquo;{query.trim()}&rdquo;
           </span>
           . Try a different word, or{" "}
-          <Link href="/where-to-start" className={`${linkColor} hover:underline`}>
+          <Link href="/guidance" className={`${linkColor} hover:underline`}>
             start here
           </Link>{" "}
           for a gentle guide.
