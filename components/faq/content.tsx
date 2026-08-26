@@ -736,6 +736,34 @@ export function getGuidanceTopic(slug: string): GuidanceTopic | undefined {
   return guidanceTopics.find((topic) => topic.slug === slug);
 }
 
+// How the topics are grouped on the /guidance hub. `guidanceTopics` above
+// stays the canonical list (it backs `getGuidanceTopic` and the topic
+// routes' static params); this is only the browse order and grouping, so a
+// topic can be re-grouped here without touching its content.
+export interface GuidanceSection {
+  title: string;
+  topics: GuidanceTopic[];
+}
+
+function topicsBySlug(...slugs: string[]): GuidanceTopic[] {
+  return slugs.map((slug) => {
+    const topic = getGuidanceTopic(slug);
+    if (!topic) throw new Error(`Unknown guidance topic: ${slug}`);
+    return topic;
+  });
+}
+
+export const guidanceSections: GuidanceSection[] = [
+  {
+    title: "The last chapter of life",
+    topics: topicsBySlug("hospice-care", "death-cleaning", "death-doulas"),
+  },
+  {
+    title: "When someone has died",
+    topics: topicsBySlug("when-someone-dies", "funerals-and-body-disposition"),
+  },
+];
+
 // Functional, transactional help — surfaced on /faq (the Help Center).
 export const helpCenterCategories: FaqCategory[] = [
   {

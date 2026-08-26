@@ -17,7 +17,7 @@ const STAGES: Stage[] = [
     y: 72,
     l1: "I'm planning",
     l2: "ahead",
-    href: "/services?lifeStage=planning-ahead,throughout",
+    href: "/planning-ahead",
   },
   {
     x: 180,

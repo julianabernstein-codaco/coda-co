@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { FaqList } from "@/components/list-with-us/FaqList";
-import type { GuidanceTopic } from "@/components/faq/content";
+import type { GuidanceSection, GuidanceTopic } from "@/components/faq/content";
 
 // Duotone topic icons: a filled light-tone shape with dark-tone line detail,
 // set inside a soft tinted circle badge. Tone alternates sage/terracotta across
@@ -57,13 +57,24 @@ const icons: Record<string, (t: Tone) => ReactNode> = {
 
 const toneForIndex = (i: number): Tone => (i % 2 === 0 ? SAGE : TERRA);
 
+// How many topics precede section `s`, so tones keep alternating across
+// section boundaries.
+function topicOffset(sections: GuidanceSection[], s: number): number {
+  return sections
+    .slice(0, s)
+    .reduce((n, section) => n + section.topics.length, 0);
+}
+
 function answerText(faq: GuidanceTopic["faqs"][number]): string {
   return faq.searchText ?? (typeof faq.a === "string" ? faq.a : "");
 }
 
-export function GuidanceHub({ topics }: { topics: GuidanceTopic[] }) {
+export function GuidanceHub({ sections }: { sections: GuidanceSection[] }) {
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
+
+  // Search spans every topic; the section grouping is only a browse aid.
+  const topics = sections.flatMap((section) => section.topics);
 
   // Land at the top on load (see FaqBrowser note); skip when deep-linking.
   useEffect(() => {
@@ -136,34 +147,48 @@ export function GuidanceHub({ topics }: { topics: GuidanceTopic[] }) {
           </div>
         )
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
-          {topics.map((topic, i) => {
-            const tone = toneForIndex(i);
-            return (
-            <Card
-              key={topic.slug}
-              href={`/guidance/${topic.slug}`}
-              hoverTone={tone.hover}
-            >
-              <div className="flex items-start gap-3.5">
-                <span
-                  className={`flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center ${tone.badge}`}
-                  aria-hidden="true"
-                >
-                  {icons[topic.slug](tone)}
-                </span>
-                <div>
-                  <h2 className="font-serif text-[19px] font-normal text-ch mb-1 leading-snug">
-                    {topic.heading}
-                  </h2>
-                  <p className="text-[13px] text-cl leading-[1.55]">
-                    {topic.blurb}
-                  </p>
-                </div>
+        <div className="space-y-10">
+          {sections.map((section, s) => (
+            <section key={section.title}>
+              <h2 className="font-serif text-[26px] font-light text-ch mb-4">
+                {section.title}
+              </h2>
+              {/* auto-fill, not auto-fit: empty tracks are kept so the
+                  two-tile section's cards stay the same width as the
+                  three-tile section's rather than stretching to fill. */}
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
+                {section.topics.map((topic, i) => {
+                  // Tone alternates across the whole hub, not per section, so
+                  // the sage/terracotta rhythm doesn't reset mid-page.
+                  const tone = toneForIndex(topicOffset(sections, s) + i);
+                  return (
+                    <Card
+                      key={topic.slug}
+                      href={`/guidance/${topic.slug}`}
+                      hoverTone={tone.hover}
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <span
+                          className={`flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center ${tone.badge}`}
+                          aria-hidden="true"
+                        >
+                          {icons[topic.slug](tone)}
+                        </span>
+                        <div>
+                          <h3 className="font-serif text-[19px] font-normal text-ch mb-1 leading-snug">
+                            {topic.heading}
+                          </h3>
+                          <p className="text-[13px] text-cl leading-[1.55]">
+                            {topic.blurb}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
-            </Card>
-            );
-          })}
+            </section>
+          ))}
         </div>
       )}
     </div>

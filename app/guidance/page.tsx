@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { GuidanceHub } from "@/components/faq/GuidanceHub";
-import { guidanceTopics } from "@/components/faq/content";
+import { guidanceSections } from "@/components/faq/content";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default function GuidancePage() {
         </p>
         <h1 className="font-serif text-[46px] font-light leading-[1.13] text-ch mb-4">
           Support around{" "}
-          <em className="italic text-sg-d">death &amp; dying</em>
+          <em className="italic text-sg-d">the end of life</em>
         </h1>
         <p className="text-[17px] text-cm max-w-[560px] mx-auto leading-[1.75]">
           Whatever you&apos;re facing, start with the topic that fits — or search
@@ -36,7 +36,7 @@ export default function GuidancePage() {
       {/* Topic hub */}
       <section className="bg-pl px-10 pt-10 pb-16">
         <Container width="mid">
-          <GuidanceHub topics={guidanceTopics} />
+          <GuidanceHub sections={guidanceSections} />
 
           <p className="text-center text-[15px] text-cl leading-[1.7] mt-12">
             For help with an order or your account, visit the{" "}
