@@ -102,7 +102,10 @@ const groups: ChecklistGroup[] = [
         body: (
           <>
             using a helpful workbook. Consider{" "}
-            <InlineLink href="/shop?category=planning">
+            <InlineLink
+              href="https://www.theheartwoodcollective.com/workbook"
+              external
+            >
               this version, from the Heartwood Collective
             </InlineLink>
             .
@@ -236,10 +239,8 @@ export default function PlanningAheadPage() {
             Welcome and congratulations on thinking about the steps you might
             take &ndash; wherever you are in your life&rsquo;s journey &ndash;
             to prepare yourself, your loved ones, and your home for the eventual
-            end of life. We have created a list below intended to guide you
-            through some of the things we all should be doing to ease the burden
-            on the people we leave behind, whenever our own end comes. Well
-            done, you, for being curious and wanting to be prepared.
+            end of life. Well done, you, for being curious and wanting to be
+            prepared.
           </p>
         </Container>
       </section>
@@ -267,9 +268,14 @@ export default function PlanningAheadPage() {
 
       <WaveDivider />
 
-      {/* The checklist */}
+      {/* The checklist, introduced by the line that hands off to it */}
       <section className="bg-pl px-10 pt-6 pb-16">
         <Container width="narrow">
+          <p className="text-[17px] text-cm leading-[1.8] mb-7">
+            We have created a list below intended to guide you through some of
+            the things we all should be doing to ease the burden on the people
+            we leave behind, whenever our own end comes.
+          </p>
           <PlanningChecklist groups={groups} />
         </Container>
       </section>
