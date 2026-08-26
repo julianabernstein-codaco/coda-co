@@ -24,9 +24,9 @@ const STAGES: Stage[] = [
     y: 140,
     l1: "Someone is",
     l2: "dying",
-    href: "/services?lifeStage=throughout,active-dying,planning-ahead",
+    href: "/guidance",
   },
-  { x: 300, y: 72, l1: "Someone", l2: "has died", href: "/where-to-start" },
+  { x: 300, y: 72, l1: "Someone", l2: "has died", href: "/guidance" },
   { x: 420, y: 140, l1: "I'm just", l2: "exploring", href: "/shop" },
 ];
 

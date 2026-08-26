@@ -1,3 +1,10 @@
+// TEMPORARILY RETIRED. /guidance covers this ground for now, so a 307 in
+// `next.config.ts` sends /where-to-start there and this route is unreachable
+// (redirects are checked before the filesystem). Every internal link was
+// repointed at /guidance too. Nothing here is deleted: bringing the page back
+// is deleting that redirect block, restoring the /where-to-start entry in
+// `scripts/visual-diff.mjs`, and re-pointing whichever links should come back.
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
