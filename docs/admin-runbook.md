@@ -36,16 +36,19 @@ the page you wanted. (The nav won't show the admin links either way.)
 
 ## Logging in
 
-Everyone uses email + password. There is **no password reset or change UI
-yet** (see `TASKS.md`), so the only credentials that work are the ones in
-this doc or whatever a real user signed up with.
+Everyone uses email + password. Signed-in users can change their password
+at `/account`; anyone who's forgotten theirs can request a reset link from
+the "Forgot password" link on `/login`.
 
 ### As the admin
 
-| Field    | Value                  |
-|----------|------------------------|
-| Email    | `admin@codaco.local`   |
-| Password | `codaco-dev`           |
+**The production admin credentials are deliberately not written down in
+this repo — ask Julie.**
+
+(For local development against mock data only, the seeded admin follows
+the same `@codaco.local` pattern as the mock vendors below. Those accounts
+exist only in a database loaded by `npm run db:mock` — never in
+production.)
 
 The admin account can:
 
