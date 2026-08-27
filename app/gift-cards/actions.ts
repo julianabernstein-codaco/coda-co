@@ -20,6 +20,7 @@ import {
   type ClaimResult,
 } from "@/lib/api/giftCards";
 import { sendGiftCardDeliveryEmail } from "@/lib/email/templates";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 async function getOrigin(): Promise<string> {
   const h = await headers();
@@ -56,6 +57,18 @@ export async function purchaseGiftCard(
 
   const purchaserEmail = input.purchaserEmail?.trim();
   if (!purchaserEmail) return { error: "Enter your email so we can send a receipt." };
+
+  // Guests can buy gift cards, so this is the one unauthenticated payment
+  // on-ramp on the site. Throttle per IP before any DB work so it can't be
+  // used as a card-testing funnel: the actual card entry happens on Stripe's
+  // hosted Checkout page (where Radar applies), but this caps how fast anyone
+  // can spin up Checkout sessions + pending gift-card rows from one source.
+  const ip = await clientIp();
+  const limited = await rateLimit(`gift-card:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
+  if (!limited.ok) {
+    log.warn("giftcard.rate_limited", { ip });
+    return { error: "Too many attempts. Please try again in a little while." };
+  }
 
   const purchaserName = input.purchaserName?.trim() || null;
 
@@ -139,6 +152,16 @@ export async function contributeToPool(
   input: ContributeInput,
 ): Promise<PurchaseResult> {
   if (!isStripeConfigured()) return { error: "Gift cards aren't available yet." };
+
+  // Same unauthenticated payment on-ramp as purchaseGiftCard — throttle per IP
+  // (shared budget with purchases, so the total gift-card checkout rate from
+  // one source is capped) before any DB work, to blunt card-testing funnels.
+  const ip = await clientIp();
+  const limited = await rateLimit(`gift-card:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
+  if (!limited.ok) {
+    log.warn("giftcard.rate_limited", { ip, flow: "contribute" });
+    return { error: "Too many attempts. Please try again in a little while." };
+  }
 
   const card = await findPoolByContributeToken(token);
   if (!card) return { error: "This contribution link is no longer valid." };
