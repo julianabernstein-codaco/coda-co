@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { isStripeConfigured } from "@/lib/stripe";
+import { auth } from "@/auth";
+import { giftCardsOpenFor } from "@/lib/launch";
 import { getContributeView, reconcilePendingByContributeToken } from "@/lib/api/giftCards";
 import { formatCents } from "@/lib/format/giftCard";
 import { ContributeForm } from "./ContributeForm";
@@ -26,6 +28,11 @@ export default async function ContributePage({
   await reconcilePendingByContributeToken(token);
   const view = await getContributeView(token);
   if (!view.found) notFound();
+
+  // Contributions are money in, so they close with the sales hold. The pool
+  // itself stays visible — its organizer can still see and send it.
+  const session = await auth();
+  const salesOpen = await giftCardsOpenFor(session?.user?.role);
 
   const forWhom = view.recipientName ? ` for ${view.recipientName}` : "";
 
@@ -57,11 +64,12 @@ export default async function ContributePage({
 
       <div className="grid gap-6 md:grid-cols-[1fr_240px] items-start">
         <Card>
-          {isStripeConfigured() ? (
+          {salesOpen && isStripeConfigured() ? (
             <ContributeForm token={token} />
           ) : (
             <p className="text-[16px] text-cm">
-              Contributions aren't available just yet. Please check back soon.
+              Contributions aren&apos;t open just yet. Please check back soon — this gift
+              pool stays exactly as it is in the meantime.
             </p>
           )}
         </Card>

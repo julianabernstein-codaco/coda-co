@@ -31,11 +31,48 @@ export async function isLaunched(): Promise<boolean> {
 
 // Paid vendor billing (goods + services subscriptions) is open once
 // launched. Admins can always transact so the team can validate live payments
-// before launch. Gift cards are NOT gated on this — they're always on sale.
+// before launch. Gift cards have their own switch — see giftCardsOpenFor.
 // Pass the signed-in user's role.
 export async function paidFlowsOpenFor(role?: string | null): Promise<boolean> {
   if (role === "admin") return true;
   return isLaunched();
+}
+
+// ── Gift cards ────────────────────────────────────────────────────────────
+//
+// Deliberately independent of `launchedAt`. The launch date answers "can we
+// bill vendors yet"; this answers "should the public be able to buy a balance
+// we can't yet redeem". Until Phase E ships a spend path, every card sold is
+// an unredeemable obligation, so the flag ships OFF and is switched on from
+// /admin/launch.
+//
+// This gates the two money-IN on-ramps only — buying a card and chipping into
+// a pool. Checking a balance, claiming a card, and an organizer delivering an
+// already-funded pool stay open unconditionally: those people paid, and a hold
+// must never strand them.
+
+export async function areGiftCardsEnabled(): Promise<boolean> {
+  const cfg = await prisma.platformConfig.findUnique({
+    where: { id: CONFIG_ID },
+    select: { giftCardsEnabled: true },
+  });
+  return cfg?.giftCardsEnabled ?? false;
+}
+
+// Admins bypass, mirroring paidFlowsOpenFor — the team needs to run a real
+// purchase against live keys to validate the webhook and payout before the
+// flow opens to anyone else (LAUNCH.md, pre-launch step 3).
+export async function giftCardsOpenFor(role?: string | null): Promise<boolean> {
+  if (role === "admin") return true;
+  return areGiftCardsEnabled();
+}
+
+export async function setGiftCardsEnabled(enabled: boolean): Promise<void> {
+  await prisma.platformConfig.upsert({
+    where: { id: CONFIG_ID },
+    create: { id: CONFIG_ID, giftCardsEnabled: enabled },
+    update: { giftCardsEnabled: enabled },
+  });
 }
 
 // The free-trial window. Trials start at launch for everyone, so they all

@@ -39,6 +39,16 @@ unblocked; PR 4 (automated payouts) needs Stripe Connect. PR 1 (balance core)
 and PR 1.5 (group-gift pools — shareable contribution link + magic organizer
 link, account-free) have landed.
 
+**Sales are currently held.** `PlatformConfig.giftCardsEnabled` ships `false`
+and is flipped from `/admin/launch`. The reason is the ordering: PR 2 (spend
+on goods) hasn't landed, so a card sold today is a balance nobody can
+redeem — an obligation with nothing behind it, and no in-app way to unwind
+it. The hold is enforced in the server actions (`purchaseGiftCard`,
+`contributeToPool`), not by the buttons; redeem / claim / organizer-deliver
+stay open, and admins bypass. **Open sales as part of PR 2**, together with
+the refund-clawback work noted in the security section below — those two
+land the same guarantee from opposite ends.
+
 ## Image storage (parallel workstream)
 
 User-uploaded images for vendor headshots and product photos. Three-phase

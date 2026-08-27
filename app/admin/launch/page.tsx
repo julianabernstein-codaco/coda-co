@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import {
+  areGiftCardsEnabled,
   getLaunchedAt,
   isDemoHidden,
   launchedFrom,
@@ -11,6 +12,8 @@ import {
   flagMockVendorsAsExamples,
   goLiveNow,
   hideDemoVendors,
+  holdGiftCardSales,
+  openGiftCardSales,
   revertToPrelaunch,
   scheduleLaunch,
   showDemoVendors,
@@ -30,6 +33,7 @@ export default async function AdminLaunchPage() {
 
   const launchedAt = await getLaunchedAt();
   const demoHidden = await isDemoHidden();
+  const giftCardsOn = await areGiftCardsEnabled();
   const [demoCount, mockUnflagged] = await Promise.all([
     prisma.vendorProfile.count({ where: { demo: true } }),
     prisma.vendorProfile.count({
@@ -54,9 +58,9 @@ export default async function AdminLaunchPage() {
         <p className="text-cm text-sm mb-6">
           Controls whether paid vendor billing is open. Pre-launch, goods and
           services subscriptions are locked for everyone but admins — vendors
-          run on the free trial. (Gift cards are always on sale.) Going live opens
-          paid flows and starts every vendor’s {TRIAL_DAYS}-day free trial from the
-          launch time.
+          run on the free trial. Going live opens paid flows and starts every
+          vendor’s {TRIAL_DAYS}-day free trial from the launch time. Gift-card
+          sales are a separate switch, below.
         </p>
 
         <div className="bg-white rounded-[10px] border border-line p-6 mb-5">
@@ -122,6 +126,36 @@ export default async function AdminLaunchPage() {
             <form action={revertToPrelaunch}>
               <button className="btn-ghost btn-md" type="submit">
                 Back to pre-launch
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[10px] border border-line p-6 mt-5">
+          <h2 className="font-serif text-[18px] text-ch mb-2">Gift card sales</h2>
+          <p className="text-[13px] text-cm mb-4 leading-relaxed">
+            Whether the public can buy a gift card or chip into a group gift.
+            Held by default: until checkout ships (Phase E) a sold card is a
+            balance nobody can spend, so every sale is an obligation with
+            nothing behind it. Enforced server-side, not just on the buttons.
+          </p>
+          <p className="text-[13px] text-cm mb-4 leading-relaxed">
+            Checking a balance, claiming a card, and an organizer sending an
+            already-funded pool stay open either way — a hold must never strand
+            someone who already paid. Admins can always buy, so the team can
+            validate a live charge before opening sales.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <span
+              className={`text-[11px] font-medium tracking-wide px-2.5 py-1 rounded-full border ${
+                giftCardsOn ? "bg-sg-p border-sg-l text-sg-d" : "bg-pl border-line text-cm"
+              }`}
+            >
+              {giftCardsOn ? "ON SALE" : "ON HOLD"}
+            </span>
+            <form action={giftCardsOn ? holdGiftCardSales : openGiftCardSales}>
+              <button className="btn-secondary btn-md" type="submit">
+                {giftCardsOn ? "Hold gift card sales" : "Open gift card sales"}
               </button>
             </form>
           </div>

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { setDemoVendorsHidden, setLaunchedAt } from "@/lib/launch";
+import { setDemoVendorsHidden, setGiftCardsEnabled, setLaunchedAt } from "@/lib/launch";
 import { log } from "@/lib/log";
 
 async function requireAdmin(): Promise<void> {
@@ -53,6 +53,22 @@ export async function showDemoVendors(): Promise<void> {
   await requireAdmin();
   await setDemoVendorsHidden(false);
   log.info("launch.demo_vendors_hidden", { hidden: false });
+  revalidateAll();
+}
+
+// Gift-card sales hold. Independent of the launch date — see lib/launch.ts.
+// Turning sales on is a money decision, so it's logged like one.
+export async function openGiftCardSales(): Promise<void> {
+  await requireAdmin();
+  await setGiftCardsEnabled(true);
+  log.info("launch.gift_cards_enabled", { enabled: true });
+  revalidateAll();
+}
+
+export async function holdGiftCardSales(): Promise<void> {
+  await requireAdmin();
+  await setGiftCardsEnabled(false);
+  log.info("launch.gift_cards_enabled", { enabled: false });
   revalidateAll();
 }
 

@@ -1,11 +1,21 @@
 import Link from "next/link";
+import { auth } from "@/auth";
+import { giftCardsOpenFor } from "@/lib/launch";
 
 // Cross-page promo for gift cards: a friend / colleague / loved one who is
 // grieving can be given a CodaCo balance to spend when they're ready. Used on
 // the homepage, /shop, and /services. Self-contained box (warm paper surface +
 // muted clay border) so it reads as distinct on white, sage, or terracotta
 // section backgrounds without being loud.
-export function GiftCardCallout() {
+//
+// Reads the sales hold itself (async RSC) so the three call sites don't each
+// have to thread it through. While held, the promo stays — it's still a real
+// thing we're building — but the CTA becomes a disabled "Coming soon", the
+// same visible-but-disabled treatment the pre-launch vendor flows use.
+export async function GiftCardCallout() {
+  const session = await auth();
+  const open = await giftCardsOpenFor(session?.user?.role);
+
   return (
     <div className="rounded-[16px] border border-tr-l bg-pl2 overflow-hidden">
       <div className="flex flex-col items-center gap-6 px-6 py-7 text-center sm:flex-row sm:gap-8 sm:px-10 sm:py-8 sm:text-left">
@@ -23,12 +33,22 @@ export function GiftCardCallout() {
             own or invite others to chip in together.
           </p>
         </div>
-        <Link
-          href="/gift-cards"
-          className="btn-primary btn-md no-underline whitespace-nowrap shrink-0"
-        >
-          Give a gift card
-        </Link>
+        {open ? (
+          <Link
+            href="/gift-cards"
+            className="btn-primary btn-md no-underline whitespace-nowrap shrink-0"
+          >
+            Give a gift card
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="btn-primary btn-md whitespace-nowrap shrink-0 opacity-50 cursor-not-allowed"
+          >
+            Coming soon
+          </button>
+        )}
       </div>
     </div>
   );

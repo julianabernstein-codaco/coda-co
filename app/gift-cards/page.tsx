@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { isStripeConfigured } from "@/lib/stripe";
+import { auth } from "@/auth";
+import { giftCardsOpenFor } from "@/lib/launch";
 import { reconcilePendingGiftCardById } from "@/lib/api/giftCards";
 import { overGiftCardLimit, RECONCILE_LIMIT } from "./limits";
 import { GiftCardForm } from "./GiftCardForm";
@@ -19,6 +21,10 @@ export default async function GiftCardsPage({
   searchParams: Promise<{ status?: string; card?: string }>;
 }) {
   const { status, card } = await searchParams;
+  // Sales hold (see lib/launch.ts). Admins keep the form so the team can still
+  // validate a live purchase end-to-end.
+  const session = await auth();
+  const salesOpen = await giftCardsOpenFor(session?.user?.role);
   // After a single-purchase checkout we land back here with ?card=<id>. If the
   // funding webhook was missed, recover it from Stripe so the recipient's
   // delivery email actually goes out.
@@ -61,12 +67,21 @@ export default async function GiftCardsPage({
 
       <div className="grid gap-8 md:grid-cols-[1fr_300px] items-start">
         <Card className="space-y-6">
-          {isStripeConfigured() ? (
+          {salesOpen && isStripeConfigured() ? (
             <GiftCardForm />
           ) : (
-            <p className="text-[16px] text-cm">
-              Gift cards aren't available just yet. Please check back soon.
-            </p>
+            <div className="space-y-3">
+              <p className="text-[16px] text-cm">
+                Gift cards aren&apos;t on sale just yet. Please check back soon.
+              </p>
+              <p className="text-[15px] text-cl">
+                Already have a code?{" "}
+                <Link href="/gift-cards/redeem" className="text-tr underline">
+                  Check its balance
+                </Link>{" "}
+                — existing cards work as normal.
+              </p>
+            </div>
           )}
         </Card>
 
