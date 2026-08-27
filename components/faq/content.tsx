@@ -839,7 +839,7 @@ export const helpCenterCategories: FaqCategory[] = [
       },
       {
         q: "Is there a fee to list?",
-        a: "Plans start free with up to three listings. Paid plans add unlimited listings and featured placement, and a small transaction fee applies on goods sales. Full details are on the List with us page.",
+        a: "Plans start with a free trial. Makers can then switch to an ongoing monthly or annual plan. Full details are on the List with Us page.",
       },
     ],
   },
