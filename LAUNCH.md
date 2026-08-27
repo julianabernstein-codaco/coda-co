@@ -48,6 +48,13 @@ Notes:
 
 1. **Clean test data.** Remove mock/test vendors from the production DB so real
    vendors aren't mixed with demo rows. (Ask Claude for the cleanup if needed.)
+   **Deleting the rows is what matters — hiding isn't enough.** `/admin/launch`
+   → "Hide demo vendors" only drops them from public surfaces; the accounts can
+   still sign in. Every `@codaco.local` account shares one password that's
+   published in this repo, so any that survive into a public site are open
+   logins. If you want to keep the demo rows visible for a while, at minimum
+   null out `users.password_hash` for every `@codaco.local` user — they render
+   exactly the same, they just can't be logged into.
 2. **Null out stale test-mode Stripe refs** on any *real* vendor who attempted a
    test-mode checkout: clear `vendor_profile.stripe_customer_id` (and any
    `subscriptions.stripe_subscription_id`) so live mode creates fresh customers.
@@ -68,7 +75,9 @@ Notes:
 7. **Flip the switch:** `/admin/launch` → **Launch now** (or Schedule a date).
    This opens vendor paid flows and starts every vendor's 90-day trial.
 8. **(Optional) Go public:** unset `PREVIEW_PASSWORD` on Production + redeploy to
-   drop the shared-password wall.
+   drop the shared-password wall. **Do step 1 first.** The shared-password wall
+   is what currently makes the demo accounts harmless; unsetting it is the
+   moment their logins become reachable from the open internet.
 
 ## Verify
 
