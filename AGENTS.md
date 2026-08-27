@@ -272,23 +272,28 @@ filter component.
 
 ### Legal-document primitives (`components/legal/LegalDoc.tsx`)
 
-For long-form legal pages (`/privacy` today; terms, community policy,
-code of conduct when they land). A legal doc is one pattern —
-numbered section, prose, the odd table — repeated twenty times, so it
-gets primitives rather than inline markup.
+For long-form legal pages (`/privacy` and `/community-policy` today;
+terms and the code of conduct when they land). A legal doc is one
+pattern — numbered section, prose, the odd table — repeated twenty
+times, so it gets primitives rather than inline markup.
 
 | Component        | Props                                 | When to use                                                                 |
 |------------------|---------------------------------------|-----------------------------------------------------------------------------|
-| `<LegalSection>` | `n`, `title`                          | One numbered top-level section. Renders the `<h2>`, the `#section-{n}` anchor, and the prose styling for its children. |
+| `<LegalSection>` | `n?`, `title`                         | One top-level section. Renders the `<h2>`, the `#section-{n}` anchor, and the prose styling for its children. Omit `n` for an unnumbered lead-in (e.g. the Community Policy's "Why we wrote this"); it anchors on a slug of its title instead. |
 | `<LegalSubhead>` | `label?`                              | Sub-heading inside a section (e.g. `label="3.1"`).                          |
 | `<LegalList>`    | `items`, `variant='bullet'\|'plain'`  | Bulleted list, or `plain` for items that carry their own `(a)` / bold lead-in. |
 | `<LegalTable>`   | `headers`, `rows`                     | Two- or three-column reference table. Scrolls horizontally on narrow screens. |
 | `<LegalContents>`| `sections`                            | Table of contents. Flows down each column, not across.                       |
 | `<Ref>`          | `n`, `short?`                         | Inline cross-reference — renders "Section 7" (or bare `7`) linked to that anchor. **Never** write a plain-text "See Section 7". |
 
-The page owns the section list (`{ n, title }[]`) and feeds it to both
-`<LegalContents>` and each `<LegalSection>`, so the contents list can't
-drift from the headings. See `app/privacy/page.tsx`.
+The page owns the section list (`LegalSectionMeta[]`) and feeds it to
+both `<LegalContents>` and each `<LegalSection>`, so the contents list
+can't drift from the headings. See `app/privacy/page.tsx`.
+
+`<Ref>` is for **internal** sections only. These documents also cite
+sections of *other* documents ("Section 5 of the Code of Conduct",
+"Section 12.2 of the Vendor Subscription Agreement") — leave those as
+plain text until the page they point at exists.
 
 ### Format helpers
 

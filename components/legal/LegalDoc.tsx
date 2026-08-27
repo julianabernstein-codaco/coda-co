@@ -8,26 +8,38 @@ import type { ReactNode } from "react";
  * away from the rest of the site.
  */
 
-/** Anchor id for a numbered section — shared by headings, the contents list, and <Ref>. */
-export function sectionAnchor(n: number) {
-  return `section-${n}`;
-}
-
-interface LegalSectionProps {
-  n: number;
+export interface LegalSectionMeta {
+  /** Section number. Omit for an unnumbered lead-in section, which
+   *  anchors on a slug of its title instead. */
+  n?: number;
   title: string;
-  children: ReactNode;
 }
 
-export function LegalSection({ n, title, children }: LegalSectionProps) {
+/** Anchor id for a section — shared by headings, the contents list, and <Ref>. */
+export function sectionAnchor({ n, title }: LegalSectionMeta) {
+  const key =
+    n ??
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  return `section-${key}`;
+}
+
+export function LegalSection({
+  n,
+  title,
+  children,
+}: LegalSectionMeta & { children: ReactNode }) {
   // scroll-mt-24 clears the sticky nav when a contents link jumps here.
   return (
     <section
-      id={sectionAnchor(n)}
+      id={sectionAnchor({ n, title })}
       className="scroll-mt-24 border-t border-line-soft pt-10 mt-10 first:border-t-0 first:pt-0 first:mt-0"
     >
       <h2 className="font-serif text-[27px] font-light leading-[1.25] text-ch mb-4">
-        <span className="text-tr">{n}.</span> {title}
+        {n != null && <span className="text-tr">{n}. </span>}
+        {title}
       </h2>
       <div className="space-y-4 text-[16px] text-cm leading-[1.8]">{children}</div>
     </section>
@@ -53,7 +65,7 @@ export function LegalSubhead({
 export function Ref({ n, short = false }: { n: number; short?: boolean }) {
   return (
     <a
-      href={`#${sectionAnchor(n)}`}
+      href={`#section-${n}`}
       className="text-tr no-underline hover:underline"
     >
       {short ? n : `Section ${n}`}
@@ -125,11 +137,7 @@ export function LegalTable({
   );
 }
 
-export function LegalContents({
-  sections,
-}: {
-  sections: { n: number; title: string }[];
-}) {
+export function LegalContents({ sections }: { sections: LegalSectionMeta[] }) {
   return (
     <nav aria-label="Contents">
       <p className="text-overline text-cl mb-3">Contents</p>
@@ -137,11 +145,12 @@ export function LegalContents({
           column (1…10, then 11…19) instead of jumping left-to-right. */}
       <ol className="list-none pl-0 sm:columns-2 gap-x-8 space-y-1.5 text-[15px]">
         {sections.map((section) => (
-          <li key={section.n} className="break-inside-avoid">
+          <li key={sectionAnchor(section)} className="break-inside-avoid">
             <a
-              href={`#${sectionAnchor(section.n)}`}
+              href={`#${sectionAnchor(section)}`}
               className="flex gap-2 text-cm no-underline hover:text-tr transition-colors"
             >
+              {/* Unnumbered lead-ins keep the empty column so titles align. */}
               <span className="w-4 shrink-0 text-right tabular-nums text-cl">
                 {section.n}
               </span>
