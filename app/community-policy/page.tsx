@@ -21,8 +21,9 @@ export const metadata: Metadata = {
 const EFFECTIVE_DATE = "August 28, 2026";
 const LAST_UPDATED = "August 28, 2026";
 
+// "Why we wrote this" is deliberately absent — it sits above the contents
+// card, so listing it there would be a link that scrolls backwards.
 const SECTIONS: LegalSectionMeta[] = [
-  { title: "Why we wrote this" },
   { n: 1, title: "What we stand for" },
   { n: 2, title: "What we ask of Vendors" },
   { n: 3, title: "Everyone is welcome here" },
@@ -32,7 +33,7 @@ const SECTIONS: LegalSectionMeta[] = [
   { n: 7, title: "How this fits with our other documents" },
 ];
 
-const section = (n?: number) => SECTIONS.find((s) => s.n === n)!;
+const section = (n: number) => SECTIONS.find((s) => s.n === n)!;
 
 const SUPPORT_EMAIL = (
   <a
@@ -75,10 +76,6 @@ export default function CommunityPolicyPage() {
 
       <section className="bg-pl px-10 pt-8 pb-20">
         <Container width="narrow">
-          <Card className="mb-12">
-            <LegalContents sections={SECTIONS} />
-          </Card>
-
           <LegalSection title="Why we wrote this">
             <p>
               People come to CodaCo on some of the worst days of their lives. A
@@ -100,6 +97,10 @@ export default function CommunityPolicyPage() {
               it.
             </p>
           </LegalSection>
+
+          <Card className="mt-12">
+            <LegalContents sections={SECTIONS} />
+          </Card>
 
           <LegalSection {...section(1)}>
             <LegalList
