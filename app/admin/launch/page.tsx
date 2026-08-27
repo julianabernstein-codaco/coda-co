@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
+import { DEMO_EMAIL_DOMAIN } from "@/lib/demo";
 import {
   getLaunchedAt,
   isDemoHidden,
@@ -33,7 +34,7 @@ export default async function AdminLaunchPage() {
   const [demoCount, mockUnflagged] = await Promise.all([
     prisma.vendorProfile.count({ where: { demo: true } }),
     prisma.vendorProfile.count({
-      where: { demo: false, user: { email: { endsWith: "@codaco.local" } } },
+      where: { demo: false, user: { email: { endsWith: DEMO_EMAIL_DOMAIN } } },
     }),
   ]);
   const live = launchedFrom(launchedAt);

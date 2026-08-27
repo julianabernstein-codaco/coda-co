@@ -155,6 +155,14 @@ Mock accounts use `{slug}@codaco.local` emails (admin is
 collide with it — that's the natural marker for identifying mock
 rows when you eventually need to delete them.
 
+That marker is `DEMO_EMAIL_DOMAIN` / `isDemoEmail()` in **`lib/demo.ts`**
+— use it instead of writing `"@codaco.local"` again. The same module's
+`demoSignInAllowed()` gates mock sign-in, and `authorize()` in `auth.ts`
+enforces it: because the password is published here, these accounts are
+refused once the site is public (production with no `PREVIEW_PASSWORD`).
+They keep working in local dev, in CI, and on any deploy still behind
+the preview wall, so nothing about the normal workflow changes.
+
 ### Auth & role gating
 - Session shape is augmented in `types/next-auth.d.ts`:
   `session.user.{id, email, name, role}`.

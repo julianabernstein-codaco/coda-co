@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
+import { demoSignInAllowed, isDemoEmail } from "@/lib/demo";
 import { log } from "@/lib/log";
 import { clientIp, rateLimit, resetRateLimit } from "@/lib/rate-limit";
 
@@ -74,6 +75,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const emailOk = (await rateLimit(`login:email:${email}`, LOGIN_EMAIL_LIMIT)).ok;
         if (!ipOk || !emailOk) {
           log.warn("auth.rate_limited", { ip, email, reason: !emailOk ? "email" : "ip" });
+          return null;
+        }
+
+        // Mock/sample accounts share one password that's published in this
+        // repo, so they must never be a way in once the site is public. They
+        // stay usable while the preview wall is up (the team signs in as
+        // sample vendors daily) — `demoSignInAllowed` derives that from
+        // PREVIEW_PASSWORD, so this arms itself the moment the wall drops.
+        // Checked after the throttles so blocked attempts still count toward
+        // the limits, and before the DB read so it costs nothing. Generic
+        // `null` like every other failure — no signal that the account exists.
+        if (isDemoEmail(email) && !demoSignInAllowed()) {
+          log.warn("auth.signin_failed", { reason: "demo_account_blocked", email });
           return null;
         }
 

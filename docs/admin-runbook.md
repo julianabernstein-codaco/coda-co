@@ -68,6 +68,12 @@ Every seeded vendor uses the same pattern:
 Example: `earthen-studio@codaco.local` / `codaco-dev` signs you in as the
 Earthen Studio vendor, with three urns already listed on their dashboard.
 
+These logins work while the site is private (behind the shared preview
+password) and in local development. They stop working the moment the site
+goes public — the password above is written down in this repo, so it can't
+be a way in once anyone can reach the login page. If you need a working
+vendor account after launch, make a real one.
+
 The 18 seeded vendor slugs are:
 
 `earthen-studio`, `maria-rosales`, `threshold-wellness`, `jade-castillo`,

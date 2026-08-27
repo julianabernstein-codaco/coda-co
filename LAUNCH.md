@@ -49,12 +49,15 @@ Notes:
 1. **Clean test data.** Remove mock/test vendors from the production DB so real
    vendors aren't mixed with demo rows. (Ask Claude for the cleanup if needed.)
    **Deleting the rows is what matters — hiding isn't enough.** `/admin/launch`
-   → "Hide demo vendors" only drops them from public surfaces; the accounts can
-   still sign in. Every `@codaco.local` account shares one password that's
-   published in this repo, so any that survive into a public site are open
-   logins. If you want to keep the demo rows visible for a while, at minimum
-   null out `users.password_hash` for every `@codaco.local` user — they render
-   exactly the same, they just can't be logged into.
+   → "Hide demo vendors" only drops them from public surfaces; the rows and
+   their accounts stay. Every `@codaco.local` account shares one password
+   that's published in this repo.
+
+   Sign-in for those accounts is blocked automatically once the site is public
+   (`lib/demo.ts`, enforced in `authorize()`) — so a missed cleanup isn't an
+   open door. That's a backstop, not the cleanup: delete the rows anyway so
+   real vendors aren't listed beside demo ones, and so the guard isn't the
+   only thing standing between a published password and a live account.
 2. **Null out stale test-mode Stripe refs** on any *real* vendor who attempted a
    test-mode checkout: clear `vendor_profile.stripe_customer_id` (and any
    `subscriptions.stripe_subscription_id`) so live mode creates fresh customers.

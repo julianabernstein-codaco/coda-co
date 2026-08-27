@@ -16,6 +16,7 @@ import { reviews } from "../lib/data/reviews";
 import { vendorReviews } from "../lib/data/vendor-reviews";
 import { inquiries } from "../lib/data/inquiries";
 import { normalizeSslmode } from "../lib/connectionString";
+import { DEMO_EMAIL_DOMAIN } from "../lib/demo";
 
 config({ path: ".env" });
 
@@ -40,7 +41,7 @@ const prisma = new PrismaClient({ adapter });
 // any vendor without a credential cheat-sheet. Never store this in a real
 // system — the mock script hard-fails in production for that reason.
 const DEV_PASSWORD = "codaco-dev";
-const ADMIN_EMAIL = "admin@codaco.local";
+const ADMIN_EMAIL = `admin${DEMO_EMAIL_DOMAIN}`;
 
 // Cover images for example listings live as static files in
 // public/products, named by the product slug (e.g. remains-bracelet-001.jpg).
@@ -111,7 +112,7 @@ async function main() {
   for (const v of vendors) {
     const user = await prisma.user.create({
       data: {
-        email: `${v.id}@codaco.local`,
+        email: `${v.id}${DEMO_EMAIL_DOMAIN}`,
         name: v.name,
         passwordHash,
         role: "user",

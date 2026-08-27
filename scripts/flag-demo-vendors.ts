@@ -11,6 +11,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { config } from "dotenv";
 import { normalizeSslmode } from "../lib/connectionString";
+import { DEMO_EMAIL_DOMAIN } from "../lib/demo";
 
 config({ path: ".env" });
 
@@ -21,7 +22,7 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const mock = await prisma.vendorProfile.findMany({
-    where: { user: { email: { endsWith: "@codaco.local" } } },
+    where: { user: { email: { endsWith: DEMO_EMAIL_DOMAIN } } },
     select: { id: true, slug: true },
   });
   if (mock.length === 0) {

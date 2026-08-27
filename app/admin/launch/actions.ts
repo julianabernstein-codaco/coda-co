@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { DEMO_EMAIL_DOMAIN } from "@/lib/demo";
 import { setDemoVendorsHidden, setLaunchedAt } from "@/lib/launch";
 import { log } from "@/lib/log";
 
@@ -63,7 +64,7 @@ export async function showDemoVendors(): Promise<void> {
 export async function flagMockVendorsAsExamples(): Promise<void> {
   await requireAdmin();
   const mock = await prisma.vendorProfile.findMany({
-    where: { user: { email: { endsWith: "@codaco.local" } } },
+    where: { user: { email: { endsWith: DEMO_EMAIL_DOMAIN } } },
     select: { id: true },
   });
   if (mock.length > 0) {
