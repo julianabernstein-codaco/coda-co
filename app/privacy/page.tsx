@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
@@ -148,7 +149,7 @@ export default function PrivacyPage() {
 
           <LegalSection {...section(1)}>
             <p>
-              CodaCo Marketplace, Inc (&ldquo;Codaco,&rdquo; &ldquo;we,&rdquo;
+              CodaCo Marketplace, Inc (&ldquo;CodaCo,&rdquo; &ldquo;we,&rdquo;
               &ldquo;us,&rdquo; &ldquo;our&rdquo;) operates the online directory
               and marketplace at{" "}
               <a
@@ -174,7 +175,16 @@ export default function PrivacyPage() {
             <LegalTable
               headers={["Document", "Applies to"]}
               rows={[
-                ["Terms of Use", "Customers and other visitors"],
+                [
+                  <Link
+                    key="customer-terms"
+                    href="/customer-terms"
+                    className="text-tr no-underline hover:underline"
+                  >
+                    Customer Terms of Use
+                  </Link>,
+                  "Customers and other visitors",
+                ],
                 ["Vendor Subscription Agreement", "Vendors"],
                 ["Community Policy", "Vendors"],
                 ["Code of Conduct", "Vendors"],
@@ -564,7 +574,7 @@ export default function PrivacyPage() {
                   </strong>{" "}
                   &mdash; when we reasonably believe disclosure is required by
                   law or legal process, or necessary to protect the rights,
-                  property, or safety of Codaco, our users, or the public, or to
+                  property, or safety of CodaCo, our users, or the public, or to
                   investigate suspected fraud or violation of our terms. Where
                   lawful and practical, we will attempt to notify you of a legal
                   demand for your information.
