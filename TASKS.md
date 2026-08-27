@@ -142,6 +142,21 @@ changes, acknowledgments), and cancellation request timestamps. In a dispute,
   Upstash Data Browser and that `event=ratelimit.redis_unavailable` is *not*
   logging in Vercel. If it is, the limiter is degraded to per-instance
   in-memory and the effective ceiling is ~×(instance count).
+- **Enable Stripe fraud controls in the Dashboard (card-testing defense).**
+  Card handling is confirmed **PCI SAQ-A**: every charge path is hosted
+  Stripe Checkout / Billing Portal reached by top-level redirect
+  (`window.location.href = session.url`) — no `@stripe/stripe-js`/Elements,
+  no card fields, no PAN ever touches our server. The gift-card purchase and
+  pool-contribution flows (the only *unauthenticated* payment on-ramps) are
+  now per-IP rate-limited (`gift-card:<ip>`, 10/hr, shared budget) so they
+  can't be used as a card-testing funnel. **Remaining (Stripe Dashboard, no
+  code)** — verify/enable: (1) **Radar** is active (on by default; "Radar for
+  Fraud Teams" adds custom rules); (2) Radar rule **"Block if CVC verification
+  fails"**; (3) Radar rule **"Block if postal code verification fails"** (AVS
+  / ZIP); (4) the built-in **card-testing** rule / rate-limiting, plus a
+  "block if risk level = highest" rule. When Phase E wires real goods
+  payments, keep them on hosted **Checkout** (not Elements with card fields)
+  to stay in SAQ-A scope.
 
 ## Resolved (kept for posterity, can be deleted once stable)
 
