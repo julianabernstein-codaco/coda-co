@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { auth } from "@/auth";
+import { giftCardsOpenFor } from "@/lib/launch";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -19,6 +21,9 @@ const offerings: {
   body: string;
   cta: string;
   href: string;
+  // Tiles that depend on a flow being open name it here, so the tile can go
+  // quiet with the flow instead of promising something that isn't there.
+  requires?: "giftCards";
 }[] = [
   {
     title: "Planning tools",
@@ -55,10 +60,14 @@ const offerings: {
     body: "It can be really hard to know what to do when someone you know has lost a loved one. CodaCo gift cards allow you to support in a way that is helpful and meaningful — and way more practical than flowers.",
     cta: "Give a gift card",
     href: "/gift-cards",
+    requires: "giftCards",
   },
 ];
 
-export default function WhatIsCodaCoPage() {
+export default async function WhatIsCodaCoPage() {
+  const session = await auth();
+  const giftCardsOpen = await giftCardsOpenFor(session?.user?.role);
+
   return (
     <>
       {/* Hero — the plain-language intro */}
@@ -104,12 +113,18 @@ export default function WhatIsCodaCoPage() {
                 <p className="text-[16px] text-cm leading-[1.72] mb-5 flex-1">
                   {item.body}
                 </p>
-                <Link
-                  href={item.href}
-                  className="inline-block text-[15px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d self-start"
-                >
-                  {item.cta} →
-                </Link>
+                {item.requires === "giftCards" && !giftCardsOpen ? (
+                  <span className="inline-block text-[15px] text-cl self-start">
+                    Gift cards — coming soon
+                  </span>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="inline-block text-[15px] text-tr border-b border-dotted border-tr-l no-underline hover:text-tr-d self-start"
+                  >
+                    {item.cta} →
+                  </Link>
+                )}
               </Card>
             ))}
           </div>
