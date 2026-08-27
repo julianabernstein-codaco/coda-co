@@ -42,7 +42,6 @@ export function Footer() {
             <Link href="/community-policy" className="hover:text-white transition-colors">Community policy</Link>
             <a href="#" className="hover:text-white transition-colors">Accessibility</a>
           </div>
-          <span>Made with intention.</span>
         </div>
       </footer>
     </>
