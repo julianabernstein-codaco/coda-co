@@ -7,17 +7,13 @@ import {
   isWaitlistInterest,
 } from "@/lib/api/waitlist";
 import { sendWaitlistConfirmationEmail } from "@/lib/email/templates";
+import { isEmailShape } from "@/lib/format/email";
 
 export interface WaitlistState {
   ok?: boolean;
   message?: string;
   error?: string;
 }
-
-// Pragmatic email shape check — not RFC-exhaustive, just enough to reject
-// obvious typos before they land in the launch list. The unique constraint
-// + upsert in the data layer handle the rest.
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function joinWaitlist(
   _prev: WaitlistState | null,
@@ -26,7 +22,7 @@ export async function joinWaitlist(
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const rawInterest = String(formData.get("interest") ?? "");
 
-  if (!EMAIL_RE.test(email)) {
+  if (!isEmailShape(email)) {
     return { error: "Please enter a valid email address." };
   }
 

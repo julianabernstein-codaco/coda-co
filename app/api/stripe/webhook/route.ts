@@ -23,6 +23,98 @@ import {
 // Event destinations) or via `stripe listen --forward-to
 // .../api/stripe/webhook` in dev, and paste the signing secret into
 // STRIPE_WEBHOOK_SECRET.
+// Credit a gift card from a Checkout session, then send whatever email that
+// funding event calls for. Called from both checkout.session.completed and
+// checkout.session.async_payment_succeeded; safe to call with any session.
+async function creditGiftCardCheckout(session: Stripe.Checkout.Session): Promise<void> {
+  if (session.metadata?.kind !== "gift_card" || !session.metadata.giftCardId) return;
+
+  // ── The gate that keeps a gift card from being free money ──────────────
+  // checkout.session.completed does NOT mean "paid". For delayed-notification
+  // payment methods (ACH, SEPA, Bacs, Boleto, Klarna, and others that can be
+  // switched on from the Stripe Dashboard with no code change here) it fires
+  // as soon as the customer finishes the flow, while payment_status is still
+  // `unpaid` — and that payment can still fail days later. Crediting there
+  // would email a spendable code for money that never arrives, which is
+  // exactly the buy-then-bounce laundering pattern gift cards attract.
+  //
+  // So: only `paid` funds a card. Async methods come back through
+  // checkout.session.async_payment_succeeded once the money is actually in,
+  // and this same function credits them then. (`no_payment_required`, the
+  // zero-total case, is correctly excluded too.)
+  if (session.payment_status !== "paid") {
+    log.info("giftcard.checkout_awaiting_payment", {
+      giftCardId: session.metadata.giftCardId,
+      sessionId: session.id,
+      paymentStatus: session.payment_status,
+    });
+    return;
+  }
+
+  const paymentIntentId =
+    typeof session.payment_intent === "string"
+      ? session.payment_intent
+      : (session.payment_intent?.id ?? null);
+
+  // Credits the amount Stripe actually collected — never a client-supplied
+  // number. Idempotent on the PaymentIntent, so a retried event (or the same
+  // session arriving via both `completed` and `async_payment_succeeded`)
+  // returns { recorded: false } and no duplicate credit or email goes out.
+  const res = await recordGiftCardContribution({
+    giftCardId: session.metadata.giftCardId,
+    paymentIntentId,
+    amountCents: session.amount_total ?? 0,
+    currency: (session.currency ?? "usd").toUpperCase(),
+    contributorName: session.metadata.contributorName ?? null,
+    contributorEmail:
+      session.customer_details?.email ?? session.metadata.contributorEmail ?? null,
+  });
+  if (!res.recorded) return;
+
+  const { card } = res;
+  if (isPooled(card)) {
+    // Group pool: never auto-deliver — the organizer sends it. Just notify
+    // them: pool ready on the first contribution, otherwise a "someone
+    // chipped in" nudge.
+    if (res.wasFirst) {
+      await sendGiftCardPoolCreatedEmail({
+        toEmail: card.purchaserEmail,
+        balanceLabel: formatCents(res.balanceCents),
+        contributeToken: card.contributeToken!,
+        organizerToken: card.organizerToken!,
+      });
+    } else {
+      await sendGiftCardContributionEmail({
+        toEmail: card.purchaserEmail,
+        contributorName: res.contributorName,
+        amountLabel: formatCents(res.amountCents),
+        balanceLabel: formatCents(res.balanceCents),
+        organizerToken: card.organizerToken!,
+      });
+    }
+  } else if (res.wasFirst) {
+    // Single-purchase card: deliver the card (with code) to the recipient,
+    // and email the buyer their payment receipt.
+    await sendGiftCardDeliveryEmail({
+      toEmail: card.recipientEmail ?? card.purchaserEmail,
+      recipientName: card.recipientName,
+      purchaserName: card.purchaserName,
+      purchaserEmail: card.purchaserEmail,
+      isSelfPurchase: !card.recipientEmail,
+      code: card.code,
+      amountLabel: formatCents(res.balanceCents),
+      message: card.giftMessage,
+    });
+    await sendGiftCardReceiptEmail({
+      toEmail: card.purchaserEmail,
+      amountLabel: formatCents(res.balanceCents),
+      isSelfPurchase: !card.recipientEmail,
+      recipientName: card.recipientName,
+      recipientEmail: card.recipientEmail,
+    });
+  }
+}
+
 export async function POST(req: Request) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) {
@@ -56,74 +148,29 @@ export async function POST(req: Request) {
               ? session.subscription
               : session.subscription.id;
           await syncStripeSubscription(await stripe.subscriptions.retrieve(subId));
-        } else if (
-          session.mode === "payment" &&
-          session.metadata?.kind === "gift_card" &&
-          session.metadata.giftCardId
-        ) {
-          const paymentIntentId =
-            typeof session.payment_intent === "string"
-              ? session.payment_intent
-              : (session.payment_intent?.id ?? null);
-          // Credits the amount Stripe actually collected. Idempotent on the
-          // PaymentIntent, so a retried event returns { recorded: false } and
-          // no duplicate credit or email goes out.
-          const res = await recordGiftCardContribution({
-            giftCardId: session.metadata.giftCardId,
-            paymentIntentId,
-            amountCents: session.amount_total ?? 0,
-            currency: (session.currency ?? "usd").toUpperCase(),
-            contributorName: session.metadata.contributorName ?? null,
-            contributorEmail:
-              session.customer_details?.email ??
-              session.metadata.contributorEmail ??
-              null,
-          });
+        } else if (session.mode === "payment") {
+          await creditGiftCardCheckout(session);
+        }
+        break;
+      }
 
-          if (res.recorded) {
-            const { card } = res;
-            if (isPooled(card)) {
-              // Group pool: never auto-deliver — the organizer sends it. Just
-              // notify them: pool ready on the first contribution, otherwise a
-              // "someone chipped in" nudge.
-              if (res.wasFirst) {
-                await sendGiftCardPoolCreatedEmail({
-                  toEmail: card.purchaserEmail,
-                  balanceLabel: formatCents(res.balanceCents),
-                  contributeToken: card.contributeToken!,
-                  organizerToken: card.organizerToken!,
-                });
-              } else {
-                await sendGiftCardContributionEmail({
-                  toEmail: card.purchaserEmail,
-                  contributorName: res.contributorName,
-                  amountLabel: formatCents(res.amountCents),
-                  balanceLabel: formatCents(res.balanceCents),
-                  organizerToken: card.organizerToken!,
-                });
-              }
-            } else if (res.wasFirst) {
-              // Single-purchase card: deliver the card (with code) to the
-              // recipient, and email the buyer their payment receipt.
-              await sendGiftCardDeliveryEmail({
-                toEmail: card.recipientEmail ?? card.purchaserEmail,
-                recipientName: card.recipientName,
-                purchaserName: card.purchaserName,
-                purchaserEmail: card.purchaserEmail,
-                isSelfPurchase: !card.recipientEmail,
-                code: card.code,
-                amountLabel: formatCents(res.balanceCents),
-                message: card.giftMessage,
-              });
-              await sendGiftCardReceiptEmail({
-                toEmail: card.purchaserEmail,
-                amountLabel: formatCents(res.balanceCents),
-                isSelfPurchase: !card.recipientEmail,
-                recipientName: card.recipientName,
-                recipientEmail: card.recipientEmail,
-              });
-            }
-          }
+      // Delayed-notification methods settle long after
+      // checkout.session.completed — this is where their money actually
+      // lands, so it's a funding event just like a paid card session.
+      case "checkout.session.async_payment_succeeded":
+        await creditGiftCardCheckout(event.data.object);
+        break;
+
+      // ...and this is where it doesn't. Nothing to undo (we never credited
+      // an unpaid session), but log it: a burst here is a card-testing or
+      // bank-fraud signal worth seeing.
+      case "checkout.session.async_payment_failed": {
+        const session = event.data.object;
+        if (session.metadata?.kind === "gift_card") {
+          log.warn("giftcard.async_payment_failed", {
+            giftCardId: session.metadata.giftCardId,
+            sessionId: session.id,
+          });
         }
         break;
       }
