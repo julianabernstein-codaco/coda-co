@@ -38,7 +38,7 @@ export function Footer() {
           <span>© 2025 CodaCo, Inc. · United States</span>
           <div className="flex gap-5">
             <a href="#" className="hover:text-white transition-colors">Terms of service</a>
-            <a href="#" className="hover:text-white transition-colors">Privacy policy</a>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy policy</Link>
             <a href="#" className="hover:text-white transition-colors">Accessibility</a>
           </div>
           <span>Made with intention.</span>
