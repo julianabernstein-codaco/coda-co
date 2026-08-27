@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { Card } from "@/components/ui/Card";
 import { isStripeConfigured } from "@/lib/stripe";
 import { reconcilePendingGiftCardById } from "@/lib/api/giftCards";
+import { overGiftCardLimit, RECONCILE_LIMIT } from "./limits";
 import { GiftCardForm } from "./GiftCardForm";
 
 export const metadata: Metadata = {
@@ -21,7 +22,14 @@ export default async function GiftCardsPage({
   // After a single-purchase checkout we land back here with ?card=<id>. If the
   // funding webhook was missed, recover it from Stripe so the recipient's
   // delivery email actually goes out.
-  if (card) await reconcilePendingGiftCardById(card);
+  //
+  // That id is whatever the URL says, and reconciling costs an outbound Stripe
+  // search — so throttle per IP first. A real buyer lands here once; being over
+  // budget just skips the self-heal (the webhook is still the primary path) and
+  // renders the page normally.
+  if (card && !(await overGiftCardLimit("reconcile", RECONCILE_LIMIT, "giftcard.reconcile_rate_limited"))) {
+    await reconcilePendingGiftCardById(card);
+  }
 
   return (
     <Container width="mid" className="py-12">

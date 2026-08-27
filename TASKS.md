@@ -148,8 +148,10 @@ changes, acknowledgments), and cancellation request timestamps. In a dispute,
   (`window.location.href = session.url`) — no `@stripe/stripe-js`/Elements,
   no card fields, no PAN ever touches our server. The gift-card purchase and
   pool-contribution flows (the only *unauthenticated* payment on-ramps) are
-  now per-IP rate-limited (`gift-card:<ip>`, 10/hr, shared budget) so they
-  can't be used as a card-testing funnel. **Remaining (Stripe Dashboard, no
+  now per-IP rate-limited (`gift-card:checkout:<ip>`, 10/hr, shared budget)
+  so they can't be used as a card-testing funnel; the redeem side
+  (`gift-card:code:<ip>`, 20/hr) caps code guessing the same way. All the
+  gift-card throttles live in `app/gift-cards/limits.ts`. **Remaining (Stripe Dashboard, no
   code)** — verify/enable: (1) **Radar** is active (on by default; "Radar for
   Fraud Teams" adds custom rules); (2) Radar rule **"Block if CVC verification
   fails"**; (3) Radar rule **"Block if postal code verification fails"** (AVS
@@ -157,6 +159,40 @@ changes, acknowledgments), and cancellation request timestamps. In a dispute,
   "block if risk level = highest" rule. When Phase E wires real goods
   payments, keep them on hosted **Checkout** (not Elements with card fields)
   to stay in SAQ-A scope.
+- **A refunded or charged-back gift card keeps its balance.** Nothing
+  listens for `charge.refunded` / `charge.dispute.created`, so the classic
+  laundering loop — buy a card, receive the code, then refund or dispute the
+  charge — leaves a fully funded ledger behind. Not exploitable *today*
+  because there is no spend path yet (Phase E), which is why it wasn't fixed
+  alongside the rest of the gift-card hardening, but it must land **with**
+  the spend path, not after it. Shape: handle both events in
+  `app/api/stripe/webhook/route.ts`, write a *negative* `adjustment` ledger
+  entry for the refunded amount, and set `status = void` when the clawback
+  takes the balance to zero. Needs a new idempotency key — the unique
+  `stripe_payment_intent_id` is already taken by the purchase entry, so add
+  a nullable unique column (a Refund/Dispute id) in the same migration.
+  Open product questions to settle first: what happens when the balance was
+  already partly spent (allow a negative balance and chase it, or write off?),
+  and whether a dispute should void the card immediately or only on loss.
+- **`getOrigin()` trusts `x-forwarded-host`.** Duplicated in
+  `app/gift-cards/actions.ts`, `app/gift-cards/manage/[token]/page.tsx`, and
+  `app/dashboard/billing/actions.ts`; each builds Stripe `success_url` /
+  `cancel_url` from a header the client controls. Low severity — an attacker
+  can only spoof the Host on *their own* request, so they redirect
+  themselves — but it does let anyone mint a genuine `checkout.stripe.com`
+  session that lands on a site they chose, which is a decent phishing prop,
+  and the gift-card success URL carries the organizer token. Fix once, in a
+  shared `lib/site-url.ts`: accept the forwarded host only when it matches
+  `NEXT_PUBLIC_SITE_URL` / `VERCEL_PROJECT_PRODUCTION_URL` / `VERCEL_URL`,
+  and fall back to the configured value otherwise (preview deploys keep
+  working via `VERCEL_URL`).
+- **A failed gift-card email silently swallows the notification.** In the
+  webhook, the sends run after `recordGiftCardContribution`. If a send
+  throws we return 500, Stripe retries, the credit is (correctly) idempotent
+  and returns `{ recorded: false }` — so the retry skips the email entirely
+  and it is never sent. Correctness, not security. Fix by making the sends
+  non-fatal (log and continue) or by driving them off recorded state rather
+  off the `wasFirst` flag of the winning call.
 
 ## Resolved (kept for posterity, can be deleted once stable)
 

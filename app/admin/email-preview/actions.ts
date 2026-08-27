@@ -4,9 +4,8 @@ import { auth } from "@/auth";
 import { sendEmail } from "@/lib/email/client";
 import { log } from "@/lib/log";
 import { rateLimit } from "@/lib/rate-limit";
+import { isEmailShape } from "@/lib/format/email";
 import { buildSample, TEMPLATE_KEYS, type TemplateKey } from "./fixtures";
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type TestSendResult = { ok: true } | { ok: false; error: string };
 
@@ -24,7 +23,7 @@ export async function sendTestEmail(
     return { ok: false, error: "Unknown template." };
   }
   const recipient = toEmail.trim();
-  if (!EMAIL_RE.test(recipient)) {
+  if (!isEmailShape(recipient)) {
     return { ok: false, error: "Enter a valid email address." };
   }
 

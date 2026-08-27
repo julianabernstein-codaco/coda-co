@@ -16,11 +16,24 @@ import {
   GiftCardError,
   GIFT_CARD_MIN_CENTS,
   GIFT_CARD_MAX_CENTS,
+  normalizeGiftCardCode,
+  isGiftCardCodeShape,
   type GiftCardLookup,
   type ClaimResult,
 } from "@/lib/api/giftCards";
 import { sendGiftCardDeliveryEmail } from "@/lib/email/templates";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { rateLimit } from "@/lib/rate-limit";
+import { isEmailShape } from "@/lib/format/email";
+import {
+  overGiftCardLimit,
+  CHECKOUT_LIMIT,
+  CODE_LIMIT,
+  DELIVER_LIMIT,
+} from "./limits";
+
+// Stripe caps a metadata value at 500 characters; stay well inside it so a
+// long name is truncated rather than failing the whole Checkout call.
+const MAX_METADATA_LEN = 200;
 
 async function getOrigin(): Promise<string> {
   const h = await headers();
@@ -55,22 +68,28 @@ export async function purchaseGiftCard(
 ): Promise<PurchaseResult> {
   if (!isStripeConfigured()) return { error: "Gift cards aren't available yet." };
 
+  // Cheap input checks run *before* the throttle so an honest typo costs a
+  // correction, not one of the caller's ten hourly attempts. createPendingGiftCard
+  // re-validates these — this is only about where the budget gets spent.
   const purchaserEmail = input.purchaserEmail?.trim();
   if (!purchaserEmail) return { error: "Enter your email so we can send a receipt." };
+  if (!isEmailShape(purchaserEmail)) return { error: "Enter a valid email address." };
+
+  const recipientEmail = input.recipientEmail?.trim() || null;
+  if (recipientEmail && !isEmailShape(recipientEmail)) {
+    return { error: "Enter a valid recipient email address." };
+  }
 
   // Guests can buy gift cards, so this is the one unauthenticated payment
   // on-ramp on the site. Throttle per IP before any DB work so it can't be
   // used as a card-testing funnel: the actual card entry happens on Stripe's
   // hosted Checkout page (where Radar applies), but this caps how fast anyone
   // can spin up Checkout sessions + pending gift-card rows from one source.
-  const ip = await clientIp();
-  const limited = await rateLimit(`gift-card:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
-  if (!limited.ok) {
-    log.warn("giftcard.rate_limited", { ip });
+  if (await overGiftCardLimit("checkout", CHECKOUT_LIMIT, "giftcard.rate_limited", { flow: "purchase" })) {
     return { error: "Too many attempts. Please try again in a little while." };
   }
 
-  const purchaserName = input.purchaserName?.trim() || null;
+  const purchaserName = input.purchaserName?.trim().slice(0, MAX_METADATA_LEN) || null;
 
   const session = await auth();
 
@@ -81,7 +100,7 @@ export async function purchaseGiftCard(
       purchaserEmail,
       purchaserName,
       purchaserUserId: session?.user?.id ?? null,
-      recipientEmail: input.recipientEmail?.trim() || null,
+      recipientEmail,
       recipientName: input.recipientName?.trim() || null,
       giftMessage: input.giftMessage?.trim() || null,
       pooled: input.pooled,
@@ -156,10 +175,7 @@ export async function contributeToPool(
   // Same unauthenticated payment on-ramp as purchaseGiftCard — throttle per IP
   // (shared budget with purchases, so the total gift-card checkout rate from
   // one source is capped) before any DB work, to blunt card-testing funnels.
-  const ip = await clientIp();
-  const limited = await rateLimit(`gift-card:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
-  if (!limited.ok) {
-    log.warn("giftcard.rate_limited", { ip, flow: "contribute" });
+  if (await overGiftCardLimit("checkout", CHECKOUT_LIMIT, "giftcard.rate_limited", { flow: "contribute" })) {
     return { error: "Too many attempts. Please try again in a little while." };
   }
 
@@ -174,6 +190,8 @@ export async function contributeToPool(
     };
   }
 
+  const contributorName = input.contributorName?.trim().slice(0, MAX_METADATA_LEN) || "";
+
   try {
     const origin = await getOrigin();
     const checkout = await stripe.checkout.sessions.create({
@@ -185,7 +203,7 @@ export async function contributeToPool(
       metadata: {
         kind: "gift_card",
         giftCardId: card.id,
-        contributorName: input.contributorName?.trim() || "",
+        contributorName,
       },
       payment_intent_data: {
         // contributorName on the PI too (not just the session) so a webhook
@@ -193,7 +211,7 @@ export async function contributeToPool(
         metadata: {
           kind: "gift_card",
           giftCardId: card.id,
-          contributorName: input.contributorName?.trim() || "",
+          contributorName,
         },
       },
     });
@@ -222,6 +240,19 @@ export async function deliverGiftCardAction(
   organizerToken: string,
   input: DeliverActionInput,
 ): Promise<DeliverActionResult> {
+  // This sends an email carrying the spend code, to an address and with a
+  // message body the caller chooses — i.e. a mail relay for whoever holds the
+  // organizer token. Capped twice: per IP, and per token so rotating IPs
+  // doesn't buy more sends out of one funded pool.
+  if (await overGiftCardLimit("deliver", DELIVER_LIMIT, "giftcard.deliver_rate_limited")) {
+    return { error: "Too many attempts. Please try again in a little while." };
+  }
+  const perToken = await rateLimit(`gift-card:deliver-token:${organizerToken}`, DELIVER_LIMIT);
+  if (!perToken.ok) {
+    log.warn("giftcard.deliver_rate_limited", { scope: "token" });
+    return { error: "You've sent this gift several times already. Try again in a little while." };
+  }
+
   const result = await deliverPooledGiftCard(organizerToken, {
     recipientEmail: input.recipientEmail,
     recipientName: input.recipientName,
@@ -240,11 +271,24 @@ export async function deliverGiftCardAction(
   return { ok: true };
 }
 
+// A code is a bearer credential, so both entry points below are guessing
+// oracles: they tell the caller whether a code exists and what it's worth.
+// Reject anything that isn't a well-formed code before spending a token (so
+// junk costs nothing), then charge one attempt per plausible guess. Callers
+// get the same generic "not found" either way — never a hint about which half
+// of the check failed.
+async function overCodeGuessLimit(): Promise<boolean> {
+  return overGiftCardLimit("code", CODE_LIMIT, "giftcard.code_rate_limited");
+}
+
 // Check a code's balance from the redeem page. Public-safe DTO only. Self-heals
 // a stranded card first, so a recipient who got their code but whose funding
 // webhook failed still sees the real balance instead of "not active yet".
 export async function lookupGiftCardAction(code: string): Promise<GiftCardLookup> {
   if (!code?.trim()) return { found: false };
+  if (!isGiftCardCodeShape(normalizeGiftCardCode(code))) return { found: false };
+  if (await overCodeGuessLimit()) return { found: false };
+
   await reconcilePendingByCode(code);
   return lookupGiftCard(code);
 }
@@ -256,6 +300,12 @@ export async function claimGiftCardAction(code: string): Promise<ClaimResult> {
   if (!session?.user) {
     return { ok: false, error: "Sign in to add this gift card to your account." };
   }
+  const notFound = { ok: false as const, error: "That code doesn't match a gift card." };
+  if (!isGiftCardCodeShape(normalizeGiftCardCode(code ?? ""))) return notFound;
+  if (await overCodeGuessLimit()) {
+    return { ok: false, error: "Too many attempts. Please try again in a little while." };
+  }
+
   await reconcilePendingByCode(code);
   return claimGiftCard(code, session.user.id);
 }

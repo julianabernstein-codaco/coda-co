@@ -6,9 +6,20 @@ import { log } from "@/lib/log";
 import {
   GIFT_CARD_MIN_CENTS,
   GIFT_CARD_MAX_CENTS,
+  GIFT_CARD_CODE_ALPHABET,
+  GIFT_CARD_CODE_GROUPS,
+  GIFT_CARD_CODE_GROUP_LEN,
   formatCents,
   normalizeGiftCardCode,
+  isGiftCardCodeShape,
 } from "@/lib/format/giftCard";
+import { isEmailShape } from "@/lib/format/email";
+
+// Caps on the free-text fields a public, unauthenticated form can write. They
+// get persisted and rendered into outbound email, so bound them at the door
+// rather than letting a script store megabytes per card.
+const MAX_NAME_LEN = 120;
+const MAX_MESSAGE_LEN = 1000;
 
 // Gift card balance lives in the ledger, never on the card. See
 // docs/gift-cards-and-client-billing-plan.md. The pure, client-safe
@@ -20,25 +31,40 @@ export {
   GIFT_CARD_MAX_CENTS,
   formatCents,
   normalizeGiftCardCode,
+  isGiftCardCodeShape,
 } from "@/lib/format/giftCard";
 
-// Unambiguous alphabet — no 0/O/1/I/L so a hand-typed code is unmistakable.
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const CODE_GROUPS = 3;
-const CODE_GROUP_LEN = 4;
-
-// e.g. "Q7KP-3MWX-RBND". The format is cosmetic; normalizeGiftCardCode
-// strips it back to the stored canonical form on lookup.
+// e.g. "Q7KP-3MWX-RBND". 12 characters drawn with node:crypto's CSPRNG from a
+// 32-character alphabet — 60 bits, well past brute-forcing, and every code
+// entry point is per-IP throttled on top (see app/gift-cards/limits.ts). The
+// dashes are cosmetic; normalizeGiftCardCode strips input back to the stored
+// canonical form on lookup.
 function generateGiftCardCode(): string {
   const groups: string[] = [];
-  for (let g = 0; g < CODE_GROUPS; g++) {
+  for (let g = 0; g < GIFT_CARD_CODE_GROUPS; g++) {
     let group = "";
-    for (let i = 0; i < CODE_GROUP_LEN; i++) {
-      group += CODE_ALPHABET[randomInt(CODE_ALPHABET.length)];
+    for (let i = 0; i < GIFT_CARD_CODE_GROUP_LEN; i++) {
+      group += GIFT_CARD_CODE_ALPHABET[randomInt(GIFT_CARD_CODE_ALPHABET.length)];
     }
     groups.push(group);
   }
   return groups.join("-");
+}
+
+// A normalized code that's worth a database round-trip. Everything that takes
+// a code from the outside funnels through this, so a malformed guess costs an
+// attacker a rate-limit token and nothing else.
+function toLookupCode(raw: string): string | null {
+  if (typeof raw !== "string") return null;
+  const code = normalizeGiftCardCode(raw);
+  return isGiftCardCodeShape(code) ? code : null;
+}
+
+// Shape gate for the card id carried in the post-checkout `?card=` redirect.
+// That id reaches reconcileCard, which calls out to Stripe, so garbage is
+// rejected before it can be used to burn Stripe API quota.
+function isCardIdShape(raw: string): boolean {
+  return typeof raw === "string" && /^[a-z0-9_-]{8,64}$/i.test(raw);
 }
 
 // URL-safe random token for the public contribution link and the secret
@@ -92,6 +118,15 @@ export async function createPendingGiftCard(
     );
   }
 
+  // Anyone can reach this form without an account, so validate the addresses
+  // and bound the free text here rather than trusting the client's inputs.
+  if (!isEmailShape(input.purchaserEmail)) {
+    throw new GiftCardError("Enter a valid email address.");
+  }
+  if (input.recipientEmail && !isEmailShape(input.recipientEmail)) {
+    throw new GiftCardError("Enter a valid recipient email address.");
+  }
+
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       return await prisma.giftCard.create({
@@ -101,11 +136,11 @@ export async function createPendingGiftCard(
           currency: "USD",
           status: "pending",
           purchaserEmail: input.purchaserEmail,
-          purchaserName: input.purchaserName ?? null,
+          purchaserName: input.purchaserName?.slice(0, MAX_NAME_LEN) ?? null,
           purchaserUserId: input.purchaserUserId ?? null,
           recipientEmail: input.recipientEmail ?? null,
-          recipientName: input.recipientName ?? null,
-          giftMessage: input.giftMessage ?? null,
+          recipientName: input.recipientName?.slice(0, MAX_NAME_LEN) ?? null,
+          giftMessage: input.giftMessage?.slice(0, MAX_MESSAGE_LEN) ?? null,
           contributeToken: input.pooled ? generateToken() : null,
           organizerToken: input.pooled ? generateToken() : null,
         },
@@ -125,6 +160,9 @@ export async function createPendingGiftCard(
 
 export interface RecordContributionInput {
   giftCardId: string;
+  // Required. The unique index on this column is the only thing standing
+  // between Stripe's at-least-once delivery and a double credit — see the
+  // null guard in recordGiftCardContribution.
   paymentIntentId: string | null;
   amountCents: number;
   currency?: string;
@@ -157,6 +195,19 @@ export async function recordGiftCardContribution(
 ): Promise<RecordContributionResult> {
   const amountCents = Math.round(input.amountCents);
   if (!Number.isInteger(amountCents) || amountCents <= 0) {
+    return { recorded: false };
+  }
+
+  // Postgres treats NULLs as distinct in a unique index, so a null
+  // PaymentIntent would slip past the idempotency lock below and let a retried
+  // webhook credit the card twice. Refuse instead of crediting unguarded — a
+  // paid Checkout session always has a PaymentIntent, so this only fires on a
+  // shape we shouldn't be crediting anyway.
+  if (!input.paymentIntentId) {
+    log.warn("giftcard.contribution_missing_payment_intent", {
+      giftCardId: input.giftCardId,
+      amountCents,
+    });
     return { recorded: false };
   }
 
@@ -241,10 +292,14 @@ async function reconcileCard(card: GiftCard): Promise<void> {
     });
     for (const pi of found.data) {
       if (pi.status !== "succeeded") continue;
+      // `amount_received` is what Stripe actually captured. Never fall back to
+      // `amount` (the authorized total) — that would credit money that was
+      // authorized but not collected.
+      if (!pi.amount_received) continue;
       await recordGiftCardContribution({
         giftCardId: card.id,
         paymentIntentId: pi.id,
-        amountCents: pi.amount_received || pi.amount,
+        amountCents: pi.amount_received,
         currency: (pi.currency ?? "usd").toUpperCase(),
         contributorName: pi.metadata?.contributorName || null,
         contributorEmail: pi.receipt_email ?? null,
@@ -256,6 +311,7 @@ async function reconcileCard(card: GiftCard): Promise<void> {
 }
 
 export async function reconcilePendingGiftCardById(id: string): Promise<void> {
+  if (!isCardIdShape(id)) return;
   const card = await prisma.giftCard.findUnique({ where: { id } });
   if (card) await reconcileCard(card);
 }
@@ -272,7 +328,7 @@ export async function reconcilePendingByContributeToken(token: string): Promise<
 }
 
 export async function reconcilePendingByCode(rawCode: string): Promise<void> {
-  const code = normalizeGiftCardCode(rawCode);
+  const code = toLookupCode(rawCode);
   if (!code) return;
   const card = await prisma.giftCard.findUnique({ where: { code } });
   if (card) await reconcileCard(card);
@@ -315,7 +371,7 @@ export type GiftCardLookup =
     };
 
 export async function lookupGiftCard(rawCode: string): Promise<GiftCardLookup> {
-  const code = normalizeGiftCardCode(rawCode);
+  const code = toLookupCode(rawCode);
   if (!code) return { found: false };
 
   const card = await prisma.giftCard.findUnique({ where: { code } });
@@ -341,7 +397,9 @@ export async function claimGiftCard(
   rawCode: string,
   userId: string,
 ): Promise<ClaimResult> {
-  const code = normalizeGiftCardCode(rawCode);
+  const code = toLookupCode(rawCode);
+  if (!code) return { ok: false, error: "That code doesn't match a gift card." };
+
   const card = await prisma.giftCard.findUnique({ where: { code } });
   if (!card) return { ok: false, error: "That code doesn't match a gift card." };
 
@@ -356,10 +414,20 @@ export async function claimGiftCard(
   }
 
   if (card.claimedByUserId !== userId) {
-    await prisma.giftCard.update({
-      where: { id: card.id },
+    // Conditional on still being unclaimed, so two accounts racing the same
+    // code can't both pass the check above and have the later write silently
+    // take the card off the first one. The loser re-reads and gets the
+    // "already on another account" answer.
+    const claimed = await prisma.giftCard.updateMany({
+      where: { id: card.id, claimedByUserId: null },
       data: { claimedByUserId: userId },
     });
+    if (claimed.count === 0) {
+      const fresh = await prisma.giftCard.findUnique({ where: { id: card.id } });
+      if (fresh?.claimedByUserId !== userId) {
+        return { ok: false, error: "This gift card is already on another account." };
+      }
+    }
   }
   return { ok: true, balanceCents: await getGiftCardBalanceCents(card.id) };
 }
@@ -495,17 +563,27 @@ export async function deliverPooledGiftCard(
   if (card.status === "void") {
     return { ok: false, error: "This gift pool is no longer valid." };
   }
+  // This call sends an email carrying the spend code to an address the caller
+  // chooses, with a body the caller writes — so validate the address and bound
+  // both free-text fields rather than passing them straight to the mailer.
+  // The per-token throttle in app/gift-cards/actions.ts caps the rate.
   const recipientEmail = input.recipientEmail?.trim();
   if (!recipientEmail) {
     return { ok: false, error: "Enter the recipient's email." };
   }
+  if (!isEmailShape(recipientEmail)) {
+    return { ok: false, error: "Enter a valid email address." };
+  }
+
+  const recipientName = input.recipientName?.trim().slice(0, MAX_NAME_LEN) || null;
+  const giftMessage = input.giftMessage?.trim().slice(0, MAX_MESSAGE_LEN) || card.giftMessage;
 
   const updated = await prisma.giftCard.update({
     where: { id: card.id },
     data: {
       recipientEmail,
-      recipientName: input.recipientName?.trim() || null,
-      giftMessage: input.giftMessage?.trim() || card.giftMessage,
+      recipientName,
+      giftMessage,
       deliveredAt: card.deliveredAt ?? new Date(),
     },
   });
