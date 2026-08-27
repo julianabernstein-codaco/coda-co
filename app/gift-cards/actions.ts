@@ -24,6 +24,7 @@ import {
 import { sendGiftCardDeliveryEmail } from "@/lib/email/templates";
 import { rateLimit } from "@/lib/rate-limit";
 import { isEmailShape } from "@/lib/format/email";
+import { giftCardsOpenFor } from "@/lib/launch";
 import {
   overGiftCardLimit,
   CHECKOUT_LIMIT,
@@ -34,6 +35,10 @@ import {
 // Stripe caps a metadata value at 500 characters; stay well inside it so a
 // long name is truncated rather than failing the whole Checkout call.
 const MAX_METADATA_LEN = 200;
+
+// Shown when the gift-card sales hold is on. Deliberately the same wording the
+// UI uses, so a direct action call and the disabled button tell one story.
+const GIFT_CARDS_HELD_MESSAGE = "Gift cards aren't on sale just yet. Please check back soon.";
 
 async function getOrigin(): Promise<string> {
   const h = await headers();
@@ -68,6 +73,16 @@ export async function purchaseGiftCard(
 ): Promise<PurchaseResult> {
   if (!isStripeConfigured()) return { error: "Gift cards aren't available yet." };
 
+  // The sales hold, enforced here rather than by hiding the button. A server
+  // action is a POST endpoint whose id ships in the client bundle, so anyone
+  // who loaded the page while sales were open can keep calling it — the UI
+  // state is cosmetic and this is the actual gate. First, before any other
+  // work, so a held site does nothing at all on this path.
+  const session = await auth();
+  if (!(await giftCardsOpenFor(session?.user?.role))) {
+    return { error: GIFT_CARDS_HELD_MESSAGE };
+  }
+
   // Cheap input checks run *before* the throttle so an honest typo costs a
   // correction, not one of the caller's ten hourly attempts. createPendingGiftCard
   // re-validates these — this is only about where the budget gets spent.
@@ -90,8 +105,6 @@ export async function purchaseGiftCard(
   }
 
   const purchaserName = input.purchaserName?.trim().slice(0, MAX_METADATA_LEN) || null;
-
-  const session = await auth();
 
   let card;
   try {
@@ -171,6 +184,14 @@ export async function contributeToPool(
   input: ContributeInput,
 ): Promise<PurchaseResult> {
   if (!isStripeConfigured()) return { error: "Gift cards aren't available yet." };
+
+  // A contribution is money in, so the sales hold covers it too — otherwise a
+  // circulating contribute link would stay a live payment on-ramp after the
+  // buy flow closed. Delivering an already-funded pool stays open.
+  const session = await auth();
+  if (!(await giftCardsOpenFor(session?.user?.role))) {
+    return { error: GIFT_CARDS_HELD_MESSAGE };
+  }
 
   // Same unauthenticated payment on-ramp as purchaseGiftCard — throttle per IP
   // (shared budget with purchases, so the total gift-card checkout rate from

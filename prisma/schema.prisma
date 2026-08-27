@@ -892,6 +892,14 @@ model PlatformConfig {
   // `demo` vendor (and their products/services) from all public surfaces.
   // Flip it from /admin/launch once real content is enough.
   demoVendorsHidden Boolean @default(false) @map("demo_vendors_hidden")
+  // Whether gift cards are on sale. Separate from `launchedAt` because the
+  // two answer different questions: launchedAt is "can vendors be billed",
+  // this is "can the public buy a balance we can't yet redeem". Defaults to
+  // OFF — a money flow should need a deliberate switch-on, and until Phase E
+  // ships a spend path a sold card is an obligation with nothing behind it.
+  // Flip it from /admin/launch. Redeeming, managing and delivering an
+  // already-funded card are never gated on this.
+  giftCardsEnabled Boolean @default(false) @map("gift_cards_enabled")
   updatedAt  DateTime  @updatedAt @map("updated_at")
 
   @@map("platform_config")

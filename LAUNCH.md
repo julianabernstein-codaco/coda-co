@@ -12,7 +12,13 @@ code — the code gate (`lib/launch.ts` + `/admin/launch`) already exists.
   checkout actions, so a stray button can't create a charge.
 - **Admins bypass the gate** (`role === "admin"`) so the team can validate live
   billing before launch.
-- **Gift cards are always on sale** — not gated.
+- **Gift cards have their own switch**, `PlatformConfig.giftCardsEnabled`,
+  also on **`/admin/launch`**. It ships **off**: until Phase E adds a spend
+  path, a sold card is a balance nobody can redeem, so each sale is an
+  obligation with nothing behind it. Buying a card and chipping into a pool
+  are blocked in the server actions (not just on the buttons); **checking a
+  balance, claiming a card, and sending an already-funded pool stay open** so
+  a hold can't strand someone who paid. Admins bypass, as with paid flows.
 - The switch is `PlatformConfig.launchedAt` (one row), edited from
   **`/admin/launch`**. `null`/future = pre-launch; a past timestamp = live.
 - `launchedAt` also starts every vendor's **90-day free trial** (`TRIAL_DAYS`
@@ -40,9 +46,13 @@ Notes:
 1. Confirm the Stripe account is activated (business details + bank connected).
 2. Set **live** `STRIPE_SECRET_KEY` on Vercel **Production** only if you want to
    test live now; otherwise stay on test keys. Either way, vendors can't be
-   charged (gate is on) — but **gift-card purchases are real** once on live keys.
+   charged (gate is on), and gift-card sales are held for the public — but an
+   **admin's** gift-card purchase bypasses that hold, so it is a **real charge**
+   once on live keys.
 3. As an **admin**, run a real subscription / goods fee / gift-card charge to
    validate the live webhook + payout, then refund from Stripe.
+4. Leave gift-card sales **held**. Open them from `/admin/launch` only once
+   checkout exists and a balance can actually be spent.
 
 ## Launch day
 
