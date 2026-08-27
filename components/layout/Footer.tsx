@@ -37,7 +37,7 @@ export function Footer() {
         <div className="border-t border-[rgba(255,255,255,.08)] max-w-[880px] mx-auto px-10 py-5 flex items-center justify-between text-[14px] text-cl">
           <span>© 2025 CodaCo, Inc. · United States</span>
           <div className="flex gap-5">
-            <a href="#" className="hover:text-white transition-colors">Terms of service</a>
+            <Link href="/customer-terms" className="hover:text-white transition-colors">Customer terms</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy policy</Link>
             <Link href="/community-policy" className="hover:text-white transition-colors">Community policy</Link>
             <a href="#" className="hover:text-white transition-colors">Accessibility</a>

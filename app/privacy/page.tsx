@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
@@ -174,7 +175,16 @@ export default function PrivacyPage() {
             <LegalTable
               headers={["Document", "Applies to"]}
               rows={[
-                ["Terms of Use", "Customers and other visitors"],
+                [
+                  <Link
+                    key="customer-terms"
+                    href="/customer-terms"
+                    className="text-tr no-underline hover:underline"
+                  >
+                    Terms of Use
+                  </Link>,
+                  "Customers and other visitors",
+                ],
                 ["Vendor Subscription Agreement", "Vendors"],
                 ["Community Policy", "Vendors"],
                 ["Code of Conduct", "Vendors"],

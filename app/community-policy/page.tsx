@@ -367,7 +367,16 @@ export default function CommunityPolicyPage() {
                   "Code of Conduct",
                   "The specific commitments every Vendor makes",
                 ],
-                ["Terms of Use", "Governs Customers, not Vendors"],
+                [
+                  <Link
+                    key="customer-terms"
+                    href="/customer-terms"
+                    className="text-tr no-underline hover:underline"
+                  >
+                    Terms of Use
+                  </Link>,
+                  "Governs Customers, not Vendors",
+                ],
                 [
                   <Link
                     key="privacy"
