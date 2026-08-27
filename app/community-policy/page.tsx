@@ -373,7 +373,7 @@ export default function CommunityPolicyPage() {
                     href="/customer-terms"
                     className="text-tr no-underline hover:underline"
                   >
-                    Terms of Use
+                    Customer Terms of Use
                   </Link>,
                   "Governs Customers, not Vendors",
                 ],

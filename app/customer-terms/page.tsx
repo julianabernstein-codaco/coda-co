@@ -397,7 +397,7 @@ export default function CustomerTermsPage() {
                   </strong>{" "}
                   for anything arising out of these Terms or the site will not
                   exceed one hundred U.S. dollars ($100), or the total amount you
-                  have paid Codaco in the six (6) months before the claim,
+                  have paid CodaCo in the six (6) months before the claim,
                   whichever is greater.
                 </>,
                 <>
@@ -539,7 +539,7 @@ export default function CustomerTermsPage() {
                 </>,
                 <>
                   These Terms, together with our {PRIVACY_LINK}, are the whole
-                  agreement between you and Codaco about the site.
+                  agreement between you and CodaCo about the site.
                 </>,
               ]}
             />
