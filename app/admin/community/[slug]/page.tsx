@@ -33,6 +33,7 @@ export default async function EditCommunityListingPage({
         zip: true,
         serviceDescription: true,
         websiteUrl: true,
+        photoSrc: true,
         user: { select: { email: true } },
         services: {
           orderBy: { createdAt: "asc" },
@@ -68,6 +69,7 @@ export default async function EditCommunityListingPage({
     bio: vendor.bio,
     serviceDescription: vendor.serviceDescription ?? "",
     website: vendor.websiteUrl ?? "",
+    currentPhotoSrc: vendor.photoSrc,
   };
 
   return (

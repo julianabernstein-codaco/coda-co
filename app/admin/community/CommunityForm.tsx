@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import {
+  ImageUploader,
+  type ImageUploaderHandle,
+} from "@/components/ui/ImageUploader";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
 import { createCommunityListing, updateCommunityListing } from "./actions";
 
@@ -21,6 +25,7 @@ export interface CommunityFormInitial {
   bio: string;
   serviceDescription: string;
   website: string;
+  currentPhotoSrc?: string | null;
 }
 
 // Shared by the create page and the per-listing edit page. Pass `initial`
@@ -35,6 +40,7 @@ export function CommunityForm({
   editSlug?: string;
 }) {
   const editing = Boolean(editSlug);
+  const uploaderRef = useRef<ImageUploaderHandle>(null);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [savedSlug, setSavedSlug] = useState<string | null>(null);
@@ -59,9 +65,14 @@ export function CommunityForm({
       website: String(fd.get("website") ?? ""),
     };
     startTransition(async () => {
+      // Pull the cropped photo from the uploader (null if none picked).
+      const blob = await uploaderRef.current?.getCroppedBlob();
+      const photo = blob
+        ? new File([blob], "photo.webp", { type: blob.type })
+        : undefined;
       const res = editSlug
-        ? await updateCommunityListing({ slug: editSlug, ...fields })
-        : await createCommunityListing(fields);
+        ? await updateCommunityListing({ slug: editSlug, ...fields, photo })
+        : await createCommunityListing({ ...fields, photo });
       if (res.ok) setSavedSlug(res.slug);
       else setError(res.error);
     });
@@ -98,6 +109,15 @@ export function CommunityForm({
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-[10px] border border-line p-6 space-y-5">
+      <ImageUploader
+        ref={uploaderRef}
+        name="photo"
+        currentSrc={initial?.currentPhotoSrc ?? null}
+        shape="circle"
+        label="Photo (optional)"
+        hint="A logo or headshot for the listing. Drag to reposition, scroll or use the slider to zoom."
+      />
+
       <Field label="Organization name" hint="Shown as the listing's name.">
         <input name="orgName" required maxLength={120} defaultValue={initial?.orgName} className={inputCls} placeholder="Front Range Death Café" />
       </Field>

@@ -1,10 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { del, put } from "@vercel/blob";
 import { normalizeSlug, requireAdmin } from "@/lib/api/applications";
 import { prisma } from "@/lib/db";
 import { normalizeZip } from "@/lib/geo/zip";
+import { isOwnedBlobUrl } from "@/lib/images";
+import { processUploadedImage } from "@/lib/images.server";
 import { log } from "@/lib/log";
+import { rateLimit } from "@/lib/rate-limit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const NAME_MAX = 120;
@@ -24,6 +28,9 @@ export interface CommunityListingInput {
   bio: string;
   serviceDescription?: string;
   website?: string;
+  // Already-cropped photo from the admin form's uploader. Optional; when
+  // absent the profile falls back to the org's initials.
+  photo?: File | null;
 }
 
 export type CommunityListingResult =
@@ -98,6 +105,22 @@ async function uniqueSlug(seed: string): Promise<string> {
   }
 }
 
+// Process an already-cropped upload and store it in Blob under the
+// listing slug. Returns { url } on success, { error } for a bad image, or
+// null when there's no usable file. Callers rate-limit per admin.
+async function storeCommunityPhoto(
+  file: File | null | undefined,
+  slug: string,
+): Promise<{ url: string } | { error: string } | null> {
+  if (!(file instanceof File) || file.size === 0) return null;
+  const processed = await processUploadedImage(file);
+  if (!processed.ok) return { error: processed.error };
+  const { buffer, contentType, ext } = processed.image;
+  const key = `community/${slug}/photo-${Date.now()}.${ext}`;
+  const blob = await put(key, buffer, { access: "public", contentType });
+  return { url: blob.url };
+}
+
 // Admin-only: create a free, published community listing (a vendor_profile
 // flagged communityListing) for a volunteer-led org, plus a lightweight
 // user (no password — admin-managed) so client inquiries reach their email.
@@ -131,6 +154,20 @@ export async function createCommunityListing(
   const slug = await uniqueSlug(orgName);
   const website = normalizeWebsite(input.website);
 
+  // Store the photo (if any) up front — a Blob failure shouldn't leave a
+  // half-created listing. Done outside the transaction (network call).
+  let photoSrc: string | null = null;
+  if (input.photo instanceof File && input.photo.size > 0) {
+    const limited = await rateLimit(`community-upload:${admin.id}`, {
+      limit: 50,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!limited.ok) return { ok: false, error: "Too many uploads. Try again later." };
+    const stored = await storeCommunityPhoto(input.photo, slug);
+    if (stored && "error" in stored) return { ok: false, error: stored.error };
+    photoSrc = stored?.url ?? null;
+  }
+
   try {
     const vendor = await prisma.$transaction(async (tx) => {
       const userId =
@@ -153,6 +190,8 @@ export async function createCommunityListing(
           verified: false,
           published: true,
           communityListing: true,
+          photoSrc,
+          photoTone: photoSrc ? "sage" : null,
           zip,
           serviceDescription,
           serviceFormats: formatsLabel(input.locationType),
@@ -230,6 +269,7 @@ export async function updateCommunityListing(
     select: {
       id: true,
       communityListing: true,
+      photoSrc: true,
       user: { select: { id: true, email: true } },
       services: { orderBy: { createdAt: "asc" }, take: 1, select: { id: true } },
     },
@@ -249,6 +289,19 @@ export async function updateCommunityListing(
 
   const website = normalizeWebsite(input.website);
 
+  // New photo (optional). undefined = leave the current one in place.
+  let nextPhotoUrl: string | undefined;
+  if (input.photo instanceof File && input.photo.size > 0) {
+    const limited = await rateLimit(`community-upload:${admin.id}`, {
+      limit: 50,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!limited.ok) return { ok: false, error: "Too many uploads. Try again later." };
+    const stored = await storeCommunityPhoto(input.photo, input.slug);
+    if (stored && "error" in stored) return { ok: false, error: stored.error };
+    if (stored) nextPhotoUrl = stored.url;
+  }
+
   try {
     await prisma.$transaction(async (tx) => {
       await tx.user.update({
@@ -266,6 +319,9 @@ export async function updateCommunityListing(
           serviceFormats: formatsLabel(input.locationType),
           websiteUrl: website,
           showWebsite: Boolean(website),
+          ...(nextPhotoUrl !== undefined
+            ? { photoSrc: nextPhotoUrl, photoTone: "sage" }
+            : {}),
         },
       });
       const svc = vendor.services[0];
@@ -281,6 +337,15 @@ export async function updateCommunityListing(
         });
       }
     });
+
+    // Best-effort cleanup of the replaced photo (only ones we own).
+    if (nextPhotoUrl !== undefined && isOwnedBlobUrl(vendor.photoSrc)) {
+      try {
+        await del(vendor.photoSrc!);
+      } catch (err) {
+        log.warn("blob.delete_failed", { kind: "community_photo", slug: input.slug, err });
+      }
+    }
 
     log.info("admin.community_listing_updated", {
       adminId: admin.id,
