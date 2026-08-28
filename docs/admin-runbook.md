@@ -366,6 +366,33 @@ developer**, but it helps to know what they do.
 | `AUTH_SECRET`                  | Signs session tokens. Changing it logs everyone out. |
 | `ALLOW_MOCK_SEED=1`            | Bypasses the safety guard that blocks `db:mock` in production. Should NOT be set in production env vars. (Even if it is, the build doesn't call `db:mock`, so it's inert — but tidier to remove it.) |
 
+### GitHub Actions settings (not Vercel)
+
+Two values live on GitHub, under **Settings → Secrets and variables → Actions**,
+and are used only by the `Neon preview cleanup` workflow:
+
+| Name                | Where            | What it's for                                        |
+|---------------------|------------------|------------------------------------------------------|
+| `NEON_API_KEY`      | **Secrets** tab  | Lets the workflow delete a PR's Neon branch. Generate at Neon Console → Account settings → API keys. |
+| `NEON_PROJECT_ID`   | **Variables** tab| Which Neon project to clean up. Neon Console → Project settings → General. |
+
+**Why it matters.** The Vercel-Neon integration makes a `preview/<branch>`
+database per preview deploy but ties cleanup to *deployment* deletion, and
+Vercel keeps pre-production deployments for months. On the free plan (10
+branches) they pile up until the cap is hit — and then new preview deploys
+can't get a database. That failure is **silent**: the deploy never starts, so
+its GitHub check sits at "building" indefinitely instead of failing. PR #148
+merged without preview validation for exactly this reason.
+
+If those two settings are missing the workflow fails loudly on the next closed
+PR, which is deliberate — a cleanup job that quietly does nothing is what
+caused the problem in the first place.
+
+Belt and braces: if the project uses the *Neon*-managed Vercel integration,
+also enable **"Automatically delete obsolete Neon branches"** in the Neon
+console. Running both is fine — the workflow treats an already-deleted branch
+as success.
+
 ---
 
 ## What's out of scope for admins right now

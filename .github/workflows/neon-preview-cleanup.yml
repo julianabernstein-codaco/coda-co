@@ -1,0 +1,48 @@
+name: Neon preview cleanup
+
+# Delete a PR's Neon preview branch when the PR closes.
+#
+# Why this exists: the Vercel-Neon integration creates a `preview/<git-branch>`
+# database branch per preview deploy, but ties cleanup to *deployment* deletion
+# rather than the PR — and Vercel keeps pre-production deployments for months.
+# On the Neon free plan (10 branches) they accumulate until the limit is hit,
+# and then new preview deploys can't get a database. That failure is silent:
+# the deploy never starts, so its GitHub check sits at "building" forever
+# rather than failing. PR #148 merged without preview validation for exactly
+# this reason. A check that hangs is worse than one that fails, so this
+# workflow is deliberately loud when something is wrong (see below).
+#
+# Setup — both are repository settings, not code:
+#   secrets.NEON_API_KEY   Settings → Secrets and variables → Actions → Secrets
+#                          Generate at Neon Console → Account settings → API keys
+#   vars.NEON_PROJECT_ID   …→ Variables. Neon Console → Project settings → General
+#
+# This is a backstop, not the only line of defence. If the project uses the
+# *Neon*-managed Vercel integration, enabling "Automatically delete obsolete
+# Neon branches" in the Neon console does the same job with no code. Running
+# both is fine — whichever gets there first wins, and this job treats an
+# already-deleted branch as success.
+
+on:
+  pull_request:
+    types: [closed]
+
+# Talks only to the Neon API — no repository access required.
+permissions: {}
+
+jobs:
+  delete-preview-branch:
+    name: Delete the PR's Neon branch
+    runs-on: ubuntu-latest
+    # Fork PRs don't receive secrets, so the API call would fail in a way that
+    # looks like a broken workflow rather than an expected skip.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Delete preview branch
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          NEON_API_BASE: ${{ vars.NEON_API_BASE || 'https://console.neon.tech/api/v2' }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: bash .github/scripts/neon-delete-preview-branch.sh
