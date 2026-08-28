@@ -26,6 +26,38 @@ export default async function BillingPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const { user, vendor } = await requireVendor();
+
+  // Community listings are free forever — no subscription, nothing to pay.
+  if (vendor.communityListing) {
+    return (
+      <>
+        <Breadcrumb
+          crumbs={[
+            { label: "Home", href: "/" },
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Billing" },
+          ]}
+        />
+        <section className="bg-pl2 px-10 py-10 min-h-screen">
+          <Container width="mid">
+            <div className="mb-7">
+              <p className="text-[13px] tracking-[.14em] uppercase text-tr mb-1.5">Vendor</p>
+              <h1 className="font-serif text-[32px] font-light text-ch">Billing</h1>
+              <p className="text-[15px] text-cl mt-1.5">Manage how you pay to be on CodaCo.</p>
+            </div>
+            <div className="bg-white rounded-[10px] border border-line p-6">
+              <h2 className="font-serif text-[22px] text-ch mb-2">Community listing</h2>
+              <p className="text-[15px] text-cm leading-relaxed">
+                You&apos;re a CodaCo community listing — free forever, with no
+                subscription required. There&apos;s nothing to pay.
+              </p>
+            </div>
+          </Container>
+        </section>
+      </>
+    );
+  }
+
   const { status } = await searchParams;
 
   // Pre-launch gate: paid options are shown but locked until launch. Admins

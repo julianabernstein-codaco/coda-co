@@ -155,6 +155,9 @@ async function main() {
         // Sample/example vendors — render publicly with an "Example" badge,
         // contact + purchase disabled. Retire them all via /admin/launch.
         demo: true,
+        // Free community listings (volunteer-led resources) — "Community
+        // resource" badge, no subscription.
+        communityListing: v.communityListing ?? false,
         user: { connect: { id: user.id } },
       },
     });

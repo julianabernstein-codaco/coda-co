@@ -4,6 +4,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { ContactVendorForm } from "@/components/services/ContactVendorForm";
+import { CommunityBadge } from "@/components/ui/CommunityBadge";
 import { ExampleBadge } from "@/components/ui/ExampleBadge";
 import { Container } from "@/components/ui/Container";
 import { SaveButton } from "@/components/ui/SaveButton";
@@ -155,6 +156,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
                   {vendor.name}
                 </h1>
                 {vendor.demo && <ExampleBadge />}
+                {vendor.communityListing && <CommunityBadge />}
                 {vendor.lifeStages.map((s) => (
                   <span
                     key={s}

@@ -125,6 +125,9 @@ export interface Vendor {
   // Sample/example vendor. Rendered with an "Example" badge; contact and
   // purchase are disabled and reviews are labeled as examples.
   demo?: boolean;
+  // Free, admin-curated community listing (volunteer-led resource).
+  // Rendered with a "Community resource" badge; exempt from billing.
+  communityListing?: boolean;
 }
 
 export interface VendorWithRating extends Vendor {
