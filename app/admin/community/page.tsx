@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { getServiceTypes } from "@/lib/api/serviceTypes";
+import { prisma } from "@/lib/db";
 import { requireAdminPage } from "@/app/admin/lib";
 import { CommunityForm } from "./CommunityForm";
 
@@ -12,7 +14,14 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminCommunityPage() {
   await requireAdminPage("/admin/community");
-  const serviceTypes = await getServiceTypes();
+  const [serviceTypes, listings] = await Promise.all([
+    getServiceTypes(),
+    prisma.vendorProfile.findMany({
+      where: { communityListing: true },
+      select: { slug: true, displayName: true, location: true },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
   return (
     <div className="min-h-screen bg-pl2">
@@ -37,6 +46,44 @@ export default async function AdminCommunityPage() {
         </div>
 
         <CommunityForm serviceTypes={serviceTypes} />
+
+        <div className="mt-10">
+          <h2 className="font-serif text-2xl text-ch mb-3">
+            Existing community listings{" "}
+            <span className="text-cl text-lg">({listings.length})</span>
+          </h2>
+          {listings.length === 0 ? (
+            <p className="text-cm text-sm">None yet.</p>
+          ) : (
+            <div className="bg-white rounded-[10px] border border-line">
+              {listings.map((l) => (
+                <div
+                  key={l.slug}
+                  className="flex items-center justify-between gap-3 px-4 py-3 border-b border-line last:border-b-0"
+                >
+                  <div className="min-w-0">
+                    <div className="text-[15px] font-medium text-ch truncate">{l.displayName}</div>
+                    <div className="text-[13px] text-cl">{l.location}</div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <Link
+                      href={`/services/${l.slug}`}
+                      className="text-[13px] text-cm no-underline hover:text-tr"
+                    >
+                      View
+                    </Link>
+                    <Link
+                      href={`/admin/community/${l.slug}`}
+                      className="btn-ghost btn-sm no-underline"
+                    >
+                      Edit
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

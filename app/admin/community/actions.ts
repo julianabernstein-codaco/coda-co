@@ -47,6 +47,42 @@ function normalizeWebsite(raw: string | undefined): string | null {
   }
 }
 
+interface CleanListing {
+  orgName: string;
+  email: string;
+  city: string;
+  state: string;
+  zip: string;
+  bio: string;
+  serviceDescription: string | null;
+}
+
+// Shared field validation for create + edit. Returns cleaned values or a
+// user-facing error.
+function parseListing(
+  input: CommunityListingInput,
+): { ok: true; data: CleanListing } | { ok: false; error: string } {
+  const orgName = input.orgName?.trim() ?? "";
+  const email = input.contactEmail?.trim().toLowerCase() ?? "";
+  const city = input.city?.trim() ?? "";
+  const state = input.state?.trim() ?? "";
+  const bio = input.bio?.trim() ?? "";
+  const serviceDescription = input.serviceDescription?.trim() || null;
+
+  if (!orgName) return { ok: false, error: "Add the organization name." };
+  if (orgName.length > NAME_MAX) return { ok: false, error: "Organization name is too long." };
+  if (!EMAIL_RE.test(email)) return { ok: false, error: "Enter a valid contact email." };
+  if (!city || !state) return { ok: false, error: "Add a city and state." };
+  const zip = normalizeZip(input.zip);
+  if (!zip) return { ok: false, error: "Add a valid 5-digit zip code." };
+  if (!bio) return { ok: false, error: "Add a short description of the organization." };
+  if (bio.length > BIO_MAX) return { ok: false, error: `Description is too long — under ${BIO_MAX} characters.` };
+  if (serviceDescription && serviceDescription.length > DESC_MAX) {
+    return { ok: false, error: `"What they offer" is too long — under ${DESC_MAX} characters.` };
+  }
+  return { ok: true, data: { orgName, email, city, state, zip, bio, serviceDescription } };
+}
+
 async function uniqueSlug(seed: string): Promise<string> {
   const base = normalizeSlug(seed);
   if (!base) throw new Error("Could not derive a slug from the organization name");
@@ -72,24 +108,9 @@ export async function createCommunityListing(
   const admin = await requireAdmin();
   if (!admin) return { ok: false, error: "Not authorized." };
 
-  const orgName = input.orgName?.trim() ?? "";
-  const email = input.contactEmail?.trim().toLowerCase() ?? "";
-  const city = input.city?.trim() ?? "";
-  const state = input.state?.trim() ?? "";
-  const bio = input.bio?.trim() ?? "";
-  const serviceDescription = input.serviceDescription?.trim() || null;
-
-  if (!orgName) return { ok: false, error: "Add the organization name." };
-  if (orgName.length > NAME_MAX) return { ok: false, error: "Organization name is too long." };
-  if (!EMAIL_RE.test(email)) return { ok: false, error: "Enter a valid contact email." };
-  if (!city || !state) return { ok: false, error: "Add a city and state." };
-  const zip = normalizeZip(input.zip);
-  if (!zip) return { ok: false, error: "Add a valid 5-digit zip code." };
-  if (!bio) return { ok: false, error: "Add a short description of the organization." };
-  if (bio.length > BIO_MAX) return { ok: false, error: `Description is too long — under ${BIO_MAX} characters.` };
-  if (serviceDescription && serviceDescription.length > DESC_MAX) {
-    return { ok: false, error: `"What they offer" is too long — under ${DESC_MAX} characters.` };
-  }
+  const parsed = parseListing(input);
+  if (!parsed.ok) return parsed;
+  const { orgName, email, city, state, zip, bio, serviceDescription } = parsed.data;
 
   const serviceType = await prisma.serviceType.findUnique({
     where: { slug: input.serviceTypeSlug },
@@ -175,5 +196,102 @@ export async function createCommunityListing(
   } catch (err) {
     log.error("admin.community_listing_failed", { orgName, err });
     return { ok: false, error: "Could not create the listing. Try again." };
+  }
+}
+
+export interface UpdateCommunityListingInput extends CommunityListingInput {
+  // Slug of the community listing to edit. The slug itself never changes,
+  // so links and inbound references stay stable across edits.
+  slug: string;
+}
+
+// Admin-only: edit an existing community listing's profile — the org's
+// name, contact email, location, description, format, type, and website.
+// Keeps the org's (login-less) account email in sync so inquiries still
+// route correctly, and updates its primary published service.
+export async function updateCommunityListing(
+  input: UpdateCommunityListingInput,
+): Promise<CommunityListingResult> {
+  const admin = await requireAdmin();
+  if (!admin) return { ok: false, error: "Not authorized." };
+
+  const parsed = parseListing(input);
+  if (!parsed.ok) return parsed;
+  const { orgName, email, city, state, zip, bio, serviceDescription } = parsed.data;
+
+  const serviceType = await prisma.serviceType.findUnique({
+    where: { slug: input.serviceTypeSlug },
+    select: { id: true, name: true, slug: true },
+  });
+  if (!serviceType) return { ok: false, error: "Pick a valid service type." };
+
+  const vendor = await prisma.vendorProfile.findUnique({
+    where: { slug: input.slug },
+    select: {
+      id: true,
+      communityListing: true,
+      user: { select: { id: true, email: true } },
+      services: { orderBy: { createdAt: "asc" }, take: 1, select: { id: true } },
+    },
+  });
+  if (!vendor) return { ok: false, error: "Listing not found." };
+  if (!vendor.communityListing) {
+    return { ok: false, error: "That vendor isn't a community listing." };
+  }
+
+  // Guard the email swap against colliding with a different account.
+  if (email !== vendor.user.email.toLowerCase()) {
+    const clash = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+    if (clash && clash.id !== vendor.user.id) {
+      return { ok: false, error: "Another account already uses that email." };
+    }
+  }
+
+  const website = normalizeWebsite(input.website);
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: vendor.user.id },
+        data: { email, name: orgName },
+      });
+      await tx.vendorProfile.update({
+        where: { id: vendor.id },
+        data: {
+          displayName: orgName,
+          bio,
+          location: `${city}, ${state}`,
+          zip,
+          serviceDescription,
+          serviceFormats: formatsLabel(input.locationType),
+          websiteUrl: website,
+          showWebsite: Boolean(website),
+        },
+      });
+      const svc = vendor.services[0];
+      if (svc) {
+        await tx.service.update({
+          where: { id: svc.id },
+          data: {
+            serviceTypeId: serviceType.id,
+            title: serviceType.name,
+            description: serviceDescription ?? bio,
+            locationType: input.locationType,
+          },
+        });
+      }
+    });
+
+    log.info("admin.community_listing_updated", {
+      adminId: admin.id,
+      vendorSlug: input.slug,
+    });
+    revalidatePath("/services");
+    revalidatePath(`/services/${input.slug}`);
+    revalidatePath("/admin/community");
+    return { ok: true, slug: input.slug };
+  } catch (err) {
+    log.error("admin.community_listing_update_failed", { slug: input.slug, err });
+    return { ok: false, error: "Could not save changes. Try again." };
   }
 }
