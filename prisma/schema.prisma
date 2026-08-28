@@ -229,6 +229,13 @@ model VendorProfile {
   // The mock seed sets this true; real signups never do.
   demo Boolean @default(false)
 
+  // Free, admin-curated community listing (volunteer-led end-of-life
+  // resources like Death Cafés). Set only by the CodaCo team from
+  // /admin/community. Drives the "Community resource" badge and exempts
+  // the org from billing — these listings are published and free forever,
+  // with no subscription or payment row and no self-serve dashboard.
+  communityListing Boolean @default(false) @map("community_listing")
+
   // One Stripe Customer per vendor, reused for both the services
   // subscription and the goods one-time set-up fee. Null until the vendor
   // first opens Checkout. (VendorPayment also stores the id for audit, but

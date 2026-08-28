@@ -111,6 +111,10 @@ const faqs = [
     a: "Both goods sellers and service providers start with a free 3-month trial, then choose a $29/month or $320/year subscription. No per-sale transaction fee.",
   },
   {
+    q: "Are there free listings for community resources?",
+    a: "Yes. Volunteer-led, non-commercial end-of-life resources — Death Cafés, grief circles, hotlines, and similar — may qualify for a permanently free listing. Email support@codaco.market to see whether your organization meets our community guidelines.",
+  },
+  {
     q: "How long does approval take?",
     a: "We review all listings within 1–2 business days. Service providers may be asked to provide credentials or verification documents.",
   },

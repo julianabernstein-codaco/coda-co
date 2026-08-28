@@ -88,6 +88,12 @@ export default async function AdminPage() {
               Vendor contact links →
             </a>
             <a
+              href="/admin/community"
+              className="btn-secondary btn-sm no-underline"
+            >
+              Community listing →
+            </a>
+            <a
               href="/admin/listings"
               className="btn-secondary btn-sm no-underline"
             >

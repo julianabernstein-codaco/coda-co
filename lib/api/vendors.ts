@@ -62,6 +62,7 @@ function toVendor(v: DbVendor): Vendor {
     specializations: v.specializations,
     requiresCustomOrder: v.requiresCustomOrder,
     demo: v.demo,
+    communityListing: v.communityListing,
   };
 }
 
