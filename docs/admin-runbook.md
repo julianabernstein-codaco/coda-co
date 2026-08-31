@@ -45,6 +45,11 @@ the "Forgot password" link on `/login`.
 **The production admin credentials are deliberately not written down in
 this repo — ask Julie.**
 
+Admin is a per-person account, not a shared one: each founder signs up
+normally and gets promoted (see *Adding an admin* below). Everyone signs
+in and out independently on their own machines, and approvals get
+attributed to whoever actually made them.
+
 (For local development against mock data only, the seeded admin follows
 the same `@codaco.local` pattern as the mock vendors below. Those accounts
 exist only in a database loaded by `npm run db:mock` — never in
@@ -97,6 +102,35 @@ vendor sees, you have two options:
 
 A proper "log in as this user" flow for support is on the list of things
 to build but not done.
+
+### Adding an admin
+
+Two steps, because nothing in the app can grant the admin role — that's
+deliberate. A "make this person an admin" button would be the single most
+useful thing for anyone who got hold of one admin session.
+
+1. **They sign up normally** at `/signup` with the invite code, like any
+   other user. This is the only step that touches a password, and they
+   choose it themselves — nobody else ever sees or sets it.
+2. **A developer promotes them**, with the production `DATABASE_URL`:
+
+   ```
+   npm run admin:list                              # who's an admin now
+   npm run admin:promote -- julie@codaco.market    # grant
+   npm run admin:demote  -- julie@codaco.market    # revoke
+   ```
+
+Promoting and demoting take effect on the person's **next page load** —
+they don't need to sign out and back in, and demoting somebody boots them
+from the admin pages within seconds even if they're signed in elsewhere.
+
+The script refuses to promote a `@codaco.local` mock account, and refuses
+to demote the last admin who can actually sign in, so you can't lock
+everyone out of `/admin`.
+
+There's no way to add an admin without database access. That's the
+intended shape: keep the number of people who hold `DATABASE_URL` small,
+and the admin roster can't grow without one of them.
 
 ### Inviting a new vendor
 

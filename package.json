@@ -14,6 +14,9 @@
     "db:mock": "tsx prisma/mock.ts",
     "db:backfill-covers": "tsx prisma/backfill-covers.ts",
     "demo:flag": "tsx scripts/flag-demo-vendors.ts",
+    "admin:list": "tsx scripts/promote-admin.ts list",
+    "admin:promote": "tsx scripts/promote-admin.ts promote",
+    "admin:demote": "tsx scripts/promote-admin.ts demote",
     "db:reset": "prisma migrate reset --force"
   },
   "dependencies": {

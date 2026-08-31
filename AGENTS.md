@@ -176,6 +176,14 @@ the preview wall, so nothing about the normal workflow changes.
 - Vendor-side gate: `requireVendor()` in `app/dashboard/lib.ts`
   redirects to `/list-with-us` when a signed-in user lacks a
   `vendor_profile`.
+- **Admin is per-person, and granted only out-of-band.** `/signup`
+  hardcodes `role: "user"` and no UI can change a role — use
+  `npm run admin:{list,promote,demote}` (`scripts/promote-admin.ts`,
+  needs `DATABASE_URL`). Don't add an in-app role editor without a
+  deliberate decision: it would let one stolen admin session mint more
+  admins. The script never creates accounts or sets passwords — the
+  person signs up first. Role changes apply on the next request, since
+  the `jwt` callback re-reads `users.role` every time.
 
 ### Build wrapper (`scripts/build.mjs`)
 Single Node script invoked by both `npm run build` and `npm run
