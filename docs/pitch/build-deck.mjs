@@ -1,11 +1,11 @@
-// Generates the CodaCo investor pitch deck (7 slides).
+// Generates the CodaCo investor pitch deck (8 slides).
 //
 //   node build-deck.mjs [outfile]
 //
 // Palette and voice come from the live site: brand tokens in
 // `app/globals.css`, copy from `/about`, `/what-is-codaco`, `/list-with-us`,
-// pricing from `lib/data/plans.ts`. Year 1 figures are the founders'
-// projection model (see YEAR1 below).
+// pricing from `lib/data/plans.ts`. Financial figures are the founders'
+// projection model (see YEAR1 / ANNUAL / MARKETS below).
 
 import pptxgen from "pptxgenjs";
 
@@ -36,19 +36,50 @@ const W = 13.3;
 const H = 7.5;
 
 /* ------------------------------------------------------------------ *
- * Year 1 projection model (founders' spreadsheet)
- * Launch 1 Nov 2026. $29/vendor/month, 3-month free trial (so a Sep
- * signup first bills in Dec), no churn assumed.
+ * Projection model (founders' spreadsheet)
+ *
+ * Launch 1 Nov 2026. $29/vendor/month, 3-month free trial (a Sep '26
+ * signup first bills in Dec '26), 10% attrition on each converting
+ * cohort, and a fee increase to $39/month from Dec '28.
+ *
+ * YEAR1 below is Nov '26 – Oct '27, the window the sheet labels
+ * "Year 1". Every figure is a subscribing-vendor count x $29 and the
+ * twelve months sum to $91,147 — the sheet's own Year 1 total — so this
+ * block is reconciled against the source, not eyeballed.
+ *
+ * Years 2 and 3 are NOT broken out per month here. See README.md: the
+ * monthly reconstruction lands within 0.33% of the stated annual totals
+ * but does not tie out exactly, so slide 7 shows the founders' annual
+ * figures as given rather than a derived monthly series.
  * ------------------------------------------------------------------ */
-const MONTHS = [
-  "Sep", "Oct", "Nov", "Dec", "Jan '27", "Feb", "Mar", "Apr",
-  "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+const Y1_MONTHS = [
+  "Nov '26", "Dec", "Jan '27", "Feb", "Mar", "Apr",
+  "May", "Jun", "Jul", "Aug", "Sep", "Oct '27",
 ];
 const YEAR1 = {
-  portland: [0, 0, 0, 435, 841, 1305, 1653, 1914, 2117, 2465, 2871, 3219, 3567, 3973, 4263, 4611],
-  denver: [0, 0, 0, 348, 754, 1102, 1537, 1827, 2088, 2407, 2697, 3045, 3335, 3654, 4002, 4321],
-  elsewhere: [0, 0, 0, 116, 203, 261, 435, 580, 812, 928, 1015, 1102, 1131, 1218, 1276, 1363],
+  portland: [0, 870, 1363, 1885, 2407, 2813, 3219, 3625, 4031, 4321, 4640, 4959],
+  denver: [0, 754, 1363, 2001, 2639, 3161, 3683, 4205, 4437, 4698, 4959, 5220],
+  seattle: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 783],
+  shipped: [0, 348, 667, 986, 1247, 1508, 1769, 2030, 2291, 2552, 2755, 2958],
 };
+
+// Annual totals, read directly off the spreadsheet's summary rows.
+const ANNUAL = [
+  { label: "Year 1", sub: "Nov '26 – Oct '27", value: 91147 },
+  { label: "Year 2", sub: "Nov '27 – Oct '28", value: 324104 },
+  { label: "Year 3", sub: "Nov '28 – Oct '29", value: 950244 },
+];
+
+// Market rollout. Population / vendor columns are the sheet's own and
+// are internally consistent (population / vendors = population per vendor).
+const MARKETS = [
+  ["Portland", "Nov '26", "2.5M", "398", "6,281"],
+  ["Denver", "Nov '26", "3.0M", "418", "7,177"],
+  ["Seattle", "Oct '27", "4.1M", "447", "9,172"],
+  ["Los Angeles", "Apr '28", "12.9M", "450", "28,667"],
+  ["New York", "Apr '28", "20.0M", "414", "48,309"],
+  ["Shipped goods", "Nov '26", "Nationwide", "148", "—"],
+];
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
@@ -170,7 +201,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
     },
   );
 
-  s.addText("Investor overview  ·  Year 1 projections", {
+  s.addText("Investor overview  ·  Three-year projections", {
     x: 0.8, y: 6.5, w: 6.0, h: 0.3,
     isTextBox: true, margin: 0,
     fontFace: SANS, fontSize: 11.5, color: ON_DARK_DIM,
@@ -548,32 +579,33 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
 }
 
 /* ================================================================== *
- * 6 — Year 1 projections
+ * 6 — Year 1 projections (monthly, reconciled to the sheet)
  * ================================================================== */
 {
   const s = pres.addSlide();
   s.background = { color: PL };
 
-  eyebrow(s, "Year 1 projections", { x: 0.75, y: 0.55 });
-  slideTitle(s, "A conservative first year");
+  eyebrow(s, "Year 1", { x: 0.75, y: 0.55 });
+  slideTitle(s, "Two cities and the mail");
   subtitle(
     s,
-    "$29 per vendor per month after a 3-month free trial. Portland first, Denver second, shipped-goods makers nationwide. No churn assumed; no other revenue line included.",
-    { w: 8.6, y: 1.62, size: 13.5 },
+    "Portland and Denver open 1 November 2026, with shipped-goods makers nationwide. Seattle follows in the twelfth month.",
+    { w: 8.6, y: 1.66, size: 13.5 },
   );
 
   s.addChart(
     pres.ChartType.bar,
     [
-      { name: "Portland", labels: MONTHS, values: YEAR1.portland },
-      { name: "Denver", labels: MONTHS, values: YEAR1.denver },
-      { name: "Elsewhere (shipped goods)", labels: MONTHS, values: YEAR1.elsewhere },
+      { name: "Portland", labels: Y1_MONTHS, values: YEAR1.portland },
+      { name: "Denver", labels: Y1_MONTHS, values: YEAR1.denver },
+      { name: "Seattle", labels: Y1_MONTHS, values: YEAR1.seattle },
+      { name: "Shipped goods", labels: Y1_MONTHS, values: YEAR1.shipped },
     ],
     {
       x: 0.7, y: 2.42, w: 8.5, h: 4.15,
       barDir: "col",
       barGrouping: "stacked",
-      chartColors: [TR, SG, SG_L],
+      chartColors: [TR, SG, TR_L, SG_L],
       showTitle: true,
       title: "Monthly subscription revenue by market",
       titleColor: CH,
@@ -601,10 +633,10 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   );
 
   const stats = [
-    ["$38,077", "Year 1 revenue", "Sep '26 – Aug '27", "tr"],
-    ["254", "paying vendors", "at the end of Year 1", "sg"],
-    ["$10,295", "monthly revenue", "by Dec '27 — ≈ $124K ARR", "tr"],
-    ["$74,791", "cumulative revenue", "through Dec '27", "sg"],
+    ["$91,147", "Year 1 revenue", "Nov '26 – Oct '27", "tr"],
+    ["480", "paying vendors", "subscribing in Oct '27", "sg"],
+    ["$13,920", "exit monthly revenue", "Oct '27 — ≈ $167K ARR", "tr"],
+    ["3", "markets live", "Portland, Denver, nationwide", "sg"],
   ];
   stats.forEach((st, i) => {
     const y = 2.42 + i * 1.06;
@@ -632,7 +664,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   });
 
   s.addText(
-    "Model assumes launch 1 November 2026; a vendor’s first payment falls three months after signup, at the end of the free trial.",
+    "$29 per vendor per month, less 10% attrition on each converting cohort. A vendor’s first payment falls three months after signup, at the end of the free trial — so the first revenue month is December 2026.",
     {
       x: 0.78, y: 6.72, w: 11.7, h: 0.28,
       isTextBox: true, margin: 0,
@@ -641,12 +673,139 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   );
 
   s.addNotes(
-    "These are the founders' conservative Year 1 numbers. Every dollar is a $29 subscription — no gift cards, no client billing, no sponsorship, and no goods transaction revenue. Zero churn is assumed, which is the model's most optimistic input; the offsetting conservatism is that upside revenue lines are excluded entirely.",
+    "Year 1 is deliberately narrow: two metros plus makers who ship. Every dollar here is a $29 subscription — no goods transaction revenue, no gift cards, no client billing, no sponsorship. Seattle opening in month twelve is what carries the ramp into Year 2.",
   );
 }
 
 /* ================================================================== *
- * 7 — Team and the ask
+ * 7 — Years 1–3
+ * ================================================================== */
+{
+  const s = pres.addSlide();
+  s.background = { color: PL };
+
+  eyebrow(s, "Years 1 – 3", { x: 0.75, y: 0.55, color: SG_D });
+  slideTitle(s, "Five metros by the third year");
+  subtitle(
+    s,
+    "The same playbook run city by city. Revenue compounds because each new metro inherits a marketplace that already works — and because vendors signed in year one are still subscribing in year three.",
+    { w: 11.4, y: 1.62, size: 13.5 },
+  );
+
+  s.addChart(
+    pres.ChartType.bar,
+    [
+      {
+        name: "Annual revenue",
+        labels: ANNUAL.map((a) => a.label),
+        values: ANNUAL.map((a) => a.value),
+      },
+    ],
+    {
+      x: 0.7, y: 2.5, w: 5.3, h: 3.5,
+      barDir: "col",
+      chartColors: [TR],
+      showTitle: true,
+      title: "Annual subscription revenue",
+      titleColor: CH,
+      titleFontFace: SANS,
+      titleFontSize: 13,
+      showLegend: false,
+      showValue: true,
+      dataLabelPosition: "outEnd",
+      dataLabelColor: CH,
+      dataLabelFontFace: SANS,
+      dataLabelFontSize: 12,
+      dataLabelFontBold: true,
+      dataLabelFormatCode: '"$"#,##0',
+      catAxisLabelColor: CM,
+      catAxisLabelFontFace: SANS,
+      catAxisLabelFontSize: 11,
+      valAxisLabelColor: CM,
+      valAxisLabelFontFace: SANS,
+      valAxisLabelFontSize: 9,
+      valAxisLabelFormatCode: '"$"#,##0',
+      valAxisMinVal: 0,
+      valAxisMaxVal: 1100000,
+      valGridLine: { color: "E7E3DE", size: 0.75 },
+      catGridLine: { style: "none" },
+      valAxisLineShow: false,
+      catAxisLineShow: false,
+      barGapWidthPct: 90,
+    },
+  );
+
+  // Market rollout table
+  s.addText("Market rollout", {
+    x: 6.35, y: 2.5, w: 6.2, h: 0.3,
+    isTextBox: true, margin: 0,
+    fontFace: SANS, fontSize: 13, bold: true, color: CH,
+  });
+  s.addTable(
+    [
+      [
+        { text: "Market", options: { bold: true, color: TR_D } },
+        { text: "Opens", options: { bold: true, color: TR_D } },
+        { text: "Metro pop.", options: { bold: true, color: TR_D, align: "right" } },
+        { text: "Vendors", options: { bold: true, color: TR_D, align: "right" } },
+        { text: "Pop. per vendor", options: { bold: true, color: TR_D, align: "right" } },
+      ],
+      ...MARKETS.map((m) => [
+        { text: m[0], options: { color: CH, bold: true } },
+        { text: m[1], options: { color: CM } },
+        { text: m[2], options: { color: CM, align: "right" } },
+        { text: m[3], options: { color: CH, align: "right" } },
+        { text: m[4], options: { color: CM, align: "right" } },
+      ]),
+      [
+        { text: "Total", options: { bold: true, color: CH } },
+        { text: "", options: {} },
+        { text: "", options: {} },
+        { text: "2,275", options: { bold: true, color: CH, align: "right" } },
+        { text: "", options: {} },
+      ],
+    ],
+    {
+      x: 6.35, y: 2.86, w: 6.2,
+      colW: [1.5, 0.85, 1.15, 1.0, 1.7],
+      rowH: 0.31,
+      fontFace: SANS,
+      fontSize: 11,
+      border: { type: "solid", color: LINE, pt: 0.75 },
+      fill: { color: WHITE },
+      margin: [3, 6, 3, 6],
+      valign: "middle",
+    },
+  );
+
+  // Model levers
+  const levers = [
+    ["3-month free trial", "Every vendor starts free, so the first payment lands three months after signup."],
+    ["10% attrition", "A tenth of each converting cohort is written off — churn is in the model, not assumed away."],
+    ["$29 → $39 from Dec '28", "One price step in year three, once the marketplace has depth in five metros."],
+  ];
+  levers.forEach((lv, i) => {
+    const x = 0.75 + i * 4.0;
+    card(s, { x, y: 6.16, w: 3.75, h: 0.92, fill: i === 1 ? SG_P : TR_P, line: i === 1 ? "D8E3D9" : "EBD8D1" });
+    s.addText(lv[0], {
+      x: x + 0.22, y: 6.26, w: 3.32, h: 0.26,
+      isTextBox: true, margin: 0,
+      fontFace: SANS, fontSize: 12.5, bold: true, color: i === 1 ? SG_D : TR_D,
+    });
+    s.addText(lv[1], {
+      x: x + 0.22, y: 6.54, w: 3.32, h: 0.48,
+      isTextBox: true, margin: 0,
+      fontFace: SANS, fontSize: 10.5, color: CM, lineSpacing: 13.5,
+    });
+  });
+
+  s.addNotes(
+    "Three-year revenue totals $1.37M. The penetration assumption is the conservative part: even New York is modelled at one vendor per 48,309 residents, against one per 6,281 in Portland — the large metros are barely touched. Annual figures are the founders' own; the monthly build behind years 2 and 3 is not reproduced here.",
+  );
+}
+
+/* ================================================================== *
+ * 8 — Team and the ask
  * ================================================================== */
 {
   const s = pres.addSlide();
