@@ -59,66 +59,31 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-pl2">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-10">
-        <div className="mb-7 flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-tr mb-1.5">Admin</p>
-            <h1 className="font-serif text-4xl text-ch">Database Viewer</h1>
-            <p className="text-cm text-sm mt-1.5">
-              Read-only view of all database records.{' '}
-              <span className="text-cl">Admin-only — includes account holder emails.</span>
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 shrink-0">
-            <a
-              href="/admin/launch"
-              className="btn-secondary btn-sm no-underline"
-            >
-              Launch →
-            </a>
-            <a
-              href="/admin/applications"
-              className="btn-secondary btn-sm no-underline"
-            >
-              Vendor applications →
-            </a>
-            <a
-              href="/admin/signups"
-              className="btn-secondary btn-sm no-underline"
-            >
-              Incomplete signups →
-            </a>
-            <a
-              href="/admin/vendors"
-              className="btn-secondary btn-sm no-underline"
-            >
-              Vendor contact links →
-            </a>
-            <a
-              href="/admin/community"
-              className="btn-secondary btn-sm no-underline"
-            >
-              Community listing →
-            </a>
-            <a
-              href="/admin/listings"
-              className="btn-secondary btn-sm no-underline"
-            >
-              Listing review →
-            </a>
-            <a
-              href="/admin/email-preview"
-              className="btn-secondary btn-sm no-underline"
-            >
-              Email preview →
-            </a>
-            <a
-              href="/admin/waitlist"
-              className="btn-secondary btn-sm no-underline"
-            >
-              Waitlist →
-            </a>
-          </div>
+        <div className="mb-5">
+          <p className="text-xs font-medium uppercase tracking-widest text-tr mb-1.5">Admin</p>
+          <h1 className="font-serif text-4xl text-ch">Database Viewer</h1>
+          <p className="text-cm text-sm mt-1.5">
+            Read-only view of all database records.{' '}
+            <span className="text-cl">Admin-only — includes account holder emails.</span>
+          </p>
         </div>
+
+        <nav className="flex flex-wrap gap-2 mb-7">
+          {[
+            { href: '/admin/launch', label: 'Launch' },
+            { href: '/admin/applications', label: 'Vendor applications' },
+            { href: '/admin/signups', label: 'Incomplete signups' },
+            { href: '/admin/vendors', label: 'Vendor contact links' },
+            { href: '/admin/community', label: 'Community listing' },
+            { href: '/admin/listings', label: 'Listing review' },
+            { href: '/admin/email-preview', label: 'Email preview' },
+            { href: '/admin/waitlist', label: 'Waitlist' },
+          ].map(({ href, label }) => (
+            <a key={href} href={href} className="btn-secondary btn-sm no-underline">
+              {label} →
+            </a>
+          ))}
+        </nav>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-7">
           {[
