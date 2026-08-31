@@ -40,9 +40,15 @@ substitute. Brand identity is carried by the palette, which is the exact
 ## The projection model
 
 Source: the **"Best Est, 3 Year Projections"** tab (the first tab) of
-**"CodaCo Market Projections 2026.xlsx"** in Google Drive, read 31 Aug 2026.
-It runs Sep '26 – Dec '29 across five metros plus shipped goods (makers who
-ship nationwide and so are not geo-bound).
+**"CodaCo Market Projections 2026.xlsx"** in Google Drive, read 31 Aug 2026
+after the founders rebuilt the model. It runs Sep '26 – Dec '29 across five
+metros plus shipped goods (makers who ship nationwide and so are not
+geo-bound).
+
+Read it straight from Drive with the Google Drive connector
+(`read_file_content` on the file id) — no download or export needed. The first
+tab is the one that matters; the later tabs hold the earlier
+best-estimate / conservative / aggressive single-year scenarios.
 
 Mechanics:
 
@@ -57,52 +63,44 @@ Mechanics:
 
 ### Reconciliation
 
-All three stated annual totals tie **exactly** to the sheet's own Monthly
-Revenue row:
+Checks run against the sheet before anything reaches a slide:
 
 | | Stated | Monthly Revenue row | Sum of the six market rows |
 |---|---|---|---|
-| Year 1 (Nov '26 – Oct '27) | $101,848 | $101,848 ✓ | $101,848 ✓ |
-| Year 2 (Nov '27 – Oct '28) | $369,837 | $369,837 ✓ | $375,985 |
-| Year 3 (Nov '28 – Oct '29) | $953,420 | $953,420 ✓ | $953,420 ✓ |
+| Year 1 (Nov '26 – Oct '27) | $109,707 | $109,707 ✓ | $109,707 ✓ |
+| Year 2 (Nov '27 – Oct '28) | $411,916 | $411,916 ✓ | $421,863 |
+| Year 3 (Nov '28 – Oct '29) | $1,046,949 | $1,046,949 ✓ | $1,046,949 ✓ |
 
-Slide 6 charts the market rows for Year 1, where the two agree. Slide 7 uses
-the stated annual totals.
+Also verified: every month in all six markets is an exact integer vendor
+count × price, and no market's revenue ever falls.
 
-### Three defects in the source sheet
+### One open defect in the source sheet
 
-These are recorded here so they are not rediscovered, and so nobody assumes
-the deck introduced them. **The deck reproduces the sheet as-is** — none of
-this is silently corrected.
+**The Monthly Revenue total row holds two bad cells** — Apr '28 (row $25,520,
+market columns $33,524) and May '28 (row $33,582, market columns $35,525).
+The row consequently *falls* from Mar '28 to Apr '28, which nothing in the
+model supports.
 
-1. **Seattle's subscriber row does not accumulate.** It oscillates — 20, 50,
-   80, 25, 25, 20, 50, 80, 105, 50, 50, 38 — as though it sums a rolling
-   window rather than a running total. Seattle's revenue consequently *falls*
-   ten separate times, most visibly from $2,233 in Jul '27 to $638 in Aug '27;
-   every other market is monotonic. The effect is large: Seattle recruits
-   **495 vendors, more than Portland's 398**, yet ends Year 3 at $4,914/month
-   against Portland's $13,884. Rebuilt on the same mechanic as Portland and
-   Denver, Seattle would be roughly **$183K in Year 3 rather than $47K**, and
-   the three-year total about **$206K higher**. This is visible on slide 6 as
-   a Seattle band that shrinks after July.
-2. **Denver's revenue row repeats a month.** $6,757 appears twice (May and
-   Jun '28), leaving that row one month behind its own vendor count from then
-   on — worth roughly $200/month.
-3. **The Monthly Revenue total row disagrees with the market rows in two
-   months**: Apr '28 (row $22,649, markets $29,058) and May '28 (row $31,900,
-   markets $31,639). This is the whole of the Year 2 discrepancy above.
+Because the annual totals are computed off that row, **Year 2 is understated
+by $9,947**: it should read $421,863, not $411,916. Slide 7 shows the stated
+$411,916 so the deck matches the model a reader would be handed. Fix those two
+cells and the deck can be regenerated to match.
+
+Two earlier defects — Seattle's subscriber row not accumulating, and a
+duplicated month in Denver's revenue row — were fixed in the founders'
+rebuild and are gone.
 
 ### Headline figures
 
 | Figure | Value | Window |
 |---|---|---|
-| Year 1 revenue | $101,848 | Nov '26 – Oct '27 |
-| Year 2 revenue | $369,837 | Nov '27 – Oct '28 |
-| Year 3 revenue | $953,420 | Nov '28 – Oct '29 |
-| Three-year total | $1,425,105 | |
-| Paying vendors | 567 | Oct '27 |
-| Exit monthly revenue, Year 1 | $16,443 (≈ $197K ARR) | Oct '27 |
-| Exit monthly revenue, Year 3 | $92,781 (≈ $1.11M ARR) | Dec '29 |
+| Year 1 revenue | $109,707 | Nov '26 – Oct '27 |
+| Year 2 revenue | $411,916 (should be $421,863) | Nov '27 – Oct '28 |
+| Year 3 revenue | $1,046,949 | Nov '28 – Oct '29 |
+| Three-year total | $1,568,572 | |
+| Paying vendors | 682 | Oct '27 |
+| Exit monthly revenue, Year 1 | $19,778 (≈ $237K ARR) | Oct '27 |
+| Exit monthly revenue, Year 3 | $100,503 (≈ $1.21M ARR) | Dec '29 |
 
 ### Market rollout
 

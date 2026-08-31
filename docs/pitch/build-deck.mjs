@@ -37,7 +37,8 @@ const H = 7.5;
 
 /* ------------------------------------------------------------------ *
  * Projection model — the "Best Est, 3 Year Projections" tab of
- * "CodaCo Market Projections 2026.xlsx" (Google Drive), read 31 Aug 2026.
+ * "CodaCo Market Projections 2026.xlsx" (Google Drive), read 31 Aug 2026
+ * after the founders' rebuild of the model.
  *
  * Launch 1 Nov 2026, running Sep '26 - Dec '29 across five metros plus
  * shipped goods. $29/vendor/month, 3-month free trial (a Sep '26 signup
@@ -53,21 +54,25 @@ const Y1_MONTHS = [
   "Nov '26", "Dec", "Jan '27", "Feb", "Mar", "Apr",
   "May", "Jun", "Jul", "Aug", "Sep", "Oct '27",
 ];
-// Year 1 = Nov '26 - Oct '27. Sums to $101,848, the sheet's Year 1 total.
+// Year 1 = Nov '26 - Oct '27. Sums to $109,707, the sheet's Year 1 total.
 const YEAR1 = {
   portland: [0, 870, 1363, 1885, 2407, 2813, 3219, 3625, 4031, 4321, 4640, 4959],
   denver: [0, 754, 1363, 2001, 2639, 3161, 3683, 4205, 4437, 4698, 4959, 5220],
-  seattle: [0, 0, 0, 0, 0, 0, 522, 1363, 2233, 638, 638, 522],
-  la: [0, 0, 0, 0, 0, 0, 0, 0, 0, 928, 1856, 2784],
+  seattle: [0, 0, 0, 0, 0, 0, 522, 1305, 2088, 2726, 3364, 4031],
+  la: [0, 0, 0, 0, 0, 0, 0, 0, 0, 928, 1769, 2610],
   shipped: [0, 348, 667, 986, 1247, 1508, 1769, 2030, 2291, 2552, 2755, 2958],
 };
 
 // Annual totals, read off the sheet's summary rows and verified against
 // its Monthly Revenue row.
+// Year 2 is the sheet's stated figure. Its Monthly Revenue row still holds
+// two bad cells (Apr and May '28); correcting them raises Year 2 to
+// $421,863. The deck keeps the stated number so it matches the model the
+// founders would hand to a reader. See README.md.
 const ANNUAL = [
-  { label: "Year 1", value: 101848 },
-  { label: "Year 2", value: 369837 },
-  { label: "Year 3", value: 953420 },
+  { label: "Year 1", value: 109707 },
+  { label: "Year 2", value: 411916 },
+  { label: "Year 3", value: 1046949 },
 ];
 
 // Market rollout. "First revenue" is the first month with a paying
@@ -636,9 +641,9 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   );
 
   const stats = [
-    ["$101,848", "Year 1 revenue", "Nov '26 – Oct '27", "tr"],
-    ["567", "paying vendors", "subscribing in Oct '27", "sg"],
-    ["$16,443", "exit monthly revenue", "Oct '27 — ≈ $197K ARR", "tr"],
+    ["$109,707", "Year 1 revenue", "Nov '26 – Oct '27", "tr"],
+    ["682", "paying vendors", "subscribing in Oct '27", "sg"],
+    ["$19,778", "exit monthly revenue", "Oct '27 — ≈ $237K ARR", "tr"],
     ["4", "metros live", "plus nationwide shipping", "sg"],
   ];
   stats.forEach((st, i) => {
@@ -676,7 +681,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   );
 
   s.addNotes(
-    "Every dollar here is a $29 subscription — no goods transaction revenue, no gift cards, no client billing, no sponsorship. Portland and Denver carry the first six months; Seattle and Los Angeles arriving mid-year is what compounds into Year 2. New York opens just after this window, in December 2027.",
+    "Every dollar here is a $29 subscription — no goods transaction revenue, no gift cards, no client billing, no sponsorship. Portland and Denver carry the first six months; Seattle arriving in May and Los Angeles in August is what compounds into Year 2, and the year exits at nearly double its mid-year run rate. New York opens just after this window, in December 2027.",
   );
 }
 
@@ -729,7 +734,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
       valAxisLabelFontSize: 9,
       valAxisLabelFormatCode: '"$"#,##0',
       valAxisMinVal: 0,
-      valAxisMaxVal: 1000000,
+      valAxisMaxVal: 1200000,
       valGridLine: { color: "E7E3DE", size: 0.75 },
       catGridLine: { style: "none" },
       valAxisLineShow: false,
@@ -740,9 +745,9 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
 
   s.addText(
     [
-      { text: "$1,425,105", options: { bold: true, color: TR_D } },
+      { text: "$1,568,572", options: { bold: true, color: TR_D } },
       { text: " over three years — exiting at ≈ ", options: { color: CM } },
-      { text: "$1.11M ARR", options: { bold: true, color: TR_D } },
+      { text: "$1.21M ARR", options: { bold: true, color: TR_D } },
       { text: ".", options: { color: CM } },
     ],
     {
@@ -818,7 +823,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   });
 
   s.addNotes(
-    "Three-year revenue totals $1.43M, exiting December 2029 at $92,781 a month — roughly $1.11M of annual run rate. The penetration assumption is the conservative part: New York is modelled at one vendor per 42,017 residents against one per 6,281 in Portland, so the largest metros are barely touched. All three annual figures tie exactly to the spreadsheet's own monthly revenue row.",
+    "Three-year revenue totals $1.57M, exiting December 2029 at $100,503 a month — roughly $1.21M of annual run rate. The penetration assumption is the conservative part: New York is modelled at one vendor per 42,017 residents against one per 6,281 in Portland, so the largest metros are barely touched. All three annual figures are the spreadsheet's own; Year 1 and Year 3 also tie exactly to the sum of the market columns.",
   );
 }
 
