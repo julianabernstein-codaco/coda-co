@@ -39,9 +39,10 @@ substitute. Brand identity is carried by the palette, which is the exact
 
 ## The projection model
 
-The figures come from the founders' spreadsheet, which runs Sep '26 – Dec '29
-across six revenue blocks: Portland, Denver, Seattle, Los Angeles, New York,
-and shipped goods (makers who ship nationwide and so are not geo-bound).
+Source: the **"Best Est, 3 Year Projections"** tab (the first tab) of
+**"CodaCo Market Projections 2026.xlsx"** in Google Drive, read 31 Aug 2026.
+It runs Sep '26 – Dec '29 across five metros plus shipped goods (makers who
+ship nationwide and so are not geo-bound).
 
 Mechanics:
 
@@ -51,61 +52,81 @@ Mechanics:
 - A vendor's first payment lands **three months after signup** — the free
   trial in `lib/data/plans.ts`. A September '26 signup first bills in
   December '26.
-- **10% attrition** is written off each converting cohort.
+- **~10% attrition** on each arriving cohort.
 - Price steps from **$29 to $39/month in December 2028**.
 
-### What is reconciled, and what is not
+### Reconciliation
 
-The numbers were transcribed from a screenshot of the sheet, so every figure
-in the deck was checked before use. Revenue in this model is always an integer
-vendor count times $29 or $39, which makes each cell self-checking, and the
-sheet's own monthly total row provides a second independent check.
+All three stated annual totals tie **exactly** to the sheet's own Monthly
+Revenue row:
 
-**Year 1 is reconciled exactly.** The twelve months Nov '26 – Oct '27 in
-`YEAR1` sum to **$91,147**, matching the sheet's stated Year 1 total, and each
-month matches the sheet's own total row ($1,972, $3,393, $4,872, $6,293,
-$7,482, $8,671, $9,860, $10,759, $11,571 …). That reconciliation is what
-established two facts the deck relies on: Seattle opens in the *last* month of
-Year 1, and the price step falls in Dec '28.
+| | Stated | Monthly Revenue row | Sum of the six market rows |
+|---|---|---|---|
+| Year 1 (Nov '26 – Oct '27) | $101,848 | $101,848 ✓ | $101,848 ✓ |
+| Year 2 (Nov '27 – Oct '28) | $369,837 | $369,837 ✓ | $375,985 |
+| Year 3 (Nov '28 – Oct '29) | $953,420 | $953,420 ✓ | $953,420 ✓ |
 
-**Years 2 and 3 are not.** A month-by-month reconstruction lands within $8 of
-the stated $324,104 and within 0.33% of the stated $950,244 — close enough to
-confirm the model's structure, not close enough to publish. The residual points
-to a one-column misalignment in the Denver row that could not be resolved from
-the screenshot. Slide 7 therefore shows the founders' **annual totals as
-given** and does not chart a derived monthly series for years 2 and 3.
+Slide 6 charts the market rows for Year 1, where the two agree. Slide 7 uses
+the stated annual totals.
 
-If the source spreadsheet becomes available as CSV or XLSX, replacing the
-`YEAR1` / `ANNUAL` constants with exact values — and adding the year 2–3
-monthly build to slide 7 — is the natural follow-up.
+### Three defects in the source sheet
+
+These are recorded here so they are not rediscovered, and so nobody assumes
+the deck introduced them. **The deck reproduces the sheet as-is** — none of
+this is silently corrected.
+
+1. **Seattle's subscriber row does not accumulate.** It oscillates — 20, 50,
+   80, 25, 25, 20, 50, 80, 105, 50, 50, 38 — as though it sums a rolling
+   window rather than a running total. Seattle's revenue consequently *falls*
+   ten separate times, most visibly from $2,233 in Jul '27 to $638 in Aug '27;
+   every other market is monotonic. The effect is large: Seattle recruits
+   **495 vendors, more than Portland's 398**, yet ends Year 3 at $4,914/month
+   against Portland's $13,884. Rebuilt on the same mechanic as Portland and
+   Denver, Seattle would be roughly **$183K in Year 3 rather than $47K**, and
+   the three-year total about **$206K higher**. This is visible on slide 6 as
+   a Seattle band that shrinks after July.
+2. **Denver's revenue row repeats a month.** $6,757 appears twice (May and
+   Jun '28), leaving that row one month behind its own vendor count from then
+   on — worth roughly $200/month.
+3. **The Monthly Revenue total row disagrees with the market rows in two
+   months**: Apr '28 (row $22,649, markets $29,058) and May '28 (row $31,900,
+   markets $31,639). This is the whole of the Year 2 discrepancy above.
 
 ### Headline figures
 
 | Figure | Value | Window |
 |---|---|---|
-| Year 1 revenue | $91,147 | Nov '26 – Oct '27 |
-| Year 2 revenue | $324,104 | Nov '27 – Oct '28 |
-| Year 3 revenue | $950,244 | Nov '28 – Oct '29 |
-| Paying vendors | 480 | Oct '27 |
-| Exit monthly revenue, Year 1 | $13,920 (≈ $167K ARR) | Oct '27 |
-| Vendors onboarded across the model | 2,275 | through Dec '29 |
+| Year 1 revenue | $101,848 | Nov '26 – Oct '27 |
+| Year 2 revenue | $369,837 | Nov '27 – Oct '28 |
+| Year 3 revenue | $953,420 | Nov '28 – Oct '29 |
+| Three-year total | $1,425,105 | |
+| Paying vendors | 567 | Oct '27 |
+| Exit monthly revenue, Year 1 | $16,443 (≈ $197K ARR) | Oct '27 |
+| Exit monthly revenue, Year 3 | $92,781 (≈ $1.11M ARR) | Dec '29 |
 
 ### Market rollout
 
-Metro population and vendor counts are the sheet's own summary columns, and
-are internally consistent (population ÷ vendors = population per vendor).
+"First revenue" is the first month with a paying vendor — three months after
+that market starts recruiting. Population and vendor columns are the sheet's
+own and are internally consistent (population ÷ vendors = population per
+vendor).
 
-| Market | Opens | Metro pop. | Vendors | Pop. per vendor |
+| Market | First revenue | Metro pop. | Vendors | Pop. per vendor |
 |---|---|---|---|---|
-| Portland | Nov '26 | 2.5M | 398 | 6,281 |
-| Denver | Nov '26 | 3.0M | 418 | 7,177 |
-| Seattle | Oct '27 | 4.1M | 447 | 9,172 |
-| Los Angeles | Apr '28 | 12.9M | 450 | 28,667 |
-| New York | Apr '28 | 20.0M | 414 | 48,309 |
-| Shipped goods | Nov '26 | Nationwide | 148 | — |
+| Portland | Dec '26 | 2.5M | 398 | 6,281 |
+| Denver | Dec '26 | 3.0M | 418 | 7,177 |
+| Seattle | May '27 | 4.1M | 495 | 8,283 |
+| Los Angeles | Aug '27 | 12.9M | 644 | 20,031 |
+| New York | Dec '27 | 20.0M | 476 | 42,017 |
+| Shipped goods | Dec '26 | Nationwide | — | — |
 
-The penetration spread is the model's conservatism: New York is assumed at one
-vendor per 48,309 residents against Portland's one per 6,281.
+Five metros, 2,431 vendors. The penetration spread is the model's
+conservatism: New York is assumed at one vendor per 42,017 residents against
+Portland's one per 6,281.
+
+The sheet's "Total New Vendors" column reads 148 for shipped goods, but that
+row's own monthly signups sum to 530 — the summary cell looks stale, so the
+deck shows a dash rather than either number.
 
 ## Before sending
 
