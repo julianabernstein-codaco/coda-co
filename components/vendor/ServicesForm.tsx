@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { submitServicesApplication } from "@/app/list-with-us/actions";
+import { saveSignupDraft, submitServicesApplication } from "@/app/list-with-us/actions";
 import { StateOptions } from "@/components/vendor/StateOptions";
 import { StepsBar } from "@/components/ui/StepsBar";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
@@ -500,7 +500,15 @@ export function ServicesForm({
                     }
                   }
                   setSubmitError(null);
-                  setStep((s) => s + 1);
+                  const next = step + 1;
+                  setStep(next);
+                  // Best-effort: record progress so we can see who started
+                  // but didn't finish. Fire-and-forget — never blocks the step.
+                  void saveSignupDraft({
+                    kind: "services",
+                    step: next,
+                    data: data as unknown as Record<string, unknown>,
+                  });
                 }}
                 className="px-8 py-2.5 rounded-full bg-sg text-white text-[15px] cursor-pointer hover:bg-sg-d transition-colors"
               >

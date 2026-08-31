@@ -1,6 +1,6 @@
 "use server";
 
-import type { ApplicationKind, SubscriptionPlanId } from "@prisma/client";
+import type { ApplicationKind, Prisma, SubscriptionPlanId } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { put } from "@vercel/blob";
 import { auth } from "@/auth";
@@ -352,6 +352,10 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
     requiresCustomOrder: input.kind === "goods" && input.requiresCustomOrder === true,
   });
 
+  // They finished — drop any in-progress signup draft so it no longer
+  // shows up as an abandoned signup.
+  await prisma.vendorSignupDraft.deleteMany({ where: { userId: session.user.id } });
+
   // Pure goods shops are self-serve: the shop page itself isn't reviewed.
   // Auto-approve so the maker lands straight in their dashboard, then park
   // the item they just uploaded in the listing-review queue. The shop stays
@@ -462,6 +466,61 @@ async function submit(input: SubmitInput): Promise<ApplicationFormState> {
   }
 
   redirect("/list-with-us/confirm");
+}
+
+export interface SaveSignupDraftInput {
+  kind: "goods" | "services";
+  step: number;
+  // Partial form state so far. Stored as-is (size-guarded) for internal
+  // funnel tracking of who started a listing but didn't finish.
+  data: Record<string, unknown>;
+}
+
+// Best-effort: upsert the signed-in user's in-progress signup as they
+// advance through the listing form. Auth-gated (the listing pages already
+// require a session) and never throws into the caller — draft-save must
+// not disrupt the form. The draft is deleted on submit.
+export async function saveSignupDraft(input: SaveSignupDraftInput): Promise<void> {
+  try {
+    const session = await auth();
+    if (!session?.user) return;
+    if (input.kind !== "goods" && input.kind !== "services") return;
+
+    const data =
+      input.data && typeof input.data === "object" && !Array.isArray(input.data)
+        ? input.data
+        : {};
+    // Guard against oversized / crafted payloads — drop the body if huge.
+    let json: Prisma.InputJsonValue = {};
+    try {
+      if (JSON.stringify(data).length <= 10_000) json = data as Prisma.InputJsonValue;
+    } catch {
+      json = {};
+    }
+    const step = Number.isFinite(input.step)
+      ? Math.max(0, Math.min(20, Math.trunc(input.step)))
+      : 0;
+
+    const company = typeof data.companyName === "string" ? data.companyName.trim() : "";
+    const first = typeof data.firstName === "string" ? data.firstName.trim() : "";
+    const last = typeof data.lastName === "string" ? data.lastName.trim() : "";
+    const orgName = company || `${first} ${last}`.trim() || null;
+
+    const fields = {
+      kind: input.kind,
+      lastStep: step,
+      data: json,
+      orgName,
+      email: session.user.email ?? null,
+    };
+    await prisma.vendorSignupDraft.upsert({
+      where: { userId: session.user.id },
+      create: { userId: session.user.id, ...fields },
+      update: fields,
+    });
+  } catch (err) {
+    log.warn("signup_draft.save_failed", { err });
+  }
 }
 
 export async function submitGoodsApplication(input: Omit<SubmitInput, "kind">) {

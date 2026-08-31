@@ -74,6 +74,7 @@ model User {
   orders        Order[]
   cartItems     CartItem[]
   inquiriesSent VendorInquiry[]     @relation("VendorInquiriesFromUser")
+  signupDraft   VendorSignupDraft?
 
   // Gift cards a user bought / claimed into their account. Both are
   // optional links (a guest can buy or redeem without an account), so the
@@ -364,6 +365,32 @@ model VendorApplication {
   @@index([applicantUserId])
   @@index([status])
   @@map("vendor_applications")
+}
+
+// In-progress vendor signups, so we can see who started the listing flow
+// but didn't finish. Written as the applicant advances through the
+// multi-step form (one row per user) and DELETED when they submit — so a
+// row that survives means "started, not completed". Internal tracking
+// only; the email is already held on the user's account.
+model VendorSignupDraft {
+  id       String          @id @default(cuid())
+  userId   String          @unique @map("user_id")
+  kind     ApplicationKind @default(unknown)
+  // Partial form state (JSON) — lets admins see how far someone got and
+  // what they'd entered so far.
+  data     Json            @default("{}")
+  lastStep Int             @default(0) @map("last_step")
+  // Denormalized for the admin list without parsing `data`.
+  orgName  String?         @map("org_name")
+  email    String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([updatedAt])
+  @@map("vendor_signup_drafts")
 }
 
 // Created on approval. A vendor with kind=both can hold two subscriptions
