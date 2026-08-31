@@ -63,41 +63,52 @@ Mechanics:
 
 ### Reconciliation
 
-Checks run against the sheet before anything reaches a slide:
+Checks run against the sheet before anything reaches a slide. As of the
+31 Aug 2026 read, **everything ties**:
 
 | | Stated | Monthly Revenue row | Sum of the six market rows |
 |---|---|---|---|
 | Year 1 (Nov '26 – Oct '27) | $109,707 | $109,707 ✓ | $109,707 ✓ |
-| Year 2 (Nov '27 – Oct '28) | $411,916 | $411,916 ✓ | $421,863 |
+| Year 2 (Nov '27 – Oct '28) | $421,863 | $421,863 ✓ | $421,863 ✓ |
 | Year 3 (Nov '28 – Oct '29) | $1,046,949 | $1,046,949 ✓ | $1,046,949 ✓ |
 
-Also verified: every month in all six markets is an exact integer vendor
-count × price, and no market's revenue ever falls.
+Also verified across all forty months: every market figure is an exact
+integer vendor count × price ($29 through Nov '28, $39 from Dec '28), no
+market's revenue ever falls, and the Monthly Revenue row equals the sum of
+the market rows in every single month.
 
-### One open defect in the source sheet
+Three earlier defects were found and fixed by the founders: Seattle's
+subscriber row not accumulating, a duplicated month in Denver's revenue row,
+and two bad cells in the Monthly Revenue total row (Apr and May '28, columns
+V and W) that had understated Year 2 by $9,947.
 
-**The Monthly Revenue total row holds two bad cells** — Apr '28 (row $25,520,
-market columns $33,524) and May '28 (row $33,582, market columns $35,525).
-The row consequently *falls* from Mar '28 to Apr '28, which nothing in the
-model supports.
+### Reading the sheet without tripping over the header
 
-Because the annual totals are computed off that row, **Year 2 is understated
-by $9,947**: it should read $421,863, not $411,916. Slide 7 shows the stated
-$411,916 so the deck matches the model a reader would be handed. Fix those two
-cells and the deck can be regenerated to match.
+**The month header row labels two different blocks "J '28"** — column S
+(correct, Jan '28) and column AE (should read J '29). Everything from AE to
+AP is therefore a year later than its label suggests. When checking a month,
+go by column letter, not by the header text:
 
-Two earlier defects — Seattle's subscriber row not accumulating, and a
-duplicated month in Denver's revenue row — were fixed in the founders'
-rebuild and are gone.
+| Month | Column | | Month | Column |
+|---|---|---|---|---|
+| Sep '26 (first) | C | | Dec '28 (fee step) | AD |
+| Nov '26 (launch) | E | | Apr '29 | AH |
+| Oct '27 (Year 1 end) | P | | Dec '29 (last) | AP |
+| Apr '28 | V | | | |
+
+Two labels in the sheet anchor this and agree with each other: "Launch Date
+November 1" sits over column E, and "Fee increase to $39/mo" over column AD —
+which is exactly where every market's price steps from $29 to $39 (Portland
+291 × $29 = $8,439, then 300 × $39 = $11,700).
 
 ### Headline figures
 
 | Figure | Value | Window |
 |---|---|---|
 | Year 1 revenue | $109,707 | Nov '26 – Oct '27 |
-| Year 2 revenue | $411,916 (should be $421,863) | Nov '27 – Oct '28 |
+| Year 2 revenue | $421,863 | Nov '27 – Oct '28 |
 | Year 3 revenue | $1,046,949 | Nov '28 – Oct '29 |
-| Three-year total | $1,568,572 | |
+| Three-year total | $1,578,519 | |
 | Paying vendors | 682 | Oct '27 |
 | Exit monthly revenue, Year 1 | $19,778 (≈ $237K ARR) | Oct '27 |
 | Exit monthly revenue, Year 3 | $100,503 (≈ $1.21M ARR) | Dec '29 |

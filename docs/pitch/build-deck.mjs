@@ -45,10 +45,10 @@ const H = 7.5;
  * first bills in Dec '26), ~10% attrition on each arriving cohort, and a
  * step to $39/month from Dec '28.
  *
- * Reconciled: all three stated annual totals tie exactly to the sheet's
- * own Monthly Revenue row, and Year 1 also ties to the sum of the market
- * rows. See README.md for the two rows that do not tie, and for the
- * Seattle defect that suppresses that market throughout.
+ * Fully reconciled: in all forty months each market's revenue is an exact
+ * vendor count times price, no market's revenue ever falls, and the sheet's
+ * Monthly Revenue row equals the sum of the six market rows. All three
+ * annual totals agree with both. See README.md.
  * ------------------------------------------------------------------ */
 const Y1_MONTHS = [
   "Nov '26", "Dec", "Jan '27", "Feb", "Mar", "Apr",
@@ -63,15 +63,11 @@ const YEAR1 = {
   shipped: [0, 348, 667, 986, 1247, 1508, 1769, 2030, 2291, 2552, 2755, 2958],
 };
 
-// Annual totals, read off the sheet's summary rows and verified against
-// its Monthly Revenue row.
-// Year 2 is the sheet's stated figure. Its Monthly Revenue row still holds
-// two bad cells (Apr and May '28); correcting them raises Year 2 to
-// $421,863. The deck keeps the stated number so it matches the model the
-// founders would hand to a reader. See README.md.
+// Annual totals from the sheet's summary rows. All three tie exactly to
+// both its Monthly Revenue row and the sum of the six market columns.
 const ANNUAL = [
   { label: "Year 1", value: 109707 },
-  { label: "Year 2", value: 411916 },
+  { label: "Year 2", value: 421863 },
   { label: "Year 3", value: 1046949 },
 ];
 
@@ -745,7 +741,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
 
   s.addText(
     [
-      { text: "$1,568,572", options: { bold: true, color: TR_D } },
+      { text: "$1,578,519", options: { bold: true, color: TR_D } },
       { text: " over three years — exiting at ≈ ", options: { color: CM } },
       { text: "$1.21M ARR", options: { bold: true, color: TR_D } },
       { text: ".", options: { color: CM } },
@@ -823,7 +819,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   });
 
   s.addNotes(
-    "Three-year revenue totals $1.57M, exiting December 2029 at $100,503 a month — roughly $1.21M of annual run rate. The penetration assumption is the conservative part: New York is modelled at one vendor per 42,017 residents against one per 6,281 in Portland, so the largest metros are barely touched. All three annual figures are the spreadsheet's own; Year 1 and Year 3 also tie exactly to the sum of the market columns.",
+    "Three-year revenue totals $1.58M, exiting December 2029 at $100,503 a month — roughly $1.21M of annual run rate. The penetration assumption is the conservative part: New York is modelled at one vendor per 42,017 residents against one per 6,281 in Portland, so the largest metros are barely touched. Every one of the model's forty months reconciles: each market's revenue is an exact vendor count times price, and the three annual totals agree with both the spreadsheet's own monthly row and the sum of its market columns.",
   );
 }
 
