@@ -82,6 +82,12 @@ export default async function AdminPage() {
               Vendor applications →
             </a>
             <a
+              href="/admin/signups"
+              className="btn-secondary btn-sm no-underline"
+            >
+              Incomplete signups →
+            </a>
+            <a
               href="/admin/vendors"
               className="btn-secondary btn-sm no-underline"
             >

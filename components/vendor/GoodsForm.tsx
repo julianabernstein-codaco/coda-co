@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { submitGoodsApplication } from "@/app/list-with-us/actions";
+import { saveSignupDraft, submitGoodsApplication } from "@/app/list-with-us/actions";
 import {
   ImageUploader,
   type ImageUploaderHandle,
@@ -17,6 +17,21 @@ import {
 import { normalizeZip } from "@/lib/geo/zip";
 
 type PlanId = "starter" | "standard" | "pro";
+
+// Keep only JSON-serializable primitives/string-arrays for the signup
+// draft — drops the item-photo File and any other non-plain values so we
+// don't re-upload image bytes on every step.
+function draftData(d: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(d)) {
+    if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") {
+      out[k] = v;
+    } else if (Array.isArray(v) && v.every((x) => typeof x === "string")) {
+      out[k] = v;
+    }
+  }
+  return out;
+}
 
 const STEPS = [
   { label: "Your shop" },
@@ -470,7 +485,15 @@ export function GoodsForm({
                       }
                     }
                     setSubmitError(null);
-                    setStep((s) => s + 1);
+                    const next = step + 1;
+                    setStep(next);
+                    // Best-effort: record progress so we can see who started
+                    // but didn't finish. Fire-and-forget — never blocks the step.
+                    void saveSignupDraft({
+                      kind: "goods",
+                      step: next,
+                      data: draftData(data as unknown as Record<string, unknown>),
+                    });
                   }}
                   className="px-8 py-2.5 rounded-full bg-tr text-white text-[15px] cursor-pointer hover:bg-tr-d transition-colors"
                 >
