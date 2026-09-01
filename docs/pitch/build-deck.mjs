@@ -36,9 +36,10 @@ const W = 13.3;
 const H = 7.5;
 
 /* ------------------------------------------------------------------ *
- * Projection model — the "Best Est, 3 Year Projections" tab of
- * "CodaCo Market Projections 2026.xlsx" (Google Drive), read 31 Aug 2026
- * after the founders' rebuild of the model.
+ * Projection model — the "More Conservative Best Est, 3 Y" tab (the second
+ * tab) of "CodaCo Market Projections 2026.xlsx" (Google Drive), read
+ * 31 Aug 2026. It keeps the Portland, Denver and New York ramps of the
+ * Best Est tab and cuts back Seattle and Los Angeles.
  *
  * Launch 1 Nov 2026, running Sep '26 - Dec '29 across five metros plus
  * shipped goods. $29/vendor/month, 3-month free trial (a Sep '26 signup
@@ -54,21 +55,21 @@ const Y1_MONTHS = [
   "Nov '26", "Dec", "Jan '27", "Feb", "Mar", "Apr",
   "May", "Jun", "Jul", "Aug", "Sep", "Oct '27",
 ];
-// Year 1 = Nov '26 - Oct '27. Sums to $109,707, the sheet's Year 1 total.
+// Year 1 = Nov '26 - Oct '27. Sums to $103,675, the sheet's Year 1 total.
 const YEAR1 = {
   portland: [0, 870, 1363, 1885, 2407, 2813, 3219, 3625, 4031, 4321, 4640, 4959],
   denver: [0, 754, 1363, 2001, 2639, 3161, 3683, 4205, 4437, 4698, 4959, 5220],
-  seattle: [0, 0, 0, 0, 0, 0, 522, 1305, 2088, 2726, 3364, 4031],
-  la: [0, 0, 0, 0, 0, 0, 0, 0, 0, 928, 1769, 2610],
-  shipped: [0, 348, 667, 986, 1247, 1508, 1769, 2030, 2291, 2552, 2755, 2958],
+  seattle: [0, 0, 0, 0, 0, 0, 377, 899, 1421, 1798, 2175, 2697],
+  la: [0, 0, 0, 0, 0, 0, 0, 0, 0, 406, 783, 1160],
+  shipped: [0, 348, 754, 1102, 1421, 1682, 1943, 2204, 2465, 2726, 2929, 3132],
 };
 
 // Annual totals from the sheet's summary rows. All three tie exactly to
 // both its Monthly Revenue row and the sum of the six market columns.
 const ANNUAL = [
-  { label: "Year 1", value: 109707 },
-  { label: "Year 2", value: 421863 },
-  { label: "Year 3", value: 1046949 },
+  { label: "Year 1", value: 103675 },
+  { label: "Year 2", value: 372795 },
+  { label: "Year 3", value: 933011 },
 ];
 
 // Market rollout. "First revenue" is the first month with a paying
@@ -78,8 +79,8 @@ const ANNUAL = [
 const MARKETS = [
   ["Portland", "Dec '26", "2.5M", "398", "6,281"],
   ["Denver", "Dec '26", "3.0M", "418", "7,177"],
-  ["Seattle", "May '27", "4.1M", "495", "8,283"],
-  ["Los Angeles", "Aug '27", "12.9M", "644", "20,031"],
+  ["Seattle", "May '27", "4.1M", "373", "10,992"],
+  ["Los Angeles", "Aug '27", "12.9M", "437", "29,519"],
   ["New York", "Dec '27", "20.0M", "476", "42,017"],
   ["Shipped goods", "Dec '26", "Nationwide", "—", "—"],
 ];
@@ -588,7 +589,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   const s = pres.addSlide();
   s.background = { color: PL };
 
-  eyebrow(s, "Year 1", { x: 0.75, y: 0.55 });
+  eyebrow(s, "Year 1  ·  conservative case", { x: 0.75, y: 0.55 });
   slideTitle(s, "Four cities in the first year");
   subtitle(
     s,
@@ -637,9 +638,9 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   );
 
   const stats = [
-    ["$109,707", "Year 1 revenue", "Nov '26 – Oct '27", "tr"],
-    ["682", "paying vendors", "subscribing in Oct '27", "sg"],
-    ["$19,778", "exit monthly revenue", "Oct '27 — ≈ $237K ARR", "tr"],
+    ["$103,675", "Year 1 revenue", "Nov '26 – Oct '27", "tr"],
+    ["592", "paying vendors", "subscribing in Oct '27", "sg"],
+    ["$17,168", "exit monthly revenue", "Oct '27 — ≈ $206K ARR", "tr"],
     ["4", "metros live", "plus nationwide shipping", "sg"],
   ];
   stats.forEach((st, i) => {
@@ -677,7 +678,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   );
 
   s.addNotes(
-    "Every dollar here is a $29 subscription — no goods transaction revenue, no gift cards, no client billing, no sponsorship. Portland and Denver carry the first six months; Seattle arriving in May and Los Angeles in August is what compounds into Year 2, and the year exits at nearly double its mid-year run rate. New York opens just after this window, in December 2027.",
+    "Every dollar here is a $29 subscription — no goods transaction revenue, no gift cards, no client billing, no sponsorship. Portland and Denver carry the first six months; Seattle arriving in May and Los Angeles in August is what compounds into Year 2. New York opens just after this window, in December 2027. These are the conservative figures — the base case runs about 6% higher in Year 1.",
   );
 }
 
@@ -688,7 +689,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   const s = pres.addSlide();
   s.background = { color: PL };
 
-  eyebrow(s, "Years 1 – 3", { x: 0.75, y: 0.55, color: SG_D });
+  eyebrow(s, "Years 1 – 3  ·  conservative case", { x: 0.75, y: 0.55, color: SG_D });
   slideTitle(s, "Five metros by the third year");
   subtitle(
     s,
@@ -730,7 +731,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
       valAxisLabelFontSize: 9,
       valAxisLabelFormatCode: '"$"#,##0',
       valAxisMinVal: 0,
-      valAxisMaxVal: 1200000,
+      valAxisMaxVal: 1000000,
       valGridLine: { color: "E7E3DE", size: 0.75 },
       catGridLine: { style: "none" },
       valAxisLineShow: false,
@@ -741,9 +742,9 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
 
   s.addText(
     [
-      { text: "$1,578,519", options: { bold: true, color: TR_D } },
+      { text: "$1,409,481", options: { bold: true, color: TR_D } },
       { text: " over three years — exiting at ≈ ", options: { color: CM } },
-      { text: "$1.21M ARR", options: { bold: true, color: TR_D } },
+      { text: "$1.08M ARR", options: { bold: true, color: TR_D } },
       { text: ".", options: { color: CM } },
     ],
     {
@@ -780,7 +781,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
         { text: "Five metros", options: { bold: true, color: CH } },
         { text: "", options: {} },
         { text: "", options: {} },
-        { text: "2,431", options: { bold: true, color: CH, align: "right" } },
+        { text: "2,102", options: { bold: true, color: CH, align: "right" } },
         { text: "", options: {} },
       ],
     ],
@@ -819,7 +820,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   });
 
   s.addNotes(
-    "Three-year revenue totals $1.58M, exiting December 2029 at $100,503 a month — roughly $1.21M of annual run rate. The penetration assumption is the conservative part: New York is modelled at one vendor per 42,017 residents against one per 6,281 in Portland, so the largest metros are barely touched. Every one of the model's forty months reconciles: each market's revenue is an exact vendor count times price, and the three annual totals agree with both the spreadsheet's own monthly row and the sum of its market columns.",
+    "These are the conservative figures: Portland, Denver and New York ramp as before, while Seattle and Los Angeles are cut back roughly a third — about 10% off three-year revenue against the base case. Three-year total $1.41M, exiting December 2029 at $89,778 a month, roughly $1.08M of annual run rate. Penetration stays deliberately shallow: Los Angeles is modelled at one vendor per 29,519 residents and New York one per 42,017, against one per 6,281 in Portland. Every one of the model's forty months reconciles: each market's revenue is an exact vendor count times price, and the three annual totals agree with both the spreadsheet's own monthly row and the sum of its market columns.",
   );
 }
 
