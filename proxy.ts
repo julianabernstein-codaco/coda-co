@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PREVIEW_COOKIE_NAME, previewToken } from "@/lib/preview-gate";
+import { PREVIEW_COOKIE_NAME, previewToken, timingSafeEqual } from "@/lib/preview-gate";
+import { getSitePrivateState } from "@/lib/site-private";
 
 // Shared-password preview gate. The whole site is hidden behind a single
 // password except the public teaser (/homepage), the password entry page
 // (/preview-access), Next's own asset routes, and robots.txt.
 //
-// Gate is engaged iff PREVIEW_PASSWORD is set. Unset (e.g. local dev)
-// means every request passes through untouched.
+// Two independent triggers engage it:
+//   1. PREVIEW_PASSWORD is set — the pre-launch wall. Env-backed, so it only
+//      changes on a redeploy.
+//   2. PlatformConfig.sitePrivate is true — the incident kill switch, flipped
+//      from /admin/launch with no deploy. See lib/site-private.ts.
+// Neither set means every request passes through untouched (local dev, and
+// normal post-launch operation).
 //
 // Lives at `proxy.ts` (Next 16+ name) — the older `middleware.ts`
-// convention is deprecated but functionally identical.
+// convention is deprecated but functionally identical. Proxy runs on the
+// Node.js runtime in Next 16, which is what lets it read the DB at all.
 
 const PUBLIC_EXACT = new Set([
   "/homepage",
@@ -28,13 +35,6 @@ function isAsset(pathname: string): boolean {
   );
 }
 
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let result = 0;
-  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return result === 0;
-}
-
 export async function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
@@ -45,9 +45,9 @@ export async function proxy(req: NextRequest) {
   headers.set("x-pathname", pathname);
   const passThrough = NextResponse.next({ request: { headers } });
 
-  const password = process.env.PREVIEW_PASSWORD;
-  if (!password) return passThrough;
-
+  // Exemptions are checked before either trigger so assets and programmatic
+  // endpoints never cost a config read.
+  //
   // Programmatic endpoints (Stripe webhooks, NextAuth callbacks) are hit by
   // external services or the app itself — never by a human typing the shared
   // password — so they must bypass the gate. Without this, Stripe's webhook
@@ -61,10 +61,27 @@ export async function proxy(req: NextRequest) {
     return passThrough;
   }
 
+  const envPassword = process.env.PREVIEW_PASSWORD;
+  // Cached, so this is one query per instance per SITE_PRIVATE_TTL_MS.
+  const sitePrivate = await getSitePrivateState();
+  if (!envPassword && !sitePrivate.enabled) return passThrough;
+
+  // A device is let through if its cookie matches whichever trigger is
+  // active. Accepting both means arming the kill switch while the env wall is
+  // already up doesn't sign out the team mid-incident, and dropping the env
+  // var later doesn't either.
   const cookie = req.cookies.get(PREVIEW_COOKIE_NAME)?.value;
   if (cookie) {
-    const expected = await previewToken(password);
-    if (timingSafeEqual(cookie, expected)) return passThrough;
+    if (envPassword && timingSafeEqual(cookie, await previewToken(envPassword))) {
+      return passThrough;
+    }
+    if (
+      sitePrivate.enabled &&
+      sitePrivate.passwordHash &&
+      timingSafeEqual(cookie, await previewToken(sitePrivate.passwordHash))
+    ) {
+      return passThrough;
+    }
   }
 
   const redirectUrl = new URL("/preview-access", req.url);

@@ -934,6 +934,18 @@ model PlatformConfig {
   // Flip it from /admin/launch. Redeeming, managing and delivering an
   // already-funded card are never gated on this.
   giftCardsEnabled Boolean @default(false) @map("gift_cards_enabled")
+  // Incident kill switch: true puts the whole site back behind the
+  // shared-password wall (`proxy.ts`), same coverage as PREVIEW_PASSWORD.
+  // DB-backed rather than env-backed on purpose — an env var only takes
+  // effect on a Vercel redeploy, which runs migrations and takes minutes;
+  // this flips from /admin/launch and takes effect within
+  // SITE_PRIVATE_TTL_MS (see lib/site-private.ts).
+  sitePrivate Boolean @default(false) @map("site_private")
+  // bcrypt hash of the bypass password used when `sitePrivate` is on.
+  // Also lives in the DB so going private after a public launch (when
+  // PREVIEW_PASSWORD is unset) doesn't lock the team out with no way back
+  // in. Never stored or compared in plaintext.
+  sitePrivatePasswordHash String? @map("site_private_password_hash")
   updatedAt  DateTime  @updatedAt @map("updated_at")
 
   @@map("platform_config")

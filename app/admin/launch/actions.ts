@@ -1,10 +1,19 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { setDemoVendorsHidden, setGiftCardsEnabled, setLaunchedAt } from "@/lib/launch";
+import {
+  hasSitePrivatePassword,
+  setDemoVendorsHidden,
+  setGiftCardsEnabled,
+  setLaunchedAt,
+  setSitePrivate,
+  setSitePrivatePassword,
+} from "@/lib/launch";
 import { log } from "@/lib/log";
+import { clearSitePrivateCache } from "@/lib/site-private";
 
 async function requireAdmin(): Promise<void> {
   const session = await auth();
@@ -69,6 +78,63 @@ export async function holdGiftCardSales(): Promise<void> {
   await requireAdmin();
   await setGiftCardsEnabled(false);
   log.info("launch.gift_cards_enabled", { enabled: false });
+  revalidateAll();
+}
+
+// ── Incident kill switch ──────────────────────────────────────────────────
+//
+// Takes the whole site back behind the shared-password wall without a
+// redeploy. Unlike the env-var gate, this applies within seconds — see
+// lib/site-private.ts for the read path and its TTL.
+
+export interface PrivatePasswordState {
+  error?: string;
+  ok?: string;
+}
+
+// Set (or rotate) the bypass password. Stored bcrypt-hashed, like any other
+// password in the app. Rotating signs out every unlocked device, since the
+// gate cookie is derived from the hash.
+export async function setPrivateModePassword(
+  _prev: PrivatePasswordState | null,
+  formData: FormData,
+): Promise<PrivatePasswordState> {
+  await requireAdmin();
+  const password = String(formData.get("password") ?? "");
+  // Longer floor than a user account's 8: this is one shared secret guarding
+  // the whole site, with no per-account lockout behind it.
+  if (password.length < 12) {
+    return { error: "Use at least 12 characters — this is a single shared secret." };
+  }
+
+  await setSitePrivatePassword(await bcrypt.hash(password, 12));
+  clearSitePrivateCache();
+  log.info("site_private.password_set");
+  revalidateAll();
+  return { ok: "Password saved. Any device already unlocked will have to enter it again." };
+}
+
+// Arm the switch. Refuses without a stored password: post-launch
+// PREVIEW_PASSWORD is unset, so arming with no bypass secret would wall off
+// the site with no way back in short of the redeploy this exists to avoid.
+// The UI disables the button in that state; this is the server-side backstop.
+export async function takeSitePrivate(): Promise<void> {
+  await requireAdmin();
+  if (!(await hasSitePrivatePassword())) {
+    throw new Error("Set a bypass password before taking the site private.");
+  }
+
+  await setSitePrivate(true);
+  clearSitePrivateCache();
+  log.warn("site_private.enabled", { enabled: true });
+  revalidateAll();
+}
+
+export async function takeSitePublic(): Promise<void> {
+  await requireAdmin();
+  await setSitePrivate(false);
+  clearSitePrivateCache();
+  log.warn("site_private.enabled", { enabled: false });
   revalidateAll();
 }
 
