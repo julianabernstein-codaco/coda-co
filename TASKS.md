@@ -123,6 +123,36 @@ changes, acknowledgments), and cancellation request timestamps. In a dispute,
 - **`DEMO_AUTO_APPROVE_VENDORS=1` is on in production.** Fine for the
   demo; flip off the moment there's a real applicant. The admin queue
   works either way.
+- **No alerting on anything — attack signals are logged but unwatched.**
+  There is no Sentry / Axiom / Datadog / log drain: `lib/log.ts` writes JSON
+  to `console`, which lands in Vercel's short-retention runtime log stream,
+  and nothing thresholds or pages on it. The early-attack signature is
+  emitted but invisible:
+  - *Failed logins* — `auth.signin_failed` (with `reason` =
+    `missing_credentials` / `user_not_found` / `wrong_password`),
+    `auth.rate_limited`, `login.rate_limited`. Well instrumented already.
+  - *Throttling* — 14 `*.rate_limited` events. Note only `/api/auth/*` and
+    `/api/csp-report` return a real HTTP **429**; every other limiter
+    returns a friendly string from a server action with a 200, so alerting
+    on 429 status codes alone would miss most throttling.
+  - *Payment declines* — `billing.invoice_payment_failed` /
+    `billing.invoice_paid` (the pair makes a decline *rate* computable, not
+    just a raw count that tracks vendor headcount) and
+    `giftcard.async_payment_failed`. Most card declines never reach the
+    webhook at all: hosted Checkout fails inside Stripe, so card-testing
+    against Checkout is only visible in **Radar** — see the Stripe fraud
+    controls item below.
+  - *Highest value of all* — `ratelimit.redis_unavailable`. If Upstash is
+    unreachable the limiter silently degrades to per-instance in-memory and
+    the effective ceiling multiplies by instance count: the defenses weaken
+    exactly when load spikes. Should be an alert, not the manual spot-check
+    described two items down.
+
+  **Order:** (1) Stripe Dashboard alerts + Radar, no code; (2) a Vercel log
+  drain to somewhere with alerting (Better Stack / Axiom both have usable
+  free tiers) — the prerequisite for all of the above, and for these events
+  being queryable after the fact at all; (3) alert rules, written against
+  whatever query language the drain lands on.
 - **CSP is Report-Only, not enforced.** `lib/security-headers.ts` ships
   the policy as `Content-Security-Policy-Report-Only` so a missed source
   reports instead of breaking a page. Watch `event=csp.violation` in
