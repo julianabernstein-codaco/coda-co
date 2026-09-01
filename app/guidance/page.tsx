@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { GuidanceHub } from "@/components/faq/GuidanceHub";
 import { guidanceSections } from "@/components/faq/content";
+import { ZipHelpCta } from "@/components/guidance/ZipHelpCta";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
@@ -37,6 +38,31 @@ export default function GuidancePage() {
       <section className="bg-pl px-10 pt-10 pb-16">
         <Container width="mid">
           <GuidanceHub sections={guidanceSections} />
+
+          {/* Closing CTA — the hand-off from reading to finding a person.
+              Mirrors the closing callout on /planning-ahead. */}
+          <div className="mt-14">
+            <div className="bg-sg-vp border border-sg-p rounded-[12px] px-8 py-8 text-center">
+              <p className="text-[17px] text-ch max-w-[520px] mx-auto mb-3 leading-[1.8]">
+                When you are losing a loved one, even the smallest action or
+                decision can feel overwhelming.
+              </p>
+              <p className="text-[15px] text-ink max-w-[520px] mx-auto mb-6 leading-[1.75]">
+                We collect resources and people who can help &mdash; and we
+                believe that every one of these people is really excellent at
+                what they do.
+              </p>
+              <div className="flex gap-3 justify-center flex-wrap">
+                <ZipHelpCta lifeStage="active-dying,throughout" />
+                <Link
+                  href="/services?lifeStage=active-dying,throughout"
+                  className="btn-ghost btn-lg bg-white text-sg-d hover:text-sg-d hover:border-sg"
+                >
+                  Browse services that can help
+                </Link>
+              </div>
+            </div>
+          </div>
 
           <p className="text-center text-[15px] text-cl leading-[1.7] mt-12">
             For help with an order or your account, visit the{" "}
