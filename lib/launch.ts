@@ -7,7 +7,9 @@ import { prisma } from "@/lib/db";
 //   • past           → launched: paid flows open; trials run from launchedAt.
 // Server-only (touches the DB) — import from server components / actions.
 
-const CONFIG_ID = "singleton";
+// Exported so lib/site-private.ts reads the same row without duplicating
+// the id.
+export const CONFIG_ID = "singleton";
 
 // Length of the free trial once it starts (at launch). 3 months ≈ 90 days.
 export const TRIAL_DAYS = 90;
@@ -112,5 +114,50 @@ export async function setDemoVendorsHidden(hidden: boolean): Promise<void> {
     where: { id: CONFIG_ID },
     create: { id: CONFIG_ID, demoVendorsHidden: hidden },
     update: { demoVendorsHidden: hidden },
+  });
+}
+
+// ── Incident kill switch ──────────────────────────────────────────────────
+//
+// Writers for `sitePrivate` / `sitePrivatePasswordHash`. The read path is
+// deliberately elsewhere (lib/site-private.ts) because it runs in `proxy.ts`
+// on every request and needs its own cache — importing this module there
+// would pull in the launch/gift-card queries for nothing.
+
+// Whether a bypass password has been set, so the admin UI can require one
+// before the switch can be armed. Returns the fact, never the hash.
+export async function hasSitePrivatePassword(): Promise<boolean> {
+  const cfg = await prisma.platformConfig.findUnique({
+    where: { id: CONFIG_ID },
+    select: { sitePrivatePasswordHash: true },
+  });
+  return Boolean(cfg?.sitePrivatePasswordHash);
+}
+
+export async function isSitePrivate(): Promise<boolean> {
+  const cfg = await prisma.platformConfig.findUnique({
+    where: { id: CONFIG_ID },
+    select: { sitePrivate: true },
+  });
+  return cfg?.sitePrivate ?? false;
+}
+
+// Store a new bypass password (hashed) without changing the armed state, so
+// the team can set the password ahead of time and arm it later under
+// pressure. Rotating it also invalidates every unlocked device, since the
+// cookie derives from the hash.
+export async function setSitePrivatePassword(passwordHash: string): Promise<void> {
+  await prisma.platformConfig.upsert({
+    where: { id: CONFIG_ID },
+    create: { id: CONFIG_ID, sitePrivatePasswordHash: passwordHash },
+    update: { sitePrivatePasswordHash: passwordHash },
+  });
+}
+
+export async function setSitePrivate(enabled: boolean): Promise<void> {
+  await prisma.platformConfig.upsert({
+    where: { id: CONFIG_ID },
+    create: { id: CONFIG_ID, sitePrivate: enabled },
+    update: { sitePrivate: enabled },
   });
 }

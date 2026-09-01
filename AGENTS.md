@@ -199,6 +199,40 @@ Methods are bound to the underlying client so
 flow) keep working. Don't naively rewrite as a direct `new
 PrismaClient()` export.
 
+### Site-private gate (`proxy.ts` + `lib/site-private.ts`)
+
+The shared-password wall over the whole site. Two independent triggers
+engage it; either one is enough:
+
+- **`PREVIEW_PASSWORD`** (env) — the pre-launch wall. Env-backed, so it
+  only changes on a Vercel redeploy, which runs `migrate deploy` first.
+  A deploy-time setting, not an incident lever.
+- **`PlatformConfig.sitePrivate`** (DB) — the incident kill switch,
+  flipped from `/admin/launch`. Applies within
+  `SITE_PRIVATE_TTL_MS` (15s) with no deploy. Its bypass password lives
+  in the DB too (`sitePrivatePasswordHash`, bcrypt) because post-launch
+  `PREVIEW_PASSWORD` is unset — a bare boolean would wall off the site
+  with no way back in. Arming is refused without one, in the UI and in
+  the server action.
+
+Notes for anyone touching this:
+
+- `proxy.ts` runs on the **Node.js runtime** (Next 16 default for proxy —
+  see `node_modules/next/dist/docs/.../proxy.md`), which is what lets it
+  read the DB at all. Don't assume Edge.
+- The read is cached in module scope with an inflight dedupe, so the gate
+  costs one query per instance per TTL. **Don't call
+  `prisma.platformConfig` directly from `proxy.ts`** — go through
+  `getSitePrivateState()` or you add a query to every request.
+- Exemptions are checked *before* the config read, so assets and
+  `/api/*` never pay for it.
+- The gate cookie is `SHA-256(salt + secret)` where the secret is the env
+  password or the stored bcrypt hash. Rotating either invalidates every
+  unlocked device — deliberate.
+- **`/api/*` bypasses the gate entirely** (Stripe webhooks, NextAuth).
+  Adding a data-bearing API route means it is reachable even when the
+  site is private — gate it in the route itself.
+
 ### Security headers (`lib/security-headers.ts`)
 Site-wide response headers, applied to every route by the `headers()`
 block in `next.config.ts` (not `vercel.json`, so they also apply under

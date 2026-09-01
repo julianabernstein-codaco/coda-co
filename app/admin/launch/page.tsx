@@ -3,7 +3,9 @@ import { prisma } from "@/lib/db";
 import {
   areGiftCardsEnabled,
   getLaunchedAt,
+  hasSitePrivatePassword,
   isDemoHidden,
+  isSitePrivate,
   launchedFrom,
   trialWindow,
   TRIAL_DAYS,
@@ -17,7 +19,10 @@ import {
   revertToPrelaunch,
   scheduleLaunch,
   showDemoVendors,
+  takeSitePrivate,
+  takeSitePublic,
 } from "./actions";
+import { PrivatePasswordForm } from "./PrivatePasswordForm";
 import { requireAdminPage } from "@/app/admin/lib";
 
 export const metadata: Metadata = { title: "Launch — Admin | CodaCo" };
@@ -34,6 +39,11 @@ export default async function AdminLaunchPage() {
   const launchedAt = await getLaunchedAt();
   const demoHidden = await isDemoHidden();
   const giftCardsOn = await areGiftCardsEnabled();
+  const [sitePrivate, hasPrivatePassword] = await Promise.all([
+    isSitePrivate(),
+    hasSitePrivatePassword(),
+  ]);
+  const envGateOn = Boolean(process.env.PREVIEW_PASSWORD);
   const [demoCount, mockUnflagged] = await Promise.all([
     prisma.vendorProfile.count({ where: { demo: true } }),
     prisma.vendorProfile.count({
@@ -158,6 +168,66 @@ export default async function AdminLaunchPage() {
                 {giftCardsOn ? "Hold gift card sales" : "Open gift card sales"}
               </button>
             </form>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[10px] border border-line p-6 mt-5">
+          <h2 className="font-serif text-[18px] text-ch mb-2">Take the site private</h2>
+          <p className="text-[13px] text-cm mb-4 leading-relaxed">
+            Emergency switch. Puts the whole site back behind the shared-password
+            wall — every page except the public welcome and launching pages.
+            Applies within about 15 seconds, with no deploy and no migration, so
+            it works during an incident when a redeploy is the last thing you
+            want to be running.
+          </p>
+          <p className="text-[13px] text-cm mb-4 leading-relaxed">
+            Stripe webhooks and sign-in stay reachable so billing keeps settling
+            and the team can still log in. Set the bypass password{" "}
+            <span className="text-ch">before</span> you need it — arming is
+            blocked without one, since that would lock the team out too.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3 mb-5">
+            <span
+              className={`text-[11px] font-medium tracking-wide px-2.5 py-1 rounded-full border ${
+                sitePrivate ? "bg-tr-p border-tr-l text-tr" : "bg-sg-p border-sg-l text-sg-d"
+              }`}
+            >
+              {sitePrivate ? "PRIVATE" : "PUBLIC"}
+            </span>
+            <form action={sitePrivate ? takeSitePublic : takeSitePrivate}>
+              <button
+                className={sitePrivate ? "btn-secondary btn-md" : "btn-primary btn-md"}
+                type="submit"
+                disabled={!sitePrivate && !hasPrivatePassword}
+              >
+                {sitePrivate ? "Make site public again" : "Take site private now"}
+              </button>
+            </form>
+            {!sitePrivate && !hasPrivatePassword && (
+              <span className="text-[12px] text-tr w-full">
+                Set a bypass password below to enable this.
+              </span>
+            )}
+          </div>
+
+          {envGateOn && (
+            <p className="text-[12px] text-cl mb-4 leading-relaxed">
+              Note: <code className="text-cm">PREVIEW_PASSWORD</code> is currently
+              set, so the site is already gated by the env-var wall regardless of
+              this switch. Both passwords work while that is true.
+            </p>
+          )}
+
+          <div className="border-t border-line pt-5">
+            <h3 className="text-[14px] font-medium text-ch mb-1">Bypass password</h3>
+            <p className="text-[13px] text-cl mb-3 leading-relaxed">
+              What the team enters at <code className="text-cm">/preview-access</code>{" "}
+              to get through the wall. Stored hashed. Replacing it signs out every
+              device that had already unlocked —{" "}
+              {hasPrivatePassword ? "one is set." : "none is set yet."}
+            </p>
+            <PrivatePasswordForm hasPassword={hasPrivatePassword} />
           </div>
         </div>
 
