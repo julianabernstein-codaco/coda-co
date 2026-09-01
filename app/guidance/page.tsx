@@ -56,7 +56,7 @@ export default function GuidancePage() {
                 <ZipHelpCta lifeStage="active-dying,throughout" />
                 <Link
                   href="/services?lifeStage=active-dying,throughout"
-                  className="btn-ghost btn-lg bg-white text-ch"
+                  className="btn-ghost btn-lg bg-white text-sg-d hover:text-sg-d hover:border-sg"
                 >
                   Browse services that can help
                 </Link>

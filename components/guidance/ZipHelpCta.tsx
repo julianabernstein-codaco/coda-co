@@ -42,7 +42,7 @@ export function ZipHelpCta({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`btn-primary btn-lg ${className}`}
+        className={`btn-secondary btn-lg bg-sg-d hover:bg-sg ${className}`}
       >
         Enter your zip code for help near you
       </button>
@@ -64,9 +64,13 @@ export function ZipHelpCta({
         autoComplete="postal-code"
         placeholder="Enter your zip code"
         aria-label="Find help near you by zip code"
-        className="w-[150px] border-0 bg-transparent font-sans text-[15px] text-tr font-medium outline-none placeholder:text-cl placeholder:font-normal"
+        className="w-[150px] border-0 bg-transparent font-sans text-[15px] text-sg-d font-medium outline-none placeholder:text-cl placeholder:font-normal"
       />
-      <button type="button" onClick={search} className="btn-primary btn-sm">
+      <button
+        type="button"
+        onClick={search}
+        className="btn-secondary btn-sm bg-sg-d hover:bg-sg"
+      >
         Find help →
       </button>
     </div>
