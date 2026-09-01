@@ -42,7 +42,7 @@ export default function GuidancePage() {
           {/* Closing CTA — the hand-off from reading to finding a person.
               Mirrors the closing callout on /planning-ahead. */}
           <div className="mt-14">
-            <div className="bg-tr-vp border border-tr-p rounded-[12px] px-8 py-8 text-center">
+            <div className="bg-sg-vp border border-sg-p rounded-[12px] px-8 py-8 text-center">
               <p className="text-[17px] text-ch max-w-[520px] mx-auto mb-3 leading-[1.8]">
                 When you are losing a loved one, even the smallest action or
                 decision can feel overwhelming.
