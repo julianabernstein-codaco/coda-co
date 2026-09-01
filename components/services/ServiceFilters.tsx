@@ -6,6 +6,7 @@ import { FilterPillGroup } from "@/components/ui/filters/FilterPillGroup";
 import { FilterCheck } from "@/components/ui/filters/FilterCheck";
 import { FilterSection } from "@/components/ui/filters/FilterSection";
 import { FilterDivider } from "@/components/ui/filters/FilterDivider";
+import { LifeStageChips } from "@/components/ui/filters/LifeStageChips";
 import type { ServiceTypeOption } from "@/lib/api/serviceTypes";
 import { SPECIALIZATIONS } from "@/lib/data/specializations";
 
@@ -48,6 +49,10 @@ export function ServiceFilters({ serviceTypes }: { serviceTypes: ServiceTypeOpti
           ))}
         </FilterPillGroup>
       </FilterSection>
+
+      <FilterDivider />
+
+      <LifeStageChips layout="stack" />
 
       <FilterDivider />
 

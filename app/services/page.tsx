@@ -16,6 +16,7 @@ import { getServiceTypes } from "@/lib/api/serviceTypes";
 import { getVendors } from "@/lib/api/vendors";
 import { isKnownZip } from "@/lib/geo";
 import { parseSpecializationsParam } from "@/lib/data/specializations";
+import { parseLifeStageParam } from "@/lib/format/lifeStage";
 import type {
   Service,
   ServiceLocationType,
@@ -34,6 +35,7 @@ interface ServicesPageProps {
     type?: string;
     locationType?: string;
     specializations?: string;
+    lifeStage?: string;
     near?: string;
     q?: string;
     sort?: string;
@@ -51,12 +53,14 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     type,
     locationType: locParam,
     specializations: specsParam,
+    lifeStage: lifeStageParam,
     near,
     q,
     sort,
   } = await searchParams;
 
   const serviceType = (type ?? undefined) as ServiceType | undefined;
+  const lifeStage = parseLifeStageParam(lifeStageParam);
   const locationType = locParam && VALID_LOCATION_TYPES.has(locParam as ServiceLocationType)
     ? (locParam as ServiceLocationType)
     : undefined;
@@ -70,6 +74,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     getServices(),
     getVendors({
       specializations,
+      lifeStage,
       near,
       q,
     }),
@@ -108,6 +113,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     locationType != null ||
     nearActive ||
     (q != null && q !== "") ||
+    (lifeStage != null && lifeStage.length > 0) ||
     (specializations != null && specializations.length > 0);
 
   return (
