@@ -181,14 +181,45 @@ export async function POST(req: Request) {
         await syncStripeSubscription(event.data.object);
         break;
 
+      // Both settle the same way — re-read the subscription so our mirror of
+      // its status is authoritative — but they're logged differently. A
+      // decline is the one billing event worth alerting on: a spike across
+      // customers is card-testing or a processor problem, and a repeat on one
+      // customer is a vendor about to lapse. Logging the paid side too (at
+      // info) is what makes a *rate* computable; a raw decline count alone
+      // just tracks how many vendors we have.
       case "invoice.paid":
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice & {
           subscription?: string | Stripe.Subscription | null;
         };
         const subRef = invoice.subscription;
-        if (subRef) {
-          const subId = typeof subRef === "string" ? subRef : subRef.id;
+        const subId = subRef ? (typeof subRef === "string" ? subRef : subRef.id) : null;
+
+        const customerRef = invoice.customer;
+        const fields = {
+          invoiceId: invoice.id,
+          // Joins to vendor_profile.stripe_customer_id when you need to know
+          // *which* vendor without paying for a DB read on the webhook path.
+          customerId: typeof customerRef === "string" ? customerRef : (customerRef?.id ?? null),
+          subscriptionId: subId,
+          amountDueCents: invoice.amount_due,
+          billingReason: invoice.billing_reason,
+        };
+
+        if (event.type === "invoice.payment_failed") {
+          // attempt_count separates a first decline from Stripe's dunning
+          // retries, so an alert can fire on new failures rather than
+          // re-counting the same lapsing customer every retry.
+          log.warn("billing.invoice_payment_failed", {
+            ...fields,
+            attemptCount: invoice.attempt_count,
+          });
+        } else {
+          log.info("billing.invoice_paid", fields);
+        }
+
+        if (subId) {
           await syncStripeSubscription(await stripe.subscriptions.retrieve(subId));
         }
         break;
