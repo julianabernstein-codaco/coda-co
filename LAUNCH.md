@@ -78,7 +78,9 @@ Notes:
 7. **Flip the switch:** `/admin/launch` → **Launch now** (or Schedule a date).
    This opens vendor paid flows and starts every vendor's 90-day trial.
 8. **(Optional) Go public:** unset `PREVIEW_PASSWORD` on Production + redeploy to
-   drop the shared-password wall.
+   drop the shared-password wall. Before you do, set the **bypass password** on
+   `/admin/launch` → *Take the site private* — that's what arms the kill switch
+   below, and it's the only way back behind the wall without a redeploy.
 
 ## Verify
 
@@ -98,3 +100,41 @@ Notes:
 `/admin/launch` → **Revert to pre-launch** re-locks vendor paid flows. To fully
 return to test mode, swap the two Stripe env vars back to `sk_test_…` /
 test `whsec_…` and redeploy.
+
+## Emergency: take the site private
+
+For a bad launch, a data problem, or a security incident. Puts every page back
+behind the shared-password wall.
+
+**Do this now, before you need it:** `/admin/launch` → *Take the site private* →
+set a **bypass password** (12+ chars) and put it somewhere the team can reach
+under pressure. Arming is blocked without one — otherwise the wall would lock
+the team out too.
+
+**In an incident:**
+
+1. `/admin/launch` → **Take site private now**.
+2. Every instance is private within ~15 seconds. No deploy, no build, no
+   migration.
+3. The team gets back in at `/preview-access` with the bypass password.
+
+**What stays reachable while private**, by design:
+
+- `/homepage` and `/launching` — the public teasers.
+- `/api/stripe/webhook` — so billing keeps settling. Losing webhooks mid-incident
+  silently corrupts subscription state.
+- `/api/auth/*` — so the team can still sign in.
+
+If the *incident is* one of those endpoints, the wall won't help — pull the
+Stripe webhook in the Stripe dashboard, or take the deployment down at Vercel.
+
+**Why this isn't `PREVIEW_PASSWORD`.** That env var only changes on a redeploy,
+and `scripts/build.mjs` runs `prisma migrate deploy` first — minutes, plus
+migrations against production at the worst possible time. Both still work
+together: when the env var is set, either password opens the gate. Treat
+`PREVIEW_PASSWORD` as the pre-launch setting and this switch as the incident
+lever.
+
+**Rotating the bypass password** signs out every device that had unlocked
+(the gate cookie derives from the stored hash). That's the move if the shared
+password leaks.
