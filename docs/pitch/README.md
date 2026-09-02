@@ -16,6 +16,28 @@ npm install --no-save pptxgenjs
 Edit `build-deck.mjs` rather than the `.pptx` when a change should stick — the
 `.pptx` is a build output and gets overwritten.
 
+## Working process — verify before drafting
+
+When the projection tab changes, **do not go straight to the slides.**
+
+1. Read the tab from Drive and run the reconciliation checks (see
+   *Reconciliation* below): annual totals against the sheet's own monthly
+   row *and* the sum of the market columns; every month an exact integer
+   vendor count × price; no market's revenue falling month-on-month; no
+   implausible jumps; and a sanity check on the summary columns against
+   the real world (metro populations, vendor totals).
+2. **Report what is broken and stop there.** The founders would rather fix
+   the sheet first than have slides drafted around bad numbers and redone
+   afterwards.
+3. Build the slides once the data is confirmed good.
+
+Checks that have earned their place, each having caught a real defect: a
+subscriber row that did not accumulate; a duplicated month; a total row
+disagreeing with the columns above it; a signup cell reading 1016 instead
+of 10; and a population column copied from the wrong tab. Internal
+consistency alone is not enough — the last two were internally consistent
+and still wrong.
+
 ## Slides
 
 | # | Slide | Sourced from |
