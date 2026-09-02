@@ -36,70 +36,62 @@ const W = 13.3;
 const H = 7.5;
 
 /* ------------------------------------------------------------------ *
- * Projection model — the 7-metro tab of "CodaCo Market Projections
- * 2026.xlsx" (Google Drive), read 31 Aug 2026. Its A1 cell still reads
- * "5 Year Projections"; the data runs 38 months, Sep '26 - Oct '29.
+ * Projection model — the "7 metros, 3 Year Projections" tab of "CodaCo
+ * Market Projections 2026.xlsx" (Google Drive), read 31 Aug 2026 after
+ * the founders' corrections. 38 months, Sep '26 - Oct '29.
  *
- * Seven metros — Portland OR, Denver, Seattle, Madison WI, Portland ME,
- * Asheville NC, Los Angeles — plus shipped goods. Launch 1 Nov 2026.
- * $29/vendor/month stepping to $39 from Dec '28, 3-month free trial, and
- * a much harder churn model than the earlier tabs: 30% of arrivals lost
- * for the first three months in a metro (then 10%), and 50% for
- * shipped-goods sellers over their first six months (then 10%).
+ * Seven metros — Portland OR, Denver, Seattle, Minneapolis, San Francisco,
+ * Asheville NC, Los Angeles — plus shipped-goods makers nationwide.
+ * Launch 1 Nov 2026. $29/vendor/month stepping to $39 from Dec '28, a
+ * 3-month free trial, and the workbook's harshest churn assumption: 30%
+ * of arrivals lost for a metro's first three months (then 10%), and 50%
+ * for shipped-goods sellers over their first six months (then 10%).
  *
- * Year 1 is fully reconciled: it sums to $84,419, matching the sheet, and
- * every month in every market is an exact vendor count times price.
- *
- * TWO DEFECTS remain downstream of Year 1 — see README.md:
- *   1. LA's Dec '28 signup cell reads 1016 where its neighbours read 10.
- *      That inflates Year 3 by ~$286K (28%).
- *   2. The metro-population column is carried over from the five-metro
- *      tab and is wrong for Madison, Portland ME, Asheville and LA, so
- *      slide 7 no longer prints population or population-per-vendor.
- * Set YEAR3_VERIFIED to true once the LA cell is fixed and re-read; that
- * drops the caveat line from slide 7.
+ * Fully reconciled — all six checks pass (see README.md):
+ *   - the total row equals the sum of the eight market rows, all 38 months
+ *   - all three annual totals tie to both
+ *   - every month is an exact vendor count times price
+ *   - no market falls more than 1% month-on-month, and only after its
+ *     signups stop; the total row never falls
+ *   - no jump above 60% anywhere
+ *   - every metro's population and vendor total checks out against the
+ *     real world and against its own monthly row
  * ------------------------------------------------------------------ */
-const YEAR3_VERIFIED = false;
-
 const Y1_MONTHS = [
   "Nov '26", "Dec", "Jan '27", "Feb", "Mar", "Apr",
   "May", "Jun", "Jul", "Aug", "Sep", "Oct '27",
 ];
-// Year 1 = Nov '26 - Oct '27. Sums to $84,419, the sheet's Year 1 total.
-// Los Angeles first bills in Nov '27, just outside this window.
+// Year 1 = Nov '26 - Oct '27. Sums to $83,984, the sheet's Year 1 total.
+// Los Angeles first bills in Nov '27, one month outside this window.
 const YEAR1 = {
   portlandOr: [0, 725, 1015, 1392, 1711, 2059, 2436, 2755, 3074, 3335, 3538, 3741],
   denver: [0, 754, 1102, 1508, 1740, 2117, 2436, 2755, 3016, 3277, 3538, 3799],
-  seattle: [0, 0, 0, 0, 0, 0, 406, 957, 1247, 1624, 2001, 2233],
-  madison: [0, 0, 0, 0, 0, 0, 0, 0, 0, 406, 725, 1044],
-  portlandMe: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 522, 986],
+  seattle: [0, 0, 0, 0, 0, 0, 406, 957, 1160, 1537, 1914, 2146],
+  minneapolis: [0, 0, 0, 0, 0, 0, 0, 0, 0, 406, 696, 986],
+  sanFrancisco: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 522, 986],
   asheville: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 580],
   shipped: [0, 696, 928, 1218, 1392, 1566, 1769, 1972, 2233, 2494, 2697, 2900],
 };
 
-// Annual totals from the sheet's summary rows. All three tie exactly to
-// both its Monthly Revenue row and the sum of the eight market columns —
-// but Year 3 carries the LA defect noted above.
 const ANNUAL = [
-  { label: "Year 1", value: 84419 },
-  { label: "Year 2", value: 312417 },
-  { label: "Year 3", value: 1015031 },
+  { label: "Year 1", value: 83984 },
+  { label: "Year 2", value: 307632 },
+  { label: "Year 3", value: 700034 },
 ];
 
 // "First revenue" is the first month with a paying vendor — three months
-// after that market starts recruiting; derived from the revenue rows, so
-// it is reliable. Vendor totals come from the sheet's summary column and
-// are shown only where that column is self-consistent: LA's is inflated
-// by the Dec '28 typo, and shipped goods' cell duplicates LA's.
+// after that market starts recruiting. Population, vendor and
+// population-per-vendor columns all verified against the sheet's own rows
+// and against real metro populations.
 const MARKETS = [
-  ["Portland, OR", "Dec '26", "199"],
-  ["Denver", "Dec '26", "214"],
-  ["Seattle", "May '27", "195"],
-  ["Madison, WI", "Aug '27", "223"],
-  ["Portland, ME", "Sep '27", "170"],
-  ["Asheville, NC", "Oct '27", "144"],
-  ["Los Angeles", "Nov '27", "—"],
-  ["Shipped goods", "Dec '26", "—"],
+  ["Portland, OR", "Dec '26", "2.5M", "199", "12,563"],
+  ["Denver", "Dec '26", "3.0M", "214", "14,019"],
+  ["Seattle", "May '27", "4.1M", "194", "21,134"],
+  ["Minneapolis", "Aug '27", "3.8M", "223", "16,996"],
+  ["San Francisco", "Sep '27", "4.6M", "170", "27,059"],
+  ["Asheville, NC", "Oct '27", "0.4M", "144", "2,778"],
+  ["Los Angeles", "Nov '27", "12.9M", "334", "38,623"],
+  ["Shipped goods", "Dec '26", "Nationwide", "472", "—"],
 ];
 
 const pres = new pptxgen();
@@ -610,7 +602,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   slideTitle(s, "Six cities in the first year");
   subtitle(
     s,
-    "Portland and Denver open 1 November 2026 with makers shipping nationwide. Seattle, Madison, Portland ME and Asheville all follow inside year one.",
+    "Portland and Denver open 1 November 2026 with makers shipping nationwide. Seattle, Minneapolis, San Francisco and Asheville all follow inside year one.",
     { w: 8.6, y: 1.66, size: 13.5 },
   );
 
@@ -620,8 +612,8 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
       { name: "Portland, OR", labels: Y1_MONTHS, values: YEAR1.portlandOr },
       { name: "Denver", labels: Y1_MONTHS, values: YEAR1.denver },
       { name: "Seattle", labels: Y1_MONTHS, values: YEAR1.seattle },
-      { name: "Madison, WI", labels: Y1_MONTHS, values: YEAR1.madison },
-      { name: "Portland, ME", labels: Y1_MONTHS, values: YEAR1.portlandMe },
+      { name: "Minneapolis", labels: Y1_MONTHS, values: YEAR1.minneapolis },
+      { name: "San Francisco", labels: Y1_MONTHS, values: YEAR1.sanFrancisco },
       { name: "Asheville, NC", labels: Y1_MONTHS, values: YEAR1.asheville },
       { name: "Shipped goods", labels: Y1_MONTHS, values: YEAR1.shipped },
     ],
@@ -657,9 +649,9 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   );
 
   const stats = [
-    ["$84,419", "Year 1 revenue", "Nov '26 – Oct '27", "tr"],
-    ["527", "paying vendors", "subscribing in Oct '27", "sg"],
-    ["$15,283", "exit monthly revenue", "Oct '27 — ≈ $183K ARR", "tr"],
+    ["$83,984", "Year 1 revenue", "Nov '26 – Oct '27", "tr"],
+    ["522", "paying vendors", "subscribing in Oct '27", "sg"],
+    ["$15,138", "exit monthly revenue", "Oct '27 — ≈ $182K ARR", "tr"],
     ["6", "metros live", "plus nationwide shipping", "sg"],
   ];
   stats.forEach((st, i) => {
@@ -697,7 +689,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
   );
 
   s.addNotes(
-    "Every dollar here is a $29 subscription — no goods transaction revenue, no gift cards, no client billing, no sponsorship. This model trades the big-metro bet for a wider spread of smaller ones: Madison, Portland ME and Asheville all open inside year one. It is also the harshest on churn of any scenario in the workbook, which is why Year 1 lands below the five-metro versions despite opening two more cities.",
+    "Every dollar here is a $29 subscription — no goods transaction revenue, no gift cards, no client billing, no sponsorship. This model spreads across seven metros rather than betting on the largest: Asheville is a 400,000-person market opening in month twelve. It is also the harshest on churn of any scenario in the workbook — 30% of arrivals lost in a metro\u2019s first three months, 50% for goods sellers over six — which is why Year 1 lands below the five-metro versions despite opening more cities.",
   );
 }
 
@@ -750,7 +742,7 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
       valAxisLabelFontSize: 9,
       valAxisLabelFormatCode: '"$"#,##0',
       valAxisMinVal: 0,
-      valAxisMaxVal: 1100000,
+      valAxisMaxVal: 800000,
       valGridLine: { color: "E7E3DE", size: 0.75 },
       catGridLine: { style: "none" },
       valAxisLineShow: false,
@@ -761,9 +753,9 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
 
   s.addText(
     [
-      { text: "$1,411,867", options: { bold: true, color: TR_D } },
+      { text: "$1,091,650", options: { bold: true, color: TR_D } },
       { text: " over three years — exiting at ≈ ", options: { color: CM } },
-      { text: "$1.22M ARR", options: { bold: true, color: TR_D } },
+      { text: "$767K ARR", options: { bold: true, color: TR_D } },
       { text: ".", options: { color: CM } },
     ],
     {
@@ -773,9 +765,9 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
     },
   );
 
-  // Market rollout table. Three columns only: the sheet's metro-population
-  // column is carried over from the five-metro tab and is wrong for four of
-  // the seven metros, so population and population-per-vendor are withheld.
+  // Market rollout table. Population, vendor and population-per-vendor
+  // columns are back: all three now check out against the sheet's own rows
+  // and against real metro populations.
   s.addText("Market rollout", {
     x: 6.35, y: 2.5, w: 6.2, h: 0.3,
     isTextBox: true, margin: 0,
@@ -785,29 +777,35 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
     [
       [
         { text: "Market", options: { bold: true, color: TR_D, fontSize: 10 } },
-        { text: "First revenue", options: { bold: true, color: TR_D, fontSize: 10 } },
-        { text: "New vendors", options: { bold: true, color: TR_D, fontSize: 10, align: "right" } },
+        { text: "First rev.", options: { bold: true, color: TR_D, fontSize: 10 } },
+        { text: "Metro pop.", options: { bold: true, color: TR_D, fontSize: 10, align: "right" } },
+        { text: "Vendors", options: { bold: true, color: TR_D, fontSize: 10, align: "right" } },
+        { text: "Pop. per vendor", options: { bold: true, color: TR_D, fontSize: 10, align: "right" } },
       ],
       ...MARKETS.map((m) => [
         { text: m[0], options: { color: CH, bold: true } },
         { text: m[1], options: { color: CM } },
-        { text: m[2], options: { color: CH, align: "right" } },
+        { text: m[2], options: { color: CM, align: "right" } },
+        { text: m[3], options: { color: CH, align: "right" } },
+        { text: m[4], options: { color: CM, align: "right" } },
       ]),
       [
-        { text: "Six metros", options: { bold: true, color: CH } },
+        { text: "Seven metros", options: { bold: true, color: CH } },
         { text: "", options: {} },
-        { text: "1,145", options: { bold: true, color: CH, align: "right" } },
+        { text: "", options: {} },
+        { text: "1,478", options: { bold: true, color: CH, align: "right" } },
+        { text: "", options: {} },
       ],
     ],
     {
       x: 6.35, y: 2.86, w: 6.2,
-      colW: [2.4, 1.9, 1.9],
-      rowH: 0.3,
+      colW: [1.45, 1.0, 1.1, 0.95, 1.7],
+      rowH: 0.28,
       fontFace: SANS,
-      fontSize: 11,
+      fontSize: 10.5,
       border: { type: "solid", color: LINE, pt: 0.75 },
       fill: { color: WHITE },
-      margin: [3, 6, 3, 6],
+      margin: [2, 6, 2, 6],
       valign: "middle",
     },
   );
@@ -833,19 +831,8 @@ function subtitle(slide, text, { x = 0.75, y = 1.66, w = 11.0, color = CM, size 
     });
   });
 
-  if (!YEAR3_VERIFIED) {
-    s.addText(
-      "Year 3 unverified — LA's Dec '28 signup cell reads 1016, not 10, inflating Year 3 by ≈ $286K. Corrected: Year 3 ≈ $729,000, three-year ≈ $1.13M.",
-      {
-        x: 0.75, y: 7.08, w: 11.8, h: 0.28,
-        isTextBox: true, margin: 0,
-        fontFace: SANS, fontSize: 9.5, italic: true, color: TR_D,
-      },
-    );
-  }
-
   s.addNotes(
-    "Seven metros instead of five, spread across smaller and cheaper markets — Madison, Portland ME and Asheville rather than New York. It is also the harshest churn model in the workbook: 30% of each arriving cohort lost for a metro's first three months, and 50% for shipped-goods sellers over six months. TWO THINGS TO FIX BEFORE SHOWING THIS: Los Angeles' December 2028 signup cell reads 1016 rather than 10, which inflates Year 3 by about $286,000 — corrected, Year 3 is roughly $729,000, not $1,015,031. And the sheet's metro-population column is carried over from the five-metro tab, so Madison reads 12.9M and Portland ME and Asheville read 20M; those columns are withheld from the table until they are fixed.",
+    "Seven metros rather than five, and deliberately not the biggest ones — Minneapolis, San Francisco and a 400,000-person Asheville alongside Los Angeles. It carries the workbook's harshest churn: 30% of each arriving cohort lost for a metro's first three months, and 50% for shipped-goods sellers over six. Every check passes on this version of the tab — the total row equals the sum of the market columns in all 38 months, all three annual totals tie to both, every month is an exact vendor count times price, no market falls more than 1% and only after its signups stop, and every metro's population and vendor total checks out against the sheet's own rows and the real world. The penetration spread is the conservatism to point at: Los Angeles is modelled at one vendor per 38,623 residents against Asheville's one per 2,778.",
   );
 }
 

@@ -61,18 +61,17 @@ substitute. Brand identity is carried by the palette, which is the exact
 
 ## The projection model
 
-Source: the **7-metro tab** of **"CodaCo Market Projections 2026.xlsx"** in
-Google Drive, read 31 Aug 2026. Its A1 cell still reads *"5 Year
-Projections"* — stale; the data runs **38 months, Sep '26 – Oct '29**.
+Source: the **"7 metros, 3 Year Projections"** tab of **"CodaCo Market
+Projections 2026.xlsx"** in Google Drive, read 31 Aug 2026. **38 months,
+Sep '26 – Oct '29.**
 
 Read it straight from Drive with the Google Drive connector
 (`read_file_content` on the file id) — no download or export needed. That call
 returns every tab concatenated into one string, so locate the block by its
-title row rather than assuming position, and note that the title row does not
-always match the tab name.
+title row rather than assuming position.
 
-Seven metros — Portland OR, Denver, Seattle, Madison WI, Portland ME,
-Asheville NC, Los Angeles — plus shipped goods.
+Seven metros — Portland OR, Denver, Seattle, Minneapolis, San Francisco,
+Asheville NC, Los Angeles — plus shipped-goods makers nationwide.
 
 Mechanics:
 
@@ -84,104 +83,83 @@ Mechanics:
 - **Front-loaded churn**, and this is what sets the tab apart: a metro loses
   **30% of each arriving cohort for its first three months**, then settles to
   10%; shipped-goods sellers churn at **50% for six months** before settling.
-  The earlier tabs assumed a flat 10% throughout.
+  The five-metro tabs assumed a flat 10% throughout.
 - Price steps from **$29 to $39/month in December 2028**.
 
 ### Which tab feeds the deck
 
-| | Best Est (tab 1) | More Conservative (tab 2) | **7-metro (in the deck)** |
+| | Best Est | More Conservative | **7-metro (in the deck)** |
 |---|---|---|---|
-| Year 1 | $109,707 | $103,675 | **$84,419** |
-| Year 2 | $421,863 | $372,795 | **$312,417** |
-| Year 3 | $1,046,949 | $933,011 | **$1,015,031** ⚠ |
-| Three-year | $1,578,519 | $1,409,481 | **$1,411,867** ⚠ |
+| Year 1 | $109,707 | $103,675 | **$83,984** |
+| Year 2 | $421,863 | $372,795 | **$307,632** |
+| Year 3 | $1,046,949 | $933,011 | **$700,034** |
+| Three-year | $1,578,519 | $1,409,481 | **$1,091,650** |
 
-The 7-metro tab trades New York for three smaller markets (Madison, Portland
-ME, Asheville) and applies much harsher early churn, which is why Year 1 lands
-lowest of the three despite opening more cities. ⚠ = affected by the LA defect
-below.
+The 7-metro tab drops New York for Minneapolis, San Francisco and Asheville
+and applies far harsher early churn, so it lands well below the others. It is
+the most defensible of the three to lead with.
 
-### Reconciliation
+### Reconciliation — all six checks pass
 
-| | Stated | Monthly Revenue row | Sum of the eight market rows |
-|---|---|---|---|
-| Year 1 (Nov '26 – Oct '27) | $84,419 | $84,419 ✓ | $84,419 ✓ |
-| Year 2 (Nov '27 – Oct '28) | $312,417 | $312,417 ✓ | $312,417 ✓ |
-| Year 3 (Nov '28 – Oct '29) | $1,015,031 | $1,015,031 ✓ | $1,015,031 ✓ |
+| Check | Result |
+|---|---|
+| Total row = sum of the eight market rows | ✓ all 38 months |
+| Annual totals vs total row **and** market columns | ✓ $83,984 / $307,632 / $700,034 |
+| Every month an exact integer vendor count × price | ✓ all eight markets |
+| Month-on-month falls | ✓ max −0.8%, and only after a market's signups stop; the total row never falls |
+| Implausible jumps (>60%) | ✓ none |
+| Summary columns vs the sheet's own rows and the real world | ✓ every population, vendor total and population-per-vendor |
 
-All 38 months agree between the total row and the market columns, and every
-market figure is an exact integer vendor count × price. **Internal
-consistency is not the problem here** — the two defects below are inputs that
-are internally consistent and still wrong.
+`check_v3.py` in the session scratchpad is the script; re-derive it from the
+tab when the model changes.
 
-### Two defects to fix before this deck is shown
+**Defects found and fixed by the founders during this round**, kept here so
+the checks that caught them are not dropped: a Los Angeles signup cell reading
+`1016` instead of `10` (inflated Year 3 by 28%); metro populations carried
+over from the five-metro tab (Madison at 12.9M, Portland ME and Asheville at
+20M); a stale population-per-vendor cell for Portland; and a shipped-goods
+vendor total duplicating Los Angeles'.
 
-**1. Los Angeles' Dec '28 signup cell reads `1016`.** Every neighbouring
-month in that row reads 10 or less. It converts three months later, so LA
-jumps from $10,452 in Feb '29 to **$50,037** in Mar '29 — and then *falls*
-every month after, which a subscriber base cannot do. The knock-on:
-
-| | As written | With the cell reading 10 |
-|---|---|---|
-| LA, Mar–Oct '29 | $377,364 | ~$91,065 |
-| Year 3 | $1,015,031 | **~$728,732** (−28%) |
-| Three-year total | $1,411,867 | ~$1,125,568 |
-| Oct '29 run rate | $101,556/mo (≈$1.22M ARR) | ~$66,261/mo (≈$795K ARR) |
-
-Slide 7 carries a caveat line while this stands. Fix the cell, re-read, and
-set `YEAR3_VERIFIED = true` in `build-deck.mjs` to drop it.
-
-**2. The metro-population column is carried over from the five-metro tab.**
-Four of seven are wrong, and wrong by two orders of magnitude:
-
-| Market | Sheet | Actual metro |
-|---|---|---|
-| Madison, WI | 12.9M | ~0.7M — that is LA's figure |
-| Portland, ME | 20.0M | ~0.6M — that is New York's figure |
-| Asheville, NC | 20.0M | ~0.5M — that is New York's figure |
-| Los Angeles | 20.0M | ~12.9M |
-
-Slide 7's rollout table therefore **omits population and population-per-vendor
-entirely** rather than print figures that would not survive ten seconds of
-scrutiny. Once corrected, restore those two columns — the penetration spread
-is one of the deck's better arguments.
-
-Two smaller things: LA's "Total New Vendors" summary cell (1,344) is inflated
-by the same typo, and shipped goods' cell duplicates it, so slide 7 shows a
-dash for both and totals only the six clean metros (1,145).
+One cosmetic item remains, unused by the deck: the **"Avg. New/Mo, first
+year" column is wrong for every metro** — San Francisco reads 61.1 against an
+actual 6.5, Asheville 41.6 against 4.5, Los Angeles 84.2 against 6.7. Only a
+problem if that column is shown elsewhere.
 
 ### Headline figures
 
 | Figure | Value | Window |
 |---|---|---|
-| Year 1 revenue | $84,419 | Nov '26 – Oct '27 |
-| Year 2 revenue | $312,417 | Nov '27 – Oct '28 |
-| Year 3 revenue | $1,015,031 (⚠ ~$728,732 corrected) | Nov '28 – Oct '29 |
-| Paying vendors | 527 | Oct '27 |
-| Exit monthly revenue, Year 1 | $15,283 (≈ $183K ARR) | Oct '27 |
+| Year 1 revenue | $83,984 | Nov '26 – Oct '27 |
+| Year 2 revenue | $307,632 | Nov '27 – Oct '28 |
+| Year 3 revenue | $700,034 | Nov '28 – Oct '29 |
+| Three-year total | $1,091,650 | |
+| Paying vendors | 522 | Oct '27 |
+| Exit monthly revenue, Year 1 | $15,138 (≈ $182K ARR) | Oct '27 |
+| Exit monthly revenue, Year 3 | $63,921 (≈ $767K ARR) | Oct '29 |
 
 ### Market rollout
 
 "First revenue" is the first month with a paying vendor — three months after
-that market starts recruiting, derived from the revenue rows.
+that market starts recruiting.
 
-| Market | First revenue | New vendors |
-|---|---|---|
-| Portland, OR | Dec '26 | 199 |
-| Denver | Dec '26 | 214 |
-| Seattle | May '27 | 195 |
-| Madison, WI | Aug '27 | 223 |
-| Portland, ME | Sep '27 | 170 |
-| Asheville, NC | Oct '27 | 144 |
-| Los Angeles | Nov '27 | — (see defect 1) |
-| Shipped goods | Dec '26 | — (cell duplicates LA's) |
+| Market | First revenue | Metro pop. | Vendors | Pop. per vendor |
+|---|---|---|---|---|
+| Portland, OR | Dec '26 | 2.5M | 199 | 12,563 |
+| Denver | Dec '26 | 3.0M | 214 | 14,019 |
+| Seattle | May '27 | 4.1M | 194 | 21,134 |
+| Minneapolis | Aug '27 | 3.8M | 223 | 16,996 |
+| San Francisco | Sep '27 | 4.6M | 170 | 27,059 |
+| Asheville, NC | Oct '27 | 0.4M | 144 | 2,778 |
+| Los Angeles | Nov '27 | 12.9M | 334 | 38,623 |
+| Shipped goods | Dec '26 | Nationwide | 472 | — |
 
-Los Angeles opens in Nov '27, one month outside Year 1, so slide 6 charts six
-metros plus shipped goods.
+Seven metros, 1,478 vendors. Los Angeles opens in Nov '27, one month outside
+Year 1, so slide 6 charts six metros plus shipped goods. The penetration
+spread is the model's conservatism: Los Angeles at one vendor per 38,623
+residents against Asheville's one per 2,778.
 
 ## Before sending
 
-- **Fix the two spreadsheet defects above.** Slide 7 carries a visible caveat line until the Los Angeles cell is corrected.
 - Slide 8 carries a literal `[amount]` placeholder for the raise.
 - Slide 2's "~3M deaths in the United States every year" is cited to CDC/NCHS
   and should be refreshed against the latest published year.
