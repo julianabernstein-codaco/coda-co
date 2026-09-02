@@ -25,8 +25,8 @@ Edit `build-deck.mjs` rather than the `.pptx` when a change should stick — the
 | 3 | The solution | `prisma/seed.ts` product/service types, `/what-is-codaco` |
 | 4 | The product, built and live | `docs/data-model-evolution.md` phases A–D, `LAUNCH.md`, `TASKS.md` |
 | 5 | Business model | `lib/data/plans.ts`, `/list-with-us` FAQ |
-| 6 | Year 1, monthly by market | Conservative tab of the founders' spreadsheet — see below |
-| 7 | Years 1–3 | Conservative tab of the founders' spreadsheet — see below |
+| 6 | Year 1, monthly by market | 7-metro tab of the founders' spreadsheet — see below |
+| 7 | Years 1–3 | 7-metro tab of the founders' spreadsheet — see below |
 | 8 | Team and the ask | `/company` founder bios |
 
 ## Fonts
@@ -39,31 +39,18 @@ substitute. Brand identity is carried by the palette, which is the exact
 
 ## The projection model
 
-Source: the **"More Conservative Best Est, 3 Y"** tab (the **second** tab) of
-**"CodaCo Market Projections 2026.xlsx"** in Google Drive, read 31 Aug 2026.
-It runs Sep '26 – Dec '29 across five metros plus shipped goods (makers who
-ship nationwide and so are not geo-bound).
+Source: the **7-metro tab** of **"CodaCo Market Projections 2026.xlsx"** in
+Google Drive, read 31 Aug 2026. Its A1 cell still reads *"5 Year
+Projections"* — stale; the data runs **38 months, Sep '26 – Oct '29**.
 
 Read it straight from Drive with the Google Drive connector
 (`read_file_content` on the file id) — no download or export needed. That call
 returns every tab concatenated into one string, so locate the block by its
-title row (`More Conservative Best Est, 3 Y …`) rather than assuming position.
+title row rather than assuming position, and note that the title row does not
+always match the tab name.
 
-**Which tab feeds the deck matters.** The first tab, "Best Est, 3 Year
-Projections", is the base case and runs about 11% higher over three years.
-The remaining tabs hold older single-year best / conservative / aggressive
-scenarios and are not used.
-
-| | Base case (tab 1) | **Conservative (tab 2, in the deck)** |
-|---|---|---|
-| Year 1 | $109,707 | **$103,675** (−5.5%) |
-| Year 2 | $421,863 | **$372,795** (−11.6%) |
-| Year 3 | $1,046,949 | **$933,011** (−10.9%) |
-| Three-year | $1,578,519 | **$1,409,481** (−10.7%) |
-
-Portland, Denver and New York are identical between the two; the conservative
-tab cuts Seattle (495 → 373 vendors) and Los Angeles (644 → 437) and nudges
-shipped goods up slightly.
+Seven metros — Portland OR, Denver, Seattle, Madison WI, Portland ME,
+Asheville NC, Los Angeles — plus shipped goods.
 
 Mechanics:
 
@@ -71,87 +58,108 @@ Mechanics:
 - Revenue is **subscribing vendors × monthly price**, and nothing else. No
   goods transaction revenue, no gift cards, no client billing, no sponsorship.
 - A vendor's first payment lands **three months after signup** — the free
-  trial in `lib/data/plans.ts`. A September '26 signup first bills in
-  December '26.
-- **~10% attrition** on each arriving cohort.
+  trial in `lib/data/plans.ts`.
+- **Front-loaded churn**, and this is what sets the tab apart: a metro loses
+  **30% of each arriving cohort for its first three months**, then settles to
+  10%; shipped-goods sellers churn at **50% for six months** before settling.
+  The earlier tabs assumed a flat 10% throughout.
 - Price steps from **$29 to $39/month in December 2028**.
+
+### Which tab feeds the deck
+
+| | Best Est (tab 1) | More Conservative (tab 2) | **7-metro (in the deck)** |
+|---|---|---|---|
+| Year 1 | $109,707 | $103,675 | **$84,419** |
+| Year 2 | $421,863 | $372,795 | **$312,417** |
+| Year 3 | $1,046,949 | $933,011 | **$1,015,031** ⚠ |
+| Three-year | $1,578,519 | $1,409,481 | **$1,411,867** ⚠ |
+
+The 7-metro tab trades New York for three smaller markets (Madison, Portland
+ME, Asheville) and applies much harsher early churn, which is why Year 1 lands
+lowest of the three despite opening more cities. ⚠ = affected by the LA defect
+below.
 
 ### Reconciliation
 
-Checks run against the tab before anything reaches a slide. **Everything
-ties:**
-
-| | Stated | Monthly Revenue row | Sum of the six market rows |
+| | Stated | Monthly Revenue row | Sum of the eight market rows |
 |---|---|---|---|
-| Year 1 (Nov '26 – Oct '27) | $103,675 | $103,675 ✓ | $103,675 ✓ |
-| Year 2 (Nov '27 – Oct '28) | $372,795 | $372,795 ✓ | $372,795 ✓ |
-| Year 3 (Nov '28 – Oct '29) | $933,011 | $933,011 ✓ | $933,011 ✓ |
+| Year 1 (Nov '26 – Oct '27) | $84,419 | $84,419 ✓ | $84,419 ✓ |
+| Year 2 (Nov '27 – Oct '28) | $312,417 | $312,417 ✓ | $312,417 ✓ |
+| Year 3 (Nov '28 – Oct '29) | $1,015,031 | $1,015,031 ✓ | $1,015,031 ✓ |
 
-Also verified across all forty months: every market figure is an exact
-integer vendor count × price ($29 through Nov '28, $39 from Dec '28), no
-market's revenue ever falls, and the Monthly Revenue row equals the sum of
-the market rows in every single month. Zero discrepancies.
+All 38 months agree between the total row and the market columns, and every
+market figure is an exact integer vendor count × price. **Internal
+consistency is not the problem here** — the two defects below are inputs that
+are internally consistent and still wrong.
 
-`/tmp/.../check_cons.py` in the session scratchpad is the script that ran
-these checks; re-derive it from the tab if the model changes again.
+### Two defects to fix before this deck is shown
 
-### Reading the sheet without tripping over the header
+**1. Los Angeles' Dec '28 signup cell reads `1016`.** Every neighbouring
+month in that row reads 10 or less. It converts three months later, so LA
+jumps from $10,452 in Feb '29 to **$50,037** in Mar '29 — and then *falls*
+every month after, which a subscriber base cannot do. The knock-on:
 
-The month header once labelled two different blocks "J '28" (columns S and
-AE), which made two readers disagree about which cells held April '28. That
-is fixed — AE now reads J '29 — but checking by column letter is still the
-reliable way in a 40-column row:
+| | As written | With the cell reading 10 |
+|---|---|---|
+| LA, Mar–Oct '29 | $377,364 | ~$91,065 |
+| Year 3 | $1,015,031 | **~$728,732** (−28%) |
+| Three-year total | $1,411,867 | ~$1,125,568 |
+| Oct '29 run rate | $101,556/mo (≈$1.22M ARR) | ~$66,261/mo (≈$795K ARR) |
 
-| Month | Column | | Month | Column |
-|---|---|---|---|---|
-| Sep '26 (first) | C | | Dec '28 (fee step) | AD |
-| Nov '26 (launch) | E | | Apr '29 | AH |
-| Oct '27 (Year 1 end) | P | | Dec '29 (last) | AP |
-| Apr '28 | V | | | |
+Slide 7 carries a caveat line while this stands. Fix the cell, re-read, and
+set `YEAR3_VERIFIED = true` in `build-deck.mjs` to drop it.
 
-Two labels in the sheet anchor this and agree with each other: "Launch Date
-November 1" sits over column E, and "Fee increase to $39/mo" over column AD —
-which is exactly where every market's price steps from $29 to $39 (Portland
-291 × $29 = $8,439, then 300 × $39 = $11,700). Both tabs share this layout.
+**2. The metro-population column is carried over from the five-metro tab.**
+Four of seven are wrong, and wrong by two orders of magnitude:
+
+| Market | Sheet | Actual metro |
+|---|---|---|
+| Madison, WI | 12.9M | ~0.7M — that is LA's figure |
+| Portland, ME | 20.0M | ~0.6M — that is New York's figure |
+| Asheville, NC | 20.0M | ~0.5M — that is New York's figure |
+| Los Angeles | 20.0M | ~12.9M |
+
+Slide 7's rollout table therefore **omits population and population-per-vendor
+entirely** rather than print figures that would not survive ten seconds of
+scrutiny. Once corrected, restore those two columns — the penetration spread
+is one of the deck's better arguments.
+
+Two smaller things: LA's "Total New Vendors" summary cell (1,344) is inflated
+by the same typo, and shipped goods' cell duplicates it, so slide 7 shows a
+dash for both and totals only the six clean metros (1,145).
 
 ### Headline figures
 
 | Figure | Value | Window |
 |---|---|---|
-| Year 1 revenue | $103,675 | Nov '26 – Oct '27 |
-| Year 2 revenue | $372,795 | Nov '27 – Oct '28 |
-| Year 3 revenue | $933,011 | Nov '28 – Oct '29 |
-| Three-year total | $1,409,481 | |
-| Paying vendors | 592 | Oct '27 |
-| Exit monthly revenue, Year 1 | $17,168 (≈ $206K ARR) | Oct '27 |
-| Exit monthly revenue, Year 3 | $89,778 (≈ $1.08M ARR) | Dec '29 |
+| Year 1 revenue | $84,419 | Nov '26 – Oct '27 |
+| Year 2 revenue | $312,417 | Nov '27 – Oct '28 |
+| Year 3 revenue | $1,015,031 (⚠ ~$728,732 corrected) | Nov '28 – Oct '29 |
+| Paying vendors | 527 | Oct '27 |
+| Exit monthly revenue, Year 1 | $15,283 (≈ $183K ARR) | Oct '27 |
 
 ### Market rollout
 
 "First revenue" is the first month with a paying vendor — three months after
-that market starts recruiting. Population and vendor columns are the sheet's
-own and are internally consistent (population ÷ vendors = population per
-vendor).
+that market starts recruiting, derived from the revenue rows.
 
-| Market | First revenue | Metro pop. | Vendors | Pop. per vendor |
-|---|---|---|---|---|
-| Portland | Dec '26 | 2.5M | 398 | 6,281 |
-| Denver | Dec '26 | 3.0M | 418 | 7,177 |
-| Seattle | May '27 | 4.1M | 373 | 10,992 |
-| Los Angeles | Aug '27 | 12.9M | 437 | 29,519 |
-| New York | Dec '27 | 20.0M | 476 | 42,017 |
-| Shipped goods | Dec '26 | Nationwide | — | — |
+| Market | First revenue | New vendors |
+|---|---|---|
+| Portland, OR | Dec '26 | 199 |
+| Denver | Dec '26 | 214 |
+| Seattle | May '27 | 195 |
+| Madison, WI | Aug '27 | 223 |
+| Portland, ME | Sep '27 | 170 |
+| Asheville, NC | Oct '27 | 144 |
+| Los Angeles | Nov '27 | — (see defect 1) |
+| Shipped goods | Dec '26 | — (cell duplicates LA's) |
 
-Five metros, 2,102 vendors. The penetration spread is the model's
-conservatism: Los Angeles is assumed at one vendor per 29,519 residents and
-New York one per 42,017, against Portland's one per 6,281.
-
-The sheet's "Total New Vendors" column reads 155 for shipped goods, but that
-row's own monthly signups sum to well over 500 — the summary cell looks
-stale, so the deck shows a dash rather than either number.
+Los Angeles opens in Nov '27, one month outside Year 1, so slide 6 charts six
+metros plus shipped goods.
 
 ## Before sending
 
+- **Fix the two spreadsheet defects above.** Slide 7 carries a visible caveat line until the Los Angeles cell is corrected.
 - Slide 8 carries a literal `[amount]` placeholder for the raise.
 - Slide 2's "~3M deaths in the United States every year" is cited to CDC/NCHS
   and should be refreshed against the latest published year.
